@@ -30,7 +30,9 @@ import sys
 import textwrap
 
 import streamlit as st
+from streamlit import config
 from streamlit import util
+from streamlit.folder_black_list import FolderBlackList
 from streamlit.compatibility import setup_2_3_shims
 
 if sys.version_info >= (3, 0):
@@ -149,12 +151,29 @@ def _hashing_error_message(start):
         %(start)s,
 
         **More information:** to prevent unexpected behavior, Streamlit tries
-        to detect mutations in cached objects so it can alert the user if
-        needed. However, something went wrong while performing this check.
+        to detect mutations in cached objects defined in your local files so
+        it can alert you when the cache is used incorrectly. However, something
+        went wrong while performing this check.
 
-        Please [file a bug](https://github.com/streamlit/streamlit/issues/new/choose).
+        This error can occur when your virtual environment lives in the same
+        folder as your project, since that makes it hard for Streamlit to
+        understand which files it should check. If you think that's what caused
+        this, please add the following to `~/.streamlit/config.toml`:
 
-        To stop this warning from showing in the meantime, try one of the following:
+        ```
+        [server]
+        folderWatchBlacklist = ['foldername']
+        ```
+
+        ...where `foldername` is the relative or absolute path to the folder
+        where you put your virtual environment.
+
+        Otherwise, please [file a
+        bug here](https://github.com/streamlit/streamlit/issues/new/choose).
+
+        To stop this warning from showing in the meantime, try one of the
+        following:
+
         * **Preferred:** modify your code to avoid using this type of object.
         * Or add the argument `ignore_hash=True` to the `st.cache` decorator.
     """
@@ -180,6 +199,10 @@ class CodeHasher:
             self.hasher = hasher
         else:
             self.hasher = hashlib.new(name)
+
+        self._folder_black_list = FolderBlackList(
+            config.get_option("server.folderWatchBlacklist")
+        )
 
     def update(self, obj, context=None):
         """Update the hash with the provided object."""
@@ -299,8 +322,11 @@ class CodeHasher:
                     return self.to_bytes("%s.%s" % (obj.__module__, obj.__name__))
 
                 h = hashlib.new(self.name)
-                # TODO: This may be too restrictive for libraries in development.
-                if os.path.abspath(obj.__code__.co_filename).startswith(os.getcwd()):
+                filepath = os.path.abspath(obj.__code__.co_filename)
+
+                if util.file_is_in_folder_glob(
+                    filepath, self._get_main_script_directory()
+                ) and not self._folder_black_list.is_blacklisted(filepath):
                     context = _get_context(obj)
                     if obj.__defaults__:
                         self._update(h, obj.__defaults__, context)
@@ -395,3 +421,15 @@ class CodeHasher:
                     self._update(h, name)
 
         return h.digest()
+
+    @staticmethod
+    def _get_main_script_directory():
+        """Get the directory of the main script.
+        """
+        import __main__
+        import os
+
+        # This works because we set __main__.__file__ to the report
+        # script path in ScriptRunner.
+        main_path = __main__.__file__
+        return os.path.dirname(main_path)

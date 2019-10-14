@@ -82,6 +82,11 @@ __diff_output__
 cypress.env.json
 mochawesome-report
 mochawesome
+frontend/mochawesome.json
+
+# Ignore screenshots that don't get used in CircleCI
+frontend/cypress/snapshots/darwin
+frontend/cypress/snapshots/linux/1x
 
 ########################################################################
 # VSCode

@@ -20,13 +20,13 @@ import { Map as ImmutableMap } from "immutable"
 import { MultiGrid } from "react-virtualized"
 import DataFrameCell from "./DataFrameCell"
 import { SortDirection } from "./SortDirection"
+import FullScreenWrapper from "components/shared/FullScreenWrapper"
 import {
   dataFrameGet,
   dataFrameGetDimensions,
   getSortedDataRowIndices,
 } from "lib/dataFrameProto"
 import { toFormattedString } from "lib/format"
-import { ElementDimensionSpec } from "autogen/proto"
 import "./DataFrame.scss"
 
 /**
@@ -51,7 +51,7 @@ const MAX_LONELY_CELL_WIDTH_PX = 400
 
 interface Props {
   width: number
-  elementDimensionSpec: ElementDimensionSpec
+  height: number | undefined
   element: ImmutableMap<string, any>
 }
 
@@ -108,6 +108,8 @@ interface CellRendererInput {
 interface CellRenderer {
   (input: CellRendererInput): React.ReactNode
 }
+
+const DEFAULT_HEIGHT = 300
 
 /**
  * Functional element representing a DataFrame.
@@ -235,7 +237,7 @@ class DataFrame extends React.PureComponent<Props, State> {
    * Returns rendering dimensions for this DataFrame
    */
   private getDimensions(cellContentsGetter: CellContentsGetter): Dimensions {
-    const { element, width, elementDimensionSpec } = this.props
+    const { element, width, height } = this.props
 
     const {
       headerRows,
@@ -248,15 +250,7 @@ class DataFrame extends React.PureComponent<Props, State> {
     // Rendering constants.
     const rowHeight = 25
     const headerHeight = rowHeight * headerRows
-    const border = 3
-    const height =
-      border +
-      Math.min(
-        rows * rowHeight,
-        elementDimensionSpec && elementDimensionSpec.height > 0
-          ? elementDimensionSpec.height
-          : 300
-      )
+    const border = 2
 
     let { elementWidth, columnWidth, headerWidth } = getWidths(
       cols,
@@ -285,7 +279,7 @@ class DataFrame extends React.PureComponent<Props, State> {
       rowHeight,
       headerHeight,
       border,
-      height,
+      height: Math.min(rows * rowHeight, height || DEFAULT_HEIGHT),
       elementWidth,
       columnWidth,
       headerWidth,
@@ -359,7 +353,7 @@ class DataFrame extends React.PureComponent<Props, State> {
           columnCount={cols}
           enableFixedColumnScroll
           enableFixedRowScroll
-          height={height - border}
+          height={height}
           rowHeight={rowHeight}
           rowCount={rows}
           width={elementWidth}
@@ -505,7 +499,7 @@ function getWidths(
     if (colIndex < headerCols) {
       headerWidth += colWidth
     } else if (tableWidth >= width) {
-      // No need to continue. We already know the followign "if" condition will fail.
+      // No need to continue. We already know the following "if" condition will fail.
       break
     }
   }
@@ -525,4 +519,17 @@ function getWidths(
   return { elementWidth, columnWidth, headerWidth }
 }
 
-export default DataFrame
+class WithFullScreenWrapper extends React.Component<Props> {
+  render(): JSX.Element {
+    const { element, width, height } = this.props
+    return (
+      <FullScreenWrapper width={width} height={height}>
+        {({ width, height }) => (
+          <DataFrame element={element} width={width} height={height} />
+        )}
+      </FullScreenWrapper>
+    )
+  }
+}
+
+export default WithFullScreenWrapper
