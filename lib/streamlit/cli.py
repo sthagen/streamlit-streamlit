@@ -33,7 +33,6 @@ from streamlit.credentials import Credentials
 from streamlit import version
 import streamlit.bootstrap as bootstrap
 
-
 LOG_LEVELS = ["error", "warning", "info", "debug"]
 
 NEW_VERSION_TEXT = """
@@ -52,7 +51,7 @@ NEW_VERSION_TEXT = """
 }
 
 
-@click.group(context_settings={'auto_envvar_prefix':'STREAMLIT'})
+@click.group(context_settings={"auto_envvar_prefix": "STREAMLIT"})
 @click.option("--log_level", show_default=True, type=click.Choice(LOG_LEVELS))
 @click.version_option(prog_name="Streamlit")
 @click.pass_context
@@ -173,6 +172,19 @@ def _apply_config_options_from_cli(kwargs):
             )
 
 
+# Fetch remote file at url_path to script_path
+def _download_remote(script_path, url_path):
+    import requests
+
+    with open(script_path, "wb") as fp:
+        try:
+            resp = requests.get(url_path)
+            resp.raise_for_status()
+            fp.write(resp.content)
+        except requests.exceptions.RequestException as e:
+            raise click.BadParameter(("Unable to fetch {}.\n{}".format(url_path, e)))
+
+
 @main.command("run")
 @configurator_options
 @click.argument("target", required=True, envvar="STREAMLIT_RUN_TARGET")
@@ -189,24 +201,13 @@ def main_run(target, args=None, **kwargs):
     _apply_config_options_from_cli(kwargs)
 
     if url(target):
-        import tempfile
-        import requests
-
-        with tempfile.NamedTemporaryFile() as fp:
-            try:
-                resp = requests.get(target)
-                resp.raise_for_status()
-                fp.write(resp.content)
-                # flush since we are reading the file within the with block
-                fp.flush()
-            except requests.exceptions.RequestException as e:
-                raise click.BadParameter(
-                    ("Unable to fetch {}.\n{}".format(target, e))
-                )
-            # this is called within the with block to make sure the temp file
-            # is not deleted
-            _main_run(fp.name, args)
-
+        from streamlit.temporary_directory import TemporaryDirectory
+        with TemporaryDirectory() as temp_dir:
+            from urllib.parse import urlparse
+            path = urlparse(target).path
+            script_path = os.path.join(temp_dir, path.strip('/').rsplit('/', 1)[-1])
+            _download_remote(script_path, target)
+            _main_run(script_path, args)
     else:
         if not os.path.exists(target):
             raise click.BadParameter("File does not exist: {}".format(target))
