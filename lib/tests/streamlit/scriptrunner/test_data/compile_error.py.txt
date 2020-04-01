@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018-2020 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""A script that won't compile, for ScriptRunnerTest."""
+
 import streamlit as st
-import numpy as np
-import pandas as pd
-import altair as alt
 
-df = pd.DataFrame(np.random.randn(200, 3), columns=["a", "b", "c"])
+placeholder = st.text('this will never run!')
 
-c = alt.Chart(df).mark_circle().encode(x="a", y="b", size="c", color="c").interactive()
-
-st.title("These two should look exactly the same")
-
-st.write("Altair chart using `st.altair_chart`:")
-st.altair_chart(c)
-
-st.write("And the same chart using `st.write`:")
-st.write(c)
+because i am a compile error! # noqa: E999 pylint:disable=syntax-error

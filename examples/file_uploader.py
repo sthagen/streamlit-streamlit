@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018-2020 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A script that won't compile, for ScriptRunnerTest."""
-
 import streamlit as st
 
-placeholder = st.text('this will never run!')
+"""
+# File Uploader
 
-because i am a compile error! # noqa: E999 pylint:disable=syntax-error
+It's hard to test the ability to upload files in an automated way, so here you
+should test it by hand. Please upload a CSV file and make sure a table shows up
+below with its contents.
+"""
+
+w = st.file_uploader("Upload a CSV file", type="csv")
+if w:
+    import pandas as pd
+
+    data = pd.read_csv(w)
+    st.write(data)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018-2020 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +24,14 @@ import inspect
 import io
 import os
 import pickle
+import re
 import sys
 import tempfile
 import textwrap
 import threading
 import weakref
 import types
-from typing import Any, List
+from typing import Any, List, Pattern
 
 from streamlit import config
 from streamlit import file_util
@@ -234,7 +234,20 @@ class _CodeHasher:
     """A hasher that can hash code objects including dependencies."""
 
     def __init__(self, hash_funcs=None):
-        self._hash_funcs = hash_funcs or {}
+        # Can't use types as the keys in the internal _hash_funcs because
+        # we always remove user-written modules from memory when rerunning a
+        # script in order to reload it and grab the latest code changes.
+        # (See LocalSourcesWatcher.py:on_file_changed) This causes
+        # the type object to refer to different underlying class instances each run,
+        # so type-based comparisons fail. To solve this, we use the types converted
+        # to fully-qualified strings as keys in our internal dict.
+        if hash_funcs:
+            self._hash_funcs = {
+                k if isinstance(k, str) else type_util.get_fqn(k): v
+                for k, v in hash_funcs.items()
+            }
+        else:
+            self._hash_funcs = {}
 
         self._hashes = {}
 
@@ -264,7 +277,7 @@ class _CodeHasher:
         try:
             # Turn these on for debugging.
             # _LOGGER.debug("About to hash: %s", obj)
-            tname = type(obj).__name__.encode()
+            tname = type(obj).__qualname__.encode()
             b = b"%s:%s" % (tname, self._to_bytes(obj, context))
             # _LOGGER.debug("Done hashing: %s", obj)
 
@@ -314,14 +327,14 @@ class _CodeHasher:
         if _is_magicmock(obj):
             # MagicMock can result in objects that appear to be infinitely
             # deep, so we don't try to hash them at all.
-            return self.to_bytes("mock:%s" % id(obj))
+            return self.to_bytes(id(obj))
 
         elif isinstance(obj, bytes) or isinstance(obj, bytearray):
             return obj
 
-        elif type(obj) in self._hash_funcs:
+        elif type_util.get_fqn_type(obj) in self._hash_funcs:
             # Escape hatch for unsupported objects
-            hash_func = self._hash_funcs[type(obj)]
+            hash_func = self._hash_funcs[type_util.get_fqn_type(obj)]
             try:
                 output = hash_func(obj)
             except BaseException as e:
@@ -406,6 +419,9 @@ class _CodeHasher:
             self.update(h, obj.tell())
             return h.digest()
 
+        elif isinstance(obj, Pattern):
+            return self.to_bytes([obj.pattern, obj.flags])
+
         elif isinstance(obj, io.StringIO) or isinstance(obj, io.BytesIO):
             # Hash in-memory StringIO/BytesIO by their full contents
             # and seek position.
@@ -415,9 +431,11 @@ class _CodeHasher:
             return h.digest()
 
         elif type_util.is_type(obj, "numpy.ufunc"):
-            # For object of type numpy.ufunc returns ufunc:<object name>
-            # For example, for numpy.remainder, this is ufunc:remainder
-            return ("%s:%s" % (obj.__class__.__name__, obj.__name__)).encode()
+            # For numpy.remainder, this returns remainder.
+            return obj.__name__.encode()
+
+        elif type_util.is_type(obj, "tensorflow.python.client.session.Session"):
+            return self.to_bytes(id(obj))
 
         elif inspect.isroutine(obj):
             if hasattr(obj, "__wrapped__"):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018-2020 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +18,6 @@ import functools
 import hashlib
 import os
 import re
-import sys
 import tempfile
 import time
 import types
@@ -166,6 +164,19 @@ class HashTest(unittest.TestCase):
             self.assertNotEqual(re.search(r"a bug in `.+` near line `\d+`", exc), None)
             self.assertEqual(exc.find(code_msg) >= 0, True)
 
+    def test_hash_funcs_acceptable_keys(self):
+        class C(object):
+            def __init__(self):
+                self.x = (x for x in range(1))
+
+        with self.assertRaises(UnhashableTypeError):
+            get_hash(C())
+
+        self.assertEqual(
+            get_hash(C(), hash_funcs={types.GeneratorType: id}),
+            get_hash(C(), hash_funcs={"builtins.generator": id}),
+        )
+
     def test_hash_funcs_error(self):
         with self.assertRaises(UserHashError):
             get_hash(1, hash_funcs={int: lambda x: "a" + x})
@@ -195,6 +206,13 @@ class HashTest(unittest.TestCase):
     def test_builtins(self):
         self.assertEqual(get_hash(abs), get_hash(abs))
         self.assertNotEqual(get_hash(abs), get_hash(type))
+
+    def test_regex(self):
+        p2 = re.compile(".*")
+        p1 = re.compile(".*")
+        p3 = re.compile(".*", re.I)
+        self.assertEqual(get_hash(p1), get_hash(p2))
+        self.assertNotEqual(get_hash(p1), get_hash(p3))
 
     def test_pandas_dataframe(self):
         df1 = pd.DataFrame({"foo": [12]})
@@ -303,29 +321,34 @@ class HashTest(unittest.TestCase):
         self.assertNotEqual(get_hash(MagicMock()), get_hash(MagicMock()))
 
     @testutil.requires_tensorflow
-    def test_tensorflow_non_hashable(self):
-        """Test user provided hash functions."""
-
+    def test_tensorflow_session(self):
         tf_config = tf.compat.v1.ConfigProto()
         tf_session = tf.compat.v1.Session(config=tf_config)
-        tf_session_class = type(tf_session)
+        self.assertEqual(get_hash(tf_session), get_hash(tf_session))
+
+        tf_session2 = tf.compat.v1.Session(config=tf_config)
+        self.assertNotEqual(get_hash(tf_session), get_hash(tf_session2))
+
+    def test_non_hashable(self):
+        """Test user provided hash functions."""
+
+        g = (x for x in range(1))
 
         # Unhashable object raises an error
         with self.assertRaises(UnhashableTypeError):
-            get_hash(tf_session)
+            get_hash(g)
 
-        id_hash_func = {tf_session_class: id}
+        id_hash_func = {types.GeneratorType: id}
 
         self.assertEqual(
-            get_hash(tf_session, hash_funcs=id_hash_func),
-            get_hash(tf_session, hash_funcs=id_hash_func),
+            get_hash(g, hash_funcs=id_hash_func), get_hash(g, hash_funcs=id_hash_func),
         )
 
-        unique_hash_func = {tf_session_class: lambda x: time.time()}
+        unique_hash_func = {types.GeneratorType: lambda x: time.time()}
 
         self.assertNotEqual(
-            get_hash(tf_session, hash_funcs=unique_hash_func),
-            get_hash(tf_session, hash_funcs=unique_hash_func),
+            get_hash(g, hash_funcs=unique_hash_func),
+            get_hash(g, hash_funcs=unique_hash_func),
         )
 
     def test_override_streamlit_hash_func(self):
@@ -757,24 +780,21 @@ class CodeHashTest(unittest.TestCase):
         # contains the name of the function in the closure.
         # self.assertEqual(get_hash(f), get_hash(h))
 
-    @testutil.requires_tensorflow
-    def test_tensorflow_non_hashable(self):
+    def test_non_hashable(self):
         """Test the hash of functions that return non hashable objects."""
 
-        tf_config = tf.compat.v1.ConfigProto()
-        tf_session = tf.compat.v1.Session(config=tf_config)
-        tf_session_class = type(tf_session)
+        gen = (x for x in range(1))
 
         def f(x):
-            return tf_session
+            return gen
 
         def g(y):
-            return tf_session
+            return gen
 
         with self.assertRaises(UnhashableTypeError):
-            get_hash(f)
+            get_hash(gen)
 
-        hash_funcs = {tf_session_class: id}
+        hash_funcs = {types.GeneratorType: id}
 
         self.assertEqual(
             get_hash(f, hash_funcs=hash_funcs), get_hash(g, hash_funcs=hash_funcs)
