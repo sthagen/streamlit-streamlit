@@ -113,7 +113,7 @@ def server_port_is_manually_set():
 
 
 def start_listening(app):
-    """Takes the server start listening at the configured port.
+    """Makes the server start listening at the configured port.
 
     In case the port is already taken it tries listening to the next available
     port.  It will error after MAX_PORT_SEARCH_RETRIES attempts.
@@ -397,8 +397,10 @@ class Server(object):
             self._set_state(State.STOPPED)
 
         except Exception as e:
-            print("EXCEPTION!", e)
-            traceback.print_stack(file=sys.stdout)
+            # Can't just re-raise here because co-routines use Tornado
+            # exceptions for control flow, which appears to swallow the reraised
+            # exception.
+            traceback.print_exc()
             LOGGER.info(
                 """
 Please report this bug at https://github.com/streamlit/streamlit/issues.
@@ -582,6 +584,16 @@ class _BrowserWebSocketHandler(tornado.websocket.WebSocketHandler):
             return
         self._server._close_report_session(self._session.id)
         self._session = None
+
+    def get_compression_options(self):
+        """Enable WebSocket compression.
+
+        By default, this method returns None, which means compression
+        is disabled. Returning an empty dict enables it.
+
+        (See the docstring in the parent class.)
+        """
+        return {}
 
     @tornado.gen.coroutine
     def on_message(self, payload):
