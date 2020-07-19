@@ -23,6 +23,7 @@ import re
 from datetime import datetime
 from datetime import date
 from datetime import time
+from typing import Optional, Any
 from datetime import timedelta
 from datetime import timezone
 
@@ -32,7 +33,7 @@ from streamlit import cursor
 from streamlit import type_util
 from streamlit.ReportThread import get_report_ctx
 from streamlit.errors import DuplicateWidgetID
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitDeprecationWarning
 from streamlit.errors import NoSessionContext
 from streamlit.file_util import get_encoded_file_data
 from streamlit.js_number import JSNumber
@@ -41,6 +42,7 @@ from streamlit.proto import Alert_pb2
 from streamlit.proto import Balloons_pb2
 from streamlit.proto import BlockPath_pb2
 from streamlit.proto import ForwardMsg_pb2
+from streamlit.proto.Element_pb2 import Element
 from streamlit.proto.NumberInput_pb2 import NumberInput
 from streamlit.proto.Slider_pb2 import Slider
 from streamlit.proto.TextInput_pb2 import TextInput
@@ -127,7 +129,9 @@ def _with_element(method):
     return wrapped_method
 
 
-def _build_duplicate_widget_message(widget_type, user_key=None):
+def _build_duplicate_widget_message(
+    widget_func_name: str, user_key: Optional[str] = None
+) -> str:
     if user_key is not None:
         message = textwrap.dedent(
             """
@@ -153,23 +157,37 @@ def _build_duplicate_widget_message(widget_type, user_key=None):
             """
         )
 
-    return message.strip("\n").format(widget_type=widget_type, user_key=user_key)
+    return message.strip("\n").format(widget_type=widget_func_name, user_key=user_key)
 
 
-def _set_widget_id(widget_type, element, user_key=None):
+def _set_widget_id(
+    element_type: str,
+    element: Element,
+    user_key: Optional[str] = None,
+    widget_func_name: Optional[str] = None,
+) -> None:
     """Set the widget id.
 
     Parameters
     ----------
-    widget_type : str
+    element_type : str
         The type of the widget as stored in proto.
     element : proto
         The proto of the element
-    user_key : str
+    user_key : str or None
         Optional user-specified key to use for the widget ID.
         If this is None, we'll generate an ID by hashing the element.
+    widget_func_name : str or None
+        The widget's DeltaGenerator function name, if it's different from
+        its element_type. Custom components are a special case: they all have
+        the element_type "component_instance", but are instantiated with
+        dynamically-named functions.
 
     """
+
+    if widget_func_name is None:
+        widget_func_name = element_type
+
     element_hash = hash(element.SerializeToString())
     if user_key is not None:
         widget_id = "%s-%s" % (user_key, element_hash)
@@ -181,25 +199,35 @@ def _set_widget_id(widget_type, element, user_key=None):
         added = ctx.widget_ids_this_run.add(widget_id)
         if not added:
             raise DuplicateWidgetID(
-                _build_duplicate_widget_message(widget_type, user_key)
+                _build_duplicate_widget_message(widget_func_name, user_key)
             )
-    el = getattr(element, widget_type)
+    el = getattr(element, element_type)
     el.id = widget_id
 
 
-def _get_widget_ui_value(widget_type, element, user_key=None):
+def _get_widget_ui_value(
+    element_type: str,
+    element: Element,
+    user_key: Optional[str] = None,
+    widget_func_name: Optional[str] = None,
+) -> Any:
     """Get the widget ui_value from the report context.
     NOTE: This function should be called after the proto has been filled.
 
     Parameters
     ----------
-    widget_type : str
+    element_type : str
         The type of the widget as stored in proto.
     element : proto
         The proto of the element
     user_key : str
         Optional user-specified string to use as the widget ID.
         If this is None, we'll generate an ID by hashing the element.
+    widget_func_name : str or None
+        The widget's DeltaGenerator function name, if it's different from
+        its element_type. Custom components are a special case: they all have
+        the element_type "component_instance", but are instantiated with
+        dynamically-named functions.
 
     Returns
     -------
@@ -209,8 +237,8 @@ def _get_widget_ui_value(widget_type, element, user_key=None):
         doesn't exist, None will be returned.
 
     """
-    _set_widget_id(widget_type, element, user_key)
-    el = getattr(element, widget_type)
+    _set_widget_id(element_type, element, user_key, widget_func_name)
+    el = getattr(element, element_type)
     ctx = get_report_ctx()
     ui_value = ctx.widgets.get_widget_value(el.id) if ctx else None
     return ui_value
@@ -227,6 +255,34 @@ class NoValue(object):
     """
 
     pass
+
+
+class FileUploaderEncodingWarning(StreamlitDeprecationWarning):
+    def __init__(self):
+        msg = self._get_message()
+        config_option = "deprecation.showfileUploaderEncoding"
+        super(FileUploaderEncodingWarning, self).__init__(
+            msg=msg, config_option=config_option
+        )
+
+    def _get_message(self):
+        return """
+The behavior of `st.file_uploader` will soon change to no longer autodetect
+the file's encoding. This means that _all files_ will be returned as binary buffers.
+
+This change will go in effect after October 31, 2020.
+
+If you are expecting a text buffer, you can future-proof your code now by
+wrapping the returned buffer in a [`TextIOWrapper`](https://docs.python.org/3/library/io.html#io.TextIOWrapper),
+as shown below:
+
+```
+import io
+
+file_buffer = st.file_uploader(...)
+text_io = io.TextIOWrapper(file_buffer)
+```
+            """
 
 
 class DeltaGenerator(object):
@@ -1258,13 +1314,9 @@ class DeltaGenerator(object):
         Parameters
         ----------
         figure_or_data : plotly.graph_objs.Figure, plotly.graph_objs.Data,
-            dict/list of plotly.graph_objs.Figure/Data, or
-            matplotlib.figure.Figure
+            dict/list of plotly.graph_objs.Figure/Data
 
             See https://plot.ly/python/ for examples of graph descriptions.
-
-            If a Matplotlib Figure, converts it to a Plotly figure and displays
-            it.
 
         width : int
             Deprecated. If != 0 (default), will show an alert.
@@ -1533,6 +1585,61 @@ class DeltaGenerator(object):
         )
 
     @_with_element
+    def _iframe(
+        self, element, src, width=None, height=None, scrolling=False,
+    ):
+        """Load a remote URL in an iframe.
+
+        Parameters
+        ----------
+        src : str
+            The URL of the page to embed.
+        width : int
+            The width of the frame in CSS pixels. Defaults to the report's
+            default element width.
+        height : int
+            The height of the frame in CSS pixels. Defaults to 150.
+        scrolling : bool
+            If True, show a scrollbar when the content is larger than the iframe.
+            Otherwise, do not show a scrollbar. Defaults to False.
+
+        """
+        from .elements import iframe_proto
+
+        iframe_proto.marshall(
+            element.iframe, src=src, width=width, height=height, scrolling=scrolling,
+        )
+
+    @_with_element
+    def _html(
+        self, element, html, width=None, height=None, scrolling=False,
+    ):
+        """Display an HTML string in an iframe.
+
+        Parameters
+        ----------
+        html : str
+            The HTML string to embed in the iframe.
+        width : int
+            The width of the frame in CSS pixels. Defaults to the report's
+            default element width.
+        height : int
+            The height of the frame in CSS pixels. Defaults to 150.
+        scrolling : bool
+            If True, show a scrollbar when the content is larger than the iframe.
+            Otherwise, do not show a scrollbar. Defaults to False.
+
+        """
+        from .elements import iframe_proto
+
+        iframe_proto.marshall(
+            element.iframe,
+            srcdoc=html,
+            width=width,
+            height=height,
+            scrolling=scrolling,
+        )
+
     def favicon(
         self, element, image, clamp=False, channels="RGB", format="JPEG",
     ):
@@ -2290,9 +2397,7 @@ class DeltaGenerator(object):
         return current_value[0] if single_value else tuple(current_value)
 
     @_with_element
-    def file_uploader(
-        self, element, label, type=None, encoding="auto", key=None,
-    ):
+    def file_uploader(self, element, label, type=None, key=None, **kwargs):
         """Display a file uploader widget.
 
         By default, uploaded files are limited to 200MB. You can configure
@@ -2342,6 +2447,20 @@ class DeltaGenerator(object):
 
         if isinstance(type, str):
             type = [type]
+
+        encoding = kwargs.get("encoding")
+        has_encoding = "encoding" in kwargs
+        show_deprecation_warning = config.get_option(
+            "deprecation.showfileUploaderEncoding"
+        )
+
+        if show_deprecation_warning and (
+            (has_encoding and encoding is not None) or not has_encoding
+        ):
+            self.exception(FileUploaderEncodingWarning())
+
+        if not has_encoding:
+            encoding = "auto"
 
         element.file_uploader.label = label
         element.file_uploader.type[:] = type if type is not None else []
