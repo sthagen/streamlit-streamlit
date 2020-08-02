@@ -28,7 +28,7 @@ from streamlit import development
 from streamlit import env_util
 from streamlit import file_util
 from streamlit import util
-from streamlit.ConfigOption import ConfigOption
+from streamlit.config_option import ConfigOption
 
 from streamlit.logger import get_logger
 
@@ -579,6 +579,14 @@ _create_section("deprecation", "Configuration to show or hide deprecation warnin
 _create_option(
     "deprecation.showfileUploaderEncoding",
     description="Set to false to disable the deprecation warning for the file uploader encoding.",
+    default_val="True",
+    scriptable="True",
+    type_=bool,
+)
+
+_create_option(
+    "deprecation.showImageFormat",
+    description="Set to false to disable the deprecation warning for the image format parameter.",
     default_val="True",
     scriptable="True",
     type_=bool,
