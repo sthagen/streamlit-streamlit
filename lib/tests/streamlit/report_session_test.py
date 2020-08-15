@@ -27,6 +27,7 @@ from streamlit.script_runner import ScriptRunner
 from streamlit.uploaded_file_manager import UploadedFileManager
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.proto.StaticManifest_pb2 import StaticManifest
+from streamlit.errors import StreamlitAPIException
 from tests.mock_storage import MockStorage
 import streamlit as st
 
@@ -56,7 +57,8 @@ class ReportSessionTest(unittest.TestCase):
         mock_script_runner._install_tracer = ScriptRunner._install_tracer
         rs._scriptrunner = mock_script_runner
 
-        rs.enqueue({"dontcare": 123})
+        mock_msg = MagicMock()
+        rs.enqueue(mock_msg)
 
         func = mock_script_runner.maybe_handle_execution_control_request
 
@@ -91,7 +93,8 @@ class ReportSessionTest(unittest.TestCase):
         mock_script_runner = MagicMock()
         rs._scriptrunner = mock_script_runner
 
-        rs.enqueue({"dontcare": 123})
+        mock_msg = MagicMock()
+        rs.enqueue(mock_msg)
 
         func = mock_script_runner.maybe_handle_execution_control_request
 

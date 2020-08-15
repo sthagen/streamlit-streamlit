@@ -148,7 +148,7 @@ With widgets, Streamlit allows you to bake interactivity directly into your apps
 .. autofunction:: streamlit.beta_color_picker
 ```
 
-## Control Flow
+## Control flow
 
 By default, Streamlit apps execute the script entirely, but we allow some functionality to handle control flow in your applications.
 
@@ -275,6 +275,7 @@ app, provide help using doc strings, and get and modify configuration options.
 .. autofunction:: streamlit.help
 .. autofunction:: streamlit.get_option
 .. autofunction:: streamlit.set_option
+.. autofunction:: streamlit.beta_set_page_config
 ```
 
 ## Mutate data
