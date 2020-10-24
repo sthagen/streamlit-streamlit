@@ -16,14 +16,15 @@
  */
 
 import React, { ReactElement } from "react"
-import classNames from "classnames"
-import { Map as ImmutableMap } from "immutable"
+import AlertContainer, { Kind } from "components/shared/AlertContainer"
 import { StreamlitMarkdown } from "components/shared/StreamlitMarkdown"
+import { Exception as ExceptionProto } from "autogen/proto"
+
 import "./ExceptionElement.scss"
 
 export interface ExceptionElementProps {
   width: number
-  element: ImmutableMap<string, any>
+  element: ExceptionProto
 }
 
 interface ExceptionMessageProps {
@@ -34,6 +35,13 @@ interface ExceptionMessageProps {
 
 interface StackTraceProps {
   stackTrace: string[]
+}
+
+/**
+ * Return true if the string is non-null and non-empty.
+ */
+function isNonEmptyString(value: string | null | undefined): boolean {
+  return value != null && value !== ""
 }
 
 function ExceptionMessage({
@@ -56,7 +64,7 @@ function ExceptionMessage({
   return (
     <>
       <span className="type">{type}</span>
-      {message != null ? `: ${message}` : null}
+      {isNonEmptyString(message) ? `: ${message}` : null}
     </>
   )
 }
@@ -86,27 +94,23 @@ export default function ExceptionElement({
   element,
   width,
 }: ExceptionElementProps): ReactElement {
-  const stackTrace = element.get("stackTrace")
-  const isWarning = element.get("isWarning")
-  const type: string = element.get("type")
-  const message: string = element.get("message")
-  const wrapperClasses = classNames("alert", "exception", "stException", {
-    "alert-danger": !isWarning,
-    "alert-warning": isWarning,
-  })
-  const messageIsMarkdown: boolean = element.get("messageIsMarkdown")
   return (
-    <div className={wrapperClasses} style={{ width }}>
-      <div className="message">
-        <ExceptionMessage
-          type={type}
-          message={message}
-          messageIsMarkdown={messageIsMarkdown}
-        />
-      </div>
-      {stackTrace && stackTrace.size > 0 ? (
-        <StackTrace stackTrace={stackTrace} />
-      ) : null}
+    <div className="stException">
+      <AlertContainer
+        kind={element.isWarning ? Kind.WARNING : Kind.ERROR}
+        width={width}
+      >
+        <div className="message">
+          <ExceptionMessage
+            type={element.type}
+            message={element.message}
+            messageIsMarkdown={element.messageIsMarkdown}
+          />
+        </div>
+        {element.stackTrace && element.stackTrace.length > 0 ? (
+          <StackTrace stackTrace={element.stackTrace} />
+        ) : null}
+      </AlertContainer>
     </div>
   )
 }

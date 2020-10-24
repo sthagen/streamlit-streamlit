@@ -67,22 +67,22 @@ commands:
       - restore_cache: &restore_virtualenv
           name: Restore virtualenv from cache
           keys:
-            - v12-python-venv-{{ checksum "~/python_cache_key.md5" }}
+            - v13-python-venv-{{ checksum "~/python_cache_key.md5" }}
 
       - restore_cache: &restore_nvm
           name: Restore nvm and node_modules from cache
           keys:
-            - v12-nvm_node_modules-{{ checksum "~/yarn.lock.md5" }}
+            - v13-nvm_node_modules-{{ checksum "~/yarn.lock.md5" }}
 
       - restore_cache: &restore_make
           name: Restore make from cache
           keys:
-            - v12_make.bin-{{ checksum "~/make.md5" }}
+            - v13_make.bin-{{ checksum "~/make.md5" }}
 
       - restore_cache: &restore_dot
           name: Restore dot from cache
           keys:
-            - v12_dot.bin-{{ checksum "~/dot.md5" }}
+            - v13_dot.bin-{{ checksum "~/dot.md5" }}
 
   pre-make:
     steps:
@@ -137,6 +137,11 @@ commands:
           command: |
             ${SUDO} apt-get install -y unixodbc-dev
 
+      - run:
+          name: Install graphviz dependencies
+          command: |
+            ${SUDO} apt-get install -y libgvc6
+
       - run: &activate_virtualenv
           name: Create virtualenv
           command: |
@@ -148,6 +153,11 @@ commands:
               pip install --upgrade pip
               make setup
               make pipenv-install
+              # Looks like the pinned setuptools is not being respected
+              # In the meantime, forcing a reinstall of setuptools to unblock
+              # TODO: Cleanup as part of GH #1963
+              pip install "setuptools<=49.6.0" --force-reinstall --no-cache-dir
+              pip show setuptools
               deactivate
             else
               # The virtualenv WAS restored from cache. Don't create a new one.
@@ -184,8 +194,10 @@ workflows:
             tags:
               only: /^([0-9]+\.){3}dev[0-9]+/
       - cypress: # Non flaky Cypress tests
-          requires:
-            - python-3-8
+          filters:
+            tags:
+              only: /^([0-9]+\.){3}dev[0-9]+/
+      - pr-preview: # Make a preview branch for each PR
           filters:
             tags:
               only: /^([0-9]+\.){3}dev[0-9]+/
@@ -251,13 +263,13 @@ jobs:
 
       - save_cache:
           name: Save make to cache
-          key: v12_make.bin-{{ checksum "~/make.md5" }}
+          key: v13_make.bin-{{ checksum "~/make.md5" }}
           paths:
             - make.bin
 
       - save_cache:
           name: Save dot to cache
-          key: v12_dot.bin-{{ checksum "~/dot.md5" }}
+          key: v13_dot.bin-{{ checksum "~/dot.md5" }}
           paths:
             - dot.bin
 
@@ -337,13 +349,13 @@ jobs:
       #################################################################
       - save_cache:
           name: Save virtualenv to cache
-          key: v12-python-venv-{{ checksum "~/python_cache_key.md5" }}
+          key: v13-python-venv-{{ checksum "~/python_cache_key.md5" }}
           paths:
             - venv
 
       - save_cache:
           name: Save nvm and node_modules to cache
-          key: v12-nvm_node_modules-{{ checksum "~/yarn.lock.md5" }}
+          key: v13-nvm_node_modules-{{ checksum "~/yarn.lock.md5" }}
           paths:
             - ~/.nvm
             - ~/.cache
@@ -406,7 +418,7 @@ jobs:
             git add lib/streamlit/__init__.py
             git add lib/streamlit/version.py
 
-            git commit -m"Update version and project name in files"
+            git commit -m "Update version and project name in files"
 
             git tag -a $TAG -m "Streamlit nightly $TAG"
             git push origin $TAG
@@ -469,11 +481,99 @@ jobs:
           fail_only: true
           failure_message: ":blobonfire: Nightly job failed to release"
 
+  pr-preview:
+    docker:
+      - image: circleci/python:3.8.1
+
+    resource_class: medium+
+
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          name: Add the read/write Github deploy key
+          fingerprints:
+            - "06:66:05:ea:ba:10:ec:b4:93:06:ab:62:7c:20:33:f0"
+
+      - checkout:
+          name: Checkout Streamlit code
+
+      - update-submodules
+      - pre-cache
+      - restore-from-cache
+      - pre-make
+      - make-init
+
+      - run:
+          <<: *make_scss_vars
+
+      - run:
+          name: Create wheel file
+          no_output_timeout: 2h
+          command: |
+            ${SUDO} apt-get install rsync
+            make package
+
+      - run:
+          name: Set PREVIEW_BRANCH envvar
+          command: |
+            echo "export PREVIEW_BRANCH=$(
+              if [[ -n "${CIRCLE_PR_NUMBER}" ]]
+              then
+                echo "pr-${CIRCLE_PR_NUMBER}"
+              elif [[ -n "${CIRCLE_BRANCH}" ]]
+              then
+                echo "${CIRCLE_BRANCH}-preview"
+              elif [[ -n "${CIRCLE_TAG}" ]]
+              then
+                echo "tag-${CIRCLE_TAG}"
+              else
+                echo "main-preview"
+              fi
+            )" >> $BASH_ENV
+
+      - run:
+          name: Upload wheel to S3
+          command: |
+            ${SUDO} apt-get install -y awscli
+            aws configure set aws_access_key_id ${CORE_PREVIEWS_S3_KEY_ID}
+            aws configure set aws_secret_access_key ${CORE_PREVIEWS_S3_SECRET_KEY}
+
+            cd lib/dist
+            export WHEELFILE="$(ls -t *.whl | head -n 1)"
+
+            aws s3 cp ${WHEELFILE} s3://core-previews/${PREVIEW_BRANCH}/ --acl public-read
+            cd ../..
+
+            echo -e "https://core-previews.s3-us-west-2.amazonaws.com/${PREVIEW_BRANCH}/${WHEELFILE}" >> S3_URL
+
+      - run:
+          name: Setup preview repo
+          command: |
+            git config --global user.email "austin@streamlit.io"
+            git config --global user.name "CircleCI"
+            git clone git@github.com:streamlit/core-previews.git
+
+            cd core-previews
+            git branch -D ${PREVIEW_BRANCH} &>/dev/null || true
+            git checkout -b ${PREVIEW_BRANCH}
+
+            cat ../S3_URL >> requirements.txt
+
+            git add .
+            git commit -m "Prepare core preview: ${PREVIEW_BRANCH}"
+            git push -f origin ${PREVIEW_BRANCH}
+
+      - run:
+          name: Ready to deploy!
+          command: |
+            echo -e "https://share.streamlit.io/deploy?repository=streamlit/core-previews&branch=pr-${CIRCLE_PR_NUMBER}&mainModule=streamlit_app.py"
+
   cypress:
     docker:
       - image: circleci/python:3.7.4-stretch
 
-    resource_class: medium+
+    resource_class: xlarge
 
     working_directory: ~/repo
 

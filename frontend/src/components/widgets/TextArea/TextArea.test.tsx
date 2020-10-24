@@ -17,7 +17,6 @@
 
 import React from "react"
 import { shallow } from "enzyme"
-import { fromJS } from "immutable"
 import { TextArea as TextAreaProto } from "autogen/proto"
 import { WidgetStateManager } from "lib/WidgetStateManager"
 
@@ -29,8 +28,8 @@ jest.mock("lib/WidgetStateManager")
 const sendBackMsg = jest.fn()
 
 const getProps = (elementProps: Partial<TextAreaProto> = {}): Props => ({
-  element: fromJS({
-    id: 1,
+  element: TextAreaProto.create({
+    id: "1",
     label: "Label",
     default: "",
     ...elementProps,
@@ -50,8 +49,8 @@ describe("TextArea widget", () => {
 
   it("should set widget value on did mount", () => {
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
-      props.element.get("default"),
+      props.element.id,
+      props.element.default,
       { fromUi: false }
     )
   })
@@ -71,13 +70,11 @@ describe("TextArea widget", () => {
   })
 
   it("should render a label", () => {
-    expect(wrapper.find("label").text()).toBe(props.element.get("label"))
+    expect(wrapper.find("label").text()).toBe(props.element.label)
   })
 
   it("should have a default value", () => {
-    expect(wrapper.find(UITextArea).prop("value")).toBe(
-      props.element.get("default").toString()
-    )
+    expect(wrapper.find(UITextArea).prop("value")).toBe(props.element.default)
   })
 
   it("could be disabled", () => {
@@ -99,9 +96,11 @@ describe("TextArea widget", () => {
     wrapper.find(UITextArea).prop("onBlur")()
 
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
+      props.element.id,
       "testing",
-      { fromUi: true }
+      {
+        fromUi: true,
+      }
     )
   })
 
@@ -124,9 +123,11 @@ describe("TextArea widget", () => {
     })
 
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
+      props.element.id,
       "testing",
-      { fromUi: true }
+      {
+        fromUi: true,
+      }
     )
   })
 
@@ -195,9 +196,11 @@ describe("TextArea widget", () => {
       })
 
       expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-        props.element.get("id"),
+        props.element.id,
         "testing",
-        { fromUi: true }
+        {
+          fromUi: true,
+        }
       )
     })
   })

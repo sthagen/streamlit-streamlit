@@ -17,7 +17,6 @@
 
 import React from "react"
 import { Slider as UISlider } from "baseui/slider"
-import { Map as ImmutableMap } from "immutable"
 import { sprintf } from "sprintf-js"
 import { WidgetStateManager, Source } from "lib/WidgetStateManager"
 import { Slider as SliderProto } from "autogen/proto"
@@ -29,7 +28,7 @@ const DEBOUNCE_TIME_MS = 200
 
 export interface Props {
   disabled: boolean
-  element: ImmutableMap<string, any>
+  element: SliderProto
   widgetMgr: WidgetStateManager
   width: number
 }
@@ -55,44 +54,70 @@ class Slider extends React.PureComponent<Props, State> {
       DEBOUNCE_TIME_MS,
       this.setWidgetValueImmediately.bind(this)
     )
-    this.state = { value: this.props.element.get("default").toJS() }
+    this.state = { value: this.initialValue }
+  }
+
+  get initialValue(): number[] {
+    const widgetId = this.props.element.id
+    const storedValue = this.props.widgetMgr.getFloatArrayValue(widgetId)
+    return storedValue !== undefined ? storedValue : this.props.element.default
   }
 
   public componentDidMount = (): void => {
     // Attach click event listener to slider knobs.
-    if (this.sliderRef.current) {
-      const knobSelector = '[role="slider"]'
-      const knobs = this.sliderRef.current.querySelectorAll(knobSelector)
-      knobs.forEach(knob => knob.addEventListener("click", this.handleClick))
-    }
+    this.getAllSliderRoles().forEach((knob, index) => {
+      knob.addEventListener("click", this.handleClick)
+      this.setAriaValueText(knob, index)
+    })
     this.setWidgetValueImmediately({ fromUi: false })
+  }
+
+  public componentDidUpdate = (): void => {
+    this.getAllSliderRoles().forEach((knob, index) => {
+      this.setAriaValueText(knob, index)
+    })
   }
 
   public componentWillUnmount = (): void => {
     // Remove click event listener from slider knobs.
-    if (this.sliderRef.current) {
-      const knobSelector = '[role="slider"]'
-      const knobs = this.sliderRef.current.querySelectorAll(knobSelector)
-      knobs.forEach(knob =>
-        knob.removeEventListener("click", this.handleClick)
-      )
-    }
+    this.getAllSliderRoles().forEach(knob => {
+      knob.removeEventListener("click", this.handleClick)
+    })
   }
 
   private setWidgetValueImmediately = (source: Source): void => {
-    const widgetId: string = this.props.element.get("id")
+    const widgetId = this.props.element.id
     this.props.widgetMgr.setFloatArrayValue(widgetId, this.state.value, source)
+  }
+
+  private getAllSliderRoles = (): Element[] => {
+    if (!this.sliderRef.current) {
+      return []
+    }
+
+    const knobSelector = '[role="slider"]'
+    const knobs = this.sliderRef.current.querySelectorAll(knobSelector)
+
+    return Array.from(knobs)
+  }
+
+  private setAriaValueText = (sliderRoleRef: Element, index: number): void => {
+    // Setting `aria-valuetext` helps screen readers read options and dates
+    const { options } = this.props.element
+    if (options.length > 0 || this.isDateTimeType()) {
+      const { value } = this
+      if (index < value.length) {
+        sliderRoleRef.setAttribute(
+          "aria-valuetext",
+          this.formatValue(value[index])
+        )
+      }
+    }
   }
 
   private handleChange = ({ value }: { value: number[] }): void => {
     this.setState({ value }, () =>
       this.setWidgetValueDebounced({ fromUi: true })
-    )
-  }
-
-  private handleFinalChange = ({ value }: { value: number[] }): void => {
-    this.setState({ value }, () =>
-      this.setWidgetValueImmediately({ fromUi: true })
     )
   }
 
@@ -107,8 +132,7 @@ class Slider extends React.PureComponent<Props, State> {
    * values (for a range slider).
    */
   private get value(): number[] {
-    const min = this.props.element.get("min")
-    const max = this.props.element.get("max")
+    const { min, max } = this.props.element
     const { value } = this.state
     let start = value[0]
     let end = value.length > 1 ? value[1] : value[0]
@@ -131,17 +155,26 @@ class Slider extends React.PureComponent<Props, State> {
     return value.length > 1 ? [start, end] : [start]
   }
 
-  private formatValue(value: number): string {
-    const format = this.props.element.get("format")
-    const dataType = this.props.element.get("dataType")
-    if (
+  private isDateTimeType(): boolean {
+    const { dataType } = this.props.element
+    return (
       dataType === SliderProto.DataType.DATETIME ||
       dataType === SliderProto.DataType.DATE ||
       dataType === SliderProto.DataType.TIME
-    ) {
+    )
+  }
+
+  private formatValue(value: number): string {
+    const { format, options } = this.props.element
+    if (this.isDateTimeType()) {
       // Python datetime uses microseconds, but JS & Moment uses milliseconds
       return moment(value / 1000).format(format)
     }
+
+    if (options.length > 0) {
+      return sprintf(format, options[value])
+    }
+
     return sprintf(format, value)
   }
 
@@ -161,8 +194,7 @@ class Slider extends React.PureComponent<Props, State> {
   }
 
   private renderTickBar = (): JSX.Element => {
-    const max = this.props.element.get("max")
-    const min = this.props.element.get("min")
+    const { max, min } = this.props.element
     const tickBarItemStyle = sliderOverrides.TickBarItem
       .style as React.CSSProperties
 
@@ -180,21 +212,16 @@ class Slider extends React.PureComponent<Props, State> {
 
   public render = (): React.ReactNode => {
     const style = { width: this.props.width }
-    const label = this.props.element.get("label")
-    const min = this.props.element.get("min")
-    const max = this.props.element.get("max")
-    const step = this.props.element.get("step")
 
     return (
       <div ref={this.sliderRef} className="Widget stSlider" style={style}>
-        <label>{label}</label>
+        <label>{this.props.element.label}</label>
         <UISlider
-          min={min}
-          max={max}
-          step={step}
+          min={this.props.element.min}
+          max={this.props.element.max}
+          step={this.props.element.step}
           value={this.value}
           onChange={this.handleChange}
-          onFinalChange={this.handleFinalChange}
           disabled={this.props.disabled}
           overrides={{
             ...sliderOverrides,

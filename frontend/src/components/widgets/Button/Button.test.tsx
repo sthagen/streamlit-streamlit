@@ -16,24 +16,21 @@
  */
 
 import React from "react"
-import { fromJS } from "immutable"
 import { shallow } from "enzyme"
-import { buttonOverrides } from "lib/widgetTheme"
 import { WidgetStateManager } from "lib/WidgetStateManager"
 
-import { Button as UIButton } from "baseui/button"
+import UIButton from "components/shared/Button"
 
+import { Button as ButtonProto } from "autogen/proto"
 import Button, { ButtonProps } from "./Button"
 
 jest.mock("lib/WidgetStateManager")
 
 const sendBackMsg = jest.fn()
 
-const getProps = (
-  elementProps: Record<string, unknown> = {}
-): ButtonProps => ({
-  element: fromJS({
-    id: 1,
+const getProps = (elementProps: Partial<ButtonProto> = {}): ButtonProps => ({
+  element: ButtonProto.create({
+    id: "1",
     label: "Label",
     ...elementProps,
   }),
@@ -73,9 +70,7 @@ describe("Button widget", () => {
     const wrappedUIButton = wrapper.find(UIButton)
 
     expect(wrappedUIButton.length).toBe(1)
-    expect(wrappedUIButton.props().children).toBe(
-      getProps().element.get("label")
-    )
+    expect(wrappedUIButton.props().children).toBe(getProps().element.label)
   })
 
   describe("UIButton props should work", () => {
@@ -88,7 +83,7 @@ describe("Button widget", () => {
       wrappedUIButton.simulate("click")
 
       expect(props.widgetMgr.setTriggerValue).toHaveBeenCalledWith(
-        props.element.get("id"),
+        props.element.id,
         { fromUi: true }
       )
     })
@@ -100,15 +95,6 @@ describe("Button widget", () => {
       const wrappedUIButton = wrapper.find(UIButton)
 
       expect(wrappedUIButton.props().disabled).toBe(props.disabled)
-    })
-
-    it("overrides prop", () => {
-      const props = getProps()
-      const wrapper = shallow(<Button {...props} />)
-
-      const wrappedUIButton = wrapper.find(UIButton)
-
-      expect(wrappedUIButton.props().overrides).toBe(buttonOverrides)
     })
   })
 })

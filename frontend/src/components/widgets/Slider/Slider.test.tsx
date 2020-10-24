@@ -16,8 +16,7 @@
  */
 
 import React from "react"
-import { shallow } from "enzyme"
-import { fromJS } from "immutable"
+import { mount, shallow } from "enzyme"
 import { sliderOverrides } from "lib/widgetTheme"
 import { Slider as SliderProto } from "autogen/proto"
 import { Slider as UISlider } from "baseui/slider"
@@ -29,15 +28,16 @@ import Slider, { Props } from "./Slider"
 jest.mock("lib/WidgetStateManager")
 
 const sendBackMsg = jest.fn()
-const getProps = (elementProps: Record<string, unknown> = {}): Props => ({
-  element: fromJS({
-    id: 1,
+const getProps = (elementProps: Partial<SliderProto> = {}): Props => ({
+  element: SliderProto.create({
+    id: "1",
     label: "Label",
     format: "%d",
     default: [5],
     min: 0,
     max: 10,
     step: 1,
+    options: [],
     ...elementProps,
   }),
   width: 0,
@@ -69,7 +69,7 @@ describe("Slider widget", () => {
     jest.runAllTimers()
 
     expect(props.widgetMgr.setFloatArrayValue).toHaveBeenCalledWith(
-      props.element.get("id"),
+      props.element.id,
       [5],
       { fromUi: false }
     )
@@ -134,9 +134,9 @@ describe("Slider widget", () => {
       const UISliderWrapper = wrapper.find(UISlider)
       const propValue = UISliderWrapper.prop("value")
 
-      expect(propValue).toStrictEqual(props.element.get("default").toJS())
-      expect(propValue[0]).toBeGreaterThanOrEqual(props.element.get("min"))
-      expect(propValue[0]).toBeLessThan(props.element.get("max"))
+      expect(propValue).toStrictEqual(props.element.default)
+      expect(propValue[0]).toBeGreaterThanOrEqual(props.element.min)
+      expect(propValue[0]).toBeLessThan(props.element.max)
     })
 
     it("should handle value changes", async () => {
@@ -152,7 +152,7 @@ describe("Slider widget", () => {
       jest.runAllTimers()
 
       expect(props.widgetMgr.setFloatArrayValue).toHaveBeenCalledWith(
-        props.element.get("id"),
+        props.element.id,
         [10],
         { fromUi: true }
       )
@@ -178,11 +178,11 @@ describe("Slider widget", () => {
       const UISliderWrapper = wrapper.find(UISlider)
       const propValue = UISliderWrapper.prop("value")
 
-      expect(propValue).toStrictEqual(props.element.get("default").toJS())
+      expect(propValue).toStrictEqual(props.element.default)
 
       propValue.forEach(value => {
-        expect(value).toBeGreaterThanOrEqual(props.element.get("min"))
-        expect(value).toBeLessThan(props.element.get("max"))
+        expect(value).toBeGreaterThanOrEqual(props.element.min)
+        expect(value).toBeLessThan(props.element.max)
       })
     })
 
@@ -253,9 +253,11 @@ describe("Slider widget", () => {
       jest.runAllTimers()
 
       expect(props.widgetMgr.setFloatArrayValue).toHaveBeenCalledWith(
-        props.element.get("id"),
+        props.element.id,
         [1, 10],
-        { fromUi: true }
+        {
+          fromUi: true,
+        }
       )
       expect(wrapper.find(UISlider).prop("value")).toStrictEqual([1, 10])
     })
@@ -307,6 +309,106 @@ describe("Slider widget", () => {
 
       expect(thumbValueWrapper.find(".tickBarMin").text()).toBe("1970-01-01")
       expect(thumbValueWrapper.find(".tickBarMax").text()).toBe("1970-01-29")
+    })
+  })
+
+  describe("Options prop", () => {
+    it("renders without crashing", () => {
+      const props = getProps({
+        default: [1],
+        min: 0,
+        max: 6,
+        format: "%s",
+        options: [
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "indigo",
+          "violet",
+        ],
+      })
+      const wrapper = mount(<Slider {...props} />)
+
+      expect(wrapper).toBeDefined()
+    })
+
+    it("sets aria-valuetext correctly", () => {
+      const props = getProps({
+        default: [1],
+        min: 0,
+        max: 6,
+        format: "%s",
+        options: [
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "indigo",
+          "violet",
+        ],
+      })
+      const wrapper = mount(<Slider {...props} />)
+      const sliderDOMNodes = wrapper.find("div[role='slider']")
+      sliderDOMNodes.forEach(node => {
+        expect(node.getDOMNode().getAttribute("aria-valuetext")).toEqual(
+          "orange"
+        )
+      })
+    })
+
+    it("updates aria-valuetext correctly", () => {
+      const originalProps = {
+        default: [1],
+        min: 0,
+        max: 6,
+        format: "%s",
+        options: [
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "indigo",
+          "violet",
+        ],
+      }
+      const props = getProps(originalProps)
+      const wrapper = mount(<Slider {...props} />)
+      wrapper.setState({ value: [4] })
+      const sliderDOMNodes = wrapper.find("div[role='slider']")
+      sliderDOMNodes.forEach(node => {
+        expect(node.getDOMNode().getAttribute("aria-valuetext")).toEqual(
+          "blue"
+        )
+      })
+    })
+
+    it("sets aria-valuetext correctly for a range", () => {
+      const props = getProps({
+        default: [1, 4],
+        min: 0,
+        max: 6,
+        format: "%s",
+        options: [
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "indigo",
+          "violet",
+        ],
+      })
+      const wrapper = mount(<Slider {...props} />)
+      const sliderDOMNodes = wrapper.find("div[role='slider']")
+      const ariaTexts = sliderDOMNodes.map(node =>
+        node.getDOMNode().getAttribute("aria-valuetext")
+      )
+
+      expect(ariaTexts).toEqual(["orange", "blue"])
     })
   })
 })

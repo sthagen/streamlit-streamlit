@@ -17,12 +17,13 @@
 
 import React from "react"
 import { mount } from "enzyme"
-import { fromJS } from "immutable"
 
+import { GraphVizChart as GraphVizChartProto } from "autogen/proto"
 import { GraphVizChartProps } from "./GraphVizChart"
 
 const mockLogError = {
   logError: jest.fn(),
+  logMessage: jest.fn(),
 }
 
 const mockGraphViz = jest.fn().mockReturnValue({
@@ -48,9 +49,9 @@ jest.mock("lib/log", () => mockLogError)
 const { GraphVizChart } = require("./GraphVizChart")
 
 const getProps = (
-  elementProps: Record<string, unknown> = {}
+  elementProps: Partial<GraphVizChartProto> = {}
 ): GraphVizChartProps => ({
-  element: fromJS({
+  element: GraphVizChartProto.create({
     spec: `digraph "Hello World" {Hello -> World}`,
     ...elementProps,
   }),

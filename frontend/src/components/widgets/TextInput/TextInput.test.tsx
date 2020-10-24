@@ -17,7 +17,6 @@
 
 import React from "react"
 import { shallow } from "enzyme"
-import { fromJS } from "immutable"
 import { WidgetStateManager } from "lib/WidgetStateManager"
 
 import { Input as UIInput } from "baseui/input"
@@ -28,7 +27,7 @@ jest.mock("lib/WidgetStateManager")
 
 const sendBackMsg = jest.fn()
 const getProps = (elementProps: Partial<TextInputProto> = {}): Props => ({
-  element: fromJS({
+  element: TextInputProto.create({
     label: "Label",
     default: "",
     type: TextInputProto.Type.DEFAULT,
@@ -48,7 +47,7 @@ describe("TextInput widget", () => {
   })
 
   it("should show a label", () => {
-    expect(wrapper.find("label").text()).toBe(props.element.get("label"))
+    expect(wrapper.find("label").text()).toBe(props.element.label)
   })
 
   it("should handle TextInputProto.Type properly", () => {
@@ -65,8 +64,8 @@ describe("TextInput widget", () => {
 
   it("should set widget value on did mount", () => {
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
-      props.element.get("default"),
+      props.element.id,
+      props.element.default,
       { fromUi: false }
     )
   })
@@ -104,9 +103,11 @@ describe("TextInput widget", () => {
     wrapper.find(UIInput).prop("onBlur")()
 
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
+      props.element.id,
       "testing",
-      { fromUi: true }
+      {
+        fromUi: true,
+      }
     )
   })
 
@@ -128,9 +129,11 @@ describe("TextInput widget", () => {
     })
 
     expect(props.widgetMgr.setStringValue).toHaveBeenCalledWith(
-      props.element.get("id"),
+      props.element.id,
       "testing",
-      { fromUi: true }
+      {
+        fromUi: true,
+      }
     )
   })
 

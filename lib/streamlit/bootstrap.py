@@ -26,7 +26,7 @@ from streamlit import env_util
 from streamlit import util
 from streamlit.report import Report
 from streamlit.logger import get_logger
-from streamlit.server.server import Server
+from streamlit.server.server import Server, server_address_is_unix_socket
 
 LOGGER = get_logger(__name__)
 
@@ -91,18 +91,18 @@ def _fix_matplotlib_crash():
 def _fix_tornado_crash():
     """Set default asyncio policy to be compatible with Tornado 6.
 
-        Tornado 6 (at least) is not compatible with the default
-        asyncio implementation on Windows. So here we
-        pick the older SelectorEventLoopPolicy when the OS is Windows
-        if the known-incompatible default policy is in use.
+    Tornado 6 (at least) is not compatible with the default
+    asyncio implementation on Windows. So here we
+    pick the older SelectorEventLoopPolicy when the OS is Windows
+    if the known-incompatible default policy is in use.
 
-        This has to happen as early as possible to make it a low priority and
-        overrideable
+    This has to happen as early as possible to make it a low priority and
+    overrideable
 
-        See: https://github.com/tornadoweb/tornado/issues/2608
+    See: https://github.com/tornadoweb/tornado/issues/2608
 
-        FIXME: if/when tornado supports the defaults in asyncio,
-        remove and bump tornado requirement for py38
+    FIXME: if/when tornado supports the defaults in asyncio,
+    remove and bump tornado requirement for py38
     """
     if env_util.IS_WINDOWS and sys.version_info >= (3, 8):
         import asyncio
@@ -148,6 +148,9 @@ def _on_server_start(server):
         if config.is_manually_set("browser.serverAddress"):
             addr = config.get_option("browser.serverAddress")
         elif config.is_manually_set("server.address"):
+            if server_address_is_unix_socket():
+                # Don't open browser when server address is an unix socket
+                return
             addr = config.get_option("server.address")
         else:
             addr = "localhost"
@@ -179,7 +182,9 @@ def _print_url(is_running_hello):
             ("URL", Report.get_url(config.get_option("browser.serverAddress")))
         ]
 
-    elif config.is_manually_set("server.address"):
+    elif (
+        config.is_manually_set("server.address") and not server_address_is_unix_socket()
+    ):
         named_urls = [
             ("URL", Report.get_url(config.get_option("server.address"))),
         ]
@@ -213,7 +218,7 @@ def _print_url(is_running_hello):
 
     if is_running_hello:
         click.secho("  Ready to create your own Python apps super quickly?")
-        click.secho("  Just head over to ", nl=False)
+        click.secho("  Head over to ", nl=False)
         click.secho("https://docs.streamlit.io", bold=True)
         click.secho("")
         click.secho("  May you create awesome apps!")

@@ -248,7 +248,15 @@ class ScriptRunner(object):
 
         # Reset DeltaGenerators, widgets, media files.
         media_file_manager.clear_session_files()
-        get_report_ctx().reset(query_string=rerun_data.query_string)
+
+        ctx = get_report_ctx()
+        if ctx is None:
+            # This should never be possible on the script_runner thread.
+            raise RuntimeError(
+                "ScriptRunner thread has a null ReportContext. Something has gone very wrong!"
+            )
+
+        ctx.reset(query_string=rerun_data.query_string)
 
         self.on_event.send(ScriptRunnerEvent.SCRIPT_STARTED)
 
@@ -341,6 +349,9 @@ class ScriptRunner(object):
         finally:
             self._widgets.reset_triggers()
             self.on_event.send(ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS)
+            # delete expired files now that the script has run and files in use
+            # are marked as active
+            media_file_manager.del_expired_files()
 
         # Use _log_if_error() to make sure we never ever ever stop running the
         # script without meaning to.

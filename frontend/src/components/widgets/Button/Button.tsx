@@ -16,36 +16,35 @@
  */
 
 import React, { ReactElement } from "react"
-import { Button as UIButton } from "baseui/button"
-import { Map as ImmutableMap } from "immutable"
+import UIButton, { Kind, Size } from "components/shared/Button"
+import { Button as ButtonProto } from "autogen/proto"
 import { WidgetStateManager } from "lib/WidgetStateManager"
-import { buttonOverrides } from "lib/widgetTheme"
 
 export interface ButtonProps {
   disabled: boolean
-  element: ImmutableMap<string, any>
+  element: ButtonProto
   widgetMgr: WidgetStateManager
   width: number
 }
 
 function Button(props: ButtonProps): ReactElement {
   const { disabled, element, widgetMgr, width } = props
-  const label = element.get("label")
   const style = { width }
 
   const handleClick = (): void => {
-    const widgetId = element.get("id")
+    const widgetId = element.id
     widgetMgr.setTriggerValue(widgetId, { fromUi: true })
   }
 
   return (
     <div className="Widget row-widget stButton" style={style}>
       <UIButton
+        kind={Kind.PRIMARY}
+        size={Size.SMALL}
         disabled={disabled}
         onClick={handleClick}
-        overrides={buttonOverrides}
       >
-        {label}
+        {element.label}
       </UIButton>
     </div>
   )

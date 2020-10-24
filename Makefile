@@ -35,11 +35,15 @@ mini-devel: mini-init develop
 
 .PHONY: init
 # Install all Python and JS dependencies.
-init: setup pipenv-install react-init scssvars protobuf
+init: setup pipenv-install react-init autogen
 
 .PHONY: mini-init
 # Install minimal Python and JS dependencies for development.
-mini-init: setup pipenv-dev-install react-init scssvars protobuf
+mini-init: setup pipenv-dev-install react-init autogen
+
+.PHONY: autogen
+# Generates files for frontend dev
+autogen: scssvars protobuf
 
 .PHONY: frontend
 # Build frontend into static files.
@@ -153,17 +157,22 @@ install:
 develop:
 	cd lib ; python setup.py develop
 
-.PHONY: wheel
-# Create a Python wheel file in dist/.
-wheel:
+.PHONY: distribution
+# Create Python distribution files in dist/.
+distribution:
 	# Get rid of the old build folder to make sure that we delete old js and css.
 	rm -rfv lib/build
-	cd lib ; python setup.py bdist_wheel --universal
-	# cd lib ; python setup.py bdist_wheel sdist
+	cd lib ; python setup.py bdist_wheel --universal sdist
+
+.PHONY: clean-package
+# Removes existing packages and creates distribution files in dist/.
+clean-package:
+	rm -rfv lib/dist
+	package
 
 .PHONY: package
-# Create a Python wheel file in dist/.
-package: mini-devel frontend install wheel
+# Create Python distribution files in dist/.
+package: mini-devel frontend install distribution
 
 
 .PHONY: clean
@@ -225,7 +234,7 @@ protobuf:
 		echo ; \
 		./node_modules/protobufjs/bin/pbjs \
 			../proto/streamlit/proto/*.proto \
-			-t static-module --es6 \
+			-t static-module --wrap es6 \
 	) > ./src/autogen/proto.js
 
 	@# Typescript type declarations for our generated protobufs
@@ -253,7 +262,7 @@ react-build:
 scssvars: react-init
 	mkdir -p frontend/src/autogen
 	cd frontend ; ( \
-		echo "export const SCSS_VARS = " ; \
+		echo "export const SCSS_VARS:Record<string, string> = " ; \
 		yarn run --silent scss-to-json src/assets/css/variables.scss \
 	) > src/autogen/scssVariables.ts
 
@@ -324,7 +333,8 @@ loc:
 # Distributes the package to PyPi
 distribute:
 	cd lib/dist; \
-		twine upload $$(ls -t *.whl | head -n 1)
+		twine upload $$(ls -t *.whl | head -n 1); \
+		twine upload $$(ls -t *.tar.gz | head -n 1)
 
 .PHONY: notices
 # Rebuild the NOTICES file.

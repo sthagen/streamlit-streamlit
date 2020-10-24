@@ -52,11 +52,9 @@ def _create_widget(id, states):
 class ScriptRunnerTest(AsyncTestCase):
     def setUp(self):
         super(ScriptRunnerTest, self).setUp()
-        media_file_manager.set_ioloop(self.io_loop)
 
     def tearDown(self):
         super(ScriptRunnerTest, self).tearDown()
-        media_file_manager.set_ioloop(None)
 
     def test_startup_shutdown(self):
         """Test that we can create and shut down a ScriptRunner."""

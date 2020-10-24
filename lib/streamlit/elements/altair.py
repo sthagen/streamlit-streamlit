@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A Python wrapper around Altair."""
+"""A Python wrapper around Altair.
+Altair is a Python visualization library based on Vega-Lite,
+a nice JSON schema for expressing graphs and charts."""
 
 from datetime import date
 
@@ -29,10 +31,13 @@ class AltairMixin:
     def line_chart(dg, data=None, width=0, height=0, use_container_width=True):
         """Display a line chart.
 
-        This is just syntax-sugar around st.altair_chart. The main difference
+        This is syntax-sugar around st.altair_chart. The main difference
         is this command uses the data's own column and indices to figure out
         the chart's spec. As a result this is easier to use for many "just plot
         this" scenarios, while being less customizable.
+
+        If st.line_chart does not guess the data specification
+        correctly, try specifying your desired chart using st.altair_chart.
 
         Parameters
         ----------
@@ -59,7 +64,7 @@ class AltairMixin:
         >>> st.line_chart(chart_data)
 
         .. output::
-           https://share.streamlit.io/0.50.0-td2L/index.html?id=BdxXG3MmrVBfJyqS2R2ki8
+           https://static.streamlit.io/0.50.0-td2L/index.html?id=BdxXG3MmrVBfJyqS2R2ki8
            height: 220px
 
         """
@@ -72,12 +77,15 @@ class AltairMixin:
         return dg._enqueue("line_chart", vega_lite_chart_proto, last_index=last_index)  # type: ignore
 
     def area_chart(dg, data=None, width=0, height=0, use_container_width=True):
-        """Display a area chart.
+        """Display an area chart.
 
         This is just syntax-sugar around st.altair_chart. The main difference
         is this command uses the data's own column and indices to figure out
         the chart's spec. As a result this is easier to use for many "just plot
         this" scenarios, while being less customizable.
+
+        If st.area_chart does not guess the data specification
+        correctly, try specifying your desired chart using st.altair_chart.
 
         Parameters
         ----------
@@ -103,7 +111,7 @@ class AltairMixin:
         >>> st.area_chart(chart_data)
 
         .. output::
-           https://share.streamlit.io/0.50.0-td2L/index.html?id=Pp65STuFj65cJRDfhGh4Jt
+           https://static.streamlit.io/0.50.0-td2L/index.html?id=Pp65STuFj65cJRDfhGh4Jt
            height: 220px
 
         """
@@ -122,6 +130,9 @@ class AltairMixin:
         is this command uses the data's own column and indices to figure out
         the chart's spec. As a result this is easier to use for many "just plot
         this" scenarios, while being less customizable.
+
+        If st.bar_chart does not guess the data specification
+        correctly, try specifying your desired chart using st.altair_chart.
 
         Parameters
         ----------
@@ -147,7 +158,7 @@ class AltairMixin:
         >>> st.bar_chart(chart_data)
 
         .. output::
-           https://share.streamlit.io/0.50.0-td2L/index.html?id=5U5bjR2b3jFwnJdDfSvuRk
+           https://static.streamlit.io/0.66.0-2BLtg/index.html?id=GaYDn6vxskvBUkBwsGVEaL
            height: 220px
 
         """
@@ -159,18 +170,13 @@ class AltairMixin:
 
         return dg._enqueue("bar_chart", vega_lite_chart_proto, last_index=last_index)  # type: ignore
 
-    def altair_chart(dg, altair_chart, width=0, use_container_width=False):
+    def altair_chart(dg, altair_chart, use_container_width=False):
         """Display a chart using the Altair library.
 
         Parameters
         ----------
         altair_chart : altair.vegalite.v2.api.Chart
             The Altair chart object to display.
-
-        width : number
-            Deprecated. If != 0 (default), will show an alert.
-            From now on you should set the width directly in the Altair
-            spec. Please refer to the Altair documentation for details.
 
         use_container_width : bool
             If True, set the chart width to the column width. This takes
@@ -193,7 +199,7 @@ class AltairMixin:
         >>> st.altair_chart(c, use_container_width=True)
 
         .. output::
-           https://share.streamlit.io/0.25.0-2JkNY/index.html?id=8jmmXR8iKoZGV4kXaKGYV5
+           https://static.streamlit.io/0.25.0-2JkNY/index.html?id=8jmmXR8iKoZGV4kXaKGYV5
            height: 200px
 
         Examples of Altair charts can be found at
@@ -201,13 +207,6 @@ class AltairMixin:
 
         """
         vega_lite_chart_proto = VegaLiteChartProto()
-
-        if width != 0:
-            import streamlit as st
-
-            st.warning(
-                "The `width` argument in `st.vega_lite_chart` is deprecated and will be removed on 2020-03-04. To set the width, you should instead use altair's native `width` argument as described at https://altair-viz.github.io/user_guide/generated/toplevel/altair.Chart.html"
-            )
 
         marshall(
             vega_lite_chart_proto,
@@ -270,10 +269,16 @@ def generate_chart(chart_type, data, width=0, height=0):
     )
     y_scale = alt.Scale(type="utc") if _is_date_column(data, "value") else alt.Undefined
 
+    x_type = alt.Undefined
+    # Bar charts should have a discrete (ordinal) x-axis, UNLESS type is date/time
+    # https://github.com/streamlit/streamlit/pull/2097#issuecomment-714802475
+    if chart_type == "bar" and not _is_date_column(data, index_name):
+        x_type = "ordinal"
+
     chart = (
         getattr(alt.Chart(data, width=width, height=height), "mark_" + chart_type)()
         .encode(
-            alt.X(index_name, title="", scale=x_scale),
+            alt.X(index_name, title="", scale=x_scale, type=x_type),
             alt.Y("value", title="", scale=y_scale),
             alt.Color("variable", title="", type="nominal"),
             alt.Tooltip([index_name, "value", "variable"]),

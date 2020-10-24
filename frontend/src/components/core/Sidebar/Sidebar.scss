@@ -26,6 +26,18 @@
     bottom: 0;
   }
 
+  .sidebar-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+
+    .open-iconic {
+      fill: $black;
+      opacity: 0.25;
+    }
+  }
+
   &.--collapsed {
     .sidebar-content {
       margin-left: -$sidebar-width;
@@ -64,26 +76,6 @@
       z-index: $z-index-sidebar-mobile;
     }
 
-    .sidebar-close {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      z-index: 1;
-
-      .open-iconic {
-        fill: $black;
-        opacity: 0.25;
-      }
-
-      &:hover {
-        background: transparent;
-
-        .open-iconic {
-          opacity: 1;
-        }
-      }
-    }
-
     h1 {
       font-size: 1.5rem;
       font-weight: 600;
@@ -109,14 +101,6 @@
       font-size: $font-size-sm;
       font-weight: 300;
       text-transform: uppercase;
-    }
-
-    .progress {
-      background-color: $gray-light;
-    }
-
-    .progress-bar {
-      background-color: $blue;
     }
   }
 

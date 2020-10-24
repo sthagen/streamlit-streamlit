@@ -17,33 +17,28 @@
 
 import React, { ReactElement } from "react"
 
-import classNames from "classnames"
-import { Map as ImmutableMap } from "immutable"
 import { Alert as AlertProto } from "autogen/proto"
 import { StreamlitMarkdown } from "components/shared/StreamlitMarkdown"
+import AlertContainer, { Kind } from "components/shared/AlertContainer"
 
-import "./Alert.scss"
-import "assets/css/write.scss"
-
-// classes defined in assets/css/theme.scss
-const ALERT_CSS_CLASS = ImmutableMap({
-  [AlertProto.Format.SUCCESS]: "alert-success",
-  [AlertProto.Format.INFO]: "alert-info",
-  [AlertProto.Format.WARNING]: "alert-warning",
-  [AlertProto.Format.ERROR]: "alert-danger",
-})
-
-export function getAlertCSSClass(format: number): string {
-  const cname = ALERT_CSS_CLASS.get(format.toString())
-  if (cname) {
-    return cname
+export function getAlertKind(format: AlertProto.Format): Kind {
+  switch (format) {
+    case AlertProto.Format.ERROR:
+      return Kind.ERROR
+    case AlertProto.Format.INFO:
+      return Kind.INFO
+    case AlertProto.Format.SUCCESS:
+      return Kind.SUCCESS
+    case AlertProto.Format.WARNING:
+      return Kind.WARNING
+    default:
+      throw new Error(`Unexpected alert type: ${format}`)
   }
-  throw new Error(`Unexpected alert type: ${format}`)
 }
 
 export interface AlertProps {
   width: number
-  element: ImmutableMap<string, any>
+  element: AlertProto
 }
 
 /**
@@ -51,17 +46,15 @@ export interface AlertProps {
  * which may be formatted in Markdown.
  */
 export default function Alert({ element, width }: AlertProps): ReactElement {
-  const body = element.get("body")
-  const format = element.get("format")
+  const { body, format } = element
 
   return (
-    <div
-      className={classNames("alert", getAlertCSSClass(format), "stAlert")}
-      style={{ width }}
-    >
-      <div className="markdown-text-container">
-        <StreamlitMarkdown source={body} allowHTML={false} />
-      </div>
+    <div className="stAlert">
+      <AlertContainer width={width} kind={getAlertKind(format)}>
+        <div className="markdown-text-container">
+          <StreamlitMarkdown source={body} allowHTML={false} />
+        </div>
+      </AlertContainer>
     </div>
   )
 }

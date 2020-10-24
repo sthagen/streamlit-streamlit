@@ -16,13 +16,13 @@
  */
 
 import React, { PureComponent, ReactNode } from "react"
-import { Map as ImmutableMap } from "immutable"
+import { TimeInput as TimeInputProto } from "autogen/proto"
 import { TimePicker as UITimePicker } from "baseui/timepicker"
 import { WidgetStateManager, Source } from "lib/WidgetStateManager"
 
 export interface Props {
   disabled: boolean
-  element: ImmutableMap<string, any>
+  element: TimeInputProto
   widgetMgr: WidgetStateManager
   width: number
 }
@@ -37,7 +37,15 @@ interface State {
 
 class TimeInput extends PureComponent<Props, State> {
   public state: State = {
-    value: this.props.element.get("default"),
+    value: this.initialValue,
+  }
+
+  get initialValue(): string {
+    // If WidgetStateManager knew a value for this widget, initialize to that.
+    // Otherwise, use the default value from the widget protobuf.
+    const widgetId = this.props.element.id
+    const storedValue = this.props.widgetMgr.getStringValue(widgetId)
+    return storedValue !== undefined ? storedValue : this.props.element.default
   }
 
   public componentDidMount(): void {
@@ -45,7 +53,7 @@ class TimeInput extends PureComponent<Props, State> {
   }
 
   private setWidgetValue = (source: Source): void => {
-    const widgetId: string = this.props.element.get("id")
+    const widgetId = this.props.element.id
     this.props.widgetMgr.setStringValue(widgetId, this.state.value, source)
   }
 
@@ -80,7 +88,6 @@ class TimeInput extends PureComponent<Props, State> {
   public render = (): ReactNode => {
     const { disabled, width, element } = this.props
     const style = { width }
-    const label = element.get("label")
 
     const selectOverrides = {
       Select: {
@@ -92,7 +99,7 @@ class TimeInput extends PureComponent<Props, State> {
 
     return (
       <div className="Widget stTimeInput" style={style}>
-        <label>{label}</label>
+        <label>{element.label}</label>
         <UITimePicker
           format="24"
           value={this.stringToDate(this.state.value)}
