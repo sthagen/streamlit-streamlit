@@ -1,15 +1,31 @@
-from streamlit import config
+# Copyright 2018-2020 Streamlit Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
+from typing import cast
+
+import streamlit
+from streamlit import config
+from streamlit.errors import StreamlitDeprecationWarning
 from streamlit.proto.FileUploader_pb2 import FileUploader as FileUploaderProto
 from streamlit.report_thread import get_report_ctx
-from streamlit.file_util import get_encoded_file_data
-from streamlit.errors import StreamlitDeprecationWarning
-from .utils import NoValue, _set_widget_id
+from .utils import NoValue, register_widget
+from ..uploaded_file_manager import UploadedFile
 
 
 class FileUploaderMixin:
     def file_uploader(
-        dg, label, type=None, accept_multiple_files=False, key=None, **kwargs
+        self, label, type=None, accept_multiple_files=False, key=None, **kwargs
     ):
         """Display a file uploader widget.
         By default, uploaded files are limited to 200MB. You can configure
@@ -46,8 +62,7 @@ class FileUploaderMixin:
 
             The UploadedFile class is a subclass of BytesIO, and therefore
             it is "file-like". This means you can pass them anywhere where
-            a file is expected. As a subclass of BytesIO, make sure to
-            reset the buffer after reading it with `UploadedFile.seek(0)`.
+            a file is expected.
 
         Examples
         --------
@@ -97,7 +112,7 @@ class FileUploaderMixin:
         )
 
         if show_deprecation_warning and has_encoding:
-            dg.exception(FileUploaderEncodingWarning())  # type: ignore
+            self.dg.exception(FileUploaderEncodingWarning())
 
         file_uploader_proto = FileUploaderProto()
         file_uploader_proto.label = label
@@ -106,21 +121,27 @@ class FileUploaderMixin:
             "server.maxUploadSize"
         )
         file_uploader_proto.multiple_files = accept_multiple_files
-        _set_widget_id("file_uploader", file_uploader_proto, user_key=key)
+        register_widget("file_uploader", file_uploader_proto, user_key=key)
 
-        files = None
+        file_recs = None
         ctx = get_report_ctx()
         if ctx is not None:
-            files = ctx.uploaded_file_mgr.get_files(
+            file_recs = ctx.uploaded_file_mgr.get_files(
                 session_id=ctx.session_id, widget_id=file_uploader_proto.id
             )
 
-        if files is None or len(files) == 0:
+        if file_recs is None or len(file_recs) == 0:
             return_value = [] if accept_multiple_files else NoValue
         else:
+            files = [UploadedFile(rec) for rec in file_recs]
             return_value = files if accept_multiple_files else files[0]
 
-        return dg._enqueue("file_uploader", file_uploader_proto, return_value)  # type: ignore
+        return self.dg._enqueue("file_uploader", file_uploader_proto, return_value)
+
+    @property
+    def dg(self) -> "streamlit.delta_generator.DeltaGenerator":
+        """Get our DeltaGenerator."""
+        return cast("streamlit.delta_generator.DeltaGenerator", self)
 
 
 class FileUploaderEncodingWarning(StreamlitDeprecationWarning):

@@ -18,34 +18,36 @@
 describe("st.file_uploader", () => {
   beforeEach(() => {
     Cypress.Cookies.defaults({
-      whitelist: ["_xsrf"]
+      preserve: ["_xsrf"]
     });
+    cy.server();
+    cy.route("POST", "**/upload_file").as("uploadFile");
 
     cy.visit("http://localhost:3000/");
 
     // Make the ribbon decoration line disappear
-    cy.get(".decoration").invoke("css", "display", "none");
+    cy.get("[data-testid='stDecoration']").invoke("css", "display", "none");
   });
 
   it("shows widget correctly", () => {
-    cy.get(".stFileUploader")
+    cy.get("[data-testid='stFileUploader']")
       .first()
       .should("exist");
-    cy.get(".stFileUploader label")
+    cy.get("[data-testid='stFileUploader'] label")
       .first()
       .should("have.text", "Drop a file:");
 
-    cy.get(".stFileUploader")
+    cy.get("[data-testid='stFileUploader']")
       .first()
       .matchImageSnapshot("single_file_uploader");
 
-    cy.get(".stFileUploader")
+    cy.get("[data-testid='stFileUploader']")
       .last()
       .matchImageSnapshot("multi_file_uploader");
   });
 
   it("shows deprecation warning", () => {
-    cy.get(".stFileUploader")
+    cy.get("[data-testid='stFileUploader']")
       .first()
       .parent()
       .prev()
@@ -53,7 +55,7 @@ describe("st.file_uploader", () => {
   });
 
   it("hides deprecation warning", () => {
-    cy.get(".stFileUploader")
+    cy.get("[data-testid='stFileUploader']")
       .last()
       .parent()
       .prev()
@@ -64,9 +66,9 @@ describe("st.file_uploader", () => {
     const fileName = "example.json";
 
     cy.fixture(fileName).then(fileContent => {
-      cy.get(".fileUploadDropzone")
+      cy.get("[data-testid='stFileUploadDropzone']")
         .first()
-        .upload(
+        .attachFile(
           { fileContent, fileName, mimeType: "application/json" },
           {
             force: true,
@@ -80,11 +82,11 @@ describe("st.file_uploader", () => {
           }
         );
 
-      cy.get(".fileError span")
+      cy.get("[data-testid='stUploadedFileErrorMessage']")
         .first()
         .should("have.text", "application/json files are not allowed.");
 
-      cy.get(".stFileUploader")
+      cy.get("[data-testid='stFileUploader']")
         .first()
         .matchImageSnapshot("file_uploader-error");
     });
@@ -97,6 +99,9 @@ describe("st.file_uploader", () => {
     // Yes, this actually is the recommended way to load multiple fixtures
     // in Cypress (!!) using Cypress.Promise.all is buggy. See:
     // https://github.com/cypress-io/cypress-example-recipes/blob/master/examples/fundamentals__fixtures/cypress/integration/multiple-fixtures-spec.js
+    // Why can’t I use async / await?
+    // If you’re a modern JS programmer you might hear “asynchronous” and think: why can’t I just use async/await instead of learning some proprietary API?
+    // https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Commands-Are-Asynchronous
     cy.fixture(fileName1).then(file1 => {
       cy.fixture(fileName2).then(file2 => {
         const files = [
@@ -104,9 +109,9 @@ describe("st.file_uploader", () => {
           { fileContent: file2, fileName: fileName2, mimeType: "text/plain" }
         ];
 
-        cy.get(".fileUploadDropzone")
+        cy.get("[data-testid='stFileUploadDropzone']")
           .eq(0)
-          .upload(files[0], {
+          .attachFile(files[0], {
             force: true,
             subjectType: "drag-n-drop",
             events: ["dragenter", "drop"]
@@ -116,17 +121,17 @@ describe("st.file_uploader", () => {
         // into an st.text. (This tests that the upload actually went
         // through.)
         cy.get(".uploadedFileName").should("have.text", fileName1);
-        cy.get(".fixed-width.stText")
+        cy.get("[data-testid='stText']")
           .first()
           .should("contain.text", file1);
 
-        cy.get(".stFileUploader")
+        cy.get("[data-testid='stFileUploader']")
           .first()
           .matchImageSnapshot("single_file_uploader-uploaded");
 
-        cy.get(".fileUploadDropzone")
+        cy.get("[data-testid='stFileUploadDropzone']")
           .eq(0)
-          .upload(files[1], {
+          .attachFile(files[1], {
             force: true,
             subjectType: "drag-n-drop",
             events: ["dragenter", "drop"]
@@ -135,10 +140,17 @@ describe("st.file_uploader", () => {
         cy.get(".uploadedFileName")
           .should("have.text", fileName2)
           .should("not.have.text", fileName1);
-        cy.get(".fixed-width.stText")
+        cy.get("[data-testid='stText']")
           .first()
           .should("contain.text", file2)
           .should("not.contain.text", file1);
+
+        // On rerun, make sure file is still returned
+        cy.get("body").type("r");
+        cy.wait(1000);
+        cy.get("[data-testid='stText']")
+          .first()
+          .should("contain.text", file2);
       });
     });
   });
@@ -147,9 +159,12 @@ describe("st.file_uploader", () => {
     const fileName1 = "file1.txt";
     const fileName2 = "file2.txt";
 
-    // Yes, this actually is the recommended way to load multiple fixtures
+    // Yes, this is the recommended way to load multiple fixtures
     // in Cypress (!!) using Cypress.Promise.all is buggy. See:
     // https://github.com/cypress-io/cypress-example-recipes/blob/master/examples/fundamentals__fixtures/cypress/integration/multiple-fixtures-spec.js
+    // Why can’t I use async / await?
+    // If you’re a modern JS programmer you might hear “asynchronous” and think: why can’t I just use async/await instead of learning some proprietary API?
+    // https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Commands-Are-Asynchronous
     cy.fixture(fileName1).then(file1 => {
       cy.fixture(fileName2).then(file2 => {
         const files = [
@@ -157,13 +172,28 @@ describe("st.file_uploader", () => {
           { fileContent: file2, fileName: fileName2, mimeType: "text/plain" }
         ];
 
-        cy.get(".fileUploadDropzone")
+        cy.get("[data-testid='stFileUploadDropzone']")
           .eq(1)
-          .upload(files, {
+          .attachFile(files[0], {
             force: true,
             subjectType: "drag-n-drop",
             events: ["dragenter", "drop"]
           });
+
+        cy.get(".uploadedFileName").each(uploadedFileName => {
+          cy.get(uploadedFileName).should("have.text", fileName1);
+        });
+
+        cy.get("[data-testid='stFileUploadDropzone']")
+          .eq(1)
+          .attachFile(files[1], {
+            force: true,
+            subjectType: "drag-n-drop",
+            events: ["dragenter", "drop"]
+          });
+
+        // Wait for the HTTP request to complete
+        cy.wait("@uploadFile");
 
         // The widget should show the names of the uploaded files in reverse
         // order
@@ -175,12 +205,12 @@ describe("st.file_uploader", () => {
         // The script should have printed the contents of the two files
         // into an st.text. (This tests that the upload actually went
         // through.)
-        const content = [file1, file2].sort().join("\n");
-        cy.get(".fixed-width.stText")
+        const content = [file1, file2].join("\n");
+        cy.get("[data-testid='stText']")
           .last()
           .should("have.text", content);
 
-        cy.get(".stFileUploader")
+        cy.get("[data-testid='stFileUploader']")
           .last()
           .matchImageSnapshot("multi_file_uploader-uploaded");
       });
