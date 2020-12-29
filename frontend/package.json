@@ -46,7 +46,7 @@
     "@loaders.gl/core": "^2.2.8",
     "@loaders.gl/csv": "^2.2.8",
     "aws-sdk": "^2.729.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "baseui": "9.106.0",
     "camelcase": "^5.2.0",
     "classnames": "^2.2.6",
