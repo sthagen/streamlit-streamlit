@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018-2020 Streamlit Inc.
+ * Copyright 2018-2021 Streamlit Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import {
 } from "autogen/proto"
 
 import React, { PureComponent, ReactNode, Suspense } from "react"
+import classnames from "classnames"
 import { AutoSizer } from "react-virtualized"
 // @ts-ignore
 import debounceRender from "react-debounce-render"
@@ -255,9 +256,12 @@ class Block extends PureComponent<Props> {
     return (
       <Maybe enable={enable} key={key}>
         <StyledElementContainer
+          data-stale={isStale}
           isStale={isStale}
           isHidden={isHidden}
-          className="element-container"
+          className={classnames("element-container", {
+            "stale-element": isStale,
+          })}
           style={{ width }}
         >
           <ErrorBoundary width={width}>

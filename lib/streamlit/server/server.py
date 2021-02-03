@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Streamlit Inc.
+# Copyright 2018-2021 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -680,8 +680,6 @@ class _BrowserWebSocketHandler(tornado.websocket.WebSocketHandler):
                 yield self._session.handle_save_request(self)
             elif msg_type == "rerun_script":
                 self._session.handle_rerun_script_request(msg.rerun_script)
-            elif msg_type == "load_git_info":
-                self._session.handle_git_information_request()
             elif msg_type == "clear_cache":
                 self._session.handle_clear_cache_request()
             elif msg_type == "set_run_on_save":

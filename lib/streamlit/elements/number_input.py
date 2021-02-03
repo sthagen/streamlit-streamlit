@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Streamlit Inc.
+# Copyright 2018-2021 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class NumberInputMixin:
 
         Parameters
         ----------
-        label : str or None
+        label : str
             A short label explaining to the user what this input is for.
         min_value : int or float or None
             The minimum permitted value.
@@ -55,7 +55,7 @@ class NumberInputMixin:
         format : str or None
             A printf-style format string controlling how the interface should
             display numbers. Output must be purely numeric. This does not impact
-            the return value. Valid formatters: %d %e %f %g %i
+            the return value. Valid formatters: %d %e %f %g %i %u
         key : str
             An optional string to use as the unique key for the widget.
             If this is omitted, a key will be generated for the widget
@@ -91,14 +91,20 @@ class NumberInputMixin:
             if format is None:
                 format = "%d" if int_value else "%0.2f"
 
+            # Warn user if they format an int type as a float or vice versa.
             if format in ["%d", "%u", "%i"] and float_value:
-                # Warn user to check if displaying float as int was really intended.
                 import streamlit as st
 
                 st.warning(
-                    "Warning: NumberInput value below is float, but format {} displays as integer.".format(
-                        format
-                    )
+                    "Warning: NumberInput value below has type float,"
+                    f" but format {format} displays as integer."
+                )
+            elif format[-1] == "f" and int_value:
+                import streamlit as st
+
+                st.warning(
+                    "Warning: NumberInput value below has type int so is"
+                    f" displayed as int despite format string {format}."
                 )
 
             if step is None:

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018-2020 Streamlit Inc.
+ * Copyright 2018-2021 Streamlit Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ export const DEPLOY_URL = "https://share.streamlit.io/deploy"
 export const STREAMLIT_SHARE_URL = "https://streamlit.io/sharing"
 export const ONLINE_DOCS_URL = "https://docs.streamlit.io"
 export const COMMUNITY_URL = "https://discuss.streamlit.io"
-export const TEAMS_URL = "https://streamlit.io/for-teams"
+export const TEAMS_URL = "https://streamlit.io/forteams"
 export const BUG_URL =
   "https://github.com/streamlit/streamlit/issues/new/choose"
 

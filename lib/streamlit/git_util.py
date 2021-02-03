@@ -1,3 +1,17 @@
+# Copyright 2018-2021 Streamlit Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import re
 from typing import Optional, Tuple
@@ -23,10 +37,10 @@ class GitRepo:
 
             self.repo = git.Repo(path, search_parent_directories=True)
             self.git_version = self.repo.git.version_info
-
             if self.git_version >= MIN_GIT_VERSION:
                 git_root = self.repo.git.rev_parse("--show-toplevel")
                 self.module = os.path.relpath(path, git_root)
+
         except:
             # The git repo must be invalid for the following reasons:
             #  * git binary or GitPython not installed
@@ -47,46 +61,13 @@ class GitRepo:
     def tracking_branch(self):
         if not self.is_valid():
             return None
-
-        if self.is_head_detached:
-            return None
-
         return self.repo.active_branch.tracking_branch()
-
-    @property
-    def untracked_files(self):
-        return self.repo.untracked_files
-
-    @property
-    def is_head_detached(self):
-        return self.repo.head.is_detached
-
-    @property
-    def uncommitted_files(self):
-        if not self.is_valid():
-            return None
-
-        return [item.a_path for item in self.repo.index.diff(None)]
-
-    @property
-    def ahead_commits(self):
-        if not self.is_valid():
-            return None
-
-        try:
-            remote, branch_name = self.get_tracking_branch_remote()
-            remote_branch = "/".join([remote.name, branch_name])
-
-            return list(self.repo.iter_commits(f"{remote_branch}..{branch_name}"))
-        except:
-            return list()
 
     def get_tracking_branch_remote(self):
         if not self.is_valid():
             return None
 
         tracking_branch = self.tracking_branch
-
         if tracking_branch is None:
             return None
 

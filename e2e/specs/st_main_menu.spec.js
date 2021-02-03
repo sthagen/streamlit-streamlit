@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018-2020 Streamlit Inc.
+ * Copyright 2018-2021 Streamlit Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ describe("main menu", () => {
     cy.get('[data-testid="main-menu-popover"]').invoke(
       "attr",
       "style",
-      "transform: translate3d(20px, 20px, 0px);"
+      "transform: translate3d(20px, 20px, 0px)"
     );
     cy.get('[data-testid="main-menu-list"]').matchImageSnapshot("main_menu");
 

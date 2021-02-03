@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018-2020 Streamlit Inc.
+ * Copyright 2018-2021 Streamlit Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import ReactMarkdown from "react-markdown"
 // @ts-ignore
 import htmlParser from "react-markdown/plugins/html-parser"
 // @ts-ignore
-import { BlockMath, InlineMath } from "react-katex"
+import Tex from "@matejmazur/react-katex"
 // @ts-ignore
 import RemarkMathPlugin from "remark-math"
 // @ts-ignore
@@ -66,10 +66,10 @@ class StreamlitMarkdown extends PureComponent<Props> {
       link: linkWithTargetBlank,
       linkReference: linkReferenceHasParens,
       inlineMath: (props: { value: string }): ReactElement => (
-        <InlineMath>{props.value}</InlineMath>
+        <Tex>{props.value}</Tex>
       ),
       math: (props: { value: string }): ReactElement => (
-        <BlockMath>{props.value}</BlockMath>
+        <Tex block>{props.value}</Tex>
       ),
     }
 
