@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 boto3 = "*"
 botocore = ">=1.13.44"
-mypy = "==0.761"
+mypy = "==0.902"
 mypy-protobuf = ">=1.17"
 parameterized = "*"
 pipenv = "*"
