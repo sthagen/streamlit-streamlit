@@ -18,6 +18,7 @@
 import {
   Alert as AlertProto,
   Audio as AudioProto,
+  Block as BlockProto,
   BokehChart as BokehChartProto,
   Button as ButtonProto,
   Checkbox as CheckboxProto,
@@ -52,15 +53,18 @@ import { AutoSizer } from "react-virtualized"
 // @ts-ignore
 import debounceRender from "react-debounce-render"
 import { ReportRunState } from "src/lib/ReportRunState"
-import { WidgetStateManager } from "src/lib/WidgetStateManager"
+import { FormsData, WidgetStateManager } from "src/lib/WidgetStateManager"
 import { getElementWidgetID } from "src/lib/utils"
 import { FileUploadClient } from "src/lib/FileUploadClient"
 import { BlockNode, ReportNode, ElementNode } from "src/lib/ReportNode"
+import { Quiver } from "src/lib/Quiver"
+import { VegaLiteChartElement } from "src/components/elements/ArrowVegaLiteChart/ArrowVegaLiteChart"
 
 // Load (non-lazy) elements.
 import Alert from "src/components/elements/Alert/"
 import { getAlertKind } from "src/components/elements/Alert/Alert"
 import { Kind } from "src/components/shared/AlertContainer"
+import ArrowTable from "src/components/elements/ArrowTable/"
 import DocString from "src/components/elements/DocString/"
 import ErrorBoundary from "src/components/shared/ErrorBoundary/"
 import ExceptionElement from "src/components/elements/ExceptionElement/"
@@ -75,6 +79,7 @@ import {
 
 import Maybe from "src/components/core/Maybe/"
 import withExpandable from "src/hocs/withExpandable"
+import { Form, FormSubmitContent } from "src/components/widgets/Form"
 
 import {
   StyledBlock,
@@ -86,6 +91,12 @@ import {
 // Lazy-load elements.
 const Audio = React.lazy(() => import("src/components/elements/Audio/"))
 const Balloons = React.lazy(() => import("src/components/elements/Balloons/"))
+const ArrowDataFrame = React.lazy(() =>
+  import("src/components/elements/ArrowDataFrame/")
+)
+const ArrowVegaLiteChart = React.lazy(() =>
+  import("src/components/elements/ArrowVegaLiteChart/")
+)
 
 // BokehChart render function is sluggish. If the component is not debounced,
 // AutoSizer causes it to rerender multiple times for different widths
@@ -149,6 +160,7 @@ interface Props {
   uploadClient: FileUploadClient
   widgetsDisabled: boolean
   componentRegistry: ComponentRegistry
+  formsData: FormsData
 }
 
 class Block extends PureComponent<Props> {
@@ -216,9 +228,31 @@ class Block extends PureComponent<Props> {
         uploadClient={this.props.uploadClient}
         widgetsDisabled={this.props.widgetsDisabled}
         componentRegistry={this.props.componentRegistry}
+        formsData={this.props.formsData}
         {...optionalProps}
       />
     )
+
+    if (node.deltaBlock.type === "form") {
+      const { formId, clearOnSubmit } = node.deltaBlock.form as BlockProto.Form
+      const submitButtonCount = this.props.formsData.submitButtonCount.get(
+        formId
+      )
+      const hasSubmitButton =
+        submitButtonCount !== undefined && submitButtonCount > 0
+      return (
+        <Form
+          formId={formId}
+          clearOnSubmit={clearOnSubmit}
+          width={width}
+          hasSubmitButton={hasSubmitButton}
+          reportRunState={this.props.reportRunState}
+          widgetMgr={this.props.widgetMgr}
+        >
+          {child}
+        </Form>
+      )
+    }
 
     if (node.deltaBlock.column && node.deltaBlock.column.weight) {
       // For columns, `width` contains the total weight of all columns.
@@ -346,6 +380,26 @@ class Block extends PureComponent<Props> {
       case "balloons":
         return <Balloons reportId={this.props.reportId} />
 
+      case "arrowDataFrame":
+        return (
+          <ArrowDataFrame
+            element={node.quiverElement as Quiver}
+            width={width}
+            height={height}
+          />
+        )
+
+      case "arrowTable":
+        return <ArrowTable element={node.quiverElement as Quiver} />
+
+      case "arrowVegaLiteChart":
+        return (
+          <ArrowVegaLiteChart
+            element={node.vegaLiteChartElement as VegaLiteChartElement}
+            width={width}
+          />
+        )
+
       case "bokehChart":
         return (
           <DebouncedBokehChart
@@ -464,14 +518,24 @@ class Block extends PureComponent<Props> {
 
       // Widgets
 
-      case "button":
-        return (
-          <Button
-            element={node.element.button as ButtonProto}
-            width={width}
-            {...widgetProps}
-          />
-        )
+      case "button": {
+        const buttonProto = node.element.button as ButtonProto
+        if (buttonProto.isFormSubmitter) {
+          const { formId } = buttonProto
+          const hasInProgressUpload = this.props.formsData.formsWithUploads.has(
+            formId
+          )
+          return (
+            <FormSubmitContent
+              element={buttonProto}
+              width={width}
+              hasInProgressUpload={hasInProgressUpload}
+              {...widgetProps}
+            />
+          )
+        }
+        return <Button element={buttonProto} width={width} {...widgetProps} />
+      }
 
       case "checkbox": {
         const checkboxProto = node.element.checkbox as CheckboxProto
@@ -527,7 +591,7 @@ class Block extends PureComponent<Props> {
             key={fileUploaderProto.id}
             element={fileUploaderProto}
             width={width}
-            widgetStateManager={widgetProps.widgetMgr}
+            widgetMgr={widgetProps.widgetMgr}
             uploadClient={this.props.uploadClient}
             disabled={widgetProps.disabled}
           />

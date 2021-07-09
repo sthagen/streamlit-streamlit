@@ -14,6 +14,7 @@
 
 """multiselect unit tests."""
 
+from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from parameterized import parameterized
@@ -41,6 +42,12 @@ class Multiselectbox(testutil.DeltaGeneratorTestCase):
             (np.array(["m", "f"]), ["m", "f"]),
             (pd.Series(np.array(["male", "female"])), ["male", "female"]),
             (pd.DataFrame({"options": ["male", "female"]}), ["male", "female"]),
+            (
+                pd.DataFrame(
+                    data=[[1, 4, 7], [2, 5, 8], [3, 6, 9]], columns=["a", "b", "c"]
+                ).columns,
+                ["a", "b", "c"],
+            ),
         ]
     )
     def test_option_types(self, options, proto_options):
@@ -98,6 +105,12 @@ class Multiselectbox(testutil.DeltaGeneratorTestCase):
         self.assertListEqual(c.default[:], [])
         self.assertEqual(c.options, [])
 
+    @parameterized.expand([(15, TypeError), ("str", TypeError)])
+    def test_invalid_options(self, options, expected):
+        """Test that it handles invalid options."""
+        with self.assertRaises(expected):
+            st.multiselect("the label", options)
+
     @parameterized.expand([(None, []), ([], []), (["Tea", "Water"], [1, 2])])
     def test_defaults(self, defaults, expected):
         """Test that valid default can be passed as expected."""
@@ -128,6 +141,50 @@ class Multiselectbox(testutil.DeltaGeneratorTestCase):
 
     @parameterized.expand(
         [
+            (
+                pd.Series(np.array(["green", "blue", "red", "yellow", "brown"])),
+                ["yellow"],
+                ["green", "blue", "red", "yellow", "brown"],
+                [3],
+            ),
+            (
+                np.array(["green", "blue", "red", "yellow", "brown"]),
+                ["green", "red"],
+                ["green", "blue", "red", "yellow", "brown"],
+                [0, 2],
+            ),
+            (
+                ("green", "blue", "red", "yellow", "brown"),
+                ["blue"],
+                ["green", "blue", "red", "yellow", "brown"],
+                [1],
+            ),
+            (
+                ["green", "blue", "red", "yellow", "brown"],
+                ["brown"],
+                ["green", "blue", "red", "yellow", "brown"],
+                [4],
+            ),
+            (
+                pd.DataFrame({"col1": ["male", "female"], "col2": ["15", "10"]}),
+                ["male", "female"],
+                ["male", "female"],
+                [0, 1],
+            ),
+        ]
+    )
+    def test_options_with_default_types(
+        self, options, defaults, expected_options, expected_default
+    ):
+        st.multiselect("label", options, defaults)
+
+        c = self.get_delta_from_queue().new_element.multiselect
+        self.assertEqual(c.label, "label")
+        self.assertListEqual(c.default[:], expected_default)
+        self.assertEqual(c.options, expected_options)
+
+    @parameterized.expand(
+        [
             (["Tea", "Vodka", None], StreamlitAPIException),
             ([1, 2], StreamlitAPIException),
         ]
@@ -136,3 +193,43 @@ class Multiselectbox(testutil.DeltaGeneratorTestCase):
         """Test that invalid default trigger the expected exception."""
         with self.assertRaises(expected):
             st.multiselect("the label", ["Coffee", "Tea", "Water"], defaults)
+
+    def test_outside_form(self):
+        """Test that form id is marshalled correctly outside of a form."""
+
+        st.multiselect("foo", ["bar", "baz"])
+
+        proto = self.get_delta_from_queue().new_element.multiselect
+        self.assertEqual(proto.form_id, "")
+
+    @patch("streamlit._is_running_with_streamlit", new=True)
+    def test_inside_form(self):
+        """Test that form id is marshalled correctly inside of a form."""
+
+        with st.form("form"):
+            st.multiselect("foo", ["bar", "baz"])
+
+        # 2 elements will be created: form block, widget
+        self.assertEqual(len(self.get_all_deltas_from_queue()), 2)
+
+        form_proto = self.get_delta_from_queue(0).add_block
+        multiselect_proto = self.get_delta_from_queue(1).new_element.multiselect
+        self.assertEqual(multiselect_proto.form_id, form_proto.form.form_id)
+
+    def test_inside_column(self):
+        """Test that it works correctly inside of a column."""
+
+        col1, col2 = st.beta_columns(2)
+
+        with col1:
+            st.multiselect("foo", ["bar", "baz"])
+
+        all_deltas = self.get_all_deltas_from_queue()
+
+        # 4 elements will be created: 1 horizontal block, 2 columns, 1 widget
+        self.assertEqual(len(all_deltas), 4)
+        multiselect_proto = self.get_delta_from_queue().new_element.multiselect
+
+        self.assertEqual(multiselect_proto.label, "foo")
+        self.assertEqual(multiselect_proto.options, ["bar", "baz"])
+        self.assertEqual(multiselect_proto.default, [])

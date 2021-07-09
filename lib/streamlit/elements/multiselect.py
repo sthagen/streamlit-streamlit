@@ -12,18 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import cast
+from typing import cast, List
 
 import streamlit
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.MultiSelect_pb2 import MultiSelect as MultiSelectProto
-from streamlit.type_util import is_type, ensure_iterable
-from .utils import register_widget
+from streamlit.state.widgets import register_widget
+from streamlit.type_util import OptionSequence, ensure_indexable, is_type
+
+from .form import current_form_id
+from .utils import check_callback_rules, check_session_state_rules
 
 
 class MultiSelectMixin:
     def multiselect(
-        self, label, options, default=None, format_func=str, key=None, help=None
+        self,
+        label,
+        options: OptionSequence,
+        default=None,
+        format_func=str,
+        key=None,
+        help=None,
+        on_change=None,
+        args=None,
+        kwargs=None,
     ):
         """Display a multiselect widget.
         The multiselect widget starts as empty.
@@ -32,7 +44,7 @@ class MultiSelectMixin:
         ----------
         label : str
             A short label explaining to the user what this select widget is for.
-        options : list, tuple, numpy.ndarray, pandas.Series, or pandas.DataFrame
+        options : Sequence, numpy.ndarray, pandas.Series, pandas.DataFrame, or pandas.Index
             Labels for the select options. This will be cast to str internally
             by default. For pandas.DataFrame, the first column is selected.
         default: [str] or None
@@ -48,11 +60,17 @@ class MultiSelectMixin:
             based on its content. Multiple widgets of the same type may
             not share the same key.
         help : str
-            A tooltip that gets displayed next to the multiselect.
+            An optional tooltip that gets displayed next to the multiselect.
+        on_change : callable
+            An optional callback invoked when this multiselect's value changes.
+        args : tuple
+            An optional tuple of args to pass to the callback.
+        kwargs : dict
+            An optional dict of kwargs to pass to the callback.
 
         Returns
         -------
-        [str]
+        list
             A list with the selected options
 
         Example
@@ -72,11 +90,14 @@ class MultiSelectMixin:
            `GitHub issue #1059 <https://github.com/streamlit/streamlit/issues/1059>`_ for updates on the issue.
 
         """
-        options = ensure_iterable(options)
+        check_callback_rules(self.dg, on_change)
+        check_session_state_rules(default_value=default, key=key)
+
+        opt = ensure_indexable(options)
 
         # Perform validation checks and return indices base on the default values.
-        def _check_and_convert_to_indices(options, default_values):
-            if default_values is None and None not in options:
+        def _check_and_convert_to_indices(opt, default_values):
+            if default_values is None and None not in opt:
                 return None
 
             if not isinstance(default_values, list):
@@ -87,32 +108,55 @@ class MultiSelectMixin:
                     default_values, "pandas.core.series.Series"
                 ):
                     default_values = list(default_values)
-                elif not default_values or default_values in options:
+                elif not default_values or default_values in opt:
                     default_values = [default_values]
                 else:
                     default_values = list(default_values)
 
             for value in default_values:
-                if value not in options:
+                if value not in opt:
                     raise StreamlitAPIException(
                         "Every Multiselect default value must exist in options"
                     )
 
-            return [options.index(value) for value in default_values]
+            return [opt.index(value) for value in default_values]
 
-        indices = _check_and_convert_to_indices(options, default)
+        indices = _check_and_convert_to_indices(opt, default)
         multiselect_proto = MultiSelectProto()
         multiselect_proto.label = label
         default_value = [] if indices is None else indices
         multiselect_proto.default[:] = default_value
-        multiselect_proto.options[:] = [str(format_func(option)) for option in options]
+        multiselect_proto.options[:] = [str(format_func(option)) for option in opt]
+        multiselect_proto.form_id = current_form_id(self.dg)
         if help is not None:
             multiselect_proto.help = help
 
-        ui_value = register_widget("multiselect", multiselect_proto, user_key=key)
-        current_value = ui_value.data if ui_value is not None else default_value
-        return_value = [options[i] for i in current_value]
-        return self.dg._enqueue("multiselect", multiselect_proto, return_value)
+        def deserialize_multiselect(ui_value, widget_id="") -> List[str]:
+            current_value = ui_value if ui_value is not None else default_value
+            return [opt[i] for i in current_value]
+
+        def serialize_multiselect(value):
+            return _check_and_convert_to_indices(opt, value)
+
+        current_value, set_frontend_value = register_widget(
+            "multiselect",
+            multiselect_proto,
+            user_key=key,
+            on_change_handler=on_change,
+            args=args,
+            kwargs=kwargs,
+            deserializer=deserialize_multiselect,
+            serializer=serialize_multiselect,
+        )
+
+        if set_frontend_value:
+            multiselect_proto.value[:] = _check_and_convert_to_indices(
+                opt, current_value
+            )
+            multiselect_proto.set_value = True
+
+        self.dg._enqueue("multiselect", multiselect_proto)
+        return current_value
 
     @property
     def dg(self) -> "streamlit.delta_generator.DeltaGenerator":

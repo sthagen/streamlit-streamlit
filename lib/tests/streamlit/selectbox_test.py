@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """selectbox unit tests."""
+from unittest.mock import patch
 import pytest
 import numpy as np
 import pandas as pd
@@ -55,6 +56,12 @@ class SelectboxTest(testutil.DeltaGeneratorTestCase):
             (np.array(["m", "f"]), ["m", "f"]),
             (pd.Series(np.array(["male", "female"])), ["male", "female"]),
             (pd.DataFrame({"options": ["male", "female"]}), ["male", "female"]),
+            (
+                pd.DataFrame(
+                    data=[[1, 4, 7], [2, 5, 8], [3, 6, 9]], columns=["a", "b", "c"]
+                ).columns,
+                ["a", "b", "c"],
+            ),
         ]
     )
     def test_option_types(self, options, proto_options):
@@ -114,3 +121,25 @@ class SelectboxTest(testutil.DeltaGeneratorTestCase):
         """Test that value must be within the length of the options."""
         with self.assertRaises(StreamlitAPIException):
             st.selectbox("the label", ("m", "f"), 2)
+
+    def test_outside_form(self):
+        """Test that form id is marshalled correctly outside of a form."""
+
+        st.selectbox("foo", ("bar", "baz"))
+
+        proto = self.get_delta_from_queue().new_element.color_picker
+        self.assertEqual(proto.form_id, "")
+
+    @patch("streamlit._is_running_with_streamlit", new=True)
+    def test_inside_form(self):
+        """Test that form id is marshalled correctly inside of a form."""
+
+        with st.form("form"):
+            st.selectbox("foo", ("bar", "baz"))
+
+        # 2 elements will be created: form block, widget
+        self.assertEqual(len(self.get_all_deltas_from_queue()), 2)
+
+        form_proto = self.get_delta_from_queue(0).add_block
+        selectbox_proto = self.get_delta_from_queue(1).new_element.selectbox
+        self.assertEqual(selectbox_proto.form_id, form_proto.form.form_id)

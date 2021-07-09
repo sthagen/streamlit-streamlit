@@ -15,9 +15,14 @@
 """A bunch of useful utilities for dealing with types."""
 
 import re
-from typing import Tuple, Any
+from typing import Any, Sequence, Tuple, Union, cast
+
+from pandas import DataFrame, Series, Index
+import numpy as np
 
 from streamlit import errors
+
+OptionSequence = Union[Sequence[Any], DataFrame, Series, Index, np.ndarray]
 
 
 def is_type(obj, fqn_type_pattern):
@@ -297,9 +302,57 @@ def ensure_iterable(obj):
         raise
 
 
+def ensure_indexable(obj: OptionSequence) -> Sequence[Any]:
+    """Try to ensure a value is an indexable Sequence. If the collection already
+    is one, it has the index method that we need. Otherwise, convert it to a list.
+    """
+    it = ensure_iterable(obj)
+    # This is an imperfect check because there is no guarantee that an `index`
+    # function actually does the thing we want.
+    index_fn = getattr(it, "index", None)
+    if callable(index_fn):
+        return it  # type: ignore
+    else:
+        return list(it)
+
+
 def is_old_pandas_version():
     """Return True if `pandas` version is < `1.1.0`."""
     import pandas as pd
     from packaging import version
 
     return version.parse(pd.__version__) < version.parse("1.1.0")
+
+
+def data_frame_to_bytes(df: DataFrame) -> bytes:
+    """Convert pandas.DataFrame to bytes.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        A dataframe to convert.
+
+    """
+    import pyarrow as pa
+
+    table = pa.Table.from_pandas(df)
+    sink = pa.BufferOutputStream()
+    writer = pa.RecordBatchStreamWriter(sink, table.schema)
+    writer.write_table(table)
+    writer.close()
+    return cast(bytes, sink.getvalue().to_pybytes())
+
+
+def bytes_to_data_frame(source: bytes) -> DataFrame:
+    """Convert bytes to pandas.DataFrame.
+
+    Parameters
+    ----------
+    source : bytes
+        A bytes object to convert.
+
+    """
+    import pyarrow as pa
+
+    reader = pa.RecordBatchStreamReader(source)
+    return reader.read_pandas()

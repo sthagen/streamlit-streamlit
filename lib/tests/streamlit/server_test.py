@@ -33,7 +33,7 @@ from streamlit.uploaded_file_manager import UploadedFileRec
 from streamlit.server.server import MAX_PORT_SEARCH_RETRIES
 from streamlit.forward_msg_cache import ForwardMsgCache
 from streamlit.forward_msg_cache import populate_hash_if_needed
-from streamlit.elements import data_frame
+from streamlit.elements import legacy_data_frame as data_frame
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.server.server import State
 from streamlit.server.server import start_listening
@@ -197,6 +197,23 @@ class ServerTest(ServerTestCase):
             self.assertEqual(populate_hash_if_needed(msg), received.hash)
 
     @tornado.testing.gen_test
+    def test_get_session_by_id_nonexistent_session(self):
+        """Test getting a nonexistent session returns None."""
+        with self._patch_report_session():
+            yield self.start_server_loop()
+            self.assertEqual(self.server.get_session_by_id("abc123"), None)
+
+    @tornado.testing.gen_test
+    def test_get_session_by_id(self):
+        """Test getting sessions by id produces the correct ReportSession."""
+        with self._patch_report_session():
+            yield self.start_server_loop()
+            ws_client = yield self.ws_connect()
+
+            session = list(self.server._session_info_by_id.values())[0].session
+            self.assertEqual(self.server.get_session_by_id(session.id), session)
+
+    @tornado.testing.gen_test
     def test_forwardmsg_cacheable_flag(self):
         """Test that the metadata.cacheable flag is set properly on outgoing
         ForwardMsgs."""
@@ -334,31 +351,6 @@ class ServerTest(ServerTestCase):
                 ),
                 [],
             )
-
-    @staticmethod
-    def _create_mock_report_session(*args, **kwargs):
-        """Create a mock ReportSession. Each mocked instance will have
-        its own unique ID."""
-        mock_id = mock.PropertyMock(
-            return_value="mock_id:%s" % ServerTest._next_report_id
-        )
-        ServerTest._next_report_id += 1
-
-        mock_session = mock.MagicMock(ReportSession, autospec=True, *args, **kwargs)
-        type(mock_session).id = mock_id
-        return mock_session
-
-    def _patch_report_session(self):
-        """Mock the Server's ReportSession import. We don't want
-        actual sessions to be instantiated, or scripts to be run.
-        """
-
-        return mock.patch(
-            "streamlit.server.server.ReportSession",
-            # new_callable must return a function, not an object, or else
-            # there will only be a single ReportSession mock. Hence the lambda.
-            new_callable=lambda: self._create_mock_report_session,
-        )
 
 
 class ServerUtilsTest(unittest.TestCase):

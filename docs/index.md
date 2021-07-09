@@ -1,12 +1,13 @@
 ```eval_rst
 .. toctree::
    :caption: Tutorials
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
 
    getting_started
    tutorial/create_a_data_explorer_app
    streamlit_components
+   tutorial/databases
    Self-driving car image browser <https://github.com/streamlit/demo-self-driving>
 
 .. toctree::
@@ -17,6 +18,7 @@
   installation
   main_concepts
   deploy_streamlit_app
+  add_state_app
   caching
   advanced_concepts
   publish_streamlit_components
@@ -27,6 +29,7 @@
   :hidden:
 
   api
+  State API <session_state_api>
   streamlit_configuration
   theme_options
   develop_streamlit_components
@@ -43,6 +46,8 @@
   changelog
   Source code & issue tracker <https://github.com/streamlit/streamlit/>
 ```
+
+[comment]: # "tutorial/visualize_rent_prices_with_Streamlit"
 
 # Welcome to Streamlit
 

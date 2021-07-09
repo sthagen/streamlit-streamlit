@@ -118,6 +118,7 @@ balloons = _main.balloons
 bar_chart = _main.bar_chart
 bokeh_chart = _main.bokeh_chart
 button = _main.button
+caption = _main.caption
 checkbox = _main.checkbox
 code = _main.code
 dataframe = _main.dataframe
@@ -127,6 +128,8 @@ empty = _main.empty
 error = _main.error
 exception = _main.exception
 file_uploader = _main.file_uploader
+form = _main.form
+form_submit_button = _main.form_submit_button
 graphviz_chart = _main.graphviz_chart
 header = _main.header
 help = _main.help
@@ -160,10 +163,34 @@ warning = _main.warning
 write = _main.write
 color_picker = _main.color_picker
 
-# Config
+# Legacy
+_legacy_dataframe = _main.legacy_dataframe
+_legacy_table = _main.legacy_table
+_legacy_altair_chart = _main.legacy_altair_chart
+_legacy_area_chart = _main.legacy_area_chart
+_legacy_bar_chart = _main.legacy_bar_chart
+_legacy_line_chart = _main.legacy_line_chart
+_legacy_vega_lite_chart = _main.legacy_vega_lite_chart
 
+# Apache Arrow
+_arrow_dataframe = _main.arrow_dataframe
+_arrow_table = _main.arrow_table
+_arrow_altair_chart = _main.arrow_altair_chart
+_arrow_area_chart = _main.arrow_area_chart
+_arrow_bar_chart = _main.arrow_bar_chart
+_arrow_line_chart = _main.arrow_line_chart
+_arrow_vega_lite_chart = _main.arrow_vega_lite_chart
+
+# Config
 get_option = _config.get_option
 from streamlit.commands.page_config import set_page_config
+
+# Session State
+
+from streamlit.state.session_state import LazySessionState
+
+session_state = LazySessionState()
+
 
 # Beta APIs
 
