@@ -19,6 +19,7 @@ import io
 import mimetypes
 from typing import cast
 from urllib.parse import urlparse
+import re
 
 import numpy as np
 from PIL import Image, ImageFile
@@ -357,10 +358,12 @@ def marshall_images(
         is_svg = False
         if isinstance(image, str):
             # Unpack local SVG image file to an SVG string
-            if image.endswith(".svg"):
+            if image.endswith(".svg") and not image.startswith(("http://", "https://")):
                 with open(image) as textfile:
                     image = textfile.read()
-            if image.strip().startswith("<svg"):
+
+            # Following regex allows svg image files to start either via a "<?xml...>" tag eventually followed by a "<svg...>" tag or directly starting with a "<svg>" tag
+            if re.search(r"(^\s?(<\?xml[\s\S]*<svg )|^\s?<svg )", image):
                 proto_img.markup = f"data:image/svg+xml,{image}"
                 is_svg = True
         if not is_svg:
