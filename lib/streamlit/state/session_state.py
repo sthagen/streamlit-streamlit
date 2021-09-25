@@ -220,14 +220,6 @@ class WStates(MutableMapping[str, Any]):
         callback(*args, **kwargs)
 
 
-INTERNAL_STATE_ATTRS = [
-    "_new_session_state",
-    "_new_widget_state",
-    "_old_state",
-    "_key_id_mapping",
-]
-
-
 def _missing_key_error_message(key: str) -> str:
     return f'st.session_state has no key "{key}". Did you forget to initialize it?'
 
@@ -345,11 +337,11 @@ class SessionState(MutableMapping[str, Any]):
         }
         return old_keys | new_widget_keys | new_session_state_keys
 
-    def is_new_state_value(self, key: str) -> bool:
-        return key in self._new_session_state
+    def is_new_state_value(self, user_key: str) -> bool:
+        return user_key in self._new_session_state
 
-    def is_new_widget_value(self, key: str) -> bool:
-        return key in self._new_widget_state
+    def is_new_widget_value(self, widget_id: str) -> bool:
+        return widget_id in self._new_widget_state
 
     def __iter__(self) -> Iterator[Any]:
         return iter(self.keys())
@@ -410,27 +402,25 @@ class SessionState(MutableMapping[str, Any]):
 
         raise KeyError
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, user_key: str, value: Any) -> None:
         from streamlit.report_thread import get_report_ctx
 
         ctx = get_report_ctx()
 
         if ctx is not None:
+            widget_id = self._key_id_mapping.get(user_key, None)
             widget_ids = ctx.widget_ids_this_run.items()
             form_ids = ctx.form_ids_this_run.items()
 
-            if key in widget_ids or key in form_ids:
+            if widget_id in widget_ids or user_key in form_ids:
                 raise StreamlitAPIException(
-                    f"`st.session_state.{key}` cannot be modified after the widget"
-                    f" with key `{key}` is instantiated."
+                    f"`st.session_state.{user_key}` cannot be modified after the widget"
+                    f" with key `{user_key}` is instantiated."
                 )
 
-        self._new_session_state[key] = value
+        self._new_session_state[user_key] = value
 
     def __delitem__(self, key: str) -> None:
-        if key in INTERNAL_STATE_ATTRS:
-            raise KeyError(f"The key {key} is reserved.")
-
         widget_id = self._get_widget_id(key)
 
         if not (key in self or widget_id in self):
@@ -450,26 +440,6 @@ class SessionState(MutableMapping[str, Any]):
 
         if widget_id in self._old_state:
             del self._old_state[widget_id]
-
-    def __getattr__(self, key: str) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            raise AttributeError(_missing_attr_error_message(key))
-
-    def __setattr__(self, key: str, value: Any) -> None:
-        # Setting internal attributes must be done using the base method to
-        # avoid recursion.
-        if key in INTERNAL_STATE_ATTRS:
-            super().__setattr__(key, value)
-        else:
-            self[key] = value
-
-    def __delattr__(self, key: str) -> None:
-        try:
-            del self[key]
-        except KeyError:
-            raise AttributeError(_missing_attr_error_message(key))
 
     def update(self, other: "SessionState"):  # type: ignore
         self._new_session_state.update(other._new_session_state)
@@ -524,25 +494,30 @@ class SessionState(MutableMapping[str, Any]):
         self._new_widget_state.widget_metadata[widget_id] = widget_metadata
 
     def maybe_set_new_widget_value(
-        self, widget_id: str, key: Optional[str] = None
+        self, widget_id: str, user_key: Optional[str] = None
     ) -> None:
         """Add the value of a new widget to session state."""
         widget_metadata = self._new_widget_state.widget_metadata[widget_id]
         deserializer = widget_metadata.deserializer
         initial_widget_value = deepcopy(deserializer(None, widget_metadata.id))
 
-        if widget_id not in self and (key is None or key not in self):
+        if widget_id not in self and (user_key is None or user_key not in self):
             # This is the first time this widget is being registered, so we save
             # its value in widget state.
             self._new_widget_state.set_from_value(widget_id, initial_widget_value)
 
-    def should_set_frontend_state_value(self, widget_id: str) -> bool:
+    def should_set_frontend_state_value(
+        self, widget_id: str, user_key: Optional[str]
+    ) -> bool:
         """Keep widget_state and session_state in sync when a widget is registered.
 
         This method returns whether the frontend needs to be updated with the
         new value of this widget.
         """
-        return self.is_new_state_value(widget_id) and not self.is_new_widget_value(
+        if user_key is None:
+            return False
+
+        return self.is_new_state_value(user_key) and not self.is_new_widget_value(
             widget_id
         )
 
@@ -563,8 +538,8 @@ class SessionState(MutableMapping[str, Any]):
         """
         return self._key_id_mapping.get(k, k)
 
-    def set_key_widget_mapping(self, widget_id: str, k: str) -> None:
-        self._key_id_mapping[k] = widget_id
+    def set_key_widget_mapping(self, widget_id: str, user_key: str) -> None:
+        self._key_id_mapping[user_key] = widget_id
 
     def copy(self):
         return deepcopy(self)
@@ -674,18 +649,21 @@ class LazySessionState(MutableMapping[str, Any]):
 
     def __getattr__(self, key: str) -> Any:
         self._validate_key(key)
-        state = get_session_state()
-        return state.__getattr__(key)
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(_missing_attr_error_message(key))
 
     def __setattr__(self, key: str, value: Any) -> None:
         self._validate_key(key)
-        state = get_session_state()
-        state.__setattr__(key, value)
+        self[key] = value
 
     def __delattr__(self, key: str) -> None:
         self._validate_key(key)
-        state = get_session_state()
-        state.__delattr__(key)
+        try:
+            del self[key]
+        except KeyError:
+            raise AttributeError(_missing_attr_error_message(key))
 
     def to_dict(self) -> Dict[str, Any]:
         state = get_session_state()
