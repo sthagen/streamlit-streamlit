@@ -16,7 +16,7 @@
  */
 
 import React from "react"
-import { shallow, mount } from "src/lib/test_util"
+import { mount } from "src/lib/test_util"
 import { BokehChart as BokehChartProto } from "src/autogen/proto"
 
 import Figure from "./mock"
@@ -28,8 +28,7 @@ const mockBokehEmbed = {
     embed_item: jest.fn(),
   },
 }
-
-jest.mock("@bokeh/bokehjs", () => mockBokehEmbed)
+global.Bokeh = mockBokehEmbed
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { BokehChart } = require("./BokehChart")
@@ -40,11 +39,11 @@ const getProps = (
   element: BokehChartProto.create({
     figure: JSON.stringify(Figure),
     useContainerWidth: false,
+    elementId: "1",
     ...elementProps,
   }),
   height: 400,
   width: 400,
-  index: 1,
 })
 
 expect.extend({
@@ -88,7 +87,7 @@ describe("BokehChart element", () => {
 
   it("renders without crashing", () => {
     const props = getProps()
-    const wrapper = shallow(<BokehChart {...props} />, {
+    const wrapper = mount(<BokehChart {...props} />, {
       attachTo: div,
     })
 

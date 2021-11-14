@@ -14,8 +14,10 @@
 
 from copy import deepcopy
 import json
+from streamlit.stats import CacheStat, CacheStatsProvider
 from streamlit.type_util import Key
 from typing import (
+    TYPE_CHECKING,
     Any,
     cast,
     Dict,
@@ -31,11 +33,16 @@ from typing import (
 
 import attr
 
+from pympler.asizeof import asizeof
+
 import streamlit as st
 from streamlit import logger as _logger
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.WidgetStates_pb2 import WidgetState as WidgetStateProto
 from streamlit.proto.WidgetStates_pb2 import WidgetStates as WidgetStatesProto
+
+if TYPE_CHECKING:
+    from streamlit.server.server import SessionInfo
 
 logger = _logger.get_logger(__name__)
 
@@ -221,11 +228,17 @@ class WStates(MutableMapping[str, Any]):
 
 
 def _missing_key_error_message(key: str) -> str:
-    return f'st.session_state has no key "{key}". Did you forget to initialize it?'
+    return (
+        f'st.session_state has no key "{key}". Did you forget to initialize it? '
+        f"More info: https://docs.streamlit.io/library/advanced-features/session-state#initialization"
+    )
 
 
 def _missing_attr_error_message(attr_name: str) -> str:
-    return f'st.session_state has no attribute "{attr_name}". Did you forget to initialize it?'
+    return (
+        f'st.session_state has no attribute "{attr_name}". Did you forget to initialize it? '
+        f"More info: https://docs.streamlit.io/library/advanced-features/session-state#initialization"
+    )
 
 
 @attr.s(auto_attribs=True, slots=True)
@@ -308,13 +321,18 @@ class SessionState(MutableMapping[str, Any]):
         wid_key_map = self.reverse_key_wid_map
 
         state: Dict[str, Any] = {}
-        for k, v in self.items():
+
+        # We can't write `for k, v in self.items()` here because doing so will
+        # run into a `KeyError` if widget metadata has been cleared (which
+        # happens when the streamlit server restarted or the cache was cleared),
+        # then we receive a widget's state from a browser.
+        for k in self.keys():
             if not is_widget_id(k) and not is_internal_key(k):
-                state[k] = v
+                state[k] = self[k]
             elif is_keyed_widget_id(k):
                 try:
                     key = wid_key_map[k]
-                    state[key] = v
+                    state[key] = self[k]
                 except KeyError:
                     # Widget id no longer maps to a key, it is a not yet
                     # cleared value in old state for a reset widget
@@ -567,6 +585,10 @@ class SessionState(MutableMapping[str, Any]):
         widget_id = self._key_id_mapping[user_key]
         return self._new_widget_state.widget_metadata[widget_id]
 
+    def get_stats(self) -> List[CacheStat]:
+        stat = CacheStat("st_session_state", "", asizeof(self))
+        return [stat]
+
 
 def is_widget_id(key: str) -> bool:
     return key.startswith(GENERATED_WIDGET_KEY_PREFIX)
@@ -676,3 +698,15 @@ class LazySessionState(MutableMapping[str, Any]):
     def to_dict(self) -> Dict[str, Any]:
         state = get_session_state()
         return state.filtered_state
+
+
+@attr.s(auto_attribs=True, slots=True)
+class SessionStateStatProvider(CacheStatsProvider):
+    _session_info_by_id: Dict[str, "SessionInfo"]
+
+    def get_stats(self) -> List[CacheStat]:
+        stats: List[CacheStat] = []
+        for session_info in self._session_info_by_id.values():
+            session_state = session_info.session.session_state
+            stats.extend(session_state.get_stats())
+        return stats

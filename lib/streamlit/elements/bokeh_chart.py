@@ -14,11 +14,15 @@
 
 """A Python wrapper around Bokeh."""
 
+import hashlib
 import json
 from typing import cast
 
 import streamlit
+from streamlit.errors import StreamlitAPIException
 from streamlit.proto.BokehChart_pb2 import BokehChart as BokehChartProto
+
+ST_BOKEH_VERSION = "2.4.1"
 
 
 class BokehMixin:
@@ -63,8 +67,22 @@ class BokehMixin:
            height: 600px
 
         """
+        import bokeh
+
+        if bokeh.__version__ != ST_BOKEH_VERSION:
+            raise StreamlitAPIException(
+                f"Streamlit only supports Bokeh version {ST_BOKEH_VERSION}, "
+                f"but you have version {bokeh.__version__} installed. Please "
+                f"run `pip install --force-reinstall --no-deps bokeh=="
+                f"{ST_BOKEH_VERSION}` to install the correct version."
+            )
+
+        # Generate element ID from delta path
+        delta_path = self.dg._get_delta_path_str()
+        element_id = hashlib.md5(delta_path.encode()).hexdigest()
+
         bokeh_chart_proto = BokehChartProto()
-        marshall(bokeh_chart_proto, figure, use_container_width)
+        marshall(bokeh_chart_proto, figure, use_container_width, element_id)
         return self.dg._enqueue("bokeh_chart", bokeh_chart_proto)
 
     @property
@@ -73,7 +91,7 @@ class BokehMixin:
         return cast("streamlit.delta_generator.DeltaGenerator", self)
 
 
-def marshall(proto, figure, use_container_width):
+def marshall(proto, figure, use_container_width, element_id):
     """Construct a Bokeh chart object.
 
     See DeltaGenerator.bokeh_chart for docs.
@@ -83,3 +101,4 @@ def marshall(proto, figure, use_container_width):
     data = json_item(figure)
     proto.figure = json.dumps(data)
     proto.use_container_width = use_container_width
+    proto.element_id = element_id
