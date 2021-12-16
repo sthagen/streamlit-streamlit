@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from textwrap import dedent
-from typing import Optional, cast, List
+from typing import Any, Optional, cast, List
 
 import streamlit
 from streamlit.errors import StreamlitAPIException
@@ -35,14 +35,16 @@ class MultiSelectMixin:
         self,
         label: str,
         options: OptionSequence,
-        default: Optional[List[str]] = None,
+        default: Optional[Any] = None,
         format_func=str,
         key: Optional[Key] = None,
         help: Optional[str] = None,
         on_change: Optional[WidgetCallback] = None,
         args: Optional[WidgetArgs] = None,
         kwargs: Optional[WidgetKwargs] = None,
-    ) -> List[str]:
+        *,  # keyword-only arguments:
+        disabled: bool = False,
+    ) -> List[Any]:
         """Display a multiselect widget.
         The multiselect widget starts as empty.
 
@@ -50,11 +52,11 @@ class MultiSelectMixin:
         ----------
         label : str
             A short label explaining to the user what this select widget is for.
-        options : Sequence, numpy.ndarray, pandas.Series, pandas.DataFrame, or pandas.Index
+        options : Sequence[V], numpy.ndarray, pandas.Series, pandas.DataFrame, or pandas.Index
             Labels for the select options. This will be cast to str internally
             by default. For pandas.DataFrame, the first column is selected.
-        default: [str] or None
-            List of default values.
+        default: [V], V, or None
+            List of default values. Can also be a single value.
         format_func : function
             Function to modify the display of selectbox options. It receives
             the raw option as an argument and should output the label to be
@@ -73,6 +75,10 @@ class MultiSelectMixin:
             An optional tuple of args to pass to the callback.
         kwargs : dict
             An optional dict of kwargs to pass to the callback.
+        disabled : bool
+            An optional boolean, which disables the multiselect widget if set
+            to True. The default is False. This argument can only be supplied
+            by keyword.
 
         Returns
         -------
@@ -135,6 +141,7 @@ class MultiSelectMixin:
         multiselect_proto.default[:] = default_value
         multiselect_proto.options[:] = [str(format_func(option)) for option in opt]
         multiselect_proto.form_id = current_form_id(self.dg)
+        multiselect_proto.disabled = disabled
         if help is not None:
             multiselect_proto.help = dedent(help)
 

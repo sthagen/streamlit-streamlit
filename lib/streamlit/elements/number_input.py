@@ -39,14 +39,16 @@ class NumberInputMixin:
         label: str,
         min_value: Optional[Number] = None,
         max_value: Optional[Number] = None,
-        value=NoValue(),
+        value: Union[NoValue, Number, None] = NoValue(),
         step: Optional[Number] = None,
-        format=None,
+        format: Optional[str] = None,
         key: Optional[Key] = None,
         help: Optional[str] = None,
         on_change: Optional[WidgetCallback] = None,
         args: Optional[WidgetArgs] = None,
         kwargs: Optional[WidgetKwargs] = None,
+        *,  # keyword-only arguments:
+        disabled: bool = False,
     ) -> Number:
         """Display a numeric input widget.
 
@@ -84,6 +86,10 @@ class NumberInputMixin:
             An optional tuple of args to pass to the callback.
         kwargs : dict
             An optional dict of kwargs to pass to the callback.
+        disabled : bool
+            An optional boolean, which disables the number input if set to
+            True. The default is False. This argument can only be supplied by
+            keyword.
 
         Returns
         -------
@@ -192,7 +198,7 @@ class NumberInputMixin:
                     JSNumber.validate_int_bounds(max_value, "`max_value`")  # type: ignore
                 if step is not None:
                     JSNumber.validate_int_bounds(step, "`step`")  # type: ignore
-                JSNumber.validate_int_bounds(value, "`value`")
+                JSNumber.validate_int_bounds(value, "`value`")  # type: ignore
             else:
                 if min_value is not None:
                     JSNumber.validate_float_bounds(min_value, "`min_value`")
@@ -211,6 +217,7 @@ class NumberInputMixin:
         number_input_proto.label = label
         number_input_proto.default = value
         number_input_proto.form_id = current_form_id(self.dg)
+        number_input_proto.disabled = disabled
         if help is not None:
             number_input_proto.help = dedent(help)
 
