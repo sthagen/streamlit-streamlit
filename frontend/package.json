@@ -54,7 +54,7 @@
     "d3": "^5.16.0",
     "d3-graphviz": "^2.6.1",
     "decamelize": "^4.0.0",
-    "deck.gl": "^8.2.5",
+    "deck.gl": "^8.6.5",
     "dompurify": "^2.2.8",
     "emotion-theming": "^10.0.27",
     "fzy.js": "^0.4.1",
