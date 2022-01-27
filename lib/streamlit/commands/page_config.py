@@ -1,4 +1,4 @@
-# Copyright 2018-2021 Streamlit Inc.
+# Copyright 2018-2022 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ def set_page_config(
             width=-1,  # Always use full width for favicons
             clamp=False,
             channels="RGB",
-            output_format="JPEG",
+            output_format="auto",
             image_id="favicon",
             allow_emoji=True,
         )
