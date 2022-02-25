@@ -39,7 +39,7 @@ from streamlit.watcher.local_sources_watcher import LocalSourcesWatcher
 
 LOGGER = get_logger(__name__)
 if TYPE_CHECKING:
-    from streamlit.state.session_state import SessionState
+    from streamlit.state import SessionState
 
 
 class AppSessionState(Enum):
@@ -127,7 +127,7 @@ class AppSession:
         self._scriptrunner: Optional[ScriptRunner] = None
 
         # This needs to be lazily imported to avoid a dependency cycle.
-        from streamlit.state.session_state import SessionState
+        from streamlit.state import SessionState
 
         self._session_state = SessionState()
 
@@ -188,19 +188,6 @@ class AppSession:
         """
         if not config.get_option("client.displayEnabled"):
             return
-
-        # Avoid having two maybe_handle_execution_control_request running on
-        # top of each other when tracer is installed. This leads to a lock
-        # contention.
-        if not config.get_option("runner.installTracer"):
-            # If we have an active ScriptRunner, signal that it can handle an
-            # execution control request. (Copy the scriptrunner reference to
-            # avoid it being unset from underneath us, as this function can be
-            # called outside the main thread.)
-            scriptrunner = self._scriptrunner
-
-            if scriptrunner is not None:
-                scriptrunner.maybe_handle_execution_control_request()
 
         self._session_data.enqueue(msg)
         if self._message_enqueued_callback:
@@ -386,7 +373,7 @@ class AppSession:
 
         msg.new_session.script_run_id = _generate_scriptrun_id()
         msg.new_session.name = self._session_data.name
-        msg.new_session.script_path = self._session_data.script_path
+        msg.new_session.main_script_path = self._session_data.main_script_path
 
         _populate_config_msg(msg.new_session.config)
         _populate_theme_msg(msg.new_session.custom_theme)
@@ -426,7 +413,7 @@ class AppSession:
         try:
             from streamlit.git_util import GitRepo
 
-            repo = GitRepo(self._session_data.script_path)
+            repo = GitRepo(self._session_data.main_script_path)
 
             repo_info = repo.get_repo_info()
             if repo_info is None:

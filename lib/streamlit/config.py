@@ -355,7 +355,7 @@ def _logger_message_format() -> str:
     [Python's documentation](https://docs.python.org/2.6/library/logging.html#formatter-objects)
     for available attributes.
 
-    Default: None
+    Default: "%(asctime)s %(message)s"
     """
     if get_option("global.developmentMode"):
         from streamlit.logger import DEFAULT_LOG_MESSAGE
@@ -869,7 +869,7 @@ def _set_option(key: str, value: Any, where_defined: str) -> None:
         LOGGER = get_logger(__name__)
 
         LOGGER.warning(
-            f' "{key}" is not a valid config option. If you previously had this config option set, it may have been removed.'
+            f'"{key}" is not a valid config option. If you previously had this config option set, it may have been removed.'
         )
 
     else:
