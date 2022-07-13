@@ -226,27 +226,6 @@ class ServerTest(ServerTestCase):
             self.assertEqual(populate_hash_if_needed(msg), received.hash)
 
     @tornado.testing.gen_test
-    async def test_get_session_by_id_nonexistent_session(self):
-        """Test getting a nonexistent session returns None."""
-        with patch(
-            "streamlit.web.server.server.LocalSourcesWatcher"
-        ), self._patch_app_session():
-            await self.start_server_loop()
-            self.assertEqual(self.server.get_session_by_id("abc123"), None)
-
-    @tornado.testing.gen_test
-    async def test_get_session_by_id(self):
-        """Test getting sessions by id produces the correct AppSession."""
-        with patch(
-            "streamlit.web.server.server.LocalSourcesWatcher"
-        ), self._patch_app_session():
-            await self.start_server_loop()
-            ws_client = await self.ws_connect()
-
-            session = list(self.server._session_info_by_id.values())[0].session
-            self.assertEqual(self.server.get_session_by_id(session.id), session)
-
-    @tornado.testing.gen_test
     async def test_forwardmsg_cacheable_flag(self):
         """Test that the metadata.cacheable flag is set properly on outgoing
         ForwardMsgs."""
@@ -651,7 +630,6 @@ class ScriptCheckTest(tornado.testing.AsyncTestCase):
 
     def tearDown(self) -> None:
         self._server.stop()
-        Server._singleton = None
 
         if event_based_path_watcher._MultiPathWatcher._singleton is not None:
             event_based_path_watcher._MultiPathWatcher.get_singleton().close()
@@ -712,7 +690,6 @@ class ScriptCheckEndpointExistsTest(tornado.testing.AsyncHTTPTestCase):
 
     def tearDown(self):
         config._set_option("server.scriptHealthCheckEnabled", self._old_config, "test")
-        Server._singleton = None
         super().tearDown()
 
     def get_app(self):
@@ -737,7 +714,6 @@ class ScriptCheckEndpointDoesNotExistTest(tornado.testing.AsyncHTTPTestCase):
 
     def tearDown(self):
         config._set_option("server.scriptHealthCheckEnabled", self._old_config, "test")
-        Server._singleton = None
         super().tearDown()
 
     def get_app(self):
