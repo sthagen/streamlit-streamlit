@@ -31,6 +31,7 @@ from streamlit.runtime.runtime import (
     RuntimeConfig,
     RuntimeStoppedError,
     SessionClientDisconnectedError,
+    AsyncObjects,
 )
 from streamlit.runtime.uploaded_file_manager import UploadedFileRec
 from streamlit.watcher import event_based_path_watcher
@@ -57,7 +58,7 @@ class RuntimeTest(RuntimeTestCase):
         """starting and stopping the Runtime should work as expected."""
         self.assertEqual(RuntimeState.INITIAL, self.runtime.state)
 
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.assertEqual(RuntimeState.NO_SESSIONS_CONNECTED, self.runtime.state)
 
         self.runtime.stop()
@@ -69,7 +70,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_create_session(self):
         """We can create and remove a single session."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         session_id = self.runtime.create_session(
             client=MockSessionClient(), user_info=MagicMock()
@@ -84,7 +85,7 @@ class RuntimeTest(RuntimeTestCase):
     async def test_close_session_shuts_down_appsession(self):
         """Closing a session should shutdown its associated AppSession."""
         with self.patch_app_session():
-            await self.start_runtime_loop()
+            await self.runtime.start()
 
             # Create a session and get its associated AppSession object.
             session_id = self.runtime.create_session(
@@ -98,7 +99,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_multiple_sessions(self):
         """Multiple sessions can be connected."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         session_ids = []
         for _ in range(3):
@@ -125,7 +126,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_close_invalid_session(self):
         """Closing a session that doesn't exist is a no-op: no error raised."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         # Close a session that never existed
         self.runtime.close_session("no_such_session")
@@ -139,7 +140,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_is_active_session(self):
         """`is_active_session` should work as expected."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
         session_id = self.runtime.create_session(
             client=MockSessionClient(), user_info=MagicMock()
         )
@@ -152,7 +153,7 @@ class RuntimeTest(RuntimeTestCase):
     async def test_shutdown_appsessions_on_stop(self):
         """When the Runtime stops, it should shut down open AppSessions."""
         with self.patch_app_session():
-            await self.start_runtime_loop()
+            await self.runtime.start()
 
             # Create a few sessions
             app_sessions = []
@@ -179,7 +180,7 @@ class RuntimeTest(RuntimeTestCase):
     async def test_handle_backmsg(self):
         """BackMsgs should be delivered to the appropriate AppSession."""
         with self.patch_app_session():
-            await self.start_runtime_loop()
+            await self.runtime.start()
             session_id = self.runtime.create_session(
                 client=MockSessionClient(), user_info=MagicMock()
             )
@@ -192,7 +193,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_handle_backmsg_invalid_session(self):
         """A BackMsg for an invalid session should get dropped without an error."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.runtime.handle_backmsg("not_a_session_id", MagicMock())
 
     async def test_handle_backmsg_deserialization_exception(self):
@@ -200,7 +201,7 @@ class RuntimeTest(RuntimeTestCase):
         appropriate AppSession.
         """
         with self.patch_app_session():
-            await self.start_runtime_loop()
+            await self.runtime.start()
             session_id = self.runtime.create_session(
                 client=MockSessionClient(), user_info=MagicMock()
             )
@@ -214,14 +215,14 @@ class RuntimeTest(RuntimeTestCase):
     async def test_handle_backmsg_exception_invalid_session(self):
         """A BackMsg exception for an invalid session should get dropped without an
         error."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.runtime.handle_backmsg_deserialization_exception(
             "not_a_session_id", MagicMock()
         )
 
     async def test_create_session_after_stop(self):
         """After Runtime.stop is called, `create_session` is an error."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.runtime.stop()
         await self.tick_runtime_loop()
 
@@ -230,7 +231,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_handle_backmsg_after_stop(self):
         """After Runtime.stop is called, `handle_backmsg` is an error."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.runtime.stop()
         await self.tick_runtime_loop()
 
@@ -243,14 +244,14 @@ class RuntimeTest(RuntimeTestCase):
         """
         # This will frequently be True from other tests
         streamlit._is_running_with_streamlit = False
-        await self.start_runtime_loop()
+        await self.runtime.start()
         self.assertTrue(streamlit._is_running_with_streamlit)
 
     async def test_handle_session_client_disconnected(self):
         """Runtime should gracefully handle `SessionClient.write_forward_msg`
         raising a `SessionClientDisconnectedError`.
         """
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         client = MagicMock(spec=SessionClient)
         session_id = self.runtime.create_session(client, MagicMock())
@@ -274,7 +275,7 @@ class RuntimeTest(RuntimeTestCase):
 
     async def test_forwardmsg_hashing(self):
         """Test that outgoing ForwardMsgs contain hashes."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         client = MockSessionClient()
         session_id = self.runtime.create_session(client=client, user_info=MagicMock())
@@ -292,7 +293,7 @@ class RuntimeTest(RuntimeTestCase):
     async def test_forwardmsg_cacheable_flag(self):
         """Test that the metadata.cacheable flag is set properly on outgoing
         ForwardMsgs."""
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         client = MockSessionClient()
         session_id = self.runtime.create_session(client=client, user_info=MagicMock())
@@ -318,7 +319,7 @@ class RuntimeTest(RuntimeTestCase):
     async def test_duplicate_forwardmsg_caching(self):
         """Test that duplicate ForwardMsgs are sent only once."""
         with patch_config_options({"global.minCachedMessageSize": 0}):
-            await self.start_runtime_loop()
+            await self.runtime.start()
 
             client = MockSessionClient()
             session_id = self.runtime.create_session(
@@ -355,7 +356,7 @@ class RuntimeTest(RuntimeTestCase):
         with patch_config_options(
             {"global.minCachedMessageSize": 0, "global.maxCachedMessageAge": 1}
         ):
-            await self.start_runtime_loop()
+            await self.runtime.start()
 
             client = MockSessionClient()
             session_id = self.runtime.create_session(
@@ -415,7 +416,7 @@ class RuntimeTest(RuntimeTestCase):
         """An uploaded file with no associated AppSession should be
         deleted.
         """
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
         client = MockSessionClient()
         session_id = self.runtime.create_session(client=client, user_info=MagicMock())
@@ -455,18 +456,17 @@ class RuntimeTest(RuntimeTestCase):
             [],
         )
 
-    async def test_get_eventloop(self):
-        """Runtime._get_eventloop() will raise an error if called before the
-        Runtime is started, and will return the Runtime's eventloop otherwise.
+    async def test_get_async_objs(self):
+        """Runtime._get_async_objs() will raise an error if called before the
+        Runtime is started, and will return the Runtime's AsyncObjects instance otherwise.
         """
         with self.assertRaises(RuntimeError):
             # Runtime hasn't started yet: error!
-            _ = self.runtime._get_eventloop()
+            _ = self.runtime._get_async_objs()
 
         # Runtime has started: no error
-        await self.start_runtime_loop()
-        eventloop = self.runtime._get_eventloop()
-        self.assertIsInstance(eventloop, asyncio.AbstractEventLoop)
+        await self.runtime.start()
+        self.assertIsInstance(self.runtime._get_async_objs(), AsyncObjects)
 
 
 @patch("streamlit.source_util._cached_pages", new=None)
@@ -485,7 +485,7 @@ class ScriptCheckTest(RuntimeTestCase):
     async def asyncSetUp(self):
         config = RuntimeConfig(script_path=self._path, command_line="mock command line")
         self.runtime = Runtime(config)
-        await self.start_runtime_loop()
+        await self.runtime.start()
 
     def tearDown(self) -> None:
         if event_based_path_watcher._MultiPathWatcher._singleton is not None:
