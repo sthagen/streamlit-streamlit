@@ -1,10 +1,10 @@
-# Copyright 2018-2022 Streamlit Inc.
+# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,9 @@ from .forward_msg_cache import (
     populate_hash_if_needed,
     create_reference_msg,
 )
-from .media_file_manager import media_file_manager
 from .legacy_caching.caching import _mem_caches
+from .media_file_manager import MediaFileManager
+from .media_file_storage import MediaFileStorage
 from .session_data import SessionData
 from .state import SessionStateStatProvider, SCRIPT_RUN_WITHOUT_ERRORS_KEY
 from .stats import StatsManager
@@ -77,6 +78,9 @@ class RuntimeConfig(NamedTuple):
     # The (optional) command line that Streamlit was started with
     # (e.g. "streamlit run app.py")
     command_line: Optional[str]
+
+    # The storage backend for Streamlit's MediaFileManager.
+    media_file_storage: MediaFileStorage
 
 
 class SessionInfo:
@@ -136,10 +140,21 @@ class AsyncObjects(NamedTuple):
 
 
 class Runtime:
-    def __init__(self, config: RuntimeConfig):
-        """Create a StreamlitRuntime. It won't be started yet.
+    _instance: Optional["Runtime"] = None
 
-        StreamlitRuntime is *not* thread-safe. Its public methods are generally
+    @classmethod
+    def instance(cls) -> "Runtime":
+        """Return the singleton Runtime instance. Raise an Error if the
+        Runtime hasn't been created yet.
+        """
+        if cls._instance is None:
+            raise RuntimeError("Runtime hasn't been created!")
+        return cls._instance
+
+    def __init__(self, config: RuntimeConfig):
+        """Create a Runtime instance. It won't be started yet.
+
+        Runtime is *not* thread-safe. Its public methods are generally
         safe to call only on the same thread that its event loop runs on.
 
         Parameters
@@ -147,6 +162,10 @@ class Runtime:
         config
             Config options.
         """
+        if Runtime._instance is not None:
+            raise RuntimeError("Runtime instance already exists!")
+        Runtime._instance = self
+
         # Will be created when we start.
         self._async_objs: Optional[AsyncObjects] = None
 
@@ -166,13 +185,13 @@ class Runtime:
         self._message_cache = ForwardMsgCache()
         self._uploaded_file_mgr = UploadedFileManager()
         self._uploaded_file_mgr.on_files_updated.connect(self._on_files_updated)
+        self._media_file_mgr = MediaFileManager(storage=config.media_file_storage)
 
         self._stats_mgr = StatsManager()
         self._stats_mgr.register_provider(get_memo_stats_provider())
         self._stats_mgr.register_provider(get_singleton_stats_provider())
         self._stats_mgr.register_provider(_mem_caches)
         self._stats_mgr.register_provider(self._message_cache)
-        self._stats_mgr.register_provider(media_file_manager)
         self._stats_mgr.register_provider(self._uploaded_file_mgr)
         self._stats_mgr.register_provider(
             SessionStateStatProvider(self._session_info_by_id)
@@ -189,6 +208,10 @@ class Runtime:
     @property
     def uploaded_file_mgr(self) -> UploadedFileManager:
         return self._uploaded_file_mgr
+
+    @property
+    def media_file_mgr(self) -> MediaFileManager:
+        return self._media_file_mgr
 
     @property
     def stats_mgr(self) -> StatsManager:
