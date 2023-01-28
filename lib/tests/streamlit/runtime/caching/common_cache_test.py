@@ -15,6 +15,7 @@
 """Tests that are common to both st.cache_data and st.cache_resource"""
 
 import threading
+import time
 import unittest
 from datetime import timedelta
 from typing import Any, List
@@ -24,15 +25,15 @@ from parameterized import parameterized
 
 import streamlit as st
 from streamlit.runtime.caching import (
-    CACHE_DATA_CALL_STACK,
-    CACHE_RESOURCE_CALL_STACK,
+    CACHE_DATA_MESSAGE_REPLAY_CTX,
+    CACHE_RESOURCE_MESSAGE_REPLAY_CTX,
     cache_data,
     cache_resource,
 )
 from streamlit.runtime.caching.cache_errors import CacheReplayClosureError
 from streamlit.runtime.caching.cache_type import CacheType
-from streamlit.runtime.caching.cache_utils import (
-    CachedResult,
+from streamlit.runtime.caching.cache_utils import CachedResult
+from streamlit.runtime.caching.cached_message_replay import (
     MultiCacheResults,
     _make_widget_key,
 )
@@ -45,9 +46,9 @@ from streamlit.runtime.scriptrunner import (
 )
 from streamlit.runtime.state import SafeSessionState, SessionState
 from streamlit.runtime.uploaded_file_manager import UploadedFileManager
+from streamlit.testing.script_interactions import InteractiveScriptTests
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 from tests.exception_capturing_thread import ExceptionCapturingThread, call_on_threads
-from tests.script_interactions import InteractiveScriptTests
 from tests.streamlit.elements.image_test import create_image
 from tests.testutil import create_mock_script_run_ctx
 
@@ -207,8 +208,8 @@ class CommonCacheTest(DeltaGeneratorTestCase):
 
     @parameterized.expand(
         [
-            ("cache_data", cache_data, CACHE_DATA_CALL_STACK),
-            ("cache_resource", cache_resource, CACHE_RESOURCE_CALL_STACK),
+            ("cache_data", cache_data, CACHE_DATA_MESSAGE_REPLAY_CTX),
+            ("cache_resource", cache_resource, CACHE_RESOURCE_MESSAGE_REPLAY_CTX),
         ]
     )
     def test_cached_st_function_warning(self, _, cache_decorator, call_stack):
@@ -794,10 +795,10 @@ class CommonCacheThreadingTest(unittest.TestCase):
     def tearDown(self):
         # Some of these tests reach directly into CALL_STACK data and twiddle it.
         # Reset default values on teardown.
-        CACHE_DATA_CALL_STACK._cached_func_stack = []
-        CACHE_DATA_CALL_STACK._suppress_st_function_warning = 0
-        CACHE_RESOURCE_CALL_STACK._cached_func_stack = []
-        CACHE_RESOURCE_CALL_STACK._suppress_st_function_warning = 0
+        CACHE_DATA_MESSAGE_REPLAY_CTX._cached_func_stack = []
+        CACHE_DATA_MESSAGE_REPLAY_CTX._suppress_st_function_warning = 0
+        CACHE_RESOURCE_MESSAGE_REPLAY_CTX._cached_func_stack = []
+        CACHE_RESOURCE_MESSAGE_REPLAY_CTX._suppress_st_function_warning = 0
 
         # Clear caches
         st.cache_data.clear()
@@ -831,11 +832,38 @@ class CommonCacheThreadingTest(unittest.TestCase):
         # Call foo from multiple threads and assert no errors.
         call_on_threads(call_foo, self.NUM_THREADS)
 
-        # We don't currently guarantee that the cached function will only be called
-        # once (multiple threads may compute the cached value independently if they
-        # access the function at ~the same time).
-        # TODO: But this might be a useful optimization for the future!
-        # self.assertEqual(1, cached_func_call_count[0])
+        # The cached function should only be called once (see `test_compute_value_only_once`).
+        self.assertEqual(1, cached_func_call_count[0])
+
+    @parameterized.expand(
+        [("cache_data", cache_data), ("cache_resource", cache_resource)]
+    )
+    def test_compute_value_only_once(self, _, cache_decorator):
+        """Cached values should be computed only once, even if multiple sessions read from an
+        unwarmed cache simultaneously.
+        """
+        cached_func_call_count = [0]
+
+        @cache_decorator
+        def foo():
+            self.assertEqual(
+                0,
+                cached_func_call_count[0],
+                "A cached value was computed multiple times!",
+            )
+            cached_func_call_count[0] += 1
+
+            # Sleep to "guarantee" that our other threads try to access the
+            # cached data while it's being computed. (The other threads should
+            # block on cache computation, so this function should only
+            # be called a single time.)
+            time.sleep(0.25)
+            return 42
+
+        def call_foo(_: int) -> None:
+            self.assertEqual(42, foo())
+
+        call_on_threads(call_foo, num_threads=self.NUM_THREADS, timeout=0.5)
 
     @parameterized.expand(
         [
@@ -886,8 +914,8 @@ class CommonCacheThreadingTest(unittest.TestCase):
 
     @parameterized.expand(
         [
-            ("cache_data", CACHE_DATA_CALL_STACK),
-            ("cache_resource", CACHE_RESOURCE_CALL_STACK),
+            ("cache_data", CACHE_DATA_MESSAGE_REPLAY_CTX),
+            ("cache_resource", CACHE_RESOURCE_MESSAGE_REPLAY_CTX),
         ]
     )
     def test_multithreaded_call_stack(self, _, call_stack):
@@ -921,10 +949,9 @@ class CommonCacheThreadingTest(unittest.TestCase):
         self.assertEqual(1, get_counter())
 
 
-@patch("streamlit.source_util._cached_pages", new=None)
 class WidgetReplayInteractionTest(InteractiveScriptTests):
     def test_dynamic_widget_replay(self):
-        script = self.script_from_filename("cached_widget_replay_dynamic.py")
+        script = self.script_from_filename(__file__, "cached_widget_replay_dynamic.py")
 
         sr = script.run()
         assert len(sr.get("checkbox")) == 1

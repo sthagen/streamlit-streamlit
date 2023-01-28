@@ -34,15 +34,16 @@ from streamlit.runtime.caching.cache_errors import CacheKeyNotFoundError
 from streamlit.runtime.caching.cache_type import CacheType
 from streamlit.runtime.caching.cache_utils import (
     Cache,
-    CachedFunction,
+    CachedFunc,
+    CachedFuncInfo,
+    ttl_to_seconds,
+)
+from streamlit.runtime.caching.cached_message_replay import (
+    CachedMessageReplayContext,
     CachedResult,
-    CacheMessagesCallStack,
-    CacheWarningCallStack,
     ElementMsgData,
     MsgData,
     MultiCacheResults,
-    create_cache_wrapper,
-    ttl_to_seconds,
 )
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
@@ -51,8 +52,7 @@ from streamlit.runtime.stats import CacheStat, CacheStatsProvider
 _LOGGER = get_logger(__name__)
 
 
-CACHE_RESOURCE_CALL_STACK = CacheWarningCallStack(CacheType.RESOURCE)
-CACHE_RESOURCE_MESSAGE_CALL_STACK = CacheMessagesCallStack(CacheType.RESOURCE)
+CACHE_RESOURCE_MESSAGE_REPLAY_CTX = CachedMessageReplayContext(CacheType.RESOURCE)
 
 ValidateFunc: TypeAlias = Callable[[Any], bool]
 
@@ -142,8 +142,8 @@ def get_resource_cache_stats_provider() -> CacheStatsProvider:
     return _resource_caches
 
 
-class CacheResourceFunction(CachedFunction):
-    """Implements the CachedFunction protocol for @st.cache_resource"""
+class CachedResourceFuncInfo(CachedFuncInfo):
+    """Implements the CachedFuncInfo interface for @st.cache_resource"""
 
     def __init__(
         self,
@@ -168,12 +168,8 @@ class CacheResourceFunction(CachedFunction):
         return CacheType.RESOURCE
 
     @property
-    def warning_call_stack(self) -> CacheWarningCallStack:
-        return CACHE_RESOURCE_CALL_STACK
-
-    @property
-    def message_call_stack(self) -> CacheMessagesCallStack:
-        return CACHE_RESOURCE_MESSAGE_CALL_STACK
+    def cached_message_replay_ctx(self) -> CachedMessageReplayContext:
+        return CACHE_RESOURCE_MESSAGE_REPLAY_CTX
 
     @property
     def display_name(self) -> str:
@@ -269,19 +265,18 @@ class CacheResourceAPI:
         validate: ValidateFunc | None,
         experimental_allow_widgets: bool,
     ):
-        """Decorator to cache functions that return global resources (e.g.
-        database connections, ML models).
+        """Decorator to cache functions that return global resources (e.g. database connections, ML models).
 
         Cached objects are shared across all users, sessions, and reruns. They
         must be thread-safe because they can be accessed from multiple threads
-        concurrently. If thread safety is an issue, consider using `st.session_state`
+        concurrently. If thread safety is an issue, consider using ``st.session_state``
         to store resources per session instead.
 
-        You can clear a function's cache with `func.clear()` or clear the entire
-        cache with `st.cache_resource.clear()`.
+        You can clear a function's cache with ``func.clear()`` or clear the entire
+        cache with ``st.cache_resource.clear()``.
 
-        To cache data, use `st.cache_data` instead.
-        Learn more about caching at [https://docs.streamlit.io/library/advanced-features/caching](https://docs.streamlit.io/library/advanced-features/caching)
+        To cache data, use ``st.cache_data`` instead. Learn more about caching at
+        https://docs.streamlit.io/library/advanced-features/caching.
 
         Parameters
         ----------
@@ -304,9 +299,9 @@ class CacheResourceAPI:
             value of show_spinner param will be used for spinner text.
 
         validate : callable or None
-            An optional validation function for cached data. `validate` is called
+            An optional validation function for cached data. ``validate`` is called
             each time the cached value is accessed. It receives the cached value as
-            its only parameter and it must return a boolean. If `validate` returns
+            its only parameter and it must return a boolean. If ``validate`` returns
             False, the current cached value is discarded, and the decorated function
             is called to compute a new value. This is useful e.g. to check the
             health of database connections.
@@ -376,8 +371,8 @@ class CacheResourceAPI:
         # Support passing the params via function decorator, e.g.
         # @st.cache_resource(show_spinner=False)
         if func is None:
-            return lambda f: create_cache_wrapper(
-                CacheResourceFunction(
+            return lambda f: CachedFunc(
+                CachedResourceFuncInfo(
                     func=f,
                     show_spinner=show_spinner,
                     max_entries=max_entries,
@@ -387,8 +382,8 @@ class CacheResourceAPI:
                 )
             )
 
-        return create_cache_wrapper(
-            CacheResourceFunction(
+        return CachedFunc(
+            CachedResourceFuncInfo(
                 func=cast(types.FunctionType, func),
                 show_spinner=show_spinner,
                 max_entries=max_entries,
@@ -424,6 +419,7 @@ class ResourceCache(Cache):
         display_name: str,
         allow_widgets: bool,
     ):
+        super().__init__()
         self.key = key
         self.display_name = display_name
         self._mem_cache: TTLCache[str, MultiCacheResults] = TTLCache(
@@ -466,7 +462,8 @@ class ResourceCache(Cache):
             result = multi_results.results[widget_key]
 
             if self.validate is not None and not self.validate(result.value):
-                # Result failed validation check.
+                # Validate failed: delete the entry and raise an error.
+                del multi_results.results[widget_key]
                 raise CacheKeyNotFoundError()
 
             return result
@@ -502,7 +499,7 @@ class ResourceCache(Cache):
             multi_results.results[widget_key] = result
             self._mem_cache[key] = multi_results
 
-    def clear(self) -> None:
+    def _clear(self) -> None:
         with self._mem_cache_lock:
             self._mem_cache.clear()
 
