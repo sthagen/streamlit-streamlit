@@ -15,6 +15,7 @@
  */
 
 import { Props as SessionInfoProps, SessionInfo } from "src/lib/SessionInfo"
+import { StreamlitEndpoints } from "src/lib/StreamlitEndpoints"
 
 /** Create mock SessionInfo.props */
 export function mockSessionInfoProps(
@@ -42,4 +43,17 @@ export function mockSessionInfo(
   const sessionInfo = new SessionInfo()
   sessionInfo.setCurrent(mockSessionInfoProps(overrides))
   return sessionInfo
+}
+
+const MOCK_ENDPOINTS: StreamlitEndpoints = {
+  buildComponentURL: (componentName: string, path: string): string => {
+    return `http://streamlit.mock:80/component/${componentName}/${path}`
+  },
+
+  uploadFileUploaderFile: jest.fn().mockResolvedValue(1),
+}
+
+/** Return a mock Endpoints implementation. */
+export function mockEndpoints(): StreamlitEndpoints {
+  return MOCK_ENDPOINTS
 }

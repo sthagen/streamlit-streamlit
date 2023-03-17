@@ -19,6 +19,7 @@ from typing import Any, Generic, List, Sequence, TypeVar, Union, cast, overload
 
 from typing_extensions import Literal, Protocol, TypeAlias, runtime_checkable
 
+from streamlit import util
 from streamlit.elements.heading import HeadingProtoTag
 from streamlit.elements.select_slider import SelectSliderSerde
 from streamlit.elements.slider import SliderScalar, SliderScalarT, SliderSerde, Step
@@ -85,8 +86,11 @@ class Element:
     def run(self) -> ElementTree:
         return self.root.run()
 
+    def __repr__(self):
+        return util.repr_(self)
 
-@dataclass(init=False)
+
+@dataclass(init=False, repr=False)
 class Text(Element):
     proto: TextProto
 
@@ -104,7 +108,7 @@ class Text(Element):
         return self.proto.body
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class HeadingBase(Element, ABC):
     proto: HeadingProto
 
@@ -127,25 +131,25 @@ class HeadingBase(Element, ABC):
         return self.proto.body
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Title(HeadingBase):
     def __init__(self, proto: HeadingProto, root: ElementTree):
         super().__init__(proto, root, "title")
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Header(HeadingBase):
     def __init__(self, proto: HeadingProto, root: ElementTree):
         super().__init__(proto, root, "header")
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Subheader(HeadingBase):
     def __init__(self, proto: HeadingProto, root: ElementTree):
         super().__init__(proto, root, "subheader")
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Markdown(Element):
     proto: MarkdownProto
 
@@ -168,21 +172,21 @@ class Markdown(Element):
         return self.proto.body
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Caption(Markdown):
     def __init__(self, proto: MarkdownProto, root: ElementTree):
         super().__init__(proto, root)
         self.type = "caption"
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Latex(Markdown):
     def __init__(self, proto: MarkdownProto, root: ElementTree):
         super().__init__(proto, root)
         self.type = "latex"
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Code(Element):
     proto: CodeProto
 
@@ -205,7 +209,7 @@ class Code(Element):
         return self.proto.code_text
 
 
-@dataclass
+@dataclass(repr=False)
 class Exception(Element):
     type: str
     message: str
@@ -229,6 +233,13 @@ class Exception(Element):
         return self.message
 
 
+@dataclass(init=False, repr=False)
+class Divider(Markdown):
+    def __init__(self, proto: MarkdownProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "divider"
+
+
 @runtime_checkable
 class Widget(Protocol):
     id: str
@@ -241,7 +252,7 @@ class Widget(Protocol):
 T = TypeVar("T")
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Radio(Element, Widget, Generic[T]):
     _value: T | None
 
@@ -302,7 +313,7 @@ class Radio(Element, Widget, Generic[T]):
         return ws
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Checkbox(Element, Widget):
     _value: bool | None
 
@@ -356,7 +367,7 @@ class Checkbox(Element, Widget):
         return self.set_value(False)
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Multiselect(Element, Widget, Generic[T]):
     _value: list[T] | None
 
@@ -445,11 +456,11 @@ class Multiselect(Element, Widget, Generic[T]):
             return self
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Selectbox(Element, Widget, Generic[T]):
     _value: T | None
 
-    proto: SelectboxProto
+    proto: SelectboxProto = field(repr=False)
     type: str
     id: str
     label: str
@@ -518,7 +529,7 @@ class Selectbox(Element, Widget, Generic[T]):
         return ws
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Button(Element, Widget):
     _value: bool
 
@@ -569,7 +580,7 @@ class Button(Element, Widget):
         return self.set_value(True)
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Slider(Element, Widget, Generic[SliderScalarT]):
     _value: SliderScalarT | Sequence[SliderScalarT] | None
 
@@ -638,7 +649,7 @@ class Slider(Element, Widget, Generic[SliderScalarT]):
         return self.set_value([lower, upper])
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class SelectSlider(Element, Widget, Generic[T]):
     _value: T | Sequence[T] | None
 
@@ -698,7 +709,7 @@ class SelectSlider(Element, Widget, Generic[T]):
         return self.set_value([lower, upper])
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class Block:
     type: str
     children: dict[int, Node]
@@ -758,6 +769,10 @@ class Block:
 
     @overload
     def get(self, element_type: Literal["code"]) -> Sequence[Code]:
+        ...
+
+    @overload
+    def get(self, element_type: Literal["divider"]) -> Sequence[Divider]:
         ...
 
     @overload
@@ -822,11 +837,14 @@ class Block:
     def run(self) -> ElementTree:
         return self.root.run()
 
+    def __repr__(self):
+        return util.repr_(self)
+
 
 Node: TypeAlias = Union[Element, Block]
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class ElementTree(Block):
     """A tree of the elements produced by running a streamlit script.
 
@@ -918,6 +936,8 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                     new_node = Caption(elt.markdown, root=root)
                 elif elt.markdown.element_type == MarkdownProto.Type.LATEX:
                     new_node = Latex(elt.markdown, root=root)
+                elif elt.markdown.element_type == MarkdownProto.Type.DIVIDER:
+                    new_node = Divider(elt.markdown, root=root)
                 else:
                     raise ValueError(
                         f"Unknown markdown type {elt.markdown.element_type}"

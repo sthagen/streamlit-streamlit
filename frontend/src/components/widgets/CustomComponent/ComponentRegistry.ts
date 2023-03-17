@@ -15,7 +15,7 @@
  */
 
 import { logWarning } from "src/lib/log"
-import { BaseUriParts, buildHttpUri } from "src/lib/UriUtil"
+import { StreamlitEndpoints } from "src/lib/StreamlitEndpoints"
 import { ComponentMessageType } from "./enums"
 
 export type ComponentMessageListener = (
@@ -27,17 +27,15 @@ export type ComponentMessageListener = (
  * Dispatches iframe messages to ComponentInstances.
  */
 export class ComponentRegistry {
-  private readonly getServerUri: () => BaseUriParts | undefined
+  private readonly endpoints: StreamlitEndpoints
 
   private readonly msgListeners = new Map<
     MessageEventSource,
     ComponentMessageListener
   >()
 
-  private cachedServerUri?: BaseUriParts
-
-  public constructor(getServerUri: () => BaseUriParts | undefined) {
-    this.getServerUri = getServerUri
+  public constructor(endpoints: StreamlitEndpoints) {
+    this.endpoints = endpoints
     window.addEventListener("message", this.onMessageEvent)
   }
 
@@ -62,20 +60,9 @@ export class ComponentRegistry {
     }
   }
 
+  /** Return a URL for fetching a resource for the given component. */
   public getComponentURL = (componentName: string, path: string): string => {
-    // Fetch the server URI. If our server is disconnected, this will return
-    // undefined, in which case we default to the most recent cached value
-    // of the URI.
-    let serverUri = this.getServerUri()
-    if (serverUri === undefined) {
-      if (this.cachedServerUri === undefined) {
-        throw new Error("Can't fetch component: not connected to a server")
-      }
-      serverUri = this.cachedServerUri
-    }
-
-    this.cachedServerUri = serverUri
-    return buildHttpUri(serverUri, `component/${componentName}/${path}`)
+    return this.endpoints.buildComponentURL(componentName, path)
   }
 
   private onMessageEvent = (event: MessageEvent): void => {
