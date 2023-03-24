@@ -21,11 +21,12 @@ import { enableAllPlugins as enableImmerPlugins } from "immer"
 import classNames from "classnames"
 
 // Other local imports.
-import AppContext from "src/components/core/AppContext"
+import { AppContext } from "src/components/core/AppContext"
 import AppView from "src/components/core/AppView"
 import StatusWidget from "src/components/core/StatusWidget"
 import MainMenu, { isLocalhost } from "src/components/core/MainMenu"
 import ToolbarActions from "src/components/core/ToolbarActions"
+import DeployButton from "src/components/core/DeployButton"
 import Header from "src/components/core/Header"
 import {
   DialogProps,
@@ -43,48 +44,49 @@ import { ConnectionState } from "src/lib/ConnectionState"
 import { ScriptRunState } from "src/lib/ScriptRunState"
 import { SessionEventDispatcher } from "src/lib/SessionEventDispatcher"
 import {
-  setCookie,
   getIFrameEnclosingApp,
   hashString,
-  isEmbed,
-  isPaddingDisplayed,
-  isToolbarDisplayed,
   isColoredLineDisplayed,
-  isScrollingHidden,
-  isFooterDisplayed,
-  isLightTheme,
   isDarkTheme,
+  isEmbed,
+  isTesting,
+  isFooterDisplayed,
   isInChildFrame,
+  isLightTheme,
+  isPaddingDisplayed,
+  isScrollingHidden,
+  isToolbarDisplayed,
   notUndefined,
   getElementWidgetID,
   generateUID,
   getEmbeddingIdClassName,
   extractPageNameFromPathName,
+  setCookie,
 } from "src/lib/utils"
 import { BaseUriParts } from "src/lib/UriUtil"
 import {
+  AppPage,
   BackMsg,
+  Config,
   CustomThemeConfig,
   Delta,
   ForwardMsg,
   ForwardMsgMetadata,
+  GitInfo,
+  IAppPage,
+  IGitInfo,
   Initialize,
   NewSession,
   PageConfig,
   PageInfo,
   PageNotFound,
-  PagesChanged,
   PageProfile,
+  PagesChanged,
   SessionEvent,
-  WidgetStates,
   SessionStatus,
-  Config,
-  IGitInfo,
-  GitInfo,
-  IAppPage,
-  AppPage,
+  WidgetStates,
 } from "src/autogen/proto"
-import { without, concat, noop } from "lodash"
+import { concat, noop, without } from "lodash"
 
 import { RERUN_PROMPT_MODAL_DIALOG } from "src/lib/baseconsts"
 import { SessionInfo } from "src/lib/SessionInfo"
@@ -97,10 +99,10 @@ import { ComponentRegistry } from "src/components/widgets/CustomComponent"
 import { handleFavicon } from "src/components/elements/Favicon"
 
 import {
-  CUSTOM_THEME_NAME,
   createAutoTheme,
   createPresetThemes,
   createTheme,
+  CUSTOM_THEME_NAME,
   getCachedTheme,
   isPresetTheme,
   ThemeConfig,
@@ -108,6 +110,7 @@ import {
 } from "src/theme"
 import { DefaultStreamlitEndpoints } from "./lib/DefaultStreamlitEndpoints"
 import { SegmentMetricsManager } from "./lib/SegmentMetricsManager"
+import { StreamlitEndpoints } from "./lib/StreamlitEndpoints"
 
 import { StyledApp } from "./styled-components"
 
@@ -171,6 +174,8 @@ declare global {
 }
 
 export class App extends PureComponent<Props, State> {
+  private readonly endpoints: StreamlitEndpoints
+
   private readonly sessionInfo = new SessionInfo()
 
   private readonly metricsMgr = new SegmentMetricsManager(this.sessionInfo)
@@ -249,14 +254,14 @@ export class App extends PureComponent<Props, State> {
       formsDataChanged: formsData => this.setState({ formsData }),
     })
 
-    const endpoints = new DefaultStreamlitEndpoints({
+    this.endpoints = new DefaultStreamlitEndpoints({
       getServerUri: this.getBaseUriParts,
       csrfEnabled: true,
     })
 
     this.uploadClient = new FileUploadClient({
       sessionInfo: this.sessionInfo,
-      endpoints,
+      endpoints: this.endpoints,
       // A form cannot be submitted if it contains a FileUploader widget
       // that's currently uploading. We write that state here, in response
       // to a FileUploadClient callback. The FormSubmitButton element
@@ -265,7 +270,7 @@ export class App extends PureComponent<Props, State> {
         this.widgetMgr.setFormsWithUploads(formIds),
     })
 
-    this.componentRegistry = new ComponentRegistry(endpoints)
+    this.componentRegistry = new ComponentRegistry(this.endpoints)
 
     this.pendingElementsTimerRunning = false
     this.pendingElementsBuffer = this.state.elements
@@ -305,6 +310,7 @@ export class App extends PureComponent<Props, State> {
     // "Can't call setState on a component that is not yet mounted." error.
     this.connectionManager = new ConnectionManager({
       sessionInfo: this.sessionInfo,
+      endpoints: this.endpoints,
       onMessage: this.handleMessage,
       onConnectionError: this.handleConnectionError,
       connectionStateChanged: this.handleConnectionStateChanged,
@@ -540,7 +546,11 @@ export class App extends PureComponent<Props, State> {
     }
 
     if (favicon) {
-      handleFavicon(favicon, this.getBaseUriParts())
+      handleFavicon(
+        favicon,
+        this.props.hostCommunication.sendMessage,
+        this.getBaseUriParts()
+      )
     }
 
     // Only change layout/sidebar when the page config has changed.
@@ -814,6 +824,7 @@ export class App extends PureComponent<Props, State> {
     document.title = `${newPageName} · Streamlit`
     handleFavicon(
       `${process.env.PUBLIC_URL}/favicon.png`,
+      this.props.hostCommunication.sendMessage,
       this.getBaseUriParts()
     )
 
@@ -1277,6 +1288,22 @@ export class App extends PureComponent<Props, State> {
     }
   }
 
+  /**
+   * Shows a dialog with Deployment instructions
+   */
+  openDeployDialog = (): void => {
+    const deployDialogProps: DialogProps = {
+      type: DialogType.DEPLOY_DIALOG,
+      onClose: this.closeDialog,
+      showDeployError: this.showDeployError,
+      gitInfo: this.state.gitInfo,
+      isDeployErrorModalOpen:
+        this.state.dialog?.type === DialogType.DEPLOY_ERROR,
+      metricsMgr: this.metricsMgr,
+    }
+    this.openDialog(deployDialogProps)
+  }
+
   openThemeCreatorDialog = (): void => {
     const newDialog: DialogProps = {
       type: DialogType.THEME_CREATOR,
@@ -1431,6 +1458,33 @@ export class App extends PureComponent<Props, State> {
     return queryString.startsWith("?") ? queryString.substring(1) : queryString
   }
 
+  isInCloudEnvironment = (): boolean => {
+    const { menuItems } = this.props.hostCommunication.currentState
+    return menuItems && menuItems?.length > 0
+  }
+
+  showDeployButton = (): boolean => {
+    return isTesting()
+    //  for now we always hide deploy button,
+    // later on we should allow below logic
+    /*
+    return (
+      isLocalhost() &&
+      !this.isInCloudEnvironment() &&
+      this.sessionInfo.isSet &&
+      !this.sessionInfo.isHello
+    )
+     */
+  }
+
+  deployButtonClicked = (): void => {
+    if (!isTesting()) {
+      this.metricsMgr.enqueue("deployButtonInApp", { clicked: true })
+    }
+    this.sendLoadGitInfoBackMsg()
+    this.openDeployDialog()
+  }
+
   render(): JSX.Element {
     const {
       allowRunOnSave,
@@ -1440,7 +1494,6 @@ export class App extends PureComponent<Props, State> {
       initialSidebarState,
       menuItems,
       isFullScreen,
-      layout,
       scriptRunId,
       scriptRunState,
       userSettings,
@@ -1477,7 +1530,6 @@ export class App extends PureComponent<Props, State> {
       <AppContext.Provider
         value={{
           initialSidebarState,
-          layout,
           wideMode: userSettings.wideMode,
           isFullScreen,
           setFullScreen: this.handleFullScreen,
@@ -1527,6 +1579,9 @@ export class App extends PureComponent<Props, State> {
                   />
                 </>
               )}
+              {this.showDeployButton() && (
+                <DeployButton onClick={this.deployButtonClicked.bind(this)} />
+              )}
               <MainMenu
                 isServerConnected={this.isServerConnected()}
                 quickRerunCallback={this.rerunScript}
@@ -1556,6 +1611,7 @@ export class App extends PureComponent<Props, State> {
 
             <AppView
               sessionInfo={this.sessionInfo}
+              sendMessageToHost={this.props.hostCommunication.sendMessage}
               elements={elements}
               scriptRunId={scriptRunId}
               scriptRunState={scriptRunState}
