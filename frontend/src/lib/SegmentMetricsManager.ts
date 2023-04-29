@@ -18,13 +18,9 @@ import { pick } from "lodash"
 import { SessionInfo } from "src/lib/SessionInfo"
 import { initializeSegment } from "src/vendor/Segment"
 import { DeployedAppMetadata } from "src/hocs/withHostCommunication/types"
+import { Delta, Element } from "src/autogen/proto"
 import { IS_DEV_ENV } from "./baseconsts"
 import { logAlways } from "./log"
-import {
-  CustomComponentCounter,
-  DeltaCounter,
-  MetricsManager,
-} from "./MetricsManager"
 
 /**
  * The analytics is the Segment.io object. It is initialized in Segment.ts
@@ -35,7 +31,15 @@ declare const analytics: any
 
 type Event = [string, Record<string, unknown>]
 
-export class SegmentMetricsManager implements MetricsManager {
+/**
+ * A mapping of [component instance name] -> [count] which is used to upload
+ * custom component stats when the app is idle.
+ */
+export interface CustomComponentCounter {
+  [name: string]: number
+}
+
+export class SegmentMetricsManager {
   /** The app's SessionInfo instance. */
   private readonly sessionInfo: SessionInfo
 
@@ -51,12 +55,6 @@ export class SegmentMetricsManager implements MetricsManager {
    * initialized.
    */
   private pendingEvents: Event[] = []
-
-  /**
-   * Object used to count the number of delta types seen in a given script run.
-   * Maps type of delta (string) to count (number).
-   */
-  private pendingDeltaCounter: DeltaCounter = {}
 
   /**
    * Object used to count the number of custom instance names seen in a given
@@ -111,29 +109,27 @@ export class SegmentMetricsManager implements MetricsManager {
     this.send(evName, evData)
   }
 
-  public clearDeltaCounter(): void {
-    this.pendingDeltaCounter = {}
-  }
-
-  public incrementDeltaCounter(deltaType: string): void {
-    if (this.pendingDeltaCounter[deltaType] == null) {
-      this.pendingDeltaCounter[deltaType] = 1
-    } else {
-      this.pendingDeltaCounter[deltaType]++
+  public handleDeltaMessage(delta: Delta): void {
+    if (delta.type === "newElement") {
+      const element = delta.newElement as Element
+      // Track component instance name.
+      if (element.type === "componentInstance") {
+        const componentName = element.componentInstance?.componentName
+        if (componentName != null) {
+          this.incrementCustomComponentCounter(componentName)
+        }
+      }
     }
   }
 
-  public getAndResetDeltaCounter(): DeltaCounter {
-    const deltaCounter = this.pendingDeltaCounter
-    this.clearDeltaCounter()
-    return deltaCounter
-  }
-
-  public clearCustomComponentCounter(): void {
-    this.pendingCustomComponentCounter = {}
-  }
-
-  public incrementCustomComponentCounter(customInstanceName: string): void {
+  /**
+   * Increment a counter that tracks the number of times a CustomComponent
+   * of the given type has been used by the frontend.
+   *
+   * No event is recorded for this. Instead, call `getAndResetCustomComponentCounter`
+   * periodically, and enqueue an event with the result.
+   */
+  private incrementCustomComponentCounter(customInstanceName: string): void {
     if (this.pendingCustomComponentCounter[customInstanceName] == null) {
       this.pendingCustomComponentCounter[customInstanceName] = 1
     } else {
@@ -145,6 +141,10 @@ export class SegmentMetricsManager implements MetricsManager {
     const customComponentCounter = this.pendingCustomComponentCounter
     this.clearCustomComponentCounter()
     return customComponentCounter
+  }
+
+  private clearCustomComponentCounter(): void {
+    this.pendingCustomComponentCounter = {}
   }
 
   // App hash gets set when updateReport happens.

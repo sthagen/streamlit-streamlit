@@ -17,6 +17,7 @@
 // Disable Typescript checking, since mm.track has private scope
 // @ts-nocheck
 
+import { Delta, Element } from "src/autogen/proto"
 import { mockSessionInfo, mockSessionInfoProps } from "./mocks/mocks"
 import { SegmentMetricsManager } from "./SegmentMetricsManager"
 import { SessionInfo } from "./SessionInfo"
@@ -151,53 +152,6 @@ test("tracks installation data", () => {
   })
 })
 
-test("increments deltas", () => {
-  const mm = getSegmentMetricsManager()
-
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-
-  const counter = mm.getAndResetDeltaCounter()
-
-  expect(counter.foo).toBe(3)
-  expect(counter.bar).toBe(2)
-  expect(counter.boz).toBeUndefined()
-})
-
-test("clears deltas", () => {
-  const mm = getSegmentMetricsManager()
-
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-
-  mm.clearDeltaCounter()
-  const counter = mm.getAndResetDeltaCounter()
-
-  expect(Object.keys(counter).length).toBe(0)
-})
-
-test("clears deltas automatically on read", () => {
-  const mm = getSegmentMetricsManager()
-
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-  mm.incrementDeltaCounter("foo")
-  mm.incrementDeltaCounter("bar")
-
-  const counter1 = mm.getAndResetDeltaCounter()
-  const counter2 = mm.getAndResetDeltaCounter()
-
-  expect(Object.keys(counter1).length).toBe(2)
-  expect(Object.keys(counter2).length).toBe(0)
-})
-
 test("ip address is overwritten", () => {
   const mm = getSegmentMetricsManager()
   mm.initialize({ gatherUsageStats: true })
@@ -208,5 +162,25 @@ test("ip address is overwritten", () => {
     context: {
       ip: "0.0.0.0",
     },
+  })
+})
+
+describe("handleDeltaMessage", () => {
+  it("handles componentInstance Delta messages", () => {
+    const mm = getSegmentMetricsManager()
+
+    const delta = Delta.create({
+      newElement: Element.create({
+        componentInstance: {
+          id: "mockId",
+          componentName: "mockComponentName",
+        },
+      }),
+    })
+
+    mm.handleDeltaMessage(delta)
+    expect(mm.getAndResetCustomComponentCounter()).toEqual({
+      mockComponentName: 1,
+    })
   })
 })
