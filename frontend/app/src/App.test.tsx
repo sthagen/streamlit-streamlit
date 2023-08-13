@@ -16,7 +16,7 @@
 
 import React from "react"
 import { ReactWrapper, ShallowWrapper } from "enzyme"
-import { waitFor } from "@testing-library/dom"
+import { waitFor } from "@testing-library/react"
 import cloneDeep from "lodash/cloneDeep"
 import {
   LocalStore,
@@ -61,7 +61,6 @@ jest.mock("@streamlit/app/src/connection/ConnectionManager")
 jest.mock("@streamlit/lib/src/baseconsts", () => {
   return {
     ...jest.requireActual("@streamlit/lib/src/baseconsts"),
-    SHOW_DEPLOY_BUTTON: true,
   }
 })
 
@@ -931,15 +930,14 @@ describe("App.onHistoryChange", () => {
     pushStateSpy.mockRestore()
   })
 
-  it("does rerun when we are navigating to a different page and the last window history url contains an anchor", () => {
+  it("does rerun when we are navigating to a different page and the last window history url contains an anchor", async () => {
     const pushStateSpy = jest.spyOn(window.history, "pushState")
-
-    jest.spyOn(instance, "onPageChange")
+    const pageChangeSpy = jest.spyOn(instance, "onPageChange")
 
     // navigate to current page with anchor
     window.history.pushState({}, "", "#foo_bar")
     instance.onHistoryChange()
-    expect(instance.onPageChange).not.toHaveBeenCalled()
+    expect(pageChangeSpy).not.toHaveBeenCalled()
 
     // navigate to new page
     instance.handleNewSession(
@@ -947,8 +945,9 @@ describe("App.onHistoryChange", () => {
     )
     window.history.back()
 
-    waitFor(() => {
-      expect(instance.onPageChange).toHaveBeenLastCalledWith("sub_hash")
+    // Check for rerun
+    await waitFor(() => {
+      expect(pageChangeSpy).toHaveBeenLastCalledWith("top_hash")
     })
 
     pushStateSpy.mockRestore()
@@ -1226,6 +1225,54 @@ describe("App.handleDeltaMessage", () => {
     instance.handleDeltaMsg(delta, metadata)
 
     expect(mockHandleDeltaMessage).toHaveBeenCalledWith(delta)
+  })
+})
+
+describe("App.requestFileURLs", () => {
+  let wrapper: ShallowWrapper
+  let instance: App
+
+  beforeEach(() => {
+    wrapper = shallow(<App {...getProps()} />)
+    instance = wrapper.instance() as App
+
+    // @ts-expect-error
+    instance.sendBackMsg = jest.fn()
+
+    // @ts-expect-error
+    instance.sessionInfo.setCurrent(mockSessionInfoProps())
+  })
+
+  it("properly constructs fileUrlsRequest BackMsg", () => {
+    instance.isServerConnected = jest.fn().mockReturnValue(true)
+
+    instance.requestFileURLs(
+      "myRequestId",
+      // @ts-expect-error
+      [{ name: "file1.txt" }, { name: "file2.txt" }, { name: "file3.txt" }]
+    )
+
+    // @ts-expect-error
+    expect(instance.sendBackMsg).toHaveBeenCalledWith({
+      fileUrlsRequest: {
+        fileNames: ["file1.txt", "file2.txt", "file3.txt"],
+        requestId: "myRequestId",
+        sessionId: "mockSessionId",
+      },
+    })
+  })
+
+  it("does nothing if server is disconnected", () => {
+    instance.isServerConnected = jest.fn().mockReturnValue(false)
+
+    instance.requestFileURLs(
+      "myRequestId",
+      // @ts-expect-error
+      [{ name: "file1.txt" }, { name: "file2.txt" }, { name: "file3.txt" }]
+    )
+
+    // @ts-expect-error
+    expect(instance.sendBackMsg).not.toHaveBeenCalled()
   })
 })
 

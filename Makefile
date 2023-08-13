@@ -196,8 +196,14 @@ conda-distribution:
 	GIT_HASH=$$(git rev-parse --short HEAD) conda build lib/conda-recipe --output-folder lib/conda-recipe/dist
 
 .PHONY: conda-package
-# Build lib and frontend, and then run 'conda-distribution'
-conda-package: build-deps frontend conda-distribution
+# Build lib and (maybe) frontend assets, and then run 'conda-distribution'
+conda-package: build-deps
+	if [ "${SNOWPARK_CONDA_BUILD}" = "1" ] ; then\
+		echo "Creating Snowpark conda build, so skipping building frontend assets."; \
+	else \
+		make frontend; \
+	fi
+	make conda-distribution;
 
 .PHONY: clean
 # Remove all generated files.
@@ -221,6 +227,7 @@ clean:
 	rm -rf frontend/public/reports
 	rm -rf frontend/lib/dist
 	rm -rf ~/.cache/pre-commit
+	rm -rf e2e/playwright/test-results
 	find . -name .streamlit -type d -exec rm -rfv {} \; || true
 	cd lib; rm -rf .coverage .coverage\.*
 
@@ -327,6 +334,14 @@ jscoverage:
 e2etest:
 	./scripts/run_e2e_tests.py
 
+.PHONY: playwright
+# Run playwright E2E tests.
+playwright:
+	python -m playwright install --with-deps; \
+	cd e2e/playwright; \
+	rm -rf ./test-results; \
+	pytest --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto -v
+
 .PHONY: loc
 # Count the number of lines of code in the project.
 loc:
@@ -410,3 +425,21 @@ connect-test-env:
 .PHONY: pre-commit-install
 pre-commit-install:
 	pre-commit install
+
+.PHONY: ensure-relative-imports
+# ensure relative imports exist within the lib/dist folder when doing yarn buildLibProd
+ensure-relative-imports:
+	./scripts/ensure_relative_imports.sh
+
+.PHONY frontend-lib-prod:
+# build the production version for @streamlit/lib
+frontend-lib-prod:
+	cd frontend/ ; yarn run buildLibProd;
+
+.PHONY streamlit-lib-prod:
+# build the production version for @streamlit/lib
+# while also doing a make init so it's a single command
+streamlit-lib-prod:
+	make mini-init;
+	make frontend-lib-prod;
+

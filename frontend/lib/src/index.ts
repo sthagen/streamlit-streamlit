@@ -18,7 +18,6 @@
 export {
   IS_DEV_ENV,
   RERUN_PROMPT_MODAL_DIALOG,
-  SHOW_DEPLOY_BUTTON,
   WEBSOCKET_PORT_DEV,
 } from "./baseconsts"
 export { default as VerticalBlock } from "./components/core/Block"
@@ -113,7 +112,6 @@ export {
   isPaddingDisplayed,
   isScrollingHidden,
   isToolbarDisplayed,
-  isTesting,
   notUndefined,
   setCookie,
   extractPageNameFromPathName,
@@ -136,4 +134,5 @@ export { mockTheme } from "./mocks/mockTheme"
 export { default as AlertElement } from "./components/elements/AlertElement"
 export { default as TextElement } from "./components/elements/TextElement"
 export { default as useScrollToBottom } from "./hooks/useScrollToBottom"
+export { RootStyleProvider } from "./RootStyleProvider"
 export * from "./proto"

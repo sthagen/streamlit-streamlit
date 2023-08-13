@@ -37,6 +37,11 @@ function DownloadButton(props: Props): ReactElement {
   const { disabled, element, widgetMgr, width, endpoints } = props
   const style = { width }
 
+  const kind =
+    element.type === "primary"
+      ? BaseButtonKind.PRIMARY
+      : BaseButtonKind.SECONDARY
+
   const handleDownloadClick: () => void = () => {
     // Downloads are only done on links, so create a hidden one and click it
     // for the user.
@@ -48,15 +53,23 @@ function DownloadButton(props: Props): ReactElement {
     link.click()
   }
 
+  // When useContainerWidth true & has help tooltip,
+  // we need to pass the container width down to the button
+  const fluidWidth = element.help ? width : true
+
   return (
-    <div className="row-widget stDownloadButton" style={style}>
+    <div
+      className="row-widget stDownloadButton"
+      data-testid="stDownloadButton"
+      style={style}
+    >
       <BaseButtonTooltip help={element.help}>
         <BaseButton
-          kind={BaseButtonKind.SECONDARY}
+          kind={kind}
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleDownloadClick}
-          fluidWidth={element.useContainerWidth || false}
+          fluidWidth={element.useContainerWidth ? fluidWidth : false}
         >
           <StreamlitMarkdown
             source={element.label}

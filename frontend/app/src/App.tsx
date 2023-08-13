@@ -51,13 +51,11 @@ import {
   isPaddingDisplayed,
   isScrollingHidden,
   isToolbarDisplayed,
-  isTesting,
   notUndefined,
   setCookie,
   extractPageNameFromPathName,
   BaseUriParts,
   RERUN_PROMPT_MODAL_DIALOG,
-  SHOW_DEPLOY_BUTTON,
   SessionInfo,
   FileUploadClient,
   logError,
@@ -80,6 +78,7 @@ import {
   Config,
   CustomThemeConfig,
   Delta,
+  FileURLsResponse,
   ForwardMsg,
   ForwardMsgMetadata,
   GitInfo,
@@ -330,6 +329,7 @@ export class App extends PureComponent<Props, State> {
       // reads the state.
       formsWithPendingRequestsChanged: formIds =>
         this.widgetMgr.setFormsWithUploads(formIds),
+      requestFileURLs: this.requestFileURLs,
     })
 
     this.componentRegistry = new ComponentRegistry(this.endpoints)
@@ -575,6 +575,8 @@ export class App extends PureComponent<Props, State> {
           this.handleScriptFinished(status),
         pageProfile: (pageProfile: PageProfile) =>
           this.handlePageProfileMsg(pageProfile),
+        fileUrlsResponse: (fileURLsResponse: FileURLsResponse) =>
+          this.uploadClient.onFileURLsResponse(fileURLsResponse),
       })
     } catch (e) {
       const err = ensureError(e)
@@ -1508,21 +1510,33 @@ export class App extends PureComponent<Props, State> {
 
   showDeployButton = (): boolean => {
     return (
-      isTesting() ||
-      (SHOW_DEPLOY_BUTTON &&
-        showDevelopmentOptions(this.state.isOwner, this.state.toolbarMode) &&
-        !this.isInCloudEnvironment() &&
-        this.sessionInfo.isSet &&
-        !this.sessionInfo.isHello)
+      showDevelopmentOptions(this.state.isOwner, this.state.toolbarMode) &&
+      !this.isInCloudEnvironment() &&
+      this.sessionInfo.isSet &&
+      !this.sessionInfo.isHello
     )
   }
 
   deployButtonClicked = (): void => {
-    if (!isTesting()) {
-      this.metricsMgr.enqueue("deployButtonInApp", { clicked: true })
-    }
+    this.metricsMgr.enqueue("menuClick", {
+      label: "deployButtonInApp",
+    })
     this.sendLoadGitInfoBackMsg()
     this.openDeployDialog()
+  }
+
+  requestFileURLs = (requestId: string, files: File[]): void => {
+    if (this.isServerConnected()) {
+      const backMsg = new BackMsg({
+        fileUrlsRequest: {
+          requestId,
+          fileNames: files.map(f => f.name),
+          sessionId: this.sessionInfo.current.sessionId,
+        },
+      })
+      backMsg.type = "fileUrlsRequest"
+      this.sendBackMsg(backMsg)
+    }
   }
 
   render(): JSX.Element {
