@@ -36,9 +36,12 @@ from streamlit.testing.v1.element_tree import (
     Block,
     Button,
     Caption,
+    ChatInput,
+    ChatMessage,
     Checkbox,
     Code,
     ColorPicker,
+    Column,
     Dataframe,
     DateInput,
     Divider,
@@ -56,6 +59,7 @@ from streamlit.testing.v1.element_tree import (
     SelectSlider,
     Slider,
     Subheader,
+    Tab,
     Text,
     TextArea,
     TextInput,
@@ -230,6 +234,14 @@ class AppTest:
         return self._tree.caption
 
     @property
+    def chat_input(self) -> WidgetList[ChatInput]:
+        return self._tree.chat_input
+
+    @property
+    def chat_message(self) -> Sequence[ChatMessage]:
+        return self._tree.chat_message
+
+    @property
     def checkbox(self) -> WidgetList[Checkbox]:
         return self._tree.checkbox
 
@@ -240,6 +252,10 @@ class AppTest:
     @property
     def color_picker(self) -> WidgetList[ColorPicker]:
         return self._tree.color_picker
+
+    @property
+    def columns(self) -> Sequence[Column]:
+        return self._tree.columns
 
     @property
     def dataframe(self) -> ElementList[Dataframe]:
@@ -296,6 +312,10 @@ class AppTest:
     @property
     def subheader(self) -> ElementList[Subheader]:
         return self._tree.subheader
+
+    @property
+    def tabs(self) -> Sequence[Tab]:
+        return self._tree.tabs
 
     @property
     def text(self) -> ElementList[Text]:

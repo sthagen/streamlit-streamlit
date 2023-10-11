@@ -49,6 +49,7 @@ from streamlit.elements.widgets.time_widgets import (
 from streamlit.proto.Arrow_pb2 import Arrow as ArrowProto
 from streamlit.proto.Block_pb2 import Block as BlockProto
 from streamlit.proto.Button_pb2 import Button as ButtonProto
+from streamlit.proto.ChatInput_pb2 import ChatInput as ChatInputProto
 from streamlit.proto.Checkbox_pb2 import Checkbox as CheckboxProto
 from streamlit.proto.Code_pb2 import Code as CodeProto
 from streamlit.proto.ColorPicker_pb2 import ColorPicker as ColorPickerProto
@@ -256,6 +257,38 @@ class Button(Widget):
 
     def click(self) -> Button:
         return self.set_value(True)
+
+
+@dataclass(repr=False)
+class ChatInput(Widget):
+    _value: str | None
+    proto: ChatInputProto = field(repr=False)
+    placeholder: str
+
+    def __init__(self, proto: ChatInputProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "chat_input"
+
+    def set_value(self, v: str | None) -> ChatInput:
+        self._value = v
+        return self
+
+    @property
+    def _widget_state(self) -> WidgetState:
+        ws = WidgetState()
+        ws.id = self.id
+        if self._value is not None:
+            ws.string_trigger_value.data = self._value
+        return ws
+
+    @property
+    def value(self) -> str | None:
+        if self._value:
+            return self._value
+        else:
+            state = self.root.session_state
+            assert state
+            return state[self.id]  # type: ignore
 
 
 @dataclass(repr=False)
@@ -998,14 +1031,13 @@ class TimeInput(Widget):
 class Block:
     type: str
     children: dict[int, Node]
-    proto: BlockProto | None = field(repr=False)
+    proto: Any = field(repr=False)
     root: ElementTree = field(repr=False)
 
     def __init__(
         self,
+        proto: BlockProto | None,
         root: ElementTree,
-        proto: BlockProto | None = None,
-        type: str | None = None,
     ):
         self.children = {}
         self.proto = proto
@@ -1014,10 +1046,8 @@ class Block:
             # TODO does not work for `st.container` which has no block proto
             assert ty is not None
             self.type = ty
-        elif type is not None:
-            self.type = type
         else:
-            self.type = ""
+            self.type = "unknown"
         self.root = root
 
     def __len__(self) -> int:
@@ -1047,6 +1077,14 @@ class Block:
         return ElementList(self.get("caption"))  # type: ignore
 
     @property
+    def chat_input(self) -> WidgetList[ChatInput]:
+        return WidgetList(self.get("chat_input"))  # type: ignore
+
+    @property
+    def chat_message(self) -> Sequence[ChatMessage]:
+        return self.get("chat_message")  # type: ignore
+
+    @property
     def checkbox(self) -> WidgetList[Checkbox]:
         return WidgetList(self.get("checkbox"))  # type: ignore
 
@@ -1057,6 +1095,10 @@ class Block:
     @property
     def color_picker(self) -> WidgetList[ColorPicker]:
         return WidgetList(self.get("color_picker"))  # type: ignore
+
+    @property
+    def columns(self) -> Sequence[Column]:
+        return self.get("column")  # type: ignore
 
     @property
     def dataframe(self) -> ElementList[Dataframe]:
@@ -1115,6 +1157,10 @@ class Block:
         return ElementList(self.get("subheader"))  # type: ignore
 
     @property
+    def tabs(self) -> Sequence[Tab]:
+        return self.get("tab")  # type: ignore
+
+    @property
     def text(self) -> ElementList[Text]:
         return ElementList(self.get("text"))  # type: ignore
 
@@ -1150,6 +1196,82 @@ class Block:
 
     def __repr__(self):
         return util.repr_(self)
+
+
+@dataclass(repr=False)
+class SpecialBlock(Block):
+    def __init__(
+        self,
+        proto: BlockProto | None,
+        root: ElementTree,
+        type: str | None = None,
+    ):
+        self.children = {}
+        self.proto = proto
+        if type:
+            self.type = type
+        elif proto and proto.WhichOneof("type"):
+            ty = proto.WhichOneof("type")
+            assert ty is not None
+            self.type = ty
+        else:
+            self.type = "unknown"
+        self.root = root
+
+
+@dataclass(repr=False)
+class ChatMessage(Block):
+    proto: BlockProto.ChatMessage = field(repr=False)
+    name: str
+    avatar: str
+
+    def __init__(
+        self,
+        proto: BlockProto.ChatMessage,
+        root: ElementTree,
+    ):
+        self.children = {}
+        self.proto = proto
+        self.root = root
+        self.type = "chat_message"
+        self.name = proto.name
+        self.avatar = proto.avatar
+
+
+@dataclass(repr=False)
+class Column(Block):
+    proto: BlockProto.Column = field(repr=False)
+    weight: float
+    gap: str
+
+    def __init__(
+        self,
+        proto: BlockProto.Column,
+        root: ElementTree,
+    ):
+        self.children = {}
+        self.proto = proto
+        self.root = root
+        self.type = "column"
+        self.weight = proto.weight
+        self.gap = proto.gap
+
+
+@dataclass(repr=False)
+class Tab(Block):
+    proto: BlockProto.Tab = field(repr=False)
+    label: str
+
+    def __init__(
+        self,
+        proto: BlockProto.Tab,
+        root: ElementTree,
+    ):
+        self.children = {}
+        self.proto = proto
+        self.root = root
+        self.type = "tab"
+        self.label = proto.label
 
 
 Node: TypeAlias = Union[Element, Block]
@@ -1190,7 +1312,6 @@ class ElementTree(Block):
     _runner: AppTest | None = field(repr=False, default=None)
 
     def __init__(self):
-        # Expect script_path and session_state to be filled in afterwards
         self.children = {}
         self.root = self
         self.type = "root"
@@ -1245,8 +1366,8 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
     """
     root = ElementTree()
     root.children = {
-        0: Block(type="main", root=root),
-        1: Block(type="sidebar", root=root),
+        0: SpecialBlock(type="main", root=root, proto=None),
+        1: SpecialBlock(type="sidebar", root=root, proto=None),
     }
 
     for msg in messages:
@@ -1262,6 +1383,8 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                 new_node = Dataframe(elt.arrow_data_frame, root=root)
             elif ty == "button":
                 new_node = Button(elt.button, root=root)
+            elif ty == "chat_input":
+                new_node = ChatInput(elt.chat_input, root=root)
             elif ty == "checkbox":
                 new_node = Checkbox(elt.checkbox, root=root)
             elif ty == "code":
@@ -1320,7 +1443,16 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
             else:
                 new_node = Element(elt, root=root)
         elif delta.WhichOneof("type") == "add_block":
-            new_node = Block(proto=delta.add_block, root=root)
+            block = delta.add_block
+            bty = block.WhichOneof("type")
+            if bty == "chat_message":
+                new_node = ChatMessage(block.chat_message, root=root)
+            elif bty == "column":
+                new_node = Column(block.column, root=root)
+            elif bty == "tab":
+                new_node = Tab(block.tab, root=root)
+            else:
+                new_node = Block(proto=block, root=root)
         else:
             # add_rows
             continue
@@ -1331,7 +1463,7 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
             children = current_node.children
             child = children.get(idx)
             if child is None:
-                child = Block(root=root)
+                child = Block(proto=None, root=root)
                 children[idx] = child
             assert isinstance(child, Block)
             current_node = child

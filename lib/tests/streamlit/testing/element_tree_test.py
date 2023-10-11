@@ -23,7 +23,6 @@ from streamlit.testing.script_interactions import InteractiveScriptTests
 from streamlit.testing.v1.app_test import AppTest
 
 
-@pytest.mark.xfail(reason="button does not work correctly with session state")
 def test_button():
     sr = AppTest.from_string(
         """
@@ -43,6 +42,29 @@ def test_button():
     sr3 = sr2.run()
     assert sr3.button[0].value == False
     assert sr3.button[1].value == False
+
+
+def test_chat():
+    def script():
+        import streamlit as st
+
+        input = st.chat_input(placeholder="Type a thing")
+        with st.chat_message("user"):
+            st.write(input)
+
+    at = AppTest.from_function(script).run()
+    assert at.chat_input[0].value == None
+    msg = at.chat_message[0]
+    assert msg.name == "user"
+    assert msg.markdown[0].value == "`None`"
+
+    at.chat_input[0].set_value("hi").run()
+    assert at.chat_input[0].value == "hi"
+    assert at.chat_message[0].markdown[0].value == "hi"
+
+    # verify value resets after use
+    at.run()
+    assert at.chat_input[0].value == None
 
 
 def test_checkbox():
@@ -79,6 +101,22 @@ def test_color_picker():
 
     at.color_picker[0].pick("#123456").run()
     assert at.color_picker[0].value == "#123456"
+
+
+def test_columns():
+    def script():
+        import streamlit as st
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.text("c1")
+        c2.radio("c2", ["a", "b", "c"])
+
+    at = AppTest.from_function(script).run()
+    assert len(at.columns) == 2
+    assert at.columns[0].weight == at.columns[1].weight
+    assert at.columns[0].text[0].value == "c1"
+    assert at.columns[1].radio[0].value == "a"
 
 
 def test_dataframe():
@@ -521,6 +559,23 @@ class SliderTest(InteractiveScriptTests):
         assert s[2].value == (time(12, 0), time(12, 15))
         assert s[3].value == datetime(2020, 1, 10, 8, 0)
         assert s[4].value == 0.1
+
+
+def test_tabs():
+    def script():
+        import streamlit as st
+
+        t1, t2 = st.tabs(["cat", "dog"])
+        with t1:
+            st.text("meow")
+        t2.text("woof")
+
+    at = AppTest.from_function(script).run()
+    assert len(at.tabs) == 2
+    assert at.tabs[0].label == "cat"
+    assert at.tabs[0].text[0].value == "meow"
+    assert at.tabs[1].label == "dog"
+    assert at.tabs[1].text[0].value == "woof"
 
 
 class TextAreaTest(InteractiveScriptTests):
