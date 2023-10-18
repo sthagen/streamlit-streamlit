@@ -46,6 +46,7 @@ from streamlit.elements.widgets.time_widgets import (
     TimeInputSerde,
     _parse_date_value,
 )
+from streamlit.proto.Alert_pb2 import Alert as AlertProto
 from streamlit.proto.Arrow_pb2 import Arrow as ArrowProto
 from streamlit.proto.Block_pb2 import Block as BlockProto
 from streamlit.proto.Button_pb2 import Button as ButtonProto
@@ -70,6 +71,7 @@ from streamlit.proto.TextInput_pb2 import TextInput as TextInputProto
 from streamlit.proto.TimeInput_pb2 import TimeInput as TimeInputProto
 from streamlit.proto.WidgetStates_pb2 import WidgetState, WidgetStates
 from streamlit.runtime.state.common import user_key_from_widget_id
+from streamlit.runtime.state.safe_session_state import SafeSessionState
 from streamlit.runtime.state.session_state import SessionState
 
 if TYPE_CHECKING:
@@ -144,7 +146,6 @@ class Element:
 @dataclass(repr=False)
 class Widget(ABC, Element):
     id: str
-    label: str
     help: str
     form_id: str
     disabled: bool
@@ -225,10 +226,54 @@ class WidgetList(Generic[W], ElementList[W]):
 
 
 @dataclass(repr=False)
+class AlertBase(Element):
+    proto: AlertProto = field(repr=False)
+    icon: str
+
+    def __init__(self, proto: AlertProto, root: ElementTree):
+        self.proto = proto
+        self.key = None
+        self.root = root
+
+    @property
+    def value(self) -> str:
+        return self.proto.body
+
+
+@dataclass(repr=False)
+class Error(AlertBase):
+    def __init__(self, proto: AlertProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "error"
+
+
+@dataclass(repr=False)
+class Warning(AlertBase):
+    def __init__(self, proto: AlertProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "warning"
+
+
+@dataclass(repr=False)
+class Info(AlertBase):
+    def __init__(self, proto: AlertProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "info"
+
+
+@dataclass(repr=False)
+class Success(AlertBase):
+    def __init__(self, proto: AlertProto, root: ElementTree):
+        super().__init__(proto, root)
+        self.type = "success"
+
+
+@dataclass(repr=False)
 class Button(Widget):
     _value: bool
 
     proto: ButtonProto
+    label: str
 
     def __init__(self, proto: ButtonProto, root: ElementTree):
         super().__init__(proto, root)
@@ -296,6 +341,7 @@ class Checkbox(Widget):
     _value: bool | None
 
     proto: CheckboxProto
+    label: str
 
     def __init__(self, proto: CheckboxProto, root: ElementTree):
         super().__init__(proto, root)
@@ -350,6 +396,7 @@ class Code(Element):
 @dataclass(repr=False)
 class ColorPicker(Widget):
     _value: str | None
+    label: str
 
     proto: ColorPickerProto
 
@@ -411,6 +458,7 @@ DateValue: TypeAlias = Union[SingleDateValue, Sequence[SingleDateValue], None]
 class DateInput(Widget):
     _value: DateValue | None | InitialValue
     proto: DateInputProto
+    label: str
     min: date
     max: date
     is_range: bool
@@ -550,6 +598,7 @@ class Multiselect(Widget, Generic[T]):
     _value: list[T] | None
 
     proto: MultiSelectProto
+    label: str
     options: list[str]
     max_selections: int
 
@@ -623,6 +672,7 @@ Number = Union[int, float]
 class NumberInput(Widget):
     _value: Number | None | InitialValue
     proto: NumberInputProto
+    label: str
     min: Number | None
     max: Number | None
     step: Number
@@ -677,6 +727,7 @@ class Radio(Widget, Generic[T]):
     _value: T | None | InitialValue
 
     proto: RadioProto = field(repr=False)
+    label: str
     options: list[str]
     horizontal: bool
 
@@ -724,6 +775,7 @@ class Selectbox(Widget, Generic[T]):
     _value: T | None | InitialValue
 
     proto: SelectboxProto = field(repr=False)
+    label: str
     options: list[str]
 
     def __init__(self, proto: SelectboxProto, root: ElementTree):
@@ -787,6 +839,7 @@ class SelectSlider(Widget, Generic[T]):
     _value: T | Sequence[T] | None
 
     proto: SliderProto
+    label: str
     data_type: SliderProto.DataType.ValueType
     options: list[str]
 
@@ -802,7 +855,16 @@ class SelectSlider(Widget, Generic[T]):
     @property
     def _widget_state(self) -> WidgetState:
         serde = SelectSliderSerde(self.options, [], False)
-        v = serde.serialize(self.value)
+        # We don't have access to the `format_func`, and options have been
+        # converted to strings already, so hope that formatting with `str`
+        # will let us find the right option.
+        try:
+            v = serde.serialize(str(self.value))
+        except (ValueError, TypeError):
+            try:
+                v = serde.serialize([str(val) for val in self.value])  # type: ignore
+            except:
+                raise ValueError(f"Could not find index for {self.value}")
 
         ws = WidgetState()
         ws.id = self.id
@@ -829,6 +891,7 @@ class Slider(Widget, Generic[SliderScalarT]):
     _value: SliderScalarT | Sequence[SliderScalarT] | None
 
     proto: SliderProto
+    label: str
     data_type: SliderProto.DataType.ValueType
     min: SliderScalar
     max: SliderScalar
@@ -893,6 +956,7 @@ class TextArea(Widget):
     _value: str | None | InitialValue
 
     proto: TextAreaProto
+    label: str
     max_chars: int
     placeholder: str
 
@@ -934,6 +998,7 @@ class TextArea(Widget):
 class TextInput(Widget):
     _value: str | None | InitialValue
     proto: TextInputProto
+    label: str
     max_chars: int
     autocomplete: str
     placeholder: str
@@ -979,6 +1044,7 @@ TimeValue: TypeAlias = Union[time, datetime]
 class TimeInput(Widget):
     _value: TimeValue | None | InitialValue
     proto: TimeInputProto
+    label: str
     step: int
 
     def __init__(self, proto: TimeInputProto, root: ElementTree):
@@ -1113,12 +1179,20 @@ class Block:
         return ElementList(self.get("divider"))  # type: ignore
 
     @property
+    def error(self) -> ElementList[Error]:
+        return ElementList(self.get("error"))  # type: ignore
+
+    @property
     def exception(self) -> ElementList[Exception]:
         return ElementList(self.get("exception"))  # type: ignore
 
     @property
     def header(self) -> ElementList[Header]:
         return ElementList(self.get("header"))  # type: ignore
+
+    @property
+    def info(self) -> ElementList[Info]:
+        return ElementList(self.get("info"))  # type: ignore
 
     @property
     def latex(self) -> ElementList[Latex]:
@@ -1157,6 +1231,10 @@ class Block:
         return ElementList(self.get("subheader"))  # type: ignore
 
     @property
+    def success(self) -> ElementList[Success]:
+        return ElementList(self.get("success"))  # type: ignore
+
+    @property
     def tabs(self) -> Sequence[Tab]:
         return self.get("tab")  # type: ignore
 
@@ -1179,6 +1257,10 @@ class Block:
     @property
     def title(self) -> ElementList[Title]:
         return ElementList(self.get("title"))  # type: ignore
+
+    @property
+    def warning(self) -> ElementList[Warning]:
+        return ElementList(self.get("warning"))  # type: ignore
 
     def get(self, element_type: str) -> Sequence[Node]:
         return [e for e in self if e.type == element_type]
@@ -1329,7 +1411,7 @@ class ElementTree(Block):
         return s
 
     @property
-    def session_state(self) -> SessionState:
+    def session_state(self) -> SafeSessionState:
         assert self._runner is not None
         return self._runner.session_state
 
@@ -1379,7 +1461,21 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
             elt = delta.new_element
             ty = elt.WhichOneof("type")
             new_node: Node
-            if ty == "arrow_data_frame":
+            if ty == "alert":
+                format = elt.alert.format
+                if format == AlertProto.Format.ERROR:
+                    new_node = Error(elt.alert, root=root)
+                elif format == AlertProto.Format.INFO:
+                    new_node = Info(elt.alert, root=root)
+                elif format == AlertProto.Format.SUCCESS:
+                    new_node = Success(elt.alert, root=root)
+                elif format == AlertProto.Format.WARNING:
+                    new_node = Warning(elt.alert, root=root)
+                else:
+                    raise ValueError(
+                        f"Unknown alert type with format {elt.alert.format}"
+                    )
+            elif ty == "arrow_data_frame":
                 new_node = Dataframe(elt.arrow_data_frame, root=root)
             elif ty == "button":
                 new_node = Button(elt.button, root=root)
