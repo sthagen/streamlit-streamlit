@@ -54,8 +54,10 @@ from streamlit.testing.v1.element_tree import (
     Exception,
     Header,
     Info,
+    Json,
     Latex,
     Markdown,
+    Metric,
     Multiselect,
     Node,
     NumberInput,
@@ -66,11 +68,14 @@ from streamlit.testing.v1.element_tree import (
     Subheader,
     Success,
     Tab,
+    Table,
     Text,
     TextArea,
     TextInput,
     TimeInput,
     Title,
+    Toast,
+    Toggle,
     Warning,
     WidgetList,
 )
@@ -201,7 +206,7 @@ class AppTest:
         mock_runtime.cache_storage_manager = MemoryCacheStorageManager()
         Runtime._instance = mock_runtime
         with source_util._pages_cache_lock:
-            self.saved_cached_pages = source_util._cached_pages
+            saved_cached_pages = source_util._cached_pages
             source_util._cached_pages = None
 
         saved_secrets: Secrets = st.secrets
@@ -221,7 +226,7 @@ class AppTest:
 
         # teardown
         with source_util._pages_cache_lock:
-            source_util._cached_pages = self.saved_cached_pages
+            source_util._cached_pages = saved_cached_pages
 
         if self.secrets:
             if st.secrets._secrets is not None:
@@ -314,12 +319,20 @@ class AppTest:
         return self._tree.info
 
     @property
+    def json(self) -> ElementList[Json]:
+        return self._tree.json
+
+    @property
     def latex(self) -> ElementList[Latex]:
         return self._tree.latex
 
     @property
     def markdown(self) -> ElementList[Markdown]:
         return self._tree.markdown
+
+    @property
+    def metric(self) -> ElementList[Metric]:
+        return self._tree.metric
 
     @property
     def multiselect(self) -> WidgetList[Multiselect[Any]]:
@@ -354,6 +367,10 @@ class AppTest:
         return self._tree.success
 
     @property
+    def table(self) -> ElementList[Table]:
+        return self._tree.table
+
+    @property
     def tabs(self) -> Sequence[Tab]:
         return self._tree.tabs
 
@@ -376,6 +393,14 @@ class AppTest:
     @property
     def title(self) -> ElementList[Title]:
         return self._tree.title
+
+    @property
+    def toast(self) -> ElementList[Toast]:
+        return self._tree.toast
+
+    @property
+    def toggle(self) -> WidgetList[Toggle]:
+        return self._tree.toggle
 
     @property
     def warning(self) -> ElementList[Warning]:

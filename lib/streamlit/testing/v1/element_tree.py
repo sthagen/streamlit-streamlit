@@ -59,7 +59,9 @@ from streamlit.proto.Element_pb2 import Element as ElementProto
 from streamlit.proto.Exception_pb2 import Exception as ExceptionProto
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.proto.Heading_pb2 import Heading as HeadingProto
+from streamlit.proto.Json_pb2 import Json as JsonProto
 from streamlit.proto.Markdown_pb2 import Markdown as MarkdownProto
+from streamlit.proto.Metric_pb2 import Metric as MetricProto
 from streamlit.proto.MultiSelect_pb2 import MultiSelect as MultiSelectProto
 from streamlit.proto.NumberInput_pb2 import NumberInput as NumberInputProto
 from streamlit.proto.Radio_pb2 import Radio as RadioProto
@@ -69,10 +71,10 @@ from streamlit.proto.Text_pb2 import Text as TextProto
 from streamlit.proto.TextArea_pb2 import TextArea as TextAreaProto
 from streamlit.proto.TextInput_pb2 import TextInput as TextInputProto
 from streamlit.proto.TimeInput_pb2 import TimeInput as TimeInputProto
+from streamlit.proto.Toast_pb2 import Toast as ToastProto
 from streamlit.proto.WidgetStates_pb2 import WidgetState, WidgetStates
 from streamlit.runtime.state.common import user_key_from_widget_id
 from streamlit.runtime.state.safe_session_state import SafeSessionState
-from streamlit.runtime.state.session_state import SessionState
 
 if TYPE_CHECKING:
     from streamlit.testing.v1.app_test import AppTest
@@ -97,32 +99,23 @@ class InitialValue:
 # have enough variation in how to get their values that most will need their
 # own classes too.
 @dataclass
-class Element:
-    type: str
+class Element(ABC):
+    type: str = field(repr=False)
     proto: Any = field(repr=False)
     root: ElementTree = field(repr=False)
     key: str | None
 
+    @abstractmethod
     def __init__(self, proto: ElementProto, root: ElementTree):
-        ty = proto.WhichOneof("type")
-        assert ty is not None
-        self.proto = getattr(proto, ty)
-        self.root = root
-        self.type = ty
-        self.key = None
+        ...
 
     def __iter__(self):
         yield self
 
     @property
+    @abstractmethod
     def value(self) -> Any:
-        try:
-            state = self.root.session_state
-            assert state is not None
-            return state[self.proto.id]
-        except ValueError:
-            # No id field, not a widget
-            return self.proto.value
+        ...
 
     def __getattr__(self, name: str) -> Any:
         """Fallback attempt to get an attribute from the proto"""
@@ -144,10 +137,29 @@ class Element:
 
 
 @dataclass(repr=False)
-class Widget(ABC, Element):
-    id: str
-    help: str
-    form_id: str
+class UnknownElement(Element):
+    def __init__(self, proto: ElementProto, root: ElementTree):
+        ty = proto.WhichOneof("type")
+        assert ty is not None
+        self.proto = getattr(proto, ty)
+        self.root = root
+        self.type = ty
+        self.key = None
+
+    @property
+    def value(self) -> Any:
+        try:
+            state = self.root.session_state
+            assert state is not None
+            return state[self.proto.id]
+        except ValueError:
+            # No id field, not a widget
+            return self.proto.value
+
+
+@dataclass(repr=False)
+class Widget(Element, ABC):
+    id: str = field(repr=False)
     disabled: bool
     key: str | None
     _value: Any
@@ -272,8 +284,10 @@ class Success(AlertBase):
 class Button(Widget):
     _value: bool
 
-    proto: ButtonProto
+    proto: ButtonProto = field(repr=False)
     label: str
+    help: str
+    form_id: str
 
     def __init__(self, proto: ButtonProto, root: ElementTree):
         super().__init__(proto, root)
@@ -340,8 +354,10 @@ class ChatInput(Widget):
 class Checkbox(Widget):
     _value: bool | None
 
-    proto: CheckboxProto
+    proto: CheckboxProto = field(repr=False)
     label: str
+    help: str
+    form_id: str
 
     def __init__(self, proto: CheckboxProto, root: ElementTree):
         super().__init__(proto, root)
@@ -376,7 +392,7 @@ class Checkbox(Widget):
 
 @dataclass(repr=False)
 class Code(Element):
-    proto: CodeProto
+    proto: CodeProto = field(repr=False)
 
     language: str
     show_line_numbers: bool
@@ -397,8 +413,10 @@ class Code(Element):
 class ColorPicker(Widget):
     _value: str | None
     label: str
+    help: str
+    form_id: str
 
-    proto: ColorPickerProto
+    proto: ColorPickerProto = field(repr=False)
 
     def __init__(self, proto: ColorPickerProto, root: ElementTree):
         super().__init__(proto, root)
@@ -457,11 +475,13 @@ DateValue: TypeAlias = Union[SingleDateValue, Sequence[SingleDateValue], None]
 @dataclass(repr=False)
 class DateInput(Widget):
     _value: DateValue | None | InitialValue
-    proto: DateInputProto
+    proto: DateInputProto = field(repr=False)
     label: str
     min: date
     max: date
     is_range: bool
+    help: str
+    form_id: str
 
     def __init__(self, proto: DateInputProto, root: ElementTree):
         super().__init__(proto, root)
@@ -517,7 +537,7 @@ class Exception(Element):
 
 @dataclass(repr=False)
 class HeadingBase(Element, ABC):
-    proto: HeadingProto
+    proto: HeadingProto = field(repr=False)
 
     tag: str
     anchor: str | None
@@ -554,8 +574,25 @@ class Title(HeadingBase):
 
 
 @dataclass(repr=False)
+class Json(Element):
+    proto: JsonProto = field(repr=False)
+
+    expanded: bool
+
+    def __init__(self, proto: JsonProto, root: ElementTree):
+        self.proto = proto
+        self.key = None
+        self.root = root
+        self.type = "json"
+
+    @property
+    def value(self) -> str:
+        return self.proto.body
+
+
+@dataclass(repr=False)
 class Markdown(Element):
-    proto: MarkdownProto
+    proto: MarkdownProto = field(repr=False)
 
     is_caption: bool
     allow_html: bool
@@ -594,13 +631,34 @@ class Latex(Markdown):
 
 
 @dataclass(repr=False)
+class Metric(Element):
+    proto: MetricProto
+    label: str
+    delta: str
+    color: str
+    help: str
+
+    def __init__(self, proto: MetricProto, root: ElementTree):
+        self.proto = proto
+        self.key = None
+        self.root = root
+        self.type = "metric"
+
+    @property
+    def value(self) -> str:
+        return self.proto.body
+
+
+@dataclass(repr=False)
 class Multiselect(Widget, Generic[T]):
     _value: list[T] | None
 
-    proto: MultiSelectProto
+    proto: MultiSelectProto = field(repr=False)
     label: str
     options: list[str]
     max_selections: int
+    help: str
+    form_id: str
 
     def __init__(self, proto: MultiSelectProto, root: ElementTree):
         super().__init__(proto, root)
@@ -671,11 +729,13 @@ Number = Union[int, float]
 @dataclass(repr=False)
 class NumberInput(Widget):
     _value: Number | None | InitialValue
-    proto: NumberInputProto
+    proto: NumberInputProto = field(repr=False)
     label: str
     min: Number | None
     max: Number | None
     step: Number
+    help: str
+    form_id: str
 
     def __init__(self, proto: NumberInputProto, root: ElementTree):
         super().__init__(proto, root)
@@ -730,6 +790,8 @@ class Radio(Widget, Generic[T]):
     label: str
     options: list[str]
     horizontal: bool
+    help: str
+    form_id: str
 
     def __init__(self, proto: RadioProto, root: ElementTree):
         super().__init__(proto, root)
@@ -777,6 +839,8 @@ class Selectbox(Widget, Generic[T]):
     proto: SelectboxProto = field(repr=False)
     label: str
     options: list[str]
+    help: str
+    form_id: str
 
     def __init__(self, proto: SelectboxProto, root: ElementTree):
         super().__init__(proto, root)
@@ -838,10 +902,12 @@ class Selectbox(Widget, Generic[T]):
 class SelectSlider(Widget, Generic[T]):
     _value: T | Sequence[T] | None
 
-    proto: SliderProto
+    proto: SliderProto = field(repr=False)
     label: str
     data_type: SliderProto.DataType.ValueType
     options: list[str]
+    help: str
+    form_id: str
 
     def __init__(self, proto: SliderProto, root: ElementTree):
         super().__init__(proto, root)
@@ -890,12 +956,14 @@ class SelectSlider(Widget, Generic[T]):
 class Slider(Widget, Generic[SliderScalarT]):
     _value: SliderScalarT | Sequence[SliderScalarT] | None
 
-    proto: SliderProto
+    proto: SliderProto = field(repr=False)
     label: str
     data_type: SliderProto.DataType.ValueType
     min: SliderScalar
     max: SliderScalar
     step: Step
+    help: str
+    form_id: str
 
     def __init__(self, proto: SliderProto, root: ElementTree):
         super().__init__(proto, root)
@@ -936,8 +1004,23 @@ class Slider(Widget, Generic[SliderScalarT]):
 
 
 @dataclass(repr=False)
+class Table(Element):
+    proto: ArrowProto = field(repr=False)
+
+    def __init__(self, proto: ArrowProto, root: ElementTree):
+        self.key = None
+        self.proto = proto
+        self.root = root
+        self.type = "arrow_table"
+
+    @property
+    def value(self) -> DataFrame:
+        return type_util.bytes_to_data_frame(self.proto.data)
+
+
+@dataclass(repr=False)
 class Text(Element):
-    proto: TextProto
+    proto: TextProto = field(repr=False)
 
     key: None = None
 
@@ -955,10 +1038,12 @@ class Text(Element):
 class TextArea(Widget):
     _value: str | None | InitialValue
 
-    proto: TextAreaProto
+    proto: TextAreaProto = field(repr=False)
     label: str
     max_chars: int
     placeholder: str
+    help: str
+    form_id: str
 
     def __init__(self, proto: TextAreaProto, root: ElementTree):
         super().__init__(proto, root)
@@ -997,11 +1082,13 @@ class TextArea(Widget):
 @dataclass(repr=False)
 class TextInput(Widget):
     _value: str | None | InitialValue
-    proto: TextInputProto
+    proto: TextInputProto = field(repr=False)
     label: str
     max_chars: int
     autocomplete: str
     placeholder: str
+    help: str
+    form_id: str
 
     def __init__(self, proto: TextInputProto, root: ElementTree):
         super().__init__(proto, root)
@@ -1043,9 +1130,11 @@ TimeValue: TypeAlias = Union[time, datetime]
 @dataclass(repr=False)
 class TimeInput(Widget):
     _value: TimeValue | None | InitialValue
-    proto: TimeInputProto
+    proto: TimeInputProto = field(repr=False)
     label: str
     step: int
+    help: str
+    form_id: str
 
     def __init__(self, proto: TimeInputProto, root: ElementTree):
         super().__init__(proto, root)
@@ -1091,6 +1180,57 @@ class TimeInput(Widget):
             return self
         dt = datetime.combine(date.today(), self.value) - timedelta(seconds=self.step)
         return self.set_value(dt.time())
+
+
+@dataclass(repr=False)
+class Toast(Element):
+    proto: ToastProto = field(repr=False)
+    icon: str
+
+    def __init__(self, proto: ToastProto, root: ElementTree):
+        self.proto = proto
+        self.key = None
+        self.root = root
+        self.type = "toast"
+
+    @property
+    def value(self) -> str:
+        return self.proto.body
+
+
+@dataclass(repr=False)
+class Toggle(Widget):
+    _value: bool | None
+
+    proto: CheckboxProto = field(repr=False)
+    label: str
+    help: str
+    form_id: str
+
+    def __init__(self, proto: CheckboxProto, root: ElementTree):
+        super().__init__(proto, root)
+        self._value = None
+        self.type = "toggle"
+
+    @property
+    def _widget_state(self) -> WidgetState:
+        ws = WidgetState()
+        ws.id = self.id
+        ws.bool_value = self.value
+        return ws
+
+    @property
+    def value(self) -> bool:
+        if self._value is not None:
+            return self._value
+        else:
+            state = self.root.session_state
+            assert state
+            return cast(bool, state[self.id])
+
+    def set_value(self, v: bool) -> Toggle:
+        self._value = v
+        return self
 
 
 @dataclass(repr=False)
@@ -1195,12 +1335,20 @@ class Block:
         return ElementList(self.get("info"))  # type: ignore
 
     @property
+    def json(self) -> ElementList[Json]:
+        return ElementList(self.get("json"))  # type: ignore
+
+    @property
     def latex(self) -> ElementList[Latex]:
         return ElementList(self.get("latex"))  # type: ignore
 
     @property
     def markdown(self) -> ElementList[Markdown]:
         return ElementList(self.get("markdown"))  # type: ignore
+
+    @property
+    def metric(self) -> ElementList[Metric]:
+        return ElementList(self.get("metric"))  # type: ignore
 
     @property
     def multiselect(self) -> WidgetList[Multiselect[Any]]:
@@ -1235,6 +1383,10 @@ class Block:
         return ElementList(self.get("success"))  # type: ignore
 
     @property
+    def table(self) -> ElementList[Table]:
+        return ElementList(self.get("arrow_table"))  # type: ignore
+
+    @property
     def tabs(self) -> Sequence[Tab]:
         return self.get("tab")  # type: ignore
 
@@ -1257,6 +1409,14 @@ class Block:
     @property
     def title(self) -> ElementList[Title]:
         return ElementList(self.get("title"))  # type: ignore
+
+    @property
+    def toast(self) -> ElementList[Toast]:
+        return ElementList(self.get("toast"))  # type: ignore
+
+    @property
+    def toggle(self) -> WidgetList[Toggle]:
+        return WidgetList(self.get("toggle"))  # type: ignore
 
     @property
     def warning(self) -> ElementList[Warning]:
@@ -1303,6 +1463,7 @@ class SpecialBlock(Block):
 
 @dataclass(repr=False)
 class ChatMessage(Block):
+    type: str = field(repr=False)
     proto: BlockProto.ChatMessage = field(repr=False)
     name: str
     avatar: str
@@ -1322,6 +1483,7 @@ class ChatMessage(Block):
 
 @dataclass(repr=False)
 class Column(Block):
+    type: str = field(repr=False)
     proto: BlockProto.Column = field(repr=False)
     weight: float
     gap: str
@@ -1341,6 +1503,7 @@ class Column(Block):
 
 @dataclass(repr=False)
 class Tab(Block):
+    type: str = field(repr=False)
     proto: BlockProto.Tab = field(repr=False)
     label: str
 
@@ -1438,6 +1601,9 @@ class ElementTree(Block):
         widget_states = self.get_widget_states()
         return self._runner._run(widget_states, timeout=timeout)
 
+    def __repr__(self):
+        return repr(self.children)
+
 
 def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
     """Transform a list of `ForwardMsg` into a tree matching the implicit
@@ -1450,6 +1616,7 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
     root.children = {
         0: SpecialBlock(type="main", root=root, proto=None),
         1: SpecialBlock(type="sidebar", root=root, proto=None),
+        2: SpecialBlock(type="event", root=root, proto=None),
     }
 
     for msg in messages:
@@ -1477,12 +1644,18 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                     )
             elif ty == "arrow_data_frame":
                 new_node = Dataframe(elt.arrow_data_frame, root=root)
+            elif ty == "arrow_table":
+                new_node = Table(elt.arrow_table, root=root)
             elif ty == "button":
                 new_node = Button(elt.button, root=root)
             elif ty == "chat_input":
                 new_node = ChatInput(elt.chat_input, root=root)
             elif ty == "checkbox":
-                new_node = Checkbox(elt.checkbox, root=root)
+                style = elt.checkbox.type
+                if style == CheckboxProto.StyleType.TOGGLE:
+                    new_node = Toggle(elt.checkbox, root=root)
+                else:
+                    new_node = Checkbox(elt.checkbox, root=root)
             elif ty == "code":
                 new_node = Code(elt.code, root=root)
             elif ty == "color_picker":
@@ -1500,6 +1673,8 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                     new_node = Subheader(elt.heading, root=root)
                 else:
                     raise ValueError(f"Unknown heading type with tag {elt.heading.tag}")
+            elif ty == "json":
+                new_node = Json(elt.json, root=root)
             elif ty == "markdown":
                 if elt.markdown.element_type == MarkdownProto.Type.NATIVE:
                     new_node = Markdown(elt.markdown, root=root)
@@ -1513,6 +1688,8 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                     raise ValueError(
                         f"Unknown markdown type {elt.markdown.element_type}"
                     )
+            elif ty == "metric":
+                new_node = Metric(elt.metric, root=root)
             elif ty == "multiselect":
                 new_node = Multiselect(elt.multiselect, root=root)
             elif ty == "number_input":
@@ -1536,8 +1713,10 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
                 new_node = TextInput(elt.text_input, root=root)
             elif ty == "time_input":
                 new_node = TimeInput(elt.time_input, root=root)
+            elif ty == "toast":
+                new_node = Toast(elt.toast, root=root)
             else:
-                new_node = Element(elt, root=root)
+                new_node = UnknownElement(elt, root=root)
         elif delta.WhichOneof("type") == "add_block":
             block = delta.add_block
             bty = block.WhichOneof("type")

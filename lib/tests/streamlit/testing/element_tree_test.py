@@ -39,6 +39,12 @@ def test_alert():
     assert at.success[0].icon == "🚨"
     assert at.warning[0].value == "danger danger"
 
+    # Verify that creating the reprs does not throw
+    repr(at.error[0])
+    repr(at.info[0])
+    repr(at.success[0])
+    repr(at.warning[0])
+
 
 def test_button():
     sr = AppTest.from_string(
@@ -59,6 +65,8 @@ def test_button():
     sr3 = sr2.run()
     assert sr3.button[0].value == False
     assert sr3.button[1].value == False
+
+    repr(sr.button[0])
 
 
 def test_chat():
@@ -83,6 +91,10 @@ def test_chat():
     at.run()
     assert at.chat_input[0].value == None
 
+    # verify reprs
+    repr(at.chat_input[0])
+    repr(at.chat_message[0])
+
 
 def test_checkbox():
     def script():
@@ -100,6 +112,8 @@ def test_checkbox():
 
     at.checkbox[1].uncheck().run()
     assert at.checkbox.values == [True, False]
+
+    repr(at.checkbox[0])
 
 
 def test_color_picker():
@@ -119,6 +133,8 @@ def test_color_picker():
     at.color_picker[0].pick("#123456").run()
     assert at.color_picker[0].value == "#123456"
 
+    repr(at.color_picker[0])
+
 
 def test_columns():
     def script():
@@ -134,6 +150,8 @@ def test_columns():
     assert at.columns[0].weight == at.columns[1].weight
     assert at.columns[0].text[0].value == "c1"
     assert at.columns[1].radio[0].value == "a"
+
+    repr(at.columns[0])
 
 
 def test_dataframe():
@@ -159,6 +177,8 @@ def test_dataframe():
             data=np.arange(0, 6, 1).reshape(2, 3),
         )
     )
+
+    repr(at.dataframe[0])
 
 
 def test_date_input():
@@ -190,18 +210,23 @@ def test_date_input():
         (date(2023, 1, 1), date(2024, 1, 1)),
     ]
 
+    # Verify that creating the reprs does not throw
+    repr(at.date_input[0])
+
 
 def test_exception():
     script = AppTest.from_string(
         """
-            import streamlit as st
+        import streamlit as st
 
-            st.exception(RuntimeError("foo"))
-            """,
+        st.exception(RuntimeError("foo"))
+        """,
     )
     sr = script.run()
 
     assert sr.exception[0].value == "foo"
+
+    repr(sr.exception[0])
 
 
 def test_markdown_exception():
@@ -215,6 +240,8 @@ def test_markdown_exception():
     sr = script.run()
 
     assert sr.exception[0].is_markdown
+
+    repr(sr.exception[0])
 
 
 def test_title():
@@ -235,6 +262,8 @@ def test_title():
     assert sr.title[1].value == "This is a title with anchor"
     assert sr.title[2].hide_anchor
 
+    repr(sr.title[0])
+
 
 def test_header():
     script = AppTest.from_string(
@@ -253,6 +282,8 @@ def test_header():
     assert sr.header[1].anchor == "header anchor text"
     assert sr.header[1].value == "This is a header with anchor"
     assert sr.header[2].hide_anchor
+
+    repr(sr.header[0])
 
 
 def test_subheader():
@@ -276,6 +307,8 @@ def test_subheader():
     assert sr.subheader[1].value == "This is a subheader with anchor"
     assert sr.subheader[2].hide_anchor
 
+    repr(sr.subheader[0])
+
 
 def test_heading_elements_by_type():
     script = AppTest.from_string(
@@ -298,6 +331,20 @@ def test_heading_elements_by_type():
     assert len(sr.subheader) == 2
 
 
+def test_json():
+    def script():
+        import streamlit as st
+
+        st.json(["hi", {"foo": "bar"}])
+
+    at = AppTest.from_function(script).run()
+    j = at.json[0]
+    assert j.value == '["hi", {"foo": "bar"}]'
+    assert j.expanded
+
+    repr(j)
+
+
 def test_markdown():
     script = AppTest.from_string(
         """
@@ -311,6 +358,8 @@ def test_markdown():
     assert sr.markdown
     assert sr.markdown[0].type == "markdown"
     assert sr.markdown[0].value == "**This is a markdown**"
+
+    repr(sr.markdown[0])
 
 
 def test_caption():
@@ -328,6 +377,8 @@ def test_caption():
     assert sr.caption[0].value == "This is a caption"
     assert sr.caption[0].is_caption
 
+    repr(sr.caption[0])
+
 
 def test_code():
     script = AppTest.from_string(
@@ -342,6 +393,8 @@ def test_code():
     assert sr.code
     assert sr.code[0].type == "code"
     assert sr.code[0].value == "import streamlit as st"
+
+    repr(sr.code[0])
 
 
 def test_echo():
@@ -376,6 +429,8 @@ def test_latex():
     assert sr.latex[0].type == "latex"
     assert sr.latex[0].value == "$$\nE=mc^2\n$$"
 
+    repr(sr.latex[0])
+
 
 def test_divider():
     script = AppTest.from_string(
@@ -390,6 +445,8 @@ def test_divider():
     assert sr.divider
     assert sr.divider[0].type == "divider"
     assert sr.divider[0].value == MARKDOWN_HORIZONTAL_RULE_EXPRESSION
+
+    repr(sr.divider[0])
 
 
 def test_markdown_elements_by_type():
@@ -414,6 +471,20 @@ def test_markdown_elements_by_type():
     assert len(sr.caption) == 2
     assert len(sr.code) == 2
     assert len(sr.latex) == 2
+
+
+def test_metric():
+    def script():
+        import streamlit as st
+
+        st.metric("stonks", value=9500, delta=1000)
+
+    at = AppTest.from_function(script).run()
+    m = at.metric[0]
+    assert m.value == "9500"
+    assert m.delta == "1000"
+
+    repr(m)
 
 
 def test_multiselect():
@@ -441,6 +512,9 @@ def test_multiselect():
     assert sr4.multiselect[0].value == []
     assert set(sr3.multiselect[1].value) == set(["zero", "one", "two"])
 
+    # Verify that creating the reprs does not throw
+    repr(sr.multiselect[0])
+
 
 def test_number_input():
     script = AppTest.from_string(
@@ -466,6 +540,8 @@ def test_number_input():
     sr4 = sr3.number_input[0].decrement().run().number_input[1].decrement().run()
     assert sr4.number_input[0].value == -10
     assert sr4.number_input[1].value == -1.0
+
+    repr(sr.number_input[0])
 
 
 def test_selectbox():
@@ -510,6 +586,8 @@ def test_selectbox():
     with pytest.raises(IndexError):
         sr6.selectbox[0].select_index(42).run()
 
+    repr(sr.selectbox[0])
+
 
 def test_select_slider():
     script = AppTest.from_string(
@@ -529,6 +607,8 @@ def test_select_slider():
     sr3 = sr2.select_slider[1].set_range("yellow", "orange").run()
     assert sr3.select_slider[0].value == "violet"
     assert sr3.select_slider[1].value == ("orange", "yellow")
+
+    repr(sr.select_slider[0])
 
 
 def test_select_slider_ints():
@@ -564,6 +644,8 @@ def test_access_methods():
     assert sr.sidebar.radio[0].value == "a"
     assert sr.main.radio[0].value == 1
 
+    repr(sr.radio[0])
+
 
 def test_slider():
     script = AppTest.from_string(
@@ -597,6 +679,34 @@ def test_slider():
     assert s[3].value == datetime(2020, 1, 10, 8, 0)
     assert s[4].value == 0.1
 
+    # Verify that creating the reprs does not throw
+    repr(sr.slider[0])
+
+
+def test_table():
+    def script():
+        import numpy as np
+        import pandas as pd
+
+        import streamlit as st
+
+        df = pd.DataFrame(
+            index=[[0, 1], ["i1", "i2"]],
+            columns=[[2, 3, 4], ["c1", "c2", "c3"]],
+            data=np.arange(0, 6, 1).reshape(2, 3),
+        )
+        st.table(df)
+
+    at = AppTest.from_function(script).run()
+    df = pd.DataFrame(
+        index=[[0, 1], ["i1", "i2"]],
+        columns=[[2, 3, 4], ["c1", "c2", "c3"]],
+        data=np.arange(0, 6, 1).reshape(2, 3),
+    )
+    assert at.table[0].value.equals(df)
+
+    repr(at.table[0])
+
 
 def test_tabs():
     def script():
@@ -613,6 +723,8 @@ def test_tabs():
     assert at.tabs[0].text[0].value == "meow"
     assert at.tabs[1].label == "dog"
     assert at.tabs[1].text[0].value == "woof"
+
+    repr(at.tabs[0])
 
 
 def test_text_area():
@@ -636,6 +748,8 @@ def test_text_area():
     assert sr2.text_area[0].value == long_string
     assert sr2.text_area[1].value == "default"
 
+    repr(sr.text_area[0])
+
 
 def test_text_input():
     script = AppTest.from_string(
@@ -657,7 +771,8 @@ def test_text_input():
 
     assert sr2.text_input[0].value == long_string
     assert sr2.text_input[1].value == "default"
-    # assert sr2.text_input[1].value == long_string[:20]
+
+    repr(sr.text_input[0])
 
 
 def test_time_input():
@@ -688,6 +803,38 @@ def test_time_input():
         time(16),
         time(2, 1),
     ]
+
+    repr(sr.time_input[0])
+
+
+def test_toast():
+    def script():
+        import streamlit as st
+
+        st.toast("first")
+        st.write("something in the main area")
+        st.toast("second")
+
+    at = AppTest.from_function(script).run()
+    assert at.toast.len == 2
+    assert at.toast.values == ["first", "second"]
+
+
+def test_toggle():
+    def script():
+        import streamlit as st
+
+        on = st.toggle("Activate feature")
+        if on:
+            st.write("Feature activated!")
+
+    at = AppTest.from_function(script).run()
+    assert at.toggle[0].value is False
+
+    at.toggle[0].set_value(True).run()
+    assert at.toggle[0].value is True
+
+    repr(at.toggle[0])
 
 
 def test_short_timeout():
