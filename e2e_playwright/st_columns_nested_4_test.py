@@ -11,3 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import re
+
+from playwright.sync_api import Page, expect
+
+
+def test_shows_nested_columns_correctly(app: Page):
+    expect(app.get_by_test_id("stException")).to_have_text(
+        re.compile(
+            r"Columns cannot be placed inside other columns in the sidebar. This is only possible in the main area of the app."
+        )
+    )

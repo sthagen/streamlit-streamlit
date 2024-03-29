@@ -11,3 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from playwright.sync_api import Page
+
+from e2e_playwright.conftest import ImageCompareFunction
+
+
+def test_shows_nested_columns_correctly(
+    themed_app: Page, assert_snapshot: ImageCompareFunction
+):
+    assert_snapshot(
+        themed_app.get_by_test_id("stVerticalBlock").nth(0),
+        name="st_columns-long_texts",
+    )
