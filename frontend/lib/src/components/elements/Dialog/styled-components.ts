@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-import React from "react"
-import { screen } from "@testing-library/react"
-import "@testing-library/jest-dom"
+import styled from "@emotion/styled"
 
-import { render } from "@streamlit/lib/src/test_util"
+import { getWrappedHeadersStyle } from "@streamlit/lib/src/theme/utils"
 
-import EventContainer from "./EventContainer"
-
-describe("EventContainer Component", () => {
-  test("renders Toast Container", () => {
-    render(<EventContainer scriptRunId="123" />)
-
-    const toastContainer = screen.getByTestId("toastContainer")
-    expect(toastContainer).toBeInTheDocument()
-  })
-})
+// change appearance of st.title, st.subheader etc.
+export const StyledDialogContent = styled.div(({ theme }) =>
+  getWrappedHeadersStyle(theme)
+)

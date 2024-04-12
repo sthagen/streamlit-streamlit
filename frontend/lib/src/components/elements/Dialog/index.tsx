@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import React from "react"
-import { screen } from "@testing-library/react"
-import "@testing-library/jest-dom"
-
-import { render } from "@streamlit/lib/src/test_util"
-
-import EventContainer from "./EventContainer"
-
-describe("EventContainer Component", () => {
-  test("renders Toast Container", () => {
-    render(<EventContainer scriptRunId="123" />)
-
-    const toastContainer = screen.getByTestId("toastContainer")
-    expect(toastContainer).toBeInTheDocument()
-  })
-})
+export { default } from "./Dialog"
