@@ -98,6 +98,7 @@ class StreamlitTest(unittest.TestCase):
                 "checkbox",
                 "code",
                 "columns",
+                "context",
                 "tabs",
                 "container",
                 "dataframe",
@@ -174,6 +175,7 @@ class StreamlitTest(unittest.TestCase):
                 "cache_resource",
                 "navigation",
                 "Page",
+                "fragment",
                 # Experimental APIs:
                 "experimental_dialog",
                 "experimental_fragment",
