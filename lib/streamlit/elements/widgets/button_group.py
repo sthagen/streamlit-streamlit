@@ -78,16 +78,7 @@ _NUMBER_STARS: Final = 5
 _STAR_ICON: Final = ":material/star:"
 # we don't have the filled-material icon library as a dependency. Hence, we have it here
 # in base64 format and send it over the wire as an image.
-_SELECTED_STAR_ICON: Final = (
-    "<img src='data:image/svg+xml;base64,"
-    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0i"
-    "MCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjNWY2MzY4Ij48cGF0aCBkPSJNNDgwLTI2OSAz"
-    "MTQtMTY5cS0xMSA3LTIzIDZ0LTIxLThxLTktNy0xNC0xNy41dC0yLTIzLjVsNDQtMTg5LTE0Ny0xMjdxLTEwL"
-    "TktMTIuNS0yMC41VDE0MC01NzFxNC0xMSAxMi0xOHQyMi05bDE5NC0xNyA3NS0xNzhxNS0xMiAxNS41LTE4dDI"
-    "xLjUtNnExMSAwIDIxLjUgNnQxNS41IDE4bDc1IDE3OCAxOTQgMTdxMTQgMiAyMiA5dDEyIDE4cTQgMTEgMS41I"
-    "DIyLjVUODA5LTUyOEw2NjItNDAxbDQ0IDE4OXEzIDEzLTIgMjMuNVQ2OTAtMTcxcS05IDctMjEgOHQtMjMtNkw"
-    "0ODAtMjY5WiIvPjwvc3ZnPg=='/>"
-)
+_SELECTED_STAR_ICON: Final = ":material/star_filled:"
 
 _FeedbackOptions: TypeAlias = Literal["thumbs", "faces", "stars"]
 
