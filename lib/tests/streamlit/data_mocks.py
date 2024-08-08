@@ -32,6 +32,7 @@ from tests.streamlit.modin_mocks import DataFrame as ModinDataFrame
 from tests.streamlit.modin_mocks import Series as ModinSeries
 from tests.streamlit.pyspark_mocks import DataFrame as PySparkDataFrame
 from tests.streamlit.snowpandas_mocks import DataFrame as SnowpandasDataFrame
+from tests.streamlit.snowpandas_mocks import Index as SnowpandasIndex
 from tests.streamlit.snowpandas_mocks import Series as SnowpandasSeries
 from tests.streamlit.snowpark_mocks import DataFrame as SnowparkDataFrame
 from tests.streamlit.snowpark_mocks import Row as SnowparkRow
@@ -840,6 +841,21 @@ SHARED_TEST_CASES: list[tuple[str, Any, CaseMetadata]] = [
         ),
     ),
     (
+        "Snowpandas Index",
+        SnowpandasIndex(
+            pd.Index(["st.text_area", "st.markdown"]),
+        ),
+        CaseMetadata(
+            2,
+            1,
+            DataFormat.SNOWPANDAS_OBJECT,
+            ["st.text_area", "st.markdown"],
+            "dataframe",
+            True,
+            pd.DataFrame,
+        ),
+    ),
+    (
         "Modin DataFrame",
         ModinDataFrame(
             pd.DataFrame(
@@ -896,3 +912,112 @@ SHARED_TEST_CASES: list[tuple[str, Any, CaseMetadata]] = [
         ),
     ),
 ]
+
+###################################
+########### Polars Types ##########
+###################################
+try:
+    import polars as pl
+
+    SHARED_TEST_CASES.extend(
+        [
+            (
+                "Polars DataFrame",
+                pl.DataFrame(
+                    [
+                        {"name": "st.text_area", "type": "widget"},
+                        {"name": "st.markdown", "type": "element"},
+                    ]
+                ),
+                CaseMetadata(
+                    2,
+                    2,
+                    DataFormat.POLARS_DATAFRAME,
+                    ["st.text_area", "st.markdown"],
+                    "dataframe",
+                    False,
+                ),
+            ),
+            (
+                "Polars Series",
+                pl.Series(["st.number_input", "st.text_area", "st.text_input"]),
+                CaseMetadata(
+                    3,
+                    1,
+                    DataFormat.POLARS_SERIES,
+                    ["st.number_input", "st.text_area", "st.text_input"],
+                    "dataframe",
+                    False,
+                ),
+            ),
+            (
+                "Polars LazyFrame",
+                pl.LazyFrame(
+                    {
+                        "name": ["st.text_area", "st.markdown"],
+                        "type": ["widget", "element"],
+                    }
+                ),
+                CaseMetadata(
+                    2,
+                    2,
+                    DataFormat.POLARS_LAZYFRAME,
+                    ["st.text_area", "st.markdown"],
+                    "dataframe",
+                    True,
+                    pl.DataFrame,
+                ),
+            ),
+        ]
+    )
+except ModuleNotFoundError:
+    print("Polars not installed. Skipping Polars dataframe integration tests.")  # noqa: T201
+
+###################################
+########### Xarray Types ##########
+###################################
+try:
+    import xarray as xr
+
+    SHARED_TEST_CASES.extend(
+        [
+            (
+                "Xarray Dataset",
+                xr.Dataset.from_dataframe(
+                    pd.DataFrame(
+                        {
+                            "name": ["st.text_area", "st.markdown"],
+                            "type": ["widget", "element"],
+                        }
+                    )
+                ),
+                CaseMetadata(
+                    2,
+                    2,
+                    DataFormat.XARRAY_DATASET,
+                    ["st.text_area", "st.markdown"],
+                    "dataframe",
+                    False,
+                ),
+            ),
+            (
+                "Xarray DataArray",
+                xr.DataArray.from_series(
+                    pd.Series(
+                        ["st.number_input", "st.text_area", "st.text_input"],
+                        name="widgets",
+                    )
+                ),
+                CaseMetadata(
+                    3,
+                    1,
+                    DataFormat.XARRAY_DATA_ARRAY,
+                    ["st.number_input", "st.text_area", "st.text_input"],
+                    "dataframe",
+                    False,
+                ),
+            ),
+        ]
+    )
+except ModuleNotFoundError:
+    print("Xarray not installed. Skipping Xarray dataframe integration tests.")  # noqa: T201
