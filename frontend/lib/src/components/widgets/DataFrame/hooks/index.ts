@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { default as useColumnFormatting } from "./useColumnFormatting"
 export { default as useColumnLoader } from "./useColumnLoader"
 export { default as useColumnPinning } from "./useColumnPinning"
 export { default as useColumnReordering } from "./useColumnReordering"

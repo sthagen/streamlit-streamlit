@@ -28,10 +28,12 @@ describe("DataFrame ColumnMenu", () => {
     top: 100,
     left: 100,
     isColumnPinned: false,
+    columnKind: "number",
     onPinColumn: vi.fn(),
     onUnpinColumn: vi.fn(),
     onCloseMenu: vi.fn(),
     onSortColumn: vi.fn(),
+    onChangeFormat: vi.fn(),
     onAutosize: vi.fn(),
   }
 
@@ -120,6 +122,20 @@ describe("DataFrame ColumnMenu", () => {
       await userEvent.click(screen.getByText("Unpin column"))
       expect(defaultProps.onUnpinColumn).toHaveBeenCalled()
       expect(defaultProps.onCloseMenu).toHaveBeenCalled()
+    })
+  })
+
+  describe("format menu functionality", () => {
+    test("renders format option when onChangeFormat is provided", () => {
+      render(<ColumnMenu {...defaultProps} onChangeFormat={() => {}} />)
+
+      expect(screen.getByText("Format")).toBeInTheDocument()
+    })
+
+    test("does not render format option when onChangeFormat is undefined", () => {
+      render(<ColumnMenu {...defaultProps} onChangeFormat={undefined} />)
+
+      expect(screen.queryByText("Format")).not.toBeInTheDocument()
     })
   })
 

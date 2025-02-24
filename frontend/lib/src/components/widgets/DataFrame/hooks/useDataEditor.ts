@@ -26,12 +26,12 @@ import {
 } from "@glideapps/glide-data-grid"
 import { getLogger } from "loglevel"
 
-import { notNullOrUndefined } from "~lib/util/utils"
 import {
   BaseColumn,
   isErrorCell,
 } from "~lib/components/widgets/DataFrame/columns"
 import EditingState from "~lib/components/widgets/DataFrame/EditingState"
+import { notNullOrUndefined } from "~lib/util/utils"
 
 /**
  * Create return type for useDataLoader hook based on the DataEditorProps.

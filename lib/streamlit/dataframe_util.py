@@ -1260,8 +1260,13 @@ def _unify_missing_values(df: DataFrame) -> DataFrame:
     which is the only missing value type that is supported by all data
     """
     import numpy as np
+    import pandas as pd
 
-    return df.fillna(np.nan).replace([np.nan], [None]).infer_objects()
+    # Replace all recognized nulls (np.nan, pd.NA, NaT) with None
+    # then infer objects without creating a separate copy:
+    # For performance reasons, we could use copy=False here.
+    # However, this is only available in pandas >=2.
+    return df.replace([pd.NA, pd.NaT, np.nan], None).infer_objects()
 
 
 def _pandas_df_to_series(df: DataFrame) -> Series[Any]:

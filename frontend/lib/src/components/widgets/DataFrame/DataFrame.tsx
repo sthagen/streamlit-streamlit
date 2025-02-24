@@ -53,6 +53,7 @@ import { useDebouncedCallback } from "~lib/hooks/useDebouncedCallback"
 import ColumnMenu from "./ColumnMenu"
 import EditingState, { getColumnName } from "./EditingState"
 import {
+  useColumnFormatting,
   useColumnLoader,
   useColumnPinning,
   useColumnReordering,
@@ -616,6 +617,8 @@ function DataFrame({
     setColumnConfigMapping
   )
 
+  const { changeColumnFormat } = useColumnFormatting(setColumnConfigMapping)
+
   const { onColumnMoved } = useColumnReordering(
     columns,
     freezeColumns,
@@ -1061,6 +1064,7 @@ function DataFrame({
           <ColumnMenu
             top={showMenu.headerBounds.y + showMenu.headerBounds.height}
             left={showMenu.headerBounds.x + showMenu.headerBounds.width}
+            columnKind={originalColumns[showMenu.columnIdx].kind}
             onCloseMenu={() => setShowMenu(undefined)}
             onSortColumn={
               isSortingEnabled
@@ -1078,6 +1082,22 @@ function DataFrame({
             }}
             onPinColumn={() => {
               pinColumn(originalColumns[showMenu.columnIdx].id)
+            }}
+            onChangeFormat={(format: string) => {
+              changeColumnFormat(
+                originalColumns[showMenu.columnIdx].id,
+                format
+              )
+              // After changing the format, remeasure the column to ensure that
+              // the column width is updated to the new format.
+              // We need to apply a short timeout here to ensure that
+              // the column format already has been fully applied to all cells
+              // before we remeasure the column.
+              setTimeout(() => {
+                dataEditorRef.current?.remeasureColumns(
+                  CompactSelection.fromSingleSelection(showMenu.columnIdx)
+                )
+              }, 100)
             }}
             onAutosize={() => {
               dataEditorRef.current?.remeasureColumns(

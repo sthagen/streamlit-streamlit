@@ -73,7 +73,16 @@ function useDataLoader(
           originalRow
         )
         if (notNullOrUndefined(editedCell)) {
-          return editedCell
+          // Create a new representation of the edited cell to apply
+          // changes that might have been applied to the column (e.g. change of format from UI).
+          // TODO(lukasmasuch): We should refactor this at some point to avoid storing
+          // cells in the editing state. It would be enough to store the value and the
+          // last updated timestamp.
+          return {
+            ...column.getCell(column.getCellValue(editedCell), false),
+            // Apply the last updated timestamp stored in the edited cell:
+            lastUpdated: editedCell.lastUpdated,
+          }
         } else if (isAddedRow) {
           // This is not expected to happen. All cells to added rows should
           // be defined. If not, we return a specific error cell.

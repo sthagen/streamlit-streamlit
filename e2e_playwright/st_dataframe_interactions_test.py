@@ -625,7 +625,11 @@ def test_sorting_column_via_ui(app: Page, assert_snapshot: ImageCompareFunction)
 
 def test_opening_column_menu(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Test that the column menu can be opened."""
-    df = themed_app.get_by_test_id("stDataFrame").nth(0)
+    df = (
+        get_element_by_key(themed_app, "column-menu-test")
+        .get_by_test_id("stDataFrame")
+        .first
+    )
     expect_canvas_to_be_visible(df)
 
     open_column_menu(df, 2, "small")

@@ -1572,6 +1572,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@loaders.gl/draco@npm:4.3.3":
+  version: 4.3.3
+  resolution: "@loaders.gl/draco@npm:4.3.3"
+  dependencies:
+    "@loaders.gl/loader-utils": "npm:4.3.3"
+    "@loaders.gl/schema": "npm:4.3.3"
+    "@loaders.gl/worker-utils": "npm:4.3.3"
+    draco3d: "npm:1.5.7"
+  peerDependencies:
+    "@loaders.gl/core": ^4.3.0
+  checksum: 10c0/ae55555cfffbd0087713bcf5770cafb42029c1f3757d44bffb5dd751c7eaf9f63d6103a68f052bac35ca5391eb7763128aa945332ecf92e437d4bfd0686bc5a1
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/gis@npm:4.2.5, @loaders.gl/gis@npm:^4.2.0":
   version: 4.2.5
   resolution: "@loaders.gl/gis@npm:4.2.5"
@@ -1587,7 +1601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@loaders.gl/gltf@npm:4.2.5, @loaders.gl/gltf@npm:^4.2.0, @loaders.gl/gltf@npm:^4.2.5":
+"@loaders.gl/gltf@npm:4.2.5, @loaders.gl/gltf@npm:^4.2.0":
   version: 4.2.5
   resolution: "@loaders.gl/gltf@npm:4.2.5"
   dependencies:
@@ -1603,6 +1617,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@loaders.gl/gltf@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "@loaders.gl/gltf@npm:4.3.3"
+  dependencies:
+    "@loaders.gl/draco": "npm:4.3.3"
+    "@loaders.gl/images": "npm:4.3.3"
+    "@loaders.gl/loader-utils": "npm:4.3.3"
+    "@loaders.gl/schema": "npm:4.3.3"
+    "@loaders.gl/textures": "npm:4.3.3"
+    "@math.gl/core": "npm:^4.1.0"
+  peerDependencies:
+    "@loaders.gl/core": ^4.3.0
+  checksum: 10c0/4e2dfc2f6c5ba08d2287cc4f8d508d0225767c6bc0535ed55413cc5e1c7a6aca02798909fcb22cbc8e36e26f4618979d9fd914b078d0459eaab80d937203d943
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/images@npm:4.2.5, @loaders.gl/images@npm:^4.2.0":
   version: 4.2.5
   resolution: "@loaders.gl/images@npm:4.2.5"
@@ -1611,6 +1641,17 @@ __metadata:
   peerDependencies:
     "@loaders.gl/core": ^4.0.0
   checksum: 10c0/90a615308ed69bc1773de599768d3d2cb0441ce067711dcd65cf445e1216992479358534ad082c0fe709e33317a4b7aa6697b5b3075a95880fb4a2d78f2dc21c
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/images@npm:4.3.3":
+  version: 4.3.3
+  resolution: "@loaders.gl/images@npm:4.3.3"
+  dependencies:
+    "@loaders.gl/loader-utils": "npm:4.3.3"
+  peerDependencies:
+    "@loaders.gl/core": ^4.3.0
+  checksum: 10c0/9b6dbcce46b687532bd8d6b73bd24b3e315ead3ed5601e0b46e9a0232300405dc14a67e9e7e5aa7abcd25e104f475ec7ddf27a136b8eccc3e57043be9b07b4d8
   languageName: node
   linkType: hard
 
@@ -1720,6 +1761,23 @@ __metadata:
   peerDependencies:
     "@loaders.gl/core": ^4.0.0
   checksum: 10c0/0eebf67368293f2c7b449319ebdbc7aca2f8fe0b2eeceb62d921c1269db2fccb16d2f8c49ee6322659876661da550be76aff385254128514665e3e90af129ed5
+  languageName: node
+  linkType: hard
+
+"@loaders.gl/textures@npm:4.3.3":
+  version: 4.3.3
+  resolution: "@loaders.gl/textures@npm:4.3.3"
+  dependencies:
+    "@loaders.gl/images": "npm:4.3.3"
+    "@loaders.gl/loader-utils": "npm:4.3.3"
+    "@loaders.gl/schema": "npm:4.3.3"
+    "@loaders.gl/worker-utils": "npm:4.3.3"
+    "@math.gl/types": "npm:^4.1.0"
+    ktx-parse: "npm:^0.7.0"
+    texture-compressor: "npm:^1.0.2"
+  peerDependencies:
+    "@loaders.gl/core": ^4.3.0
+  checksum: 10c0/fe8fc9788d3314e9958d87a3da1808c35b657dbf58b5fc7b47ba3fb1de7b41faadc15c01e664e4936884000892aaebed9daa3529d663864467108d9ea6aab032
   languageName: node
   linkType: hard
 
@@ -2577,6 +2635,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/rollup-linux-x64-gnu@npm:^4.24.4":
+  version: 4.34.8
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.34.8"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-linux-x64-musl@npm:4.34.7":
   version: 4.34.7
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.34.7"
@@ -2882,7 +2947,7 @@ __metadata:
     "@glideapps/glide-data-grid-source": "npm:6.0.4-alpha8"
     "@loaders.gl/core": "npm:^4.2.5"
     "@loaders.gl/csv": "npm:^4.2.5"
-    "@loaders.gl/gltf": "npm:^4.2.5"
+    "@loaders.gl/gltf": "npm:^4.3.3"
     "@streamlit/protobuf": "workspace:^"
     "@streamlit/utils": "workspace:^"
     "@swc/plugin-emotion": "npm:^3.0.9"
@@ -2958,7 +3023,7 @@ __metadata:
     react-plotly.js: "npm:^2.6.0"
     react-responsive-carousel: "npm:^3.2.23"
     react-syntax-highlighter: "npm:^15.5.0"
-    react-webcam: "npm:7.1.1"
+    react-webcam: "npm:7.2.0"
     react-window: "npm:^1.8.8"
     rehype-katex: "npm:^6.0.2"
     rehype-raw: "npm:^6.1.1"
@@ -2975,7 +3040,7 @@ __metadata:
     urlpattern-polyfill: "npm:^10.0.0"
     uuid: "npm:^9.0.0"
     vega: "npm:^5.30.0"
-    vega-embed: "npm:^6.26.0"
+    vega-embed: "npm:^6.29.0"
     vega-interpreter: "npm:^1.0.5"
     vega-lite: "npm:5.21.0"
     vite: "npm:^6.1.0"
@@ -11598,17 +11663,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-stringify-pretty-compact@npm:^3.0.0, json-stringify-pretty-compact@npm:~3.0.0":
-  version: 3.0.0
-  resolution: "json-stringify-pretty-compact@npm:3.0.0"
-  checksum: 10c0/fc522c25047bd96d72ded77af4002e7f12e9ba9f4b7e7e12a9316aee166f1b8f9c7b0d0d989a8494e3fdd804a23819f411479f68f2ef10b2f7a144581b2c68f4
-  languageName: node
-  linkType: hard
-
 "json-stringify-pretty-compact@npm:^4.0.0":
   version: 4.0.0
   resolution: "json-stringify-pretty-compact@npm:4.0.0"
   checksum: 10c0/505781b4be7c72047ae8dfa667b520d20461ceac451b6516cb8ac5e12a758fbd7491d99d5e3f7e60423ce9d26ed4e4bcaccab3420bf651298901635c849017cf
+  languageName: node
+  linkType: hard
+
+"json-stringify-pretty-compact@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "json-stringify-pretty-compact@npm:3.0.0"
+  checksum: 10c0/fc522c25047bd96d72ded77af4002e7f12e9ba9f4b7e7e12a9316aee166f1b8f9c7b0d0d989a8494e3fdd804a23819f411479f68f2ef10b2f7a144581b2c68f4
   languageName: node
   linkType: hard
 
@@ -11756,6 +11821,13 @@ __metadata:
   version: 0.0.4
   resolution: "ktx-parse@npm:0.0.4"
   checksum: 10c0/806d5005696c25147dcc9aa6a2033587041fb391c58faaecd88b94ad17b3edfc145d3d69746a218f569600e8e9c7116886e70251c5fd1c813086a093271643b2
+  languageName: node
+  linkType: hard
+
+"ktx-parse@npm:^0.7.0":
+  version: 0.7.1
+  resolution: "ktx-parse@npm:0.7.1"
+  checksum: 10c0/07c0870a0d0fe0bd412b430ac58afd721136a1ca76db83a066b6d20810878822822cbe3b8c8507c15ae8680be0988675b4f5c3d1243262284f161b52c59d09e9
   languageName: node
   linkType: hard
 
@@ -15640,13 +15712,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-webcam@npm:7.1.1":
-  version: 7.1.1
-  resolution: "react-webcam@npm:7.1.1"
+"react-webcam@npm:7.2.0":
+  version: 7.2.0
+  resolution: "react-webcam@npm:7.2.0"
   peerDependencies:
     react: ">=16.2.0"
     react-dom: ">=16.2.0"
-  checksum: 10c0/78a5f57e3f55f1653c91a0f9fd3c94fd0865d30407b9864c033ded01edd4efbbc581520e7b7ee88055802574e602c8ffe6c4e5f282f4ed1a4ce6a9a2cb445c50
+  checksum: 10c0/d639a9e4cd545f66a5ecbfdc6c38344f6ae40e6609ba5fb26db730b48723158dedeeecdecba94e4d117517f4db0be828169db270c329b9b71d847e54aba6f7f0
   languageName: node
   linkType: hard
 
@@ -16436,7 +16508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.2, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3":
+"semver@npm:^7.1.2, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.3":
   version: 7.6.3
   resolution: "semver@npm:7.6.3"
   bin:
@@ -17734,7 +17806,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.6.2, tslib@npm:^2.6.3, tslib@npm:^2.7.0, tslib@npm:^2.8.1":
+"tslib@npm:2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.6.2, tslib@npm:^2.7.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -18445,22 +18517,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vega-embed@npm:^6.26.0":
-  version: 6.26.0
-  resolution: "vega-embed@npm:6.26.0"
+"vega-embed@npm:^6.29.0":
+  version: 6.29.0
+  resolution: "vega-embed@npm:6.29.0"
   dependencies:
     fast-json-patch: "npm:^3.1.1"
-    json-stringify-pretty-compact: "npm:^3.0.0"
-    semver: "npm:^7.6.2"
-    tslib: "npm:^2.6.3"
+    json-stringify-pretty-compact: "npm:^4.0.0"
+    semver: "npm:^7.6.3"
+    tslib: "npm:^2.8.1"
     vega-interpreter: "npm:^1.0.5"
     vega-schema-url-parser: "npm:^2.2.0"
     vega-themes: "npm:^2.15.0"
-    vega-tooltip: "npm:^0.34.0"
+    vega-tooltip: "npm:^0.35.2"
   peerDependencies:
     vega: ^5.21.0
     vega-lite: "*"
-  checksum: 10c0/fb653043f6b9f00efad2de7c9135065d644fdaa7ddd5861eeb5eed5954d1277a40854fbe1a93e63c28cad2bbcdf43c25b428aad61fd4fb43219b75b4084a2c12
+  checksum: 10c0/298285cd45647c9958d529fbd0450040b6cdec5e204b2e940807b890046aa4f7b52706f662d980428b6347265cb6909e2b47d4e12e8f59e06b358de581dbbb10
   languageName: node
   linkType: hard
 
@@ -18739,12 +18811,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vega-tooltip@npm:^0.34.0":
-  version: 0.34.0
-  resolution: "vega-tooltip@npm:0.34.0"
+"vega-tooltip@npm:^0.35.2":
+  version: 0.35.2
+  resolution: "vega-tooltip@npm:0.35.2"
   dependencies:
+    "@rollup/rollup-linux-x64-gnu": "npm:^4.24.4"
     vega-util: "npm:^1.17.2"
-  checksum: 10c0/2631d30ba5fd499dbb625dc715b7b7081b0c44899fc92876efa73fe0db52976a41a16315c883b83aa6fee2128324f5d42e3795fe2829d588886596a135dcf6fa
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-gnu":
+      optional: true
+  checksum: 10c0/9ebd70e687f604dad23d99268df0ef30aadc942237a9ba20f1996252fdfc0a56ce48882ccb80deaf26c62445176bce81ae2caacf051f1cbe42c0de3d3030a10b
   languageName: node
   linkType: hard
 

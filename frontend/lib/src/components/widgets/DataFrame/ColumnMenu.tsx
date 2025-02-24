@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useEffect } from "react"
+import React, { memo, ReactElement, useEffect, useState } from "react"
 
 import { useTheme } from "@emotion/react"
 import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
@@ -31,12 +31,15 @@ import {
   StyledMenuList,
   StyledMenuListItem,
 } from "./styled-components"
+import FormattingMenu from "./FormattingMenu"
 
 export interface ColumnMenuProps {
   // The top position of the menu
   top: number
   // The left position of the menu
   left: number
+  // The kind of the column
+  columnKind: string
   // Callback used to instruct the parent to close the menu
   onCloseMenu: () => void
   // Callback to sort column
@@ -48,6 +51,8 @@ export interface ColumnMenuProps {
   onPinColumn: () => void
   // Callback to unpin the column
   onUnpinColumn: () => void
+  // Callback to change the column format
+  onChangeFormat?: (format: string) => void
   // Callback to autosize the column
   onAutosize?: () => void
 }
@@ -63,9 +68,12 @@ function ColumnMenu({
   onUnpinColumn,
   onCloseMenu,
   onSortColumn,
+  columnKind,
+  onChangeFormat,
   onAutosize,
 }: ColumnMenuProps): ReactElement {
   const theme: EmotionTheme = useTheme()
+  const [formatMenuOpen, setFormatMenuOpen] = useState(false)
   const { colors, fontSizes, radii, fontWeights } = theme
 
   // Disable page scrolling while the menu is open to keep the menu und
@@ -134,6 +142,40 @@ function ColumnMenu({
               <StyledMenuDivider />
             </>
           )}
+          {onChangeFormat && (
+            <FormattingMenu
+              columnKind={columnKind}
+              isOpen={formatMenuOpen}
+              onMouseEnter={() => setFormatMenuOpen(true)}
+              onMouseLeave={() => setFormatMenuOpen(false)}
+              onChangeFormat={onChangeFormat}
+              onCloseMenu={closeMenu}
+            >
+              <StyledMenuListItem
+                onMouseEnter={() => setFormatMenuOpen(true)}
+                onMouseLeave={() => setFormatMenuOpen(false)}
+                isActive={formatMenuOpen}
+                hasSubmenu={true}
+              >
+                <div>
+                  <DynamicIcon
+                    size={"base"}
+                    margin="0"
+                    color="inherit"
+                    iconValue=":material/format_list_numbered:"
+                  />
+                  Format
+                </div>
+
+                <DynamicIcon
+                  size={"base"}
+                  margin="0"
+                  color="inherit"
+                  iconValue=":material/chevron_right:"
+                />
+              </StyledMenuListItem>
+            </FormattingMenu>
+          )}
           {onAutosize && (
             <StyledMenuListItem
               onClick={() => {
@@ -188,7 +230,7 @@ function ColumnMenu({
       accessibilityType={ACCESSIBILITY_TYPE.menu}
       showArrow={false}
       popoverMargin={convertRemToPx("0.375rem")}
-      onClickOutside={closeMenu}
+      onClickOutside={!formatMenuOpen ? closeMenu : undefined}
       onEsc={closeMenu}
       overrides={{
         Body: {
