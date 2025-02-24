@@ -77,7 +77,7 @@ export interface DataframeArg {
  * version in the COMPONENT_READY call.
  */
 export const CUSTOM_COMPONENT_API_VERSION = 1
-export const log = getLogger("componentUtils")
+export const LOG = getLogger("componentUtils")
 
 /**
  * Create a callback to be passed to  {@link ComponentRegistry#registerListener}.
@@ -134,7 +134,7 @@ export function createIframeMessageHandler(
 
       case ComponentMessageType.SET_COMPONENT_VALUE:
         if (!isReady) {
-          log.warn(
+          LOG.warn(
             `Got ${type} before ${ComponentMessageType.COMPONENT_READY}!`
           )
         } else {
@@ -151,7 +151,7 @@ export function createIframeMessageHandler(
 
       case ComponentMessageType.SET_FRAME_HEIGHT:
         if (!isReady) {
-          log.warn(
+          LOG.warn(
             `Got ${type} before ${ComponentMessageType.COMPONENT_READY}!`
           )
         } else {
@@ -162,7 +162,7 @@ export function createIframeMessageHandler(
         break
 
       default:
-        log.warn(`Unrecognized ComponentBackMsgType: ${type}`)
+        LOG.warn(`Unrecognized ComponentBackMsgType: ${type}`)
     }
   }
 }
@@ -243,13 +243,13 @@ export function sendRenderMessage(
 ): void {
   if (!iframe) {
     // This should never happen!
-    log.warn("Can't send ForwardMsg; missing our iframe!")
+    LOG.warn("Can't send ForwardMsg; missing our iframe!")
     return
   }
 
   if (isNullOrUndefined(iframe.contentWindow)) {
     // Nor should this!
-    log.warn("Can't send ForwardMsg; iframe has no contentWindow!")
+    LOG.warn("Can't send ForwardMsg; iframe has no contentWindow!")
     return
   }
 
@@ -286,7 +286,7 @@ function handleSetComponentValue(
   fragmentId?: string
 ): void {
   if (value === undefined) {
-    log.warn(`handleSetComponentValue: missing 'value' prop`)
+    LOG.warn(`handleSetComponentValue: missing 'value' prop`)
     return
   }
 

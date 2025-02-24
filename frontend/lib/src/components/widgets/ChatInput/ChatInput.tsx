@@ -52,7 +52,7 @@ import {
   UploadFileInfo,
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "~lib/FileUploadClient"
-import { getAccept } from "~lib/components/widgets/FileUploader/FileDropzone"
+import { getAccept } from "~lib/components/widgets/FileUploader/utils"
 import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {

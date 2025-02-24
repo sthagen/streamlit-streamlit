@@ -105,7 +105,7 @@ export interface State {
 }
 
 const MIN_SHUTTER_EFFECT_TIME_MS = 150
-const log = getLogger("CameraInput")
+const LOG = getLogger("CameraInput")
 
 class CameraInput extends React.PureComponent<Props, State> {
   private localFileIdCounter = 1
@@ -179,7 +179,7 @@ class CameraInput extends React.PureComponent<Props, State> {
         })
       })
       .catch(err => {
-        log.error(err)
+        LOG.error(err)
       })
   }
 

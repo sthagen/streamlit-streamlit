@@ -402,10 +402,21 @@ export function RenderedMarkdown({
         ${redbg}, ${orangebg}, ${yellowbg}, ${greenbg}, ${bluebg}, ${violetbg}, ${purplebg});`,
     })
   )
-  function remarkColoring() {
+  function remarkColoringAndSmall() {
     return (tree: any) => {
       visit(tree, "textDirective", (node, _index, _parent) => {
         const nodeName = String(node.name)
+
+        // Handle small text directive
+        if (nodeName === "small") {
+          const data = node.data || (node.data = {})
+          data.hName = "span"
+          data.hProperties = data.hProperties || {}
+          data.hProperties.style = `font-size: ${theme.fontSizes.sm};`
+          return
+        }
+
+        // Handle color directives
         if (colorMapping.has(nodeName)) {
           const data = node.data || (node.data = {})
           const style = colorMapping.get(nodeName)
@@ -420,14 +431,16 @@ export function RenderedMarkdown({
             data.hProperties.className =
               (data.hProperties.className || "") + " has-background-color"
           }
-        } else {
-          // Workaround to convert unsupported text directives to plain text to avoid them being
-          // ignored / not rendered. See https://github.com/streamlit/streamlit/issues/8726,
-          // https://github.com/streamlit/streamlit/issues/5968
-          node.type = "text"
-          node.value = `:${nodeName}`
-          node.data = {}
+          return
         }
+
+        // Handle unsupported directives
+        // We convert unsupported text directives to plain text to avoid them being
+        // ignored / not rendered. See https://github.com/streamlit/streamlit/issues/8726,
+        // https://github.com/streamlit/streamlit/issues/5968
+        node.type = "text"
+        node.value = `:${nodeName}`
+        node.data = {}
       })
     }
   }
@@ -553,7 +566,7 @@ export function RenderedMarkdown({
     remarkEmoji,
     remarkGfm,
     remarkDirective,
-    remarkColoring,
+    remarkColoringAndSmall,
     remarkMaterialIcons,
     remarkStreamlitLogo,
     remarkTypographicalSymbols,

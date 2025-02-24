@@ -40,7 +40,7 @@ const CSV_UTF8_BOM = "\ufeff"
 const CSV_SPECIAL_CHARS_REGEX = new RegExp(
   `[${[CSV_DELIMITER, CSV_QUOTE_CHAR, CSV_ROW_DELIMITER].join("")}]`
 )
-const log = getLogger("useDataExporter")
+const LOG = getLogger("useDataExporter")
 
 export function toCsvRow(rowValues: any[]): string {
   return (
@@ -160,7 +160,7 @@ function useDataExporter(
       }
 
       try {
-        log.warn(
+        LOG.warn(
           "Failed to export data as CSV with FileSystem API, trying fallback method",
           error
         )
@@ -200,7 +200,7 @@ function useDataExporter(
         document.body.removeChild(link) // Clean up
         URL.revokeObjectURL(url) // Free up memory
       } catch (error) {
-        log.error("Failed to export data as CSV", error)
+        LOG.error("Failed to export data as CSV", error)
       }
     }
   }, [columns, numRows, getCellContent, enforceDownloadInNewTab])

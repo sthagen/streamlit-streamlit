@@ -202,7 +202,7 @@ $$
 | --------- | ----------- |
 | Some      | :material/description: :streamlit: Data        |
 
-- :blue[blue], :green[green], :red[red], :violet[violet], :orange[orange], :gray[gray], :grey[grey], :rainbow[rainbow], :primary[primary]
+- :small[small], :small[:red[small red]], :blue[blue], :green[green], :red[red], :violet[violet], :orange[orange], :gray[gray], :grey[grey], :rainbow[rainbow], :primary[primary]
 - :blue-background[blue], :green-background[green], :red-background[red], :violet-background[violet], :orange-background[orange], :gray-background[gray], :grey-background[grey], :primary-background[primary], :rainbow-background[rainbow]
 - :material/chevron_right: Markdown can contain material icons :red[:material/local_fire_department:] :green-background[:material/celebration: Yay]
 - :streamlit: Markdown can contain the Streamlit logo

@@ -25,7 +25,7 @@ import { GraphVizChart as GraphVizChartProto } from "@streamlit/protobuf"
 import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 import { render } from "~lib/test_util"
 
-import GraphVizChart, { GraphVizChartProps, log } from "./GraphVizChart"
+import GraphVizChart, { GraphVizChartProps, LOG } from "./GraphVizChart"
 
 vi.mock("d3-graphviz", () => ({
   graphviz: vi.fn().mockReturnValue({
@@ -57,7 +57,7 @@ describe("GraphVizChart Element", () => {
   let logErrorSpy: MockInstance
 
   beforeEach(() => {
-    logErrorSpy = vi.spyOn(log, "error").mockImplementation(() => {})
+    logErrorSpy = vi.spyOn(LOG, "error").mockImplementation(() => {})
 
     vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
       elementRef: React.createRef(),

@@ -41,7 +41,7 @@ type DataEditorReturn = Pick<
   "onCellEdited" | "onPaste" | "onRowAppended" | "onDelete" | "validateCell"
 >
 
-const log = getLogger("useDataEditor")
+const LOG = getLogger("useDataEditor")
 
 /**
  * Custom hook to handle all aspects related to data editing. This includes editing cells,
@@ -112,7 +112,7 @@ function useDataEditor(
 
         syncEditState()
       } else {
-        log.warn(
+        LOG.warn(
           `Not applying the cell edit since it causes this error:\n ${newCell.data}`
         )
       }

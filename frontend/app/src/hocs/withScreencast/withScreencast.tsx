@@ -57,7 +57,7 @@ interface InjectedProps {
 
 type WrappedProps<P extends InjectedProps> = Omit<P, "screenCast">
 
-const log = getLogger("withScreencast")
+const LOG = getLogger("withScreencast")
 
 function withScreencast<P extends InjectedProps>(
   WrappedComponent: ComponentType<PropsWithChildren<P>>
@@ -116,7 +116,7 @@ function withScreencast<P extends InjectedProps>(
         recordAudio,
         onErrorOrStop: () => {
           stopRecording().catch(err =>
-            log.warn(`withScreencast.stopRecording threw an error: ${err}`)
+            LOG.warn(`withScreencast.stopRecording threw an error: ${err}`)
           )
         },
       })
@@ -124,7 +124,7 @@ function withScreencast<P extends InjectedProps>(
       try {
         await recorderRef.current.initialize()
       } catch (e) {
-        log.warn(`ScreenCastRecorder.initialize error: ${e}`)
+        LOG.warn(`ScreenCastRecorder.initialize error: ${e}`)
         setCurrentState("UNSUPPORTED")
         return
       }
@@ -147,7 +147,7 @@ function withScreencast<P extends InjectedProps>(
 
         // If we are currently in any other state, stop any ongoing recording
         stopRecording().catch(err =>
-          log.warn(`withScreencast.stopRecording threw an error: ${err}`)
+          LOG.warn(`withScreencast.stopRecording threw an error: ${err}`)
         )
       },
       [currentState, stopRecording]
@@ -164,7 +164,7 @@ function withScreencast<P extends InjectedProps>(
         setCurrentState("RECORDING")
       } else {
         stopRecording().catch(err =>
-          log.warn(`withScreencast.stopRecording threw an error: ${err}`)
+          LOG.warn(`withScreencast.stopRecording threw an error: ${err}`)
         )
       }
     }, [stopRecording])

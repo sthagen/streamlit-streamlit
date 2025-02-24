@@ -25,7 +25,7 @@ export type ComponentMessageListener = (
   data: any
 ) => void
 
-const log = getLogger("ComponentRegistry")
+const LOG = getLogger("ComponentRegistry")
 
 /**
  * Dispatches iframe messages to ComponentInstances.
@@ -51,7 +51,7 @@ export class ComponentRegistry {
     listener: ComponentMessageListener
   ): void => {
     if (this.msgListeners.has(source)) {
-      log.warn(`MessageEventSource registered multiple times!`, source)
+      LOG.warn(`MessageEventSource registered multiple times!`, source)
     }
 
     this.msgListeners.set(source, listener)
@@ -60,7 +60,7 @@ export class ComponentRegistry {
   public deregisterListener = (source: MessageEventSource): void => {
     const removed = this.msgListeners.delete(source)
     if (!removed) {
-      log.warn(`Could not deregister unregistered MessageEventSource!`)
+      LOG.warn(`Could not deregister unregistered MessageEventSource!`)
     }
   }
 
@@ -80,14 +80,14 @@ export class ComponentRegistry {
 
     if (isNullOrUndefined(event.source)) {
       // This should not be possible.
-      log.warn(`Received component message with no eventSource!`, event.data)
+      LOG.warn(`Received component message with no eventSource!`, event.data)
       return
     }
 
     // Get the ComponentInstance associated with the event
     const listener = this.msgListeners.get(event.source)
     if (isNullOrUndefined(listener) || typeof listener !== "function") {
-      log.warn(
+      LOG.warn(
         `Received component message for unregistered ComponentInstance!`,
         event.data
       )
@@ -96,7 +96,7 @@ export class ComponentRegistry {
 
     const { type } = event.data
     if (isNullOrUndefined(type)) {
-      log.warn(`Received Streamlit message with no type!`, event.data)
+      LOG.warn(`Received Streamlit message with no type!`, event.data)
       return
     }
 

@@ -34,7 +34,7 @@ import {
 } from "./constants"
 import { IHostConfigResponse, OnRetry } from "./types"
 
-const log = getLogger("DoInitPings")
+const LOG = getLogger("DoInitPings")
 
 export function doInitPings(
   uriPartsList: URL[],
@@ -106,7 +106,7 @@ If you are trying to access a Streamlit app running on another server, this coul
     const healthzUri = buildHttpUri(uriParts, SERVER_PING_PATH)
     const hostConfigUri = buildHttpUri(uriParts, HOST_CONFIG_PATH)
 
-    log.info(`Attempting to connect to ${healthzUri}.`)
+    LOG.info(`Attempting to connect to ${healthzUri}.`)
 
     if (uriNumber === 0) {
       totalTries++

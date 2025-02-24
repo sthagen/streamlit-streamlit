@@ -39,7 +39,7 @@ interface Props {
   requestFileURLs?: (requestId: string, files: File[]) => void
 }
 
-const log = getLogger("FileUploadClient")
+const LOG = getLogger("FileUploadClient")
 
 /**
  * Handles operations related to the widgets that require file uploading.
@@ -173,7 +173,7 @@ export class FileUploadClient {
       }
       this.pendingFileURLsRequests.delete(id)
     } else {
-      log.warn("fileURLsResponse received for nonexistent request, ignoring.")
+      LOG.warn("fileURLsResponse received for nonexistent request, ignoring.")
     }
   }
 

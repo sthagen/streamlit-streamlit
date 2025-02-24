@@ -52,7 +52,7 @@ export const COLUMN_WIDTH_MAPPING = {
   large: 400,
 }
 
-const log = getLogger("useColumnLoader")
+const LOG = getLogger("useColumnLoader")
 
 /**
  * Options to configure columns.
@@ -217,7 +217,7 @@ export function getColumnConfig(configJson: string): Map<string, any> {
   } catch (error) {
     // This is not expected to happen, but if it does, we'll return an empty map
     // and log the error to the console.
-    log.error(error)
+    LOG.error(error)
     return new Map()
   }
 }
@@ -244,7 +244,7 @@ export function getColumnType(column: BaseColumnProps): ColumnCreator {
     if (ColumnTypes.has(customType)) {
       ColumnType = ColumnTypes.get(customType)
     } else {
-      log.warn(
+      LOG.warn(
         `Unknown column type configured in column configuration: ${customType}`
       )
     }

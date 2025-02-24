@@ -32,7 +32,7 @@ import { WebsocketConnection } from "./WebsocketConnection"
  * due to jitter).
  */
 const RETRY_COUNT_FOR_WARNING = 6
-const log = getLogger("ConnectionManager")
+const LOG = getLogger("ConnectionManager")
 
 interface Props {
   /** The app's SessionInfo instance */
@@ -119,7 +119,7 @@ export class ConnectionManager {
       this.websocketConnection.sendMessage(obj)
     } else {
       // Don't need to make a big deal out of this. Just print to console.
-      log.error(`Cannot send message when server is disconnected: ${obj}`)
+      LOG.error(`Cannot send message when server is disconnected: ${obj}`)
     }
   }
 
@@ -168,7 +168,7 @@ export class ConnectionManager {
         this.websocketConnection = await this.connectToRunningServer()
       } catch (e) {
         const err = e instanceof Error ? e : new Error(`${e}`)
-        log.error(err.message)
+        LOG.error(err.message)
         this.setConnectionState(
           ConnectionState.DISCONNECTED_FOREVER,
           err.message

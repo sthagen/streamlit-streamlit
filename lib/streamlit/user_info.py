@@ -22,7 +22,7 @@ from typing import (
     Union,
 )
 
-from streamlit import config, runtime
+from streamlit import config, logger, runtime
 from streamlit.auth_util import (
     encode_provider_token,
     get_secrets_auth_section,
@@ -40,6 +40,8 @@ from streamlit.url_util import make_url_path
 if TYPE_CHECKING:
     from streamlit.runtime.scriptrunner_utils.script_run_context import UserInfo
 
+
+_LOGGER: Final = logger.get_logger(__name__)
 
 AUTH_LOGIN_ENDPOINT: Final = "/auth/login"
 AUTH_LOGOUT_ENDPOINT: Final = "/auth/logout"
@@ -357,13 +359,17 @@ def generate_login_redirect_url(provider: str) -> str:
 def _get_user_info() -> UserInfo:
     ctx = _get_script_run_ctx()
     if ctx is None:
-        # TODO: Add appropriate warnings when ctx is missing
+        _LOGGER.warning(
+            "No script run context available. st.experimental_user will return an empty dictionary."
+        )
         return {}
+
     context_user_info = ctx.user_info.copy()
 
     auth_section_exists = get_secrets_auth_section()
     if "is_logged_in" not in context_user_info and auth_section_exists:
         context_user_info["is_logged_in"] = False
+
     return context_user_info
 
 

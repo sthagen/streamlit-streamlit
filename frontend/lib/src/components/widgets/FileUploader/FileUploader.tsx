@@ -574,4 +574,5 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
   }
 }
 
-export default withCalculatedWidth(memo(FileUploader))
+const FileUploaderWithCalculatedWidth = withCalculatedWidth(memo(FileUploader))
+export default FileUploaderWithCalculatedWidth

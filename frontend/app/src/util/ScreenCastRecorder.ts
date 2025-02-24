@@ -19,7 +19,7 @@ import { getLogger } from "loglevel"
 import { notNullOrUndefined } from "@streamlit/utils"
 
 const BLOB_TYPE = "video/webm"
-const log = getLogger("ScreenCastRecorder")
+const LOG = getLogger("ScreenCastRecorder")
 
 interface ScreenCastRecorderOptions {
   recordAudio: boolean
@@ -108,12 +108,12 @@ class ScreenCastRecorder {
    */
   public start(): boolean {
     if (!this.mediaRecorder) {
-      log.warn(`ScreenCastRecorder.start: mediaRecorder is null`)
+      LOG.warn(`ScreenCastRecorder.start: mediaRecorder is null`)
       return false
     }
 
     const logRecorderError = (e: any): void => {
-      log.warn(`mediaRecorder.start threw an error: ${e}`)
+      LOG.warn(`mediaRecorder.start threw an error: ${e}`)
     }
 
     this.mediaRecorder.onerror = (e: any): void => {

@@ -71,7 +71,7 @@ declare global {
     >
   }
 }
-const log = getLogger("theme:utils")
+const LOG = getLogger("theme:utils")
 
 function mergeTheme(
   theme: ThemeConfig,
@@ -487,7 +487,7 @@ export function computeSpacingStyle(
       }
 
       if (!(marginValue in theme.spacing)) {
-        log.error(`Invalid spacing value: ${marginValue}`)
+        LOG.error(`Invalid spacing value: ${marginValue}`)
         return theme.spacing.none
       }
 

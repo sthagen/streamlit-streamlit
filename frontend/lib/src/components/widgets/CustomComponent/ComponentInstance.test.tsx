@@ -39,7 +39,7 @@ import ComponentInstance, {
   COMPONENT_READY_WARNING_TIME_MS,
 } from "./ComponentInstance"
 import {
-  log as componentUtilsLog,
+  LOG as componentUtilsLog,
   CUSTOM_COMPONENT_API_VERSION,
 } from "./componentUtils"
 import { ComponentRegistry } from "./ComponentRegistry"

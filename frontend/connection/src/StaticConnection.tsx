@@ -25,7 +25,7 @@ import { StreamlitEndpoints } from "./types"
 // TODO: Change this to a stable location and eventually make it configurable
 // Holds url for static asset location
 export const STATIC_ASSET_CONFIG = "https://data.streamlit.io/static.json"
-export const log = getLogger("StaticConnection")
+export const LOG = getLogger("StaticConnection")
 
 type OnMessage = (ForwardMsg: any) => void
 type OnConnectionStateChange = (
@@ -54,7 +54,7 @@ export async function getStaticConfig(): Promise<string> {
     })
 
     if (!response.ok) {
-      log.error("Failed to fetch static config url: ", response.status)
+      LOG.error("Failed to fetch static config url: ", response.status)
     } else {
       const config = await response.json()
       staticConfigUrl = config.static_url ?? undefined
@@ -65,7 +65,7 @@ export async function getStaticConfig(): Promise<string> {
       }
     }
   } catch (err) {
-    log.error("Failed to fetch static config url:", err)
+    LOG.error("Failed to fetch static config url:", err)
   }
 
   return staticConfigUrl
@@ -85,7 +85,7 @@ export async function getProtoResponse(
   })
 
   if (!response.ok) {
-    log.error(
+    LOG.error(
       `Failed to fetch static app protos for id: ${staticAppId}`,
       response.status
     )
@@ -107,7 +107,7 @@ export async function dispatchAppForwardMessages(
   const arrayBuffer = await getProtoResponse(staticAppId, staticConfigUrl)
 
   if (!arrayBuffer) {
-    log.error("Failed to retrieve static app protos")
+    LOG.error("Failed to retrieve static app protos")
     onConnectionError(
       `Failed to retrieve static app protos. Please confirm the id is correct and try again. Given static app id: ${staticAppId}`
     )

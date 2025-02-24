@@ -36,7 +36,7 @@ import {
 import { useVegaLiteSelections } from "./useVegaLiteSelections"
 
 const DEFAULT_DATA_NAME = "source"
-const log = getLogger("useVegaEmbed")
+const LOG = getLogger("useVegaEmbed")
 
 interface UseVegaEmbedOutput {
   createView: (
@@ -194,7 +194,7 @@ export function useVegaEmbed(
       if (data.hash !== prevData.hash) {
         // Clean the dataset and insert from scratch.
         view.data(name, getDataArray(data))
-        log.info(
+        LOG.info(
           `Had to clear the ${name} dataset before inserting data through Vega view.`
         )
       }

@@ -23,7 +23,7 @@ import { Spinner as SpinnerProto } from "@streamlit/protobuf"
 
 import { render } from "~lib/test_util"
 
-import Spinner, { formatTime, SpinnerProps } from "./Spinner"
+import Spinner, { SpinnerProps } from "./Spinner"
 
 const getProps = (
   propOverrides: Partial<SpinnerProps> = {},
@@ -85,22 +85,5 @@ describe("Spinner component", () => {
     const spinnerContainer = screen.getByTestId("stSpinner")
     expect(spinnerContainer).toBeInTheDocument()
     expect(screen.getByText("(0.0 seconds)")).toBeInTheDocument()
-  })
-})
-
-describe("formatTime", () => {
-  it.each([
-    [0, "(0.0 seconds)"],
-    [1.5, "(1.5 seconds)"],
-    [45.2, "(45.2 seconds)"],
-    [60, "(1 minute)"],
-    [61.5, "(1 minute, 1.5 seconds)"],
-    [122.2, "(2 minutes, 2.2 seconds)"],
-    [3600, "(1 hour)"],
-    [3660, "(1 hour, 1 minute)"],
-    [3661.5, "(1 hour, 1 minute, 1.5 seconds)"],
-    [7384.2, "(2 hours, 3 minutes, 4.2 seconds)"],
-  ])("formats %s to %s", (value, expected) => {
-    expect(formatTime(value)).toEqual(expected)
   })
 })

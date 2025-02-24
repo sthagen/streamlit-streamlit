@@ -95,7 +95,7 @@ interface MessageQueue {
   [index: number]: any
 }
 
-const log = getLogger("WebsocketConnection")
+const LOG = getLogger("WebsocketConnection")
 
 /**
  * Events of the WebsocketConnection state machine. Here's what the FSM looks
@@ -195,7 +195,7 @@ export class WebsocketConnection {
 
   // This should only be called inside stepFsm().
   private setFsmState(state: ConnectionState, errMsg?: string): void {
-    log.info(`New state: ${state}`)
+    LOG.info(`New state: ${state}`)
     this.state = state
 
     // Perform pre-callback actions when entering certain states.
@@ -234,7 +234,7 @@ export class WebsocketConnection {
    * will be displayed to the user in a "Connection Error" dialog.
    */
   private stepFsm(event: Event, errMsg?: string): void {
-    log.info(`State: ${this.state}; Event: ${event}`)
+    LOG.info(`State: ${this.state}; Event: ${event}`)
 
     if (
       event === "FATAL_ERROR" &&
@@ -291,7 +291,7 @@ export class WebsocketConnection {
         // process any events, and it's possible we're in this state because
         // of a fatal error. Just log these events rather than throwing more
         // exceptions.
-        log.warn(
+        LOG.warn(
           `Discarding ${event} while in ${ConnectionState.DISCONNECTED_FOREVER}`
         )
         return
@@ -356,7 +356,7 @@ export class WebsocketConnection {
       throw new Error("Websocket already exists")
     }
 
-    log.info("creating WebSocket")
+    LOG.info("creating WebSocket")
 
     // NOTE: We repurpose the Sec-WebSocket-Protocol header (set via the second
     // parameter to the WebSocket constructor) here in a slightly unfortunate
@@ -383,7 +383,7 @@ export class WebsocketConnection {
       if (checkWebsocket()) {
         this.handleMessage(event.data).catch(reason => {
           const err = `Failed to process a Websocket message (${reason})`
-          log.error(err)
+          LOG.error(err)
           this.stepFsm("FATAL_ERROR", err)
         })
       }
@@ -391,14 +391,14 @@ export class WebsocketConnection {
 
     this.websocket.addEventListener("open", () => {
       if (checkWebsocket()) {
-        log.info("WebSocket onopen")
+        LOG.info("WebSocket onopen")
         this.stepFsm("CONNECTION_SUCCEEDED")
       }
     })
 
     this.websocket.addEventListener("close", () => {
       if (checkWebsocket()) {
-        log.warn("WebSocket onclose")
+        LOG.warn("WebSocket onclose")
         this.closeConnection()
         this.stepFsm("CONNECTION_CLOSED")
       }
@@ -406,7 +406,7 @@ export class WebsocketConnection {
 
     this.websocket.addEventListener("error", () => {
       if (checkWebsocket()) {
-        log.error("WebSocket onerror")
+        LOG.error("WebSocket onerror")
         this.closeConnection()
         this.stepFsm("CONNECTION_ERROR")
       }
@@ -429,7 +429,7 @@ export class WebsocketConnection {
 
       if (isNullOrUndefined(this.wsConnectionTimeoutId)) {
         // Sometimes the clearTimeout doesn't work. No idea why :-/
-        log.warn("Timeout fired after cancellation")
+        LOG.warn("Timeout fired after cancellation")
         return
       }
 
@@ -443,12 +443,12 @@ export class WebsocketConnection {
       }
 
       if (this.websocket.readyState === 0 /* CONNECTING */) {
-        log.info(`${uri} timed out`)
+        LOG.info(`${uri} timed out`)
         this.closeConnection()
         this.stepFsm("CONNECTION_TIMED_OUT")
       }
     }, WEBSOCKET_TIMEOUT_MS)
-    log.info(`Set WS timeout ${this.wsConnectionTimeoutId}`)
+    LOG.info(`Set WS timeout ${this.wsConnectionTimeoutId}`)
   }
 
   private closeConnection(): void {
@@ -464,7 +464,7 @@ export class WebsocketConnection {
     }
 
     if (notNullOrUndefined(this.wsConnectionTimeoutId)) {
-      log.info(`Clearing WS timeout ${this.wsConnectionTimeoutId}`)
+      LOG.info(`Clearing WS timeout ${this.wsConnectionTimeoutId}`)
       window.clearTimeout(this.wsConnectionTimeoutId)
       this.wsConnectionTimeoutId = undefined
     }

@@ -53,7 +53,7 @@ import {
 } from "./componentUtils"
 import { StyledComponentIframe } from "./styled-components"
 
-const log = getLogger("ComponentInstance")
+const LOG = getLogger("ComponentInstance")
 /**
  * If we haven't received a COMPONENT_READY message this many seconds
  * after the component has been created, explain to the user that there
@@ -221,7 +221,7 @@ function ComponentInstance(props: Props): ReactElement {
 
   // Show a log in the console as a soft-warning to the developer before showing the more disrupting warning element
   const clearTimeoutLog = useTimeout(
-    () => log.warn(getWarnMessage(componentName, url)),
+    () => LOG.warn(getWarnMessage(componentName, url)),
     COMPONENT_READY_WARNING_TIME_MS / 4
   )
   const clearTimeoutWarningElement = useTimeout(
@@ -247,7 +247,7 @@ function ComponentInstance(props: Props): ReactElement {
   useEffect(() => {
     const handleSetFrameHeight = (height: number | undefined): void => {
       if (height === undefined) {
-        log.warn(`handleSetFrameHeight: missing 'height' prop`)
+        LOG.warn(`handleSetFrameHeight: missing 'height' prop`)
         return
       }
 
@@ -258,7 +258,7 @@ function ComponentInstance(props: Props): ReactElement {
 
       if (isNullOrUndefined(iframeRef.current)) {
         // This should not be possible.
-        log.warn(`handleSetFrameHeight: missing our iframeRef!`)
+        LOG.warn(`handleSetFrameHeight: missing our iframeRef!`)
         return
       }
 

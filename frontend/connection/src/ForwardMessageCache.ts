@@ -21,7 +21,7 @@ import { isNullOrUndefined, notNullOrUndefined } from "@streamlit/utils"
 
 import { StreamlitEndpoints } from "./types"
 
-const log = getLogger("ForwardMessageCache")
+const LOG = getLogger("ForwardMessageCache")
 
 class CacheEntry {
   public readonly encodedMsg: Uint8Array
@@ -73,7 +73,7 @@ export class ForwardMsgCache {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/forEach#Description
     this.messages.forEach((entry, hash) => {
       if (entry.getAge(this.scriptRunCount) > maxMessageAge) {
-        log.info(`Removing expired ForwardMsg [hash=${hash}]`)
+        LOG.info(`Removing expired ForwardMsg [hash=${hash}]`)
         this.messages.delete(hash)
       }
     })
@@ -102,10 +102,10 @@ export class ForwardMsgCache {
 
     let newMsg = this.getCachedMessage(msg.refHash as string, true)
     if (notNullOrUndefined(newMsg)) {
-      log.info(`Cached ForwardMsg HIT [hash=${msg.refHash}]`)
+      LOG.info(`Cached ForwardMsg HIT [hash=${msg.refHash}]`)
     } else {
       // Cache miss: fetch from the server
-      log.info(`Cached ForwardMsg MISS [hash=${msg.refHash}]`)
+      LOG.info(`Cached ForwardMsg MISS [hash=${msg.refHash}]`)
       const encodedNewMsg = await this.endpoints.fetchCachedForwardMsg(
         msg.refHash as string
       )
@@ -155,7 +155,7 @@ export class ForwardMsgCache {
       return
     }
 
-    log.info(`Caching ForwardMsg [hash=${msg.hash}]`)
+    LOG.info(`Caching ForwardMsg [hash=${msg.hash}]`)
     this.messages.set(
       msg.hash,
       new CacheEntry(encodedMsg, this.scriptRunCount)

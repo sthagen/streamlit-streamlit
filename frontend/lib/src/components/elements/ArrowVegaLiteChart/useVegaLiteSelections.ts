@@ -44,7 +44,7 @@ export interface UseVegaLiteSelectionsOutput {
   onFormCleared: () => void
 }
 
-const log = getLogger("useVegaLiteSelections")
+const LOG = getLogger("useVegaLiteSelections")
 
 /**
  * Hook that returns a function that can be used to configure the selection
@@ -142,7 +142,7 @@ export const useVegaLiteSelections = (
         try {
           return vegaView.setState(viewState)
         } catch (e) {
-          log.warn("Failed to restore view state", e)
+          LOG.warn("Failed to restore view state", e)
         }
       }
 

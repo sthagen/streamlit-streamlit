@@ -25,6 +25,7 @@ import { render } from "~lib/test_util"
 import IsSidebarContext from "~lib/components/core/IsSidebarContext"
 import { colors } from "~lib/theme/primitives/colors"
 import IsDialogContext from "~lib/components/core/IsDialogContext"
+import { mockTheme } from "~lib/mocks/mockTheme"
 
 import StreamlitMarkdown, {
   createAnchorFromText,
@@ -468,6 +469,17 @@ describe("StreamlitMarkdown", () => {
       // Removes rendered StreamlitMarkdown component before next case run
       cleanup()
     })
+  })
+
+  it("renders small text properly", () => {
+    const source = `:small[text]`
+    render(<StreamlitMarkdown source={source} allowHTML={false} />)
+    const markdown = screen.getByText("text")
+    const tagName = markdown.nodeName.toLowerCase()
+    expect(tagName).toBe("span")
+    expect(markdown).toHaveStyle(
+      `font-size: ${mockTheme.emotion.fontSizes.sm}`
+    )
   })
 })
 

@@ -80,6 +80,8 @@ class MarkdownMixin:
               primary accent color unless you set the ``theme.primaryColor``
               configuration option.
 
+            - Small text, using the syntax ``:small[text to show small]``.
+
         unsafe_allow_html : bool
             Whether to render HTML within ``body``. If this is ``False``
             (default), any HTML tags found in ``body`` will be escaped and
