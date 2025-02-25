@@ -32,15 +32,15 @@ df = pd.DataFrame(
 )
 
 st.header("Disabled parameter:")
-st.data_editor(df, disabled=True)
-st.data_editor(df, disabled=["col_4", "col_1"])
+st.data_editor(df, disabled=True, use_container_width=False)
+st.data_editor(df, disabled=["col_4", "col_1"], use_container_width=False)
 
 st.header("Hide index parameter:")
-st.data_editor(df, hide_index=True)
-st.data_editor(df, hide_index=False)
+st.data_editor(df, hide_index=True, use_container_width=False)
+st.data_editor(df, hide_index=False, use_container_width=False)
 
 st.header("Column order parameter:")
-st.data_editor(df, column_order=["col_4", "col_3", "col_0"])
+st.data_editor(df, column_order=["col_4", "col_3", "col_0"], use_container_width=False)
 
 st.header("Set column labels:")
 st.data_editor(
@@ -50,10 +50,15 @@ st.data_editor(
         "col_0": "Column 0",
         "col_2": st.column_config.Column("Column 1"),
     },
+    use_container_width=False,
 )
 
 st.header("Hide columns:")
-st.data_editor(df, column_config={"col_1": None, "col_3": {"hidden": True}})
+st.data_editor(
+    df,
+    column_config={"col_1": None, "col_3": {"hidden": True}},
+    use_container_width=False,
+)
 
 st.header("Set column width:")
 st.data_editor(
@@ -63,6 +68,7 @@ st.data_editor(
         "col_1": st.column_config.Column(width="medium"),
         "col_4": {"width": "large"},
     },
+    use_container_width=False,
 )
 
 st.header("Set help tooltips:")
@@ -77,6 +83,7 @@ st.data_editor(
         "col_0": st.column_config.Column(help="This :red[is] a **tooltip** 🌟"),
         "_index": {"help": "Index tooltip!"},
     },
+    use_container_width=False,
 )
 
 st.header("Text column:")
@@ -105,6 +112,7 @@ st.data_editor(
             validate="^[0-9]+$",
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -136,6 +144,7 @@ st.data_editor(
             format="%.2f%%",
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -158,6 +167,7 @@ st.data_editor(
         ),
         "col_1": st.column_config.CheckboxColumn(),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -182,6 +192,7 @@ st.data_editor(
         ),
         "col_1": st.column_config.SelectboxColumn(options=["a", "b", "c", "d"]),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -226,6 +237,7 @@ st.data_editor(
             display_text=r"https://(.*?)\.streamlit\.app",
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -259,6 +271,7 @@ st.data_editor(
             format="YYYY-MM-DD HH:mm:ss.SSS",
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -291,6 +304,7 @@ st.data_editor(
             step=2,
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -323,6 +337,7 @@ st.data_editor(
             step=datetime.timedelta(milliseconds=1),
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -345,6 +360,7 @@ st.data_editor(
             format="$%f", min_value=0, max_value=1000
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -365,6 +381,7 @@ st.data_editor(
         ),
         "col_1": st.column_config.ListColumn(),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -387,6 +404,7 @@ st.data_editor(
         ),
         "col_1": st.column_config.BarChartColumn(),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -410,6 +428,7 @@ st.data_editor(
         ),
         "col_1": st.column_config.LineChartColumn(),
     },
+    use_container_width=False,
     hide_index=True,
 )
 
@@ -433,5 +452,6 @@ st.data_editor(
             help="This is a image column",
         ),
     },
+    use_container_width=False,
     hide_index=True,
 )

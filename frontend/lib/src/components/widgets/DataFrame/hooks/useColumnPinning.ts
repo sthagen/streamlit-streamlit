@@ -16,8 +16,9 @@
 
 import React from "react"
 
-import { updateColumnConfigTypeProps } from "~lib/components/widgets/DataFrame/columnConfigUtils"
 import { BaseColumn } from "~lib/components/widgets/DataFrame/columns"
+
+import { updateColumnConfigTypeProps } from "./columnConfigUtils"
 
 type ColumnPinningReturn = {
   // The number of columns to freeze.

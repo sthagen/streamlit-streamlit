@@ -26,7 +26,7 @@ random.seed(0)
 
 st.header("Pandas Styler: Value formatting")
 df = pd.DataFrame({"test": [3.1423424, 3.1]})
-st.dataframe(df.style.format({"test": "{:.2f}"}))
+st.dataframe(df.style.format({"test": "{:.2f}"}), use_container_width=False)
 
 st.header("Pandas Styler: Background color")
 

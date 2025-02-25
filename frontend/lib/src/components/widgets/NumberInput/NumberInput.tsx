@@ -26,10 +26,8 @@ import React, {
 
 import { Minus, Plus } from "@emotion-icons/open-iconic"
 import { useTheme } from "@emotion/react"
-import { sprintf } from "sprintf-js"
 import { Input as UIInput } from "baseui/input"
 import uniqueId from "lodash/uniqueId"
-import { getLogger } from "loglevel"
 
 import { NumberInput as NumberInputProto } from "@streamlit/protobuf"
 
@@ -53,117 +51,18 @@ import { EmotionTheme } from "~lib/theme"
 import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 
 import {
+  canDecrement,
+  canIncrement,
+  formatValue,
+  getInitialValue,
+  getStep,
+} from "./utils"
+import {
   StyledInputContainer,
   StyledInputControl,
   StyledInputControls,
   StyledInstructionsContainer,
 } from "./styled-components"
-
-const LOG = getLogger("NumberInput")
-
-/**
- * Return a string property from an element. If the string is
- * null or empty, return undefined instead.
- */
-function getNonEmptyString(
-  value: string | null | undefined
-): string | undefined {
-  return isNullOrUndefined(value) || value === "" ? undefined : value
-}
-
-/**
- * This function returns the initial value for the NumberInput widget
- * via the widget manager.
- */
-const getInitialValue = (
-  props: Pick<Props, "element" | "widgetMgr">
-): number | null => {
-  const isIntData = props.element.dataType === NumberInputProto.DataType.INT
-  const storedValue = isIntData
-    ? props.widgetMgr.getIntValue(props.element)
-    : props.widgetMgr.getDoubleValue(props.element)
-  return storedValue ?? props.element.default ?? null
-}
-
-const getStep = ({
-  step,
-  dataType,
-}: Pick<NumberInputProto, "step" | "dataType">): number => {
-  if (step) {
-    return step
-  }
-  if (dataType === NumberInputProto.DataType.INT) {
-    return 1
-  }
-  return 0.01
-}
-
-/**
- * Utilizes the sprintf library to format a number value
- * according to a given format string.
- */
-export const formatValue = ({
-  value,
-  format,
-  step,
-  dataType,
-}: {
-  value: number | null
-  format?: string | null
-  step?: number
-  dataType: NumberInputProto.DataType
-}): string | null => {
-  if (isNullOrUndefined(value)) {
-    return null
-  }
-
-  let formatString = getNonEmptyString(format)
-
-  if (isNullOrUndefined(formatString) && notNullOrUndefined(step)) {
-    const strStep = step.toString()
-    if (
-      dataType === NumberInputProto.DataType.FLOAT &&
-      step !== 0 &&
-      strStep.includes(".")
-    ) {
-      const decimalPlaces = strStep.split(".")[1].length
-      formatString = `%0.${decimalPlaces}f`
-    }
-  }
-
-  if (isNullOrUndefined(formatString)) {
-    return value.toString()
-  }
-
-  try {
-    return sprintf(formatString, value)
-  } catch (e) {
-    LOG.warn(`Error in sprintf(${formatString}, ${value}): ${e}`)
-    return String(value)
-  }
-}
-
-export const canDecrement = (
-  value: number | null,
-  step: number,
-  min: number
-): boolean => {
-  if (isNullOrUndefined(value)) {
-    return false
-  }
-  return value - step >= min
-}
-
-export const canIncrement = (
-  value: number | null,
-  step: number,
-  max: number
-): boolean => {
-  if (isNullOrUndefined(value)) {
-    return false
-  }
-  return value + step <= max
-}
 
 export interface Props {
   disabled: boolean

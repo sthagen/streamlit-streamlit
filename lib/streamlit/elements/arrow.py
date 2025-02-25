@@ -228,7 +228,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -245,7 +245,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -262,7 +262,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool | None = None,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -331,10 +331,10 @@ class ArrowMixin:
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent
-            container. If ``use_container_width`` is ``False`` (default),
-            Streamlit sets the dataframe's width according to ``width``. If
-            ``use_container_width`` is ``True``, Streamlit sets the width of
-            the dataframe to match the width of the parent container.
+            container. If ``use_container_width`` is ``False``, Streamlit
+            sets the dataframe's width according to ``width``. If
+            ``use_container_width`` is ``True`` (default), Streamlit sets the
+            width of the dataframe to match the width of the parent container.
 
         hide_index : bool or None
             Whether to hide the index column(s). If ``hide_index`` is ``None``
@@ -536,7 +536,8 @@ class ArrowMixin:
 
         if on_select not in ["ignore", "rerun"] and not callable(on_select):
             raise StreamlitAPIException(
-                f"You have passed {on_select} to `on_select`. But only 'ignore', 'rerun', or a callable is supported."
+                f"You have passed {on_select} to `on_select`. But only 'ignore', "
+                "'rerun', or a callable is supported."
             )
 
         key = to_key(key)
@@ -558,7 +559,14 @@ class ArrowMixin:
         column_config_mapping = process_config_mapping(column_config)
 
         proto = ArrowProto()
+
+        if use_container_width is None:
+            # If use_container_width was not explicitly set by the user, we set
+            # it to True if width was not set explicitly, and False otherwise.
+            use_container_width = True if width is None else False
+
         proto.use_container_width = use_container_width
+
         if width:
             proto.width = width
         if height:

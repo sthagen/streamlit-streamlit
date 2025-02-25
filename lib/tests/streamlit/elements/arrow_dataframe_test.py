@@ -29,6 +29,7 @@ from streamlit.dataframe_util import (
 )
 from streamlit.elements.lib.column_config_utils import INDEX_IDENTIFIER
 from streamlit.errors import StreamlitAPIException
+from streamlit.proto.Arrow_pb2 import Arrow as ArrowProto
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 from tests.streamlit.data_test_cases import SHARED_TEST_CASES, CaseMetadata
 
@@ -44,12 +45,46 @@ def mock_data_frame():
 class ArrowDataFrameProtoTest(DeltaGeneratorTestCase):
     """Test ability to marshall arrow protos."""
 
-    def test_dataframe_data(self):
+    def test_default_params(self):
+        """Test that it can be called with a dataframe."""
+        df = pd.DataFrame({"a": [1, 2, 3]})
+        st.dataframe(df)
+
+        proto = self.get_delta_from_queue().new_element.arrow_data_frame
+        pd.testing.assert_frame_equal(convert_arrow_bytes_to_pandas_df(proto.data), df)
+
+        # Since dataframe and data editor share the same proto, we also test for
+        # properties only relevant for an editable dataframe.
+        self.assertEqual(proto.use_container_width, True)
+        self.assertEqual(proto.width, 0)
+        self.assertEqual(proto.height, 0)
+        self.assertEqual(proto.editing_mode, ArrowProto.EditingMode.READ_ONLY)
+        self.assertEqual(proto.selection_mode, [])
+        self.assertEqual(proto.disabled, False)
+        self.assertEqual(proto.column_order, [])
+        self.assertEqual(proto.form_id, "")
+        self.assertEqual(proto.columns, "{}")
+        # ID should not be set:
+        self.assertEqual(proto.id, "")
+        # Row height is marked optional should not be set if not specified
+        self.assertEqual(proto.HasField("row_height"), False)
+        self.assertEqual(proto.row_height, 0)
+
+    def test_dataframe_only_data(self):
         df = mock_data_frame()
         st.dataframe(df)
 
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         pd.testing.assert_frame_equal(convert_arrow_bytes_to_pandas_df(proto.data), df)
+
+    def test_dataframe_width_parameter(self):
+        """Test that it can be called with width and uses use_container_width=False
+        as default."""
+        st.dataframe(pd.DataFrame(), width=100)
+
+        proto = self.get_delta_from_queue().new_element.arrow_data_frame
+        self.assertEqual(proto.width, 100)
+        self.assertEqual(proto.use_container_width, False)
 
     def test_column_order_parameter(self):
         """Test that it can be called with column_order."""

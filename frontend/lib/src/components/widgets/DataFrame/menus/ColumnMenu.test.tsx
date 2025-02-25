@@ -160,4 +160,27 @@ describe("DataFrame ColumnMenu", () => {
       expect(defaultProps.onCloseMenu).toHaveBeenCalled()
     })
   })
+
+  describe("hide column functionality", () => {
+    test("renders 'Hide column' when onHideColumn is provided", () => {
+      render(<ColumnMenu {...defaultProps} onHideColumn={() => {}} />)
+
+      expect(screen.getByText("Hide column")).toBeInTheDocument()
+    })
+
+    test("does not render 'Hide column' when onHideColumn is undefined", () => {
+      render(<ColumnMenu {...defaultProps} onHideColumn={undefined} />)
+
+      expect(screen.queryByText("Hide column")).not.toBeInTheDocument()
+    })
+
+    test("calls onHideColumn when clicking 'Hide column'", async () => {
+      const onHideColumn = vi.fn()
+      render(<ColumnMenu {...defaultProps} onHideColumn={onHideColumn} />)
+
+      await userEvent.click(screen.getByText("Hide column"))
+      expect(onHideColumn).toHaveBeenCalled()
+      expect(defaultProps.onCloseMenu).toHaveBeenCalled()
+    })
+  })
 })

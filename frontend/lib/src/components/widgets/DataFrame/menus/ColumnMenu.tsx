@@ -51,6 +51,8 @@ export interface ColumnMenuProps {
   onPinColumn: () => void
   // Callback to unpin the column
   onUnpinColumn: () => void
+  // Callback to hide the column
+  onHideColumn?: () => void
   // Callback to change the column format
   onChangeFormat?: (format: string) => void
   // Callback to autosize the column
@@ -68,6 +70,7 @@ function ColumnMenu({
   onUnpinColumn,
   onCloseMenu,
   onSortColumn,
+  onHideColumn,
   columnKind,
   onChangeFormat,
   onAutosize,
@@ -222,6 +225,22 @@ function ColumnMenu({
                 iconValue=":material/keep:"
               />
               Pin column
+            </StyledMenuListItem>
+          )}
+          {onHideColumn && (
+            <StyledMenuListItem
+              onClick={() => {
+                onHideColumn()
+                closeMenu()
+              }}
+            >
+              <DynamicIcon
+                size={"base"}
+                margin="0"
+                color="inherit"
+                iconValue=":material/visibility_off:"
+              />
+              Hide column
             </StyledMenuListItem>
           )}
         </StyledMenuList>

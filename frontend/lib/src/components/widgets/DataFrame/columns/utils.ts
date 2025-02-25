@@ -237,9 +237,11 @@ export function toGlideColumn(column: BaseColumn): GridColumn {
     themeOverride: column.themeOverride,
     icon: column.icon,
     group: column.group,
-    ...(column.isStretched && {
-      grow: column.isIndex ? 1 : 3,
-    }),
+    // Only grow non pinned columns, it looks a bit broken otherwise:
+    ...(column.isStretched &&
+      !column.isPinned && {
+        grow: 1,
+      }),
     ...(column.width && {
       width: column.width,
     }),

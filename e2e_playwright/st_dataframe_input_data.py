@@ -39,4 +39,4 @@ st.markdown(str(test_case[1].expected_data_format))
 for _ in range(selected_test_case):
     st.empty()
 
-st.dataframe(data)
+st.dataframe(data, use_container_width=False)

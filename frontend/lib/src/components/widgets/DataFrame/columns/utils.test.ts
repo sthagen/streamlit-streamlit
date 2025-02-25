@@ -442,16 +442,16 @@ describe("toGlideColumn", () => {
       isStretched: true,
     })
 
-    expect(toGlideColumn(textColumn).grow).toEqual(3)
+    expect(toGlideColumn(textColumn).grow).toEqual(1)
 
-    // Create index column:
+    // Pinned columns should not use grow:
     const indexColumn = TextColumn({
       ...MOCK_TEXT_COLUMN_PROPS,
       isStretched: true,
-      isIndex: true,
+      isPinned: true,
     })
 
-    expect(toGlideColumn(indexColumn).grow).toEqual(1)
+    expect(toGlideColumn(indexColumn).grow).toEqual(undefined)
   })
 })
 
