@@ -310,6 +310,7 @@ class ScriptRunner:
             gather_usage_stats=bool(config.get_option("browser.gatherUsageStats")),
             fragment_storage=self._fragment_storage,
             pages_manager=self._pages_manager,
+            context_info=None,
         )
         add_script_run_ctx(threading.current_thread(), ctx)
 
@@ -468,6 +469,7 @@ class ScriptRunner:
                 query_string=rerun_data.query_string,
                 page_script_hash=page_script_hash,
                 fragment_ids_this_run=fragment_ids_this_run,
+                context_info=rerun_data.context_info,
             )
 
             self.on_event.send(

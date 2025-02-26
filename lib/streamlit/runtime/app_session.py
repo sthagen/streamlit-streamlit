@@ -353,6 +353,7 @@ class AppSession:
             to use previous client state.
 
         """
+
         if self._state == AppSessionState.SHUTDOWN_REQUESTED:
             _LOGGER.warning("Discarding rerun request after shutdown")
             return
@@ -382,6 +383,9 @@ class AppSession:
                 )
                 return
 
+            if client_state.HasField("context_info"):
+                self._client_state.context_info.CopyFrom(client_state.context_info)
+
             rerun_data = RerunData(
                 client_state.query_string,
                 client_state.widget_states,
@@ -389,6 +393,7 @@ class AppSession:
                 client_state.page_name,
                 fragment_id=fragment_id if fragment_id else None,
                 is_auto_rerun=client_state.is_auto_rerun,
+                context_info=client_state.context_info,
             )
         else:
             rerun_data = RerunData()

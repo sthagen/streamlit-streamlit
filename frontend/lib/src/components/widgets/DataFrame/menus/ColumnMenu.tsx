@@ -190,7 +190,7 @@ function ColumnMenu({
                 size={"base"}
                 margin="0"
                 color="inherit"
-                iconValue=":material/fit_width:"
+                iconValue=":material/arrows_outward:"
               />
               Autosize
             </StyledMenuListItem>

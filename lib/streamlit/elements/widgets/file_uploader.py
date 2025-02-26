@@ -235,10 +235,12 @@ class FileUploaderMixin:
         label_visibility: LabelVisibility = "visible",
     ) -> UploadedFile | list[UploadedFile] | None:
         r"""Display a file uploader widget.
-        By default, uploaded files are limited to 200MB. You can configure
-        this using the ``server.maxUploadSize`` config option. For more info
-        on how to set config options, see
-        https://docs.streamlit.io/develop/api-reference/configuration/config.toml
+        By default, uploaded files are limited to 200 MB each. You can
+        configure this using the ``server.maxUploadSize`` config option. For
+        more information on how to set config options, see |config.toml|_.
+
+        .. |config.toml| replace:: ``config.toml``
+        .. _config.toml: https://docs.streamlit.io/develop/api-reference/configuration/config.toml
 
         Parameters
         ----------
@@ -265,13 +267,21 @@ class FileUploaderMixin:
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
 
         type : str or list of str or None
-            Array of allowed extensions. ['png', 'jpg']
-            The default is None, which means all extensions are allowed.
+            The allowed file extension(s) for uploaded files. This can be one
+            of the following types:
+
+            - ``None`` (default): All file extensions are allowed.
+            - A string: A single file extension is allowed. For example, to
+              only accept CSV files, use ``"csv"``.
+            - A sequence of strings: Multiple file extensions are allowed. For
+              example, to only accept JPG/JPEG and PNG files, use
+              ``["jpg", "jpeg", "png"]``.
 
         accept_multiple_files : bool
-            If True, allows the user to upload multiple files at the same time,
-            in which case the return value will be a list of files.
-            Default: False
+            Whether to accept more than one file in a submission. If this is
+            ``False`` (default), the user can only submit one file at a time.
+            If this is ``True``, the user can upload multiple files at the same
+            time, in which case the return value will be a list of files.
 
         key : str or int
             An optional string or integer to use as the unique key for the widget.
@@ -309,7 +319,7 @@ class FileUploaderMixin:
 
         Returns
         -------
-        None or UploadedFile or list of UploadedFile
+        None, UploadedFile, or list of UploadedFile
             - If accept_multiple_files is False, returns either None or
               an UploadedFile object.
             - If accept_multiple_files is True, returns a list with the

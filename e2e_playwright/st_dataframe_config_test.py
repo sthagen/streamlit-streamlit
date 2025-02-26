@@ -15,7 +15,11 @@
 from playwright.sync_api import Locator, Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction
-from e2e_playwright.shared.app_utils import check_top_level_class, reset_hovering
+from e2e_playwright.shared.app_utils import (
+    check_top_level_class,
+    click_button,
+    reset_hovering,
+)
 from e2e_playwright.shared.dataframe_utils import (
     click_on_cell,
     expect_canvas_to_be_visible,
@@ -238,3 +242,15 @@ def test_date_column_formatting_via_ui(
     # taking a snapshot:
     app.wait_for_timeout(250)
     assert_snapshot(date_col_df, name="st_dataframe-date_column_format_changed")
+
+
+def test_changing_column_order_from_code_updates_ui(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that changing the column order from code updates the UI correctly."""
+    dataframe_element = app.get_by_test_id("stDataFrame").nth(2)
+    expect_canvas_to_be_visible(dataframe_element)
+    click_button(app, "Change column order")
+
+    # Verify that the column order has changed:
+    assert_snapshot(dataframe_element, name="st_dataframe-column_order_changed")

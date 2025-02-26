@@ -17,12 +17,15 @@ from __future__ import annotations
 import threading
 from dataclasses import dataclass, field, replace
 from enum import Enum
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from streamlit import util
 from streamlit.proto.Common_pb2 import ChatInputValue as ChatInputValueProto
 from streamlit.proto.Common_pb2 import StringTriggerValue as StringTriggerValueProto
 from streamlit.proto.WidgetStates_pb2 import WidgetState, WidgetStates
+
+if TYPE_CHECKING:
+    from streamlit.proto.ClientState_pb2 import ContextInfo
 
 
 class ScriptRequestType(Enum):
@@ -55,6 +58,8 @@ class RerunData:
     is_fragment_scoped_rerun: bool = False
     # set to true when a script is rerun by the fragment auto-rerun mechanism
     is_auto_rerun: bool = False
+    # context_info is used to store information from the user browser (e.g. timezone)
+    context_info: ContextInfo | None = None
 
     def __repr__(self) -> str:
         return util.repr_(self)
@@ -233,6 +238,7 @@ class ScriptRequests:
                     fragment_id_queue=fragment_id_queue,
                     is_fragment_scoped_rerun=new_data.is_fragment_scoped_rerun,
                     is_auto_rerun=new_data.is_auto_rerun,
+                    context_info=new_data.context_info,
                 )
 
                 return True

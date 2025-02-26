@@ -41,6 +41,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from streamlit.cursor import RunningCursor
+    from streamlit.proto.ClientState_pb2 import ContextInfo
     from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
     from streamlit.proto.PageProfile_pb2 import Command
     from streamlit.runtime.fragment import FragmentStorage
@@ -85,6 +86,7 @@ class ScriptRunContext:
     fragment_storage: FragmentStorage
     pages_manager: PagesManager
 
+    context_info: ContextInfo | None = None
     gather_usage_stats: bool = False
     command_tracking_deactivated: bool = False
     tracked_commands: list[Command] = field(default_factory=list)
@@ -138,12 +140,14 @@ class ScriptRunContext:
         query_string: str = "",
         page_script_hash: str = "",
         fragment_ids_this_run: list[str] | None = None,
+        context_info: ContextInfo | None = None,
     ) -> None:
         self.cursors = {}
         self.widget_ids_this_run = set()
         self.widget_user_keys_this_run = set()
         self.form_ids_this_run = set()
         self.query_string = query_string
+        self.context_info = context_info
         self.pages_manager.set_current_page_script_hash(page_script_hash)
         self._active_script_hash = self.pages_manager.initial_active_script_hash
         # Permit set_page_config when the ScriptRunContext is reused on a rerun

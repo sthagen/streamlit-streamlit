@@ -1071,6 +1071,7 @@ _create_option(
         file_uploader, etc).
     """,
     type_=bool,
+    visibility="hidden",
 )
 
 _create_option(

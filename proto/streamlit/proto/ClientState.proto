@@ -22,6 +22,11 @@ option java_outer_classname = "ClientStateProto";
 import "streamlit/proto/WidgetStates.proto";
 
 
+message ContextInfo {
+  optional string timezone = 1;
+  optional int32 timezone_offset = 2;
+}
+
 message ClientState {
   string query_string = 1;
   WidgetStates widget_states = 2;
@@ -29,4 +34,5 @@ message ClientState {
   string page_name = 4;
   string fragment_id = 5;
   bool is_auto_rerun = 6;
+  ContextInfo context_info = 8;
 }

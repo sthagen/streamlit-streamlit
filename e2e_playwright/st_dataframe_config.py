@@ -37,7 +37,11 @@ st.dataframe(df, hide_index=True, use_container_width=False)
 st.dataframe(df, hide_index=False, use_container_width=False)
 
 st.header("Column order parameter:")
-st.dataframe(df, column_order=["col_4", "col_3", "col_0"], use_container_width=False)
+column_order = ["col_4", "col_3", "col_0"]
+if st.button("Change column order"):
+    column_order = ["col_0", "col_3", "col_4"]
+
+st.dataframe(df, column_order=column_order, use_container_width=False)
 
 st.header("Set column labels:")
 st.dataframe(

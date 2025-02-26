@@ -230,6 +230,15 @@ function DataFrame({
 
   const [columnOrder, setColumnOrder] = React.useState(element.columnOrder)
 
+  // Update the column order if the element.columnOrder value changes
+  // e.g. if the user has applied changes to the column order in the code.
+  React.useEffect(() => {
+    setColumnOrder(element.columnOrder)
+
+    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [element.columnOrder.join(",")])
+
   const {
     columns: originalColumns,
     allColumns,

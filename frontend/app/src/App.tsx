@@ -1531,6 +1531,11 @@ export class App extends PureComponent<Props, State> {
     let queryString = this.getQueryString()
     let pageName = ""
 
+    const contextInfo = {
+      timezone: this.getTimezone(),
+      timezoneOffset: this.getTimezoneOffset(),
+    }
+
     if (pageScriptHash) {
       // The user specified exactly which page to run. We can simply use this
       // value in the BackMsg we send to the server.
@@ -1569,6 +1574,7 @@ export class App extends PureComponent<Props, State> {
           pageName,
           fragmentId,
           isAutoRerun,
+          contextInfo,
         },
       })
     )
@@ -1803,6 +1809,14 @@ export class App extends PureComponent<Props, State> {
     this.connectionManager
       ? this.connectionManager.getBaseUriParts()
       : undefined
+
+  getTimezone = (): string => {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+  }
+
+  getTimezoneOffset = (): number => {
+    return new Date().getTimezoneOffset()
+  }
 
   getQueryString = (): string => {
     const { queryParams } = this.state
