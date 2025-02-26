@@ -54,8 +54,6 @@ jobs:
       # The name of the tag that contains the constraints files
       # for the current release
       CONSTRAINTS_TAG: constraints/${{ github.ref_name }}
-      # We don't want to use constraints files because they might not exist yet.
-      USE_CONSTRAINTS_FILE: "false"
 
     environment: release
 

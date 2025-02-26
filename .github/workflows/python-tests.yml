@@ -66,7 +66,6 @@ jobs:
       PYTHON_VERSIONS: ${{ steps.build_info.outputs.PYTHON_VERSIONS }}
       PYTHON_MIN_VERSION: ${{ steps.build_info.outputs.PYTHON_MIN_VERSION }}
       PYTHON_MAX_VERSION: ${{ steps.build_info.outputs.PYTHON_MAX_VERSION }}
-      USE_CONSTRAINTS_FILE: ${{ steps.build_info.outputs.USE_CONSTRAINTS_FILE }}
 
   py-unit-tests:
     needs:
@@ -87,7 +86,6 @@ jobs:
             (matrix.python_version == 'max' && needs.build_info.outputs.PYTHON_MAX_VERSION || matrix.python_version)
           )
         }}
-      USE_CONSTRAINTS_FILE: "${{ fromJson(needs.build_info.outputs.USE_CONSTRAINTS_FILE )}}"
       CONSTRAINTS_BRANCH: ${{ inputs.constraints-branch || 'constraints-develop' }}
 
     steps:
@@ -218,7 +216,6 @@ jobs:
       )
 
     env:
-      USE_CONSTRAINTS_FILE: "${{ fromJson(needs.build_info.outputs.USE_CONSTRAINTS_FILE )}}"
       CONSTRAINTS_BRANCH: ${{ inputs.constraints-branch || 'constraints-develop' }}
 
     steps:

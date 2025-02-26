@@ -38,19 +38,21 @@ from typing import Any, Callable, Final, Union, cast
 
 from typing_extensions import TypeAlias
 
-from streamlit import type_util, util
+from streamlit import logger, type_util, util
 from streamlit.errors import StreamlitAPIException
 from streamlit.runtime.caching.cache_errors import UnhashableTypeError
 from streamlit.runtime.caching.cache_type import CacheType
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
+_LOGGER: Final = logger.get_logger(__name__)
+
 # If a dataframe has more than this many rows, we consider it large and hash a sample.
-_PANDAS_ROWS_LARGE: Final = 100000
-_PANDAS_SAMPLE_SIZE: Final = 10000
+_PANDAS_ROWS_LARGE: Final = 50_000
+_PANDAS_SAMPLE_SIZE: Final = 10_000
 
 # Similar to dataframes, we also sample large numpy arrays.
-_NP_SIZE_LARGE: Final = 1000000
-_NP_SAMPLE_SIZE: Final = 100000
+_NP_SIZE_LARGE: Final = 500_000
+_NP_SAMPLE_SIZE: Final = 100_000
 
 HashFuncsDict: TypeAlias = dict[Union[str, type[Any]], Callable[[Any], Any]]
 
@@ -426,6 +428,11 @@ class _CacheFuncHasher:
                 self.update(h, pd.util.hash_pandas_object(obj).values.tobytes())
                 return h.digest()
             except TypeError:
+                _LOGGER.warning(
+                    "Pandas Series hash failed. Falling back to pickling the object.",
+                    exc_info=True,
+                )
+
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
@@ -447,10 +454,65 @@ class _CacheFuncHasher:
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
+                _LOGGER.warning(
+                    "Pandas DataFrame hash failed. Falling back to pickling the object.",
+                    exc_info=True,
+                )
+
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
 
+        elif type_util.is_type(obj, "polars.series.series.Series"):
+            import polars as pl  # type: ignore[import-not-found]
+
+            obj = cast(pl.Series, obj)
+            self.update(h, str(obj.dtype).encode())
+            self.update(h, obj.shape)
+
+            if len(obj) >= _PANDAS_ROWS_LARGE:
+                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
+
+            try:
+                self.update(h, obj.hash(seed=0).to_arrow().to_string().encode())
+                return h.digest()
+            except TypeError:
+                _LOGGER.warning(
+                    "Polars Series hash failed. Falling back to pickling the object.",
+                    exc_info=True,
+                )
+
+                # Use pickle if polars cannot hash the object for example if
+                # it contains unhashable objects.
+                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
+        elif type_util.is_type(obj, "polars.dataframe.frame.DataFrame"):
+            import polars as pl
+
+            obj = cast(pl.DataFrame, obj)
+            self.update(h, obj.shape)
+
+            if len(obj) >= _PANDAS_ROWS_LARGE:
+                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)
+            try:
+                for c, t in obj.schema.items():
+                    self.update(h, c.encode())
+                    self.update(h, str(t).encode())
+
+                values_hash_bytes = (
+                    obj.hash_rows(seed=0).hash(seed=0).to_arrow().to_string().encode()
+                )
+
+                self.update(h, values_hash_bytes)
+                return h.digest()
+            except TypeError:
+                _LOGGER.warning(
+                    "Polars DataFrame hash failed. Falling back to pickling the object.",
+                    exc_info=True,
+                )
+
+                # Use pickle if polars cannot hash the object for example if
+                # it contains unhashable objects.
+                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "numpy.ndarray"):
             import numpy as np
 

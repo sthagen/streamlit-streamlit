@@ -44,6 +44,8 @@ def test_code_blocks_render_correctly(
     themed_app.wait_for_function(
         f"()=>document.body.textContent.split('def foo()').length === {foo_func_count}"
     )
+    # Check that there are 15 code blocks with the class "language-python"
+    expect(themed_app.locator("code.language-python")).to_have_count(15)
 
     assert_snapshot(code_blocks.nth(0), name="st_code-auto_lang")
     assert_snapshot(code_blocks.nth(1), name="st_code-empty")
@@ -54,6 +56,9 @@ def test_code_blocks_render_correctly(
     assert_snapshot(code_blocks.nth(6), name="st_code-diff_lang")
 
     # Test long lines draw as expected.
+    # The screenshot for long-no_wrap seems to be a bit flaky, scrolling
+    # it into view seems to help fix this (but not sure why).
+    code_blocks.nth(11).scroll_into_view_if_needed()
     assert_snapshot(code_blocks.nth(11), name="st_code-long-no_wrap")
     assert_snapshot(code_blocks.nth(12), name="st_code-long-numbers-no_wrap")
     assert_snapshot(code_blocks.nth(13), name="st_code-long-wrap")
