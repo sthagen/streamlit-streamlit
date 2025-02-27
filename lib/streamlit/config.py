@@ -1021,6 +1021,7 @@ _create_option(
 _create_option(
     "theme.linkColor",
     description="Color used for all links.",
+    visibility="hidden",
 )
 
 _create_option(
@@ -1038,6 +1039,7 @@ _create_option(
         The font family to use for code (monospace) in the app.
         To use a custom font, it needs to be added via [theme.fontFaces].
     """,
+    visibility="hidden",
 )
 
 _create_option(
@@ -1045,16 +1047,18 @@ _create_option(
     description="""
     Configure a list of font faces that you can use for the app & code fonts.
 """,
+    visibility="hidden",
 )
 
 
 _create_option(
-    "theme.roundness",
+    "theme.baseRadius",
     description="""
-        The roundness of the corners for most UI elements. Can be between 0 and 1,
-        where 0 is no-roundness and 1 is maximum roundness.
+        The radius used as basis for the corners of most UI elements. Can be:
+        "none", "small", "medium", "large", "full", or the number in pixel or rem.
+        For example: "10px", "0.5rem", "1.2rem", "2rem".
     """,
-    type_=float,
+    visibility="hidden",
 )
 
 _create_option(
@@ -1062,6 +1066,7 @@ _create_option(
     description="""
         The color of the border around elements.
     """,
+    visibility="hidden",
 )
 
 _create_option(
@@ -1081,6 +1086,7 @@ _create_option(
         scale of text and UI elements. The default base font size is 16.
     """,
     type_=int,
+    visibility="hidden",
 )
 
 # Config Section: Secrets #

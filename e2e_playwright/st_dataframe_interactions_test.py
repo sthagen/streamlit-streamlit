@@ -216,6 +216,13 @@ def test_open_search_via_toolbar(
     # Check that it is visible
     assert_snapshot(dataframe_element, name="st_dataframe-trigger_search_via_toolbar")
 
+    # Check that the search bar is responsive and changes width when the data grid
+    # width is changed:
+    expect(themed_app.locator(".gdg-seveqep")).to_have_css("width", "304px")
+    # Change screen size to a smaller width:
+    themed_app.set_viewport_size({"width": 100, "height": 1000})
+    expect(themed_app.locator(".gdg-seveqep")).to_have_css("width", "96px")
+
 
 def test_open_search_via_hotkey(app: Page):
     """Test that the search can be opened via a hotkey."""

@@ -43,5 +43,39 @@ export const StyledResizableContainer =
         ["overflowX" as any]: "auto !important",
         ["overflowY" as any]: "auto !important",
       },
+      "& .gdg-seveqep": {
+        // Make the search field more responsive to the grid width and use
+        // rem units for everything.
+        // 19rem is the closest rem withou decimals to the original size:
+        maxWidth: "19rem",
+        width: "80%",
+        // 6rem was manually determined as the smallest size thats still somewhat usuable:
+        minWidth: "6rem",
+        top: theme.spacing.sm,
+        right: theme.spacing.sm,
+        padding: theme.spacing.sm,
+        borderRadius: theme.radii.default,
+        "& .gdg-search-status": {
+          paddingTop: theme.spacing.twoXS,
+          fontSize: theme.fontSizes.twoSm,
+        },
+        "& .gdg-search-progress": {
+          // We are disabling the search progress bar since it
+          // looks a bit weired in its current state and doesn't work
+          // with rounded corners
+          display: "none",
+        },
+        "& input": {
+          width: "100%",
+        },
+        "& button": {
+          width: theme.iconSizes.xl,
+          height: theme.iconSizes.xl,
+          "& .button-icon": {
+            width: theme.iconSizes.base,
+            height: theme.iconSizes.base,
+          },
+        },
+      },
     })
   )

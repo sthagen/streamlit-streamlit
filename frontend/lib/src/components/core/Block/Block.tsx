@@ -296,10 +296,14 @@ function ScrollToBottomVerticalBlockWrapper(
 // Python side.
 const VerticalBlock = (props: BlockPropsWithoutWidth): ReactElement => {
   const {
-    values: [calculatedWidth],
+    values: [observedWidth],
     elementRef: wrapperElement,
     forceRecalculate,
   } = useResizeObserver(useMemo(() => ["width"], []))
+
+  // The width should never be set to 0 since it can cause
+  // flickering effects.
+  const calculatedWidth = observedWidth <= 0 ? -1 : observedWidth
 
   const border = props.node.deltaBlock.vertical?.border ?? false
   const height = props.node.deltaBlock.vertical?.height || undefined

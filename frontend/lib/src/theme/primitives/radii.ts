@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// md, default, xl, xxl can be changed based on the roundness theme config.
+// md, default, xl, xxl can be changed based on the baseRadius theme config.
 // chatInput, full, and maxCheckboxRadius are not impacted by this config.
 export const radii = {
   md: "0.25rem",

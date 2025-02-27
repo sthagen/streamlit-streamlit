@@ -283,7 +283,7 @@ function ColumnMenu({
             borderBottomLeftRadius: radii.default,
             borderBottomRightRadius: radii.default,
             // Prevent the menu hover background from overflowing the menu edges
-            // This is only an issue if a high roundness is configured.
+            // This is only an issue if a high base radius is configured.
             overflow: "auto",
             // See the long comment about `borderRadius`. The same applies here
             // to `padding`.

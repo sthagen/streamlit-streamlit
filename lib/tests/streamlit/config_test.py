@@ -393,7 +393,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.secondaryBackgroundColor",
                 "theme.textColor",
                 "theme.baseFontSize",
-                "theme.roundness",
+                "theme.baseRadius",
                 "theme.font",
                 "theme.codeFont",
                 "theme.fontFaces",
@@ -553,7 +553,7 @@ class ConfigTest(unittest.TestCase):
         expected = {
             "base": None,
             "primaryColor": None,
-            "roundness": None,
+            "baseRadius": None,
             "secondaryBackgroundColor": None,
             "backgroundColor": None,
             "textColor": None,
@@ -574,7 +574,7 @@ class ConfigTest(unittest.TestCase):
 
         config._set_option("theme.base", "dark", "test")
         config._set_option("theme.textColor", "#DFFDE0", "test")
-        config._set_option("theme.roundness", 0.85, "test")
+        config._set_option("theme.baseRadius", "1.2rem", "test")
         config._set_option("theme.secondaryBackgroundColor", "#021A09", "test")
         config._set_option("theme.backgroundColor", "#001200", "test")
         config._set_option("theme.borderColor", "#0B4C0B", "test")
@@ -598,7 +598,7 @@ class ConfigTest(unittest.TestCase):
         expected = {
             "base": "dark",
             "primaryColor": "#1BD760",
-            "roundness": 0.85,
+            "baseRadius": "1.2rem",
             "secondaryBackgroundColor": "#021A09",
             "backgroundColor": "#001200",
             "textColor": "#DFFDE0",

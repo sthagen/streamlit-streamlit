@@ -697,7 +697,7 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         ],
         "linkColor": "#2EC163",
         "primaryColor": "coral",
-        "roundness": 0.75,
+        "baseRadius": "1.2rem",
         "secondaryBackgroundColor": "blue",
         "showBorderAroundInputs": True,
         "textColor": "black",
@@ -1069,7 +1069,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "fontFaces": None,
                     "linkColor": None,
                     "primaryColor": None,
-                    "roundness": None,
+                    "baseRadius": None,
                     "secondaryBackgroundColor": None,
                     "showBorderAroundInputs": None,
                     "textColor": None,
@@ -1097,7 +1097,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "font": None,
                     "fontFaces": None,
                     "linkColor": None,
-                    "roundness": None,
+                    "baseRadius": None,
                     "secondaryBackgroundColor": None,
                     "showBorderAroundInputs": None,
                     "textColor": None,
@@ -1122,7 +1122,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.font_faces
 
         # Fields that are marked as optional in proto:
-        assert not new_session_msg.custom_theme.HasField("roundness")
+        assert not new_session_msg.custom_theme.HasField("base_radius")
         assert not new_session_msg.custom_theme.HasField("border_color")
         assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
         assert not new_session_msg.custom_theme.HasField("link_color")
@@ -1144,7 +1144,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.custom_theme.background_color == "white"
         assert new_session_msg.custom_theme.text_color == "black"
         assert new_session_msg.custom_theme.secondary_background_color == "blue"
-        assert new_session_msg.custom_theme.roundness == 0.75
+        assert new_session_msg.custom_theme.base_radius == "1.2rem"
         assert new_session_msg.custom_theme.border_color == "#ff0000"
         assert new_session_msg.custom_theme.show_border_around_inputs is True
         assert new_session_msg.custom_theme.link_color == "#2EC163"

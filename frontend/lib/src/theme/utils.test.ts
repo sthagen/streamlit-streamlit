@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getLogger } from "loglevel"
 import { MockInstance } from "vitest"
 
 import { CustomThemeConfig } from "@streamlit/protobuf"
@@ -54,6 +55,8 @@ const matchMediaFillers = {
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 }
+
+const LOG = getLogger("theme:utils")
 
 const windowLocationSearch = (search: string): any => ({
   location: {
@@ -609,18 +612,80 @@ describe("createEmotionTheme", () => {
     )
   })
 
-  it("adapts the radii theme props if roundness is provided", () => {
+  it("adapts the radii theme props if baseRadius is provided", () => {
     const themeInput: Partial<CustomThemeConfig> = {
-      roundness: 0.8,
+      baseRadius: "1.2rem",
     }
 
     const theme = createEmotionTheme(themeInput)
 
-    expect(theme.radii.default).toBe("1.28rem")
-    expect(theme.radii.md).toBe("0.64rem")
-    expect(theme.radii.xl).toBe("1.92rem")
-    expect(theme.radii.xxl).toBe("2.56rem")
+    expect(theme.radii.default).toBe("1.2rem")
+    expect(theme.radii.md).toBe("0.6rem")
+    expect(theme.radii.xl).toBe("1.8rem")
+    expect(theme.radii.xxl).toBe("2.4rem")
   })
+
+  it.each([
+    // Test keyword values
+    ["full", "1.4rem", "0.7rem", "2.1rem", "2.8rem"],
+    ["none", "0rem", "0rem", "0rem", "0rem"],
+    ["small", "0.35rem", "0.17rem", "0.52rem", "0.7rem"],
+    ["medium", "0.5rem", "0.25rem", "0.75rem", "1rem"],
+    ["large", "1rem", "0.5rem", "1.5rem", "2rem"],
+    // Test rem values
+    ["0.8rem", "0.8rem", "0.4rem", "1.2rem", "1.6rem"],
+    ["2rem", "2rem", "1rem", "3rem", "4rem"],
+    // Test px values
+    ["10px", "10px", "5px", "15px", "20px"],
+    ["24px", "24px", "12px", "36px", "48px"],
+    // Test with whitespace and uppercase
+    [" FULL ", "1.4rem", "0.7rem", "2.1rem", "2.8rem"],
+    ["  medium  ", "0.5rem", "0.25rem", "0.75rem", "1rem"],
+    ["2 rem ", "2rem", "1rem", "3rem", "4rem"],
+  ])(
+    "correctly applies baseRadius '%s'",
+    (baseRadius, expectedDefault, expectedMd, expectedXl, expectedXxl) => {
+      const themeInput: Partial<CustomThemeConfig> = {
+        baseRadius,
+      }
+
+      const theme = createEmotionTheme(themeInput)
+
+      expect(theme.radii.default).toBe(expectedDefault)
+      expect(theme.radii.md).toBe(expectedMd)
+      expect(theme.radii.xl).toBe(expectedXl)
+      expect(theme.radii.xxl).toBe(expectedXxl)
+    }
+  )
+
+  it.each([
+    "invalid",
+    "123", // Missing unit
+    "rem", // Missing number
+    "px", // Missing number
+    "", // Empty string
+  ])(
+    "logs an warning and falls back to default for invalid baseRadius '%s'",
+    invalidBaseRadius => {
+      const logWarningSpy = vi.spyOn(LOG, "warn")
+      const themeInput: Partial<CustomThemeConfig> = {
+        baseRadius: invalidBaseRadius,
+      }
+
+      const theme = createEmotionTheme(themeInput)
+
+      // Should log an error
+      expect(logWarningSpy).toHaveBeenCalledWith(
+        `Invalid base radius: ${invalidBaseRadius}. Falling back to default base radius.`
+      )
+
+      // Should fall back to default values
+      expect(theme.radii.default).toBe(baseTheme.emotion.radii.default)
+      expect(theme.radii.md).toBe(baseTheme.emotion.radii.md)
+      expect(theme.radii.xl).toBe(baseTheme.emotion.radii.xl)
+      expect(theme.radii.xxl).toBe(baseTheme.emotion.radii.xxl)
+    }
+  )
 })
 
 describe("toThemeInput", () => {

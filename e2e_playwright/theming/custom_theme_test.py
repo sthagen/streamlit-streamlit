@@ -30,7 +30,7 @@ def configure_custom_theme():
     os.environ["STREAMLIT_THEME_BACKGROUND_COLOR"] = "#001200"
     os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"] = "#03200C"
     os.environ["STREAMLIT_THEME_TEXT_COLOR"] = "#DFFDE0"
-    os.environ["STREAMLIT_THEME_ROUNDNESS"] = "0.75"
+    os.environ["STREAMLIT_THEME_BASE_RADIUS"] = "1.2rem"
     os.environ["STREAMLIT_THEME_BORDER_COLOR"] = "#0B4C0B"
     os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"] = "True"
     os.environ["STREAMLIT_THEME_LINK_COLOR"] = "#2EC163"
@@ -41,7 +41,7 @@ def configure_custom_theme():
     del os.environ["STREAMLIT_THEME_BACKGROUND_COLOR"]
     del os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"]
     del os.environ["STREAMLIT_THEME_TEXT_COLOR"]
-    del os.environ["STREAMLIT_THEME_ROUNDNESS"]
+    del os.environ["STREAMLIT_THEME_BASE_RADIUS"]
     del os.environ["STREAMLIT_THEME_BORDER_COLOR"]
     del os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"]
     del os.environ["STREAMLIT_THEME_LINK_COLOR"]
