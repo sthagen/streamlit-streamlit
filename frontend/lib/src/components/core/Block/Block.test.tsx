@@ -23,6 +23,7 @@ import { Block as BlockProto } from "@streamlit/protobuf"
 import { render } from "~lib/test_util"
 import { BlockNode } from "~lib/AppNode"
 import { ScriptRunState } from "~lib/ScriptRunState"
+import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 
 import VerticalBlock from "./Block"
 
@@ -129,5 +130,45 @@ describe("Vertical Block Component", () => {
     expect(
       screen.getAllByTestId("stVerticalBlockBorderWrapper")[0]
     ).toHaveStyle("border: 1px solid rgba(49, 51, 63, 0.2);")
+  })
+
+  describe("should never have a width of 0", () => {
+    describe("when observed width is 0", () => {
+      beforeEach(() => {
+        vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+          elementRef: React.createRef(),
+          forceRecalculate: vitest.fn(),
+          values: [0],
+        })
+      })
+
+      it("should have a width of -1px", () => {
+        const block = makeVerticalBlock([makeHorizontalBlock(4)])
+        render(makeVerticalBlockComponent(block))
+
+        expect(screen.getAllByTestId("stVerticalBlock")[0]).toHaveStyle(
+          "width: -1px"
+        )
+      })
+    })
+
+    describe("when observed width is a positive value", () => {
+      beforeEach(() => {
+        vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
+          elementRef: React.createRef(),
+          forceRecalculate: vitest.fn(),
+          values: [100],
+        })
+      })
+
+      it("should have the observed width", () => {
+        const block = makeVerticalBlock([makeHorizontalBlock(4)])
+        render(makeVerticalBlockComponent(block))
+
+        expect(screen.getAllByTestId("stVerticalBlock")[0]).toHaveStyle(
+          "width: 100px"
+        )
+      })
+    })
   })
 })

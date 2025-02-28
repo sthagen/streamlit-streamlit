@@ -120,7 +120,7 @@ def test_page_icon_with_emoji_shortcode(app: Page):
     favicon = app.locator("link[rel='shortcut icon']")
     expect(favicon).to_have_attribute(
         "href",
-        "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f988.png",
+        "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦈</text></svg>",
     )
     expect_no_exception(app)
 
@@ -131,7 +131,7 @@ def test_page_icon_with_emoji_symbol(app: Page):
     favicon = app.locator("link[rel='shortcut icon']")
     expect(favicon).to_have_attribute(
         "href",
-        "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f419.png",
+        "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐙</text></svg>",
     )
 
 

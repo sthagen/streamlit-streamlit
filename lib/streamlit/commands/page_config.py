@@ -165,8 +165,7 @@ def set_page_config(
           https://share.streamlit.io/streamlit/emoji-shortcodes.
 
         - The string literal, ``"random"``. You can set ``page_icon="random"``
-          to set a random emoji from the supported list above. Emoji icons are
-          courtesy of Twemoji and loaded from MaxCDN.
+          to set a random emoji from the supported list above.
 
         - An icon from the Material Symbols library (rounded style) in the
           format ``":material/icon_name:"`` where "icon_name" is the name

@@ -25,7 +25,7 @@ from typing import (
     overload,
 )
 
-from streamlit import runtime
+from streamlit import config, runtime
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
 from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
 from streamlit.elements.lib.form_utils import is_in_form
@@ -597,6 +597,7 @@ class ChatMixin:
         )
 
         chat_input_proto.file_type[:] = file_type if file_type is not None else []
+        chat_input_proto.max_upload_size_mb = config.get_option("server.maxUploadSize")
 
         serde = ChatInputSerde(accept_files=bool(accept_file))
         widget_state = register_widget(  # type: ignore[misc]

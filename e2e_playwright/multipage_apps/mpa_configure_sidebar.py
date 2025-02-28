@@ -39,4 +39,3 @@ with colA:
 
 with colB:
     st.page_link("pages/04_page_with_duplicate_name.py", label="Page 4", icon="🧪")
-    st.page_link("pages/05_page_with_duplicate_name.py", label="Page 5", icon="🌎")

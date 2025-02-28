@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import streamlit as st
-from streamlit import runtime
+from streamlit import config, runtime
+
+# Set file max upload size to 1MB
+config.set_option("server.maxUploadSize", 1)
 
 v1 = st.container().chat_input("Chat input 1 (inline)")
 st.write("Chat input 1 (inline) - value:", v1)
@@ -35,7 +38,9 @@ if runtime.exists():
     )
     st.write("Chat input 3 (callback) - value:", st.session_state.get("chat_input_3"))
 
-v4 = st.container().chat_input("Chat input 4 (single file)", accept_file=True)
+v4 = st.container().chat_input(
+    "Chat input 4 (single file)", accept_file=True, file_type="txt"
+)
 st.write("Chat input 4 (single file) - value:", v4)
 
 v5 = st.container().chat_input("Chat input 5 (multiple files)", accept_file="multiple")

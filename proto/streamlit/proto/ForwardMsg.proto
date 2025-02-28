@@ -77,7 +77,7 @@ message ForwardMsg {
     // Other messages.
     Navigation navigation = 23;
     PageNotFound page_not_found = 15;
-    PagesChanged pages_changed = 16;
+    PagesChanged pages_changed = 16 [deprecated = true];
     FileURLsResponse file_urls_response = 19;
     AutoRerun auto_rerun = 21;
 

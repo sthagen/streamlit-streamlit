@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable, Literal, Union
 
 from typing_extensions import TypeAlias
 
@@ -25,6 +25,7 @@ from streamlit.navigation.page import StreamlitPage
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.proto.Navigation_pb2 import Navigation as NavigationProto
 from streamlit.runtime.metrics_util import gather_metrics
+from streamlit.runtime.pages_manager import PagesManager
 from streamlit.runtime.scriptrunner_utils.script_run_context import (
     ScriptRunContext,
     get_script_run_ctx,
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from streamlit.source_util import PageHash, PageInfo
 
 SectionHeader: TypeAlias = str
+PageType: TypeAlias = Union[str, Path, Callable[[], None], StreamlitPage]
 
 
 def convert_to_streamlit_page(
@@ -78,8 +80,7 @@ def send_page_not_found(ctx: ScriptRunContext):
 
 @gather_metrics("navigation")
 def navigation(
-    pages: list[str | Path | Callable[[], None] | StreamlitPage]
-    | dict[SectionHeader, list[str | Path | Callable[[], None] | StreamlitPage]],
+    pages: list[PageType] | dict[SectionHeader, list[PageType]],
     *,
     position: Literal["sidebar", "hidden"] = "sidebar",
     expanded: bool = False,
@@ -214,6 +215,18 @@ def navigation(
     - The first page is automatically set as default if none specified
     - Common widgets should be defined in the entrypoint file for state sharing
     """
+    # Disable the use of the pages feature (ie disregard v1 behavior of Multipage Apps)
+    PagesManager.uses_pages_directory = False
+
+    return _navigation(pages, position=position, expanded=expanded)
+
+
+def _navigation(
+    pages: list[PageType] | dict[SectionHeader, list[PageType]],
+    *,
+    position: Literal["sidebar", "hidden"],
+    expanded: bool,
+) -> StreamlitPage:
     if isinstance(pages, list):
         converted_pages = [convert_to_streamlit_page(p) for p in pages]
         nav_sections = {"": converted_pages}
@@ -222,7 +235,6 @@ def navigation(
             section: [convert_to_streamlit_page(p) for p in section_pages]
             for section, section_pages in pages.items()
         }
-
     page_list = pages_from_nav_sections(nav_sections)
 
     if not page_list:

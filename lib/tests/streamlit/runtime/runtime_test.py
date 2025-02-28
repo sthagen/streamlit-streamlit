@@ -698,7 +698,6 @@ class RuntimeTest(RuntimeTestCase):
         self.assertIsInstance(self.runtime._get_async_objs(), AsyncObjects)
 
 
-@patch("streamlit.source_util._cached_pages", new=None)
 class ScriptCheckTest(RuntimeTestCase):
     """Tests for Runtime.does_script_run_without_error"""
 

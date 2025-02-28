@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import MagicMock
 from urllib import parse
 
-from streamlit import source_util
 from streamlit.runtime import Runtime
 from streamlit.runtime.caching.storage.dummy_cache_storage import (
     MemoryCacheStorageManager,
@@ -30,10 +29,12 @@ from streamlit.runtime.caching.storage.dummy_cache_storage import (
 from streamlit.runtime.media_file_manager import MediaFileManager
 from streamlit.runtime.memory_media_file_storage import MemoryMediaFileStorage
 from streamlit.runtime.pages_manager import PagesManager
+from streamlit.runtime.scriptrunner.script_cache import ScriptCache
 from streamlit.runtime.secrets import Secrets
 from streamlit.runtime.state.common import TESTING_KEY
 from streamlit.runtime.state.safe_session_state import SafeSessionState
 from streamlit.runtime.state.session_state import SessionState
+from streamlit.source_util import page_icon_and_name
 from streamlit.testing.v1.element_tree import (
     Block,
     Button,
@@ -327,10 +328,10 @@ class AppTest:
         )
         mock_runtime.cache_storage_manager = MemoryCacheStorageManager()
         Runtime._instance = mock_runtime
-        pages_manager = PagesManager(self._script_path, setup_watcher=False)
-        with source_util._pages_cache_lock:
-            saved_cached_pages = source_util._cached_pages
-            source_util._cached_pages = None
+        script_cache = ScriptCache()
+        pages_manager = PagesManager(
+            self._script_path, script_cache, setup_watcher=False
+        )
 
         saved_secrets: Secrets = st.secrets
         # Only modify global secrets stuff if we have been given secrets
@@ -354,10 +355,6 @@ class AppTest:
         # Last event is SHUTDOWN, so the corresponding data includes query string
         query_string = script_runner.event_data[-1]["client_state"].query_string
         self.query_params = parse.parse_qs(query_string)
-
-        # teardown
-        with source_util._pages_cache_lock:
-            source_util._cached_pages = saved_cached_pages
 
         if self.secrets:
             if st.secrets._secrets is not None:
@@ -415,7 +412,8 @@ class AppTest:
                 f"Unable to find script at {page_path}, make sure the page given is relative to the main script."
             )
         page_path_str = str(full_page_path.resolve())
-        self._page_hash = calc_md5(page_path_str)
+        _, page_name = page_icon_and_name(Path(page_path_str))
+        self._page_hash = calc_md5(page_name)
         return self
 
     @property

@@ -50,7 +50,6 @@ from streamlit.watcher import LocalSourcesWatcher
 
 if TYPE_CHECKING:
     from streamlit.proto.BackMsg_pb2 import BackMsg
-    from streamlit.proto.PagesChanged_pb2 import PagesChanged
     from streamlit.runtime.script_data import ScriptData
     from streamlit.runtime.scriptrunner.script_cache import ScriptCache
     from streamlit.runtime.state import SessionState
@@ -199,9 +198,6 @@ class AppSession:
         )
         self._stop_config_listener = config.on_config_parsed(
             self._on_source_file_changed, force_connect=True
-        )
-        self._stop_pages_listener = self._pages_manager.register_pages_changed_callback(
-            self._on_pages_changed
         )
         secrets_singleton.file_change_listener.connect(self._on_secrets_file_changed)
 
@@ -493,14 +489,6 @@ class AppSession:
         # thus `_`), and introducing an unnecessary argument to
         # `_on_source_file_changed` just for this purpose sounded finicky.
         self._on_source_file_changed()
-
-    def _on_pages_changed(self, _) -> None:
-        msg = ForwardMsg()
-        self._populate_app_pages(msg.pages_changed, self._pages_manager.get_pages())
-        self._enqueue_forward_msg(msg)
-
-        if self._local_sources_watcher is not None:
-            self._local_sources_watcher.update_watched_pages()
 
     def _clear_queue(self, fragment_ids_this_run: list[str] | None = None) -> None:
         self._browser_queue.clear(
@@ -886,7 +874,7 @@ class AppSession:
         self._enqueue_forward_msg(msg)
 
     def _populate_app_pages(
-        self, msg: NewSession | PagesChanged, pages: dict[PageHash, PageInfo]
+        self, msg: NewSession, pages: dict[PageHash, PageInfo]
     ) -> None:
         for page_script_hash, page_info in pages.items():
             page_proto = msg.app_pages.add()

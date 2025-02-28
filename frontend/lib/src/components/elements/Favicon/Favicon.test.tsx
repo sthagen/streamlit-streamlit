@@ -27,13 +27,6 @@ function getFaviconHref(): string {
 
 document.head.innerHTML = `<link rel="shortcut icon" href="default.png">`
 
-const PIZZA_TWEMOJI_URL =
-  "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f355.png"
-const SATELLITE_TWEMOJI_URL =
-  "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6f0.png"
-const CRESCENT_MOON_TWEMOJI_URL =
-  "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f319.png"
-
 const FLAG_MATERIAL_ICON_URL =
   "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/flag/default/24px.svg"
 
@@ -61,12 +54,16 @@ describe("Favicon element", () => {
 
   it("accepts emojis directly", () => {
     handleFavicon("🍕", vi.fn(), endpoints)
-    expect(getFaviconHref()).toBe(PIZZA_TWEMOJI_URL)
+    // Check that its an svg that contains the pizza emoji bytecode:
+    expect(getFaviconHref()).toContain("svg")
+    expect(getFaviconHref()).toContain("%F0%9F%8D%95")
   })
 
   it("handles emoji variants correctly", () => {
     handleFavicon("🛰", vi.fn(), endpoints)
-    expect(getFaviconHref()).toBe(SATELLITE_TWEMOJI_URL)
+    // Check that its an svg that contains the satellite emoji bytecode:
+    expect(getFaviconHref()).toContain("svg")
+    expect(getFaviconHref()).toContain("%F0%9F%9B%B0")
   })
 
   it("handles material icon correctly", () => {
@@ -82,18 +79,24 @@ describe("Favicon element", () => {
 
   it("handles emoji shortcodes containing a dash correctly", () => {
     handleFavicon(":crescent-moon:", vi.fn(), endpoints)
-    expect(getFaviconHref()).toBe(CRESCENT_MOON_TWEMOJI_URL)
+    // Check that its an svg that contains the crescent moon emoji bytecode:
+    expect(getFaviconHref()).toContain("svg")
+    expect(getFaviconHref()).toContain("%F0%9F%8C%99")
   })
 
   it("accepts emoji shortcodes", () => {
     handleFavicon(":pizza:", vi.fn(), endpoints)
-    expect(getFaviconHref()).toBe(PIZZA_TWEMOJI_URL)
+    // Check that its an svg that contains the pizza emoji bytecode:
+    expect(getFaviconHref()).toContain("svg")
+    expect(getFaviconHref()).toContain("%F0%9F%8D%95")
   })
 
   it("updates the favicon when it changes", () => {
     handleFavicon("/media/1234567890.png", vi.fn(), endpoints)
     handleFavicon(":pizza:", vi.fn(), endpoints)
-    expect(getFaviconHref()).toBe(PIZZA_TWEMOJI_URL)
+    // Check that its an svg that contains the pizza emoji bytecode:
+    expect(getFaviconHref()).toContain("svg")
+    expect(getFaviconHref()).toContain("%F0%9F%8D%95")
   })
 
   it("sends SET_PAGE_FAVICON message to host", () => {

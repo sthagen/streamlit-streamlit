@@ -45,12 +45,7 @@ def Page(
     object to execute the page. You can only run the page returned by
     ``st.navigation``, and you can only run it once per app rerun.
 
-    A page can be defined by a Python file or ``Callable``. Python files used
-    as a ``StreamlitPage`` source will have ``__name__ == "__page__"``.
-    Functions used as a ``StreamlitPage`` source will have ``__name__``
-    corresponding to the module they were imported from. Only the entrypoint
-    file and functions defined within the entrypoint file have
-    ``__name__ == "__main__"`` to adhere to Python convention.
+    A page can be defined by a Python file or ``Callable``.
 
     Parameters
     ----------
@@ -297,10 +292,7 @@ class StreamlitPage:
                 return
             else:
                 code = ctx.pages_manager.get_page_script_byte_code(str(self._page))
-
-                # We create a module named __page__ for this specific
-                # script. This is differentiate it from the `__main__` module
-                module = types.ModuleType("__page__")
+                module = types.ModuleType("__main__")
                 # We want __file__ to be the path to the script
                 module.__dict__["__file__"] = self._page
                 exec(code, module.__dict__)

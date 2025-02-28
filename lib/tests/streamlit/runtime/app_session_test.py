@@ -21,7 +21,7 @@ import unittest
 from asyncio import AbstractEventLoop
 from typing import Any, Callable, cast
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import DEFAULT, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -468,48 +468,6 @@ class AppSessionTest(unittest.TestCase):
             }
         ),
     )
-    @patch("streamlit.runtime.app_session.AppSession._enqueue_forward_msg")
-    def test_on_pages_changed(self, mock_enqueue: MagicMock):
-        session = _create_test_session()
-        session._on_pages_changed("/foo/pages")
-
-        expected_msg = ForwardMsg()
-        expected_msg.pages_changed.app_pages.extend(
-            [
-                AppPage(
-                    page_script_hash="hash1",
-                    page_name="page 1",
-                    icon="",
-                    url_pathname="page_1",
-                ),
-                AppPage(
-                    page_script_hash="hash2",
-                    page_name="page 2",
-                    icon="🎉",
-                    url_pathname="page_2",
-                ),
-            ]
-        )
-
-        mock_enqueue.assert_called_once_with(expected_msg)
-
-    @patch.object(PagesManager, "register_pages_changed_callback")
-    def test_installs_pages_watcher_on_init(self, patched_register_callback):
-        session = _create_test_session()
-        patched_register_callback.assert_called_once_with(session._on_pages_changed)
-
-    def test_deregisters_pages_watcher_on_shutdown(self):
-        disconnect_mock = MagicMock()
-        with patch.object(
-            PagesManager,
-            "register_pages_changed_callback",
-            return_value=disconnect_mock,
-        ):
-            session = _create_test_session()
-            session.shutdown()
-
-            disconnect_mock.assert_called_once()
-
     def test_tags_fwd_msgs_with_last_backmsg_id_if_set(self):
         session = _create_test_session()
         session._debug_last_backmsg_id = "some backmsg id"
@@ -523,16 +481,15 @@ class AppSessionTest(unittest.TestCase):
     @patch(
         "streamlit.runtime.app_session.secrets_singleton.file_change_listener.connect"
     )
-    @patch.multiple(
+    @patch.object(
         PagesManager,
-        register_pages_changed_callback=DEFAULT,
-        get_pages=MagicMock(return_value={}),
+        "get_pages",
+        MagicMock(return_value={}),
     )
     def test_registers_file_watchers(
         self,
         patched_secrets_connect,
         patched_on_config_parsed,
-        register_pages_changed_callback,
     ):
         session = _create_test_session()
 
@@ -541,9 +498,6 @@ class AppSessionTest(unittest.TestCase):
         )
         patched_on_config_parsed.assert_called_once_with(
             session._on_source_file_changed, force_connect=True
-        )
-        register_pages_changed_callback.assert_called_once_with(
-            session._on_pages_changed
         )
         patched_secrets_connect.assert_called_once_with(
             session._on_secrets_file_changed
@@ -815,11 +769,6 @@ class AppSessionScriptEventTest(IsolatedAsyncioTestCase):
         "streamlit.runtime.app_session._generate_scriptrun_id",
         MagicMock(return_value="mock_scriptrun_id"),
     )
-    @patch.object(
-        PagesManager,
-        "register_pages_changed_callback",
-        MagicMock(return_value=lambda: None),
-    )
     async def test_new_session_message_includes_fragment_ids(self):
         session = _create_test_session(asyncio.get_running_loop())
 
@@ -934,11 +883,6 @@ class AppSessionScriptEventTest(IsolatedAsyncioTestCase):
     @patch(
         "streamlit.runtime.app_session._generate_scriptrun_id",
         MagicMock(return_value="mock_scriptrun_id"),
-    )
-    @patch.object(
-        PagesManager,
-        "register_pages_changed_callback",
-        MagicMock(return_value=lambda: None),
     )
     async def test_handle_backmsg_exception(self):
         """handle_backmsg_exception is a bit of a hack. Test that it does

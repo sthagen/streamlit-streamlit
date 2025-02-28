@@ -21,6 +21,7 @@ import {
   ErrorOutline,
   InsertDriveFile,
 } from "@emotion-icons/material-outlined"
+import { useTheme } from "@emotion/react"
 
 import BaseButton, { BaseButtonKind } from "~lib/components/shared/BaseButton"
 import Icon, { StyledSpinnerIcon } from "~lib/components/shared/Icon"
@@ -52,6 +53,7 @@ export interface ChatUploadedFileIconProps {
 export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
   fileInfo,
 }) => {
+  const theme = useTheme()
   const { type } = fileInfo.status
 
   switch (type) {
@@ -70,7 +72,7 @@ export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
         <ChatUploadedFileIconTooltip
           content={(fileInfo.status as ErrorStatus).errorMessage}
         >
-          <Icon content={ErrorOutline} size="lg" />
+          <Icon color={theme.colors.red} content={ErrorOutline} size="lg" />
         </ChatUploadedFileIconTooltip>
       )
     case "uploaded":
@@ -84,36 +86,34 @@ export const ChatUploadedFileIcon: FC<ChatUploadedFileIconProps> = ({
 const ChatUploadedFile = ({
   fileInfo,
   onDelete,
-}: Props): React.ReactElement => {
-  return (
-    <StyledChatUploadedFile
-      className="stChatInputFile"
-      data-testid="stChatInputFile"
+}: Props): React.ReactElement => (
+  <StyledChatUploadedFile
+    className="stChatInputFile"
+    data-testid="stChatInputFile"
+  >
+    <StyledChatUploadedFileIcon>
+      <ChatUploadedFileIcon fileInfo={fileInfo} />
+    </StyledChatUploadedFileIcon>
+    <StyledChatUploadedFileName
+      className="stChatInputFileName"
+      data-testid="stChatInputFileName"
+      title={fileInfo.name}
+      fileStatus={fileInfo.status}
     >
-      <StyledChatUploadedFileIcon>
-        <ChatUploadedFileIcon fileInfo={fileInfo} />
-      </StyledChatUploadedFileIcon>
-      <StyledChatUploadedFileName
-        className="stChatInputFileName"
-        data-testid="stChatInputFileName"
-        title={fileInfo.name}
-        fileStatus={fileInfo.status}
+      {fileInfo.name}
+    </StyledChatUploadedFileName>
+    <StyledChatUploadedFileSize>
+      {getSizeDisplay(fileInfo.size, FileSize.Byte)}
+    </StyledChatUploadedFileSize>
+    <StyledChatUploadedFileDeleteButton data-testid="stChatInputDeleteBtn">
+      <BaseButton
+        onClick={() => onDelete(fileInfo.id)}
+        kind={BaseButtonKind.MINIMAL}
       >
-        {fileInfo.name}
-      </StyledChatUploadedFileName>
-      <StyledChatUploadedFileSize>
-        {getSizeDisplay(fileInfo.size, FileSize.Byte)}
-      </StyledChatUploadedFileSize>
-      <StyledChatUploadedFileDeleteButton data-testid="stChatInputDeleteBtn">
-        <BaseButton
-          onClick={() => onDelete(fileInfo.id)}
-          kind={BaseButtonKind.MINIMAL}
-        >
-          <Icon content={Clear} size="lg" />
-        </BaseButton>
-      </StyledChatUploadedFileDeleteButton>
-    </StyledChatUploadedFile>
-  )
-}
+        <Icon content={Clear} size="lg" />
+      </BaseButton>
+    </StyledChatUploadedFileDeleteButton>
+  </StyledChatUploadedFile>
+)
 
 export default ChatUploadedFile

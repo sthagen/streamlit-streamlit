@@ -43,7 +43,7 @@ def test_page_links_in_main(
     """Test that page link appears as expected in main."""
     expect(themed_app.get_by_test_id("stSidebar")).not_to_be_attached()
     page_links = themed_app.get_by_test_id("stPageLink-NavLink")
-    expect(page_links).to_have_count(5)
+    expect(page_links).to_have_count(4)
 
     # Selected page
     assert_snapshot(page_links.nth(0), name="current-page-link")
@@ -79,7 +79,7 @@ def test_page_links_in_sidebar(
     wait_for_app_run(themed_app)
 
     page_links = themed_app.get_by_test_id("stPageLink-NavLink")
-    expect(page_links).to_have_count(5)
+    expect(page_links).to_have_count(4)
 
     # Selected page
     assert_snapshot(page_links.nth(3), name="current-page-link-sidebar")
@@ -90,7 +90,7 @@ def test_page_links_in_sidebar(
     page_links.nth(0).hover()
     assert_snapshot(page_links.nth(0), name="page-link-sidebar-hover")
     # Disabled page
-    assert_snapshot(page_links.nth(4), name="page-link-sidebar-disabled")
+    assert_snapshot(page_links.nth(2), name="page-link-sidebar-disabled")
 
 
 def test_page_link_href(
@@ -100,7 +100,7 @@ def test_page_link_href(
     """Test that page link href set properly."""
     page_links = app.get_by_test_id("stPageLink-NavLink")
 
-    expect(page_links.nth(0)).to_have_attribute("href", "mpa_configure_sidebar")
+    expect(page_links.nth(0)).to_have_attribute("href", "")
     expect(page_links.nth(1)).to_have_attribute("href", "page2")
     expect(page_links.nth(2)).to_have_attribute("href", "page3")
     expect(page_links.nth(3)).to_have_attribute("href", "page_with_duplicate_name")

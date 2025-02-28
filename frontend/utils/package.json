@@ -25,16 +25,13 @@
     "format": "prettier --write --config ../.prettierrc --ignore-path ../.prettierignore './src/**/*.{js,ts,jsx,tsx}'",
     "formatCheck": "prettier --check --config ../.prettierrc --ignore-path ../.prettierignore './src/**/*.{js,ts,jsx,tsx}'"
   },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  },
   "devDependencies": {
     "eslint": "^8.33.0",
     "prettier": "^2.8.3",
     "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.7"
   },
   "browserslist": [
     ">0.2%",

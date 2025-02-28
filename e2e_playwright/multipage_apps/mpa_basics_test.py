@@ -76,13 +76,6 @@ def test_can_switch_to_the_first_page_with_a_duplicate_name(app: Page):
     expect(app.get_by_test_id("stHeading")).to_contain_text("Page 4")
 
 
-def test_can_switch_to_the_second_page_with_a_duplicate_name(app: Page):
-    """Test that we can switch to the second page with a duplicate name."""
-    app.get_by_test_id("stSidebarNav").locator("a").nth(4).click()
-    wait_for_app_run(app)
-    expect(app.get_by_test_id("stHeading")).to_contain_text("Page 5")
-
-
 def test_runs_the_first_page_with_a_duplicate_name_if_navigating_via_url(
     page: Page, app_port: int
 ):

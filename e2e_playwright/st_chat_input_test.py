@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from playwright.sync_api import FilePayload, Page, expect
+from playwright.sync_api import FilePayload, Locator, Page, expect
 
 from e2e_playwright.conftest import (
     ImageCompareFunction,
@@ -21,6 +21,19 @@ from e2e_playwright.conftest import (
     wait_for_app_run,
 )
 from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
+
+
+def file_upload_helper(
+    app: Page, chat_input: Locator, files: list[FilePayload], wait_delay=500
+):
+    with app.expect_file_chooser() as fc_info:
+        chat_input.get_by_role("button").nth(0).click()
+        file_chooser = fc_info.value
+        file_chooser.set_files(files=files)
+
+    # take away hover focus of button
+    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
+    wait_for_app_run(app, wait_delay)
 
 
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
@@ -240,6 +253,7 @@ def test_uploads_and_deletes_single_file(
 ):
     """Test that it correctly uploads and deletes a single file."""
     app.set_viewport_size({"width": 750, "height": 2000})
+    chat_input = app.get_by_test_id("stChatInput").nth(3)
 
     file_name1 = "file1.txt"
     file1 = FilePayload(name=file_name1, mimeType="text/plain", buffer=b"file1content")
@@ -247,29 +261,14 @@ def test_uploads_and_deletes_single_file(
     file_name2 = "file2.txt"
     file2 = FilePayload(name=file_name2, mimeType="text/plain", buffer=b"file2content")
 
-    chat_input = app.get_by_test_id("stChatInput").nth(3)
-    with app.expect_file_chooser() as fc_info:
-        chat_input.get_by_role("button").nth(0).click()
-        file_chooser = fc_info.value
-        file_chooser.set_files(files=[file1])
-
-    # take away hover focus of button
-    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
-    wait_for_app_run(app)
+    file_upload_helper(app, chat_input, [file1])
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
     expect(uploaded_files.get_by_text(file_name1)).to_be_visible()
     assert_snapshot(uploaded_files, name="st_chat_input-single_file_uploaded")
 
     # Upload a second file. This one will replace the first.
-    with app.expect_file_chooser() as fc_info:
-        chat_input.get_by_role("button").nth(0).click()
-        file_chooser = fc_info.value
-        file_chooser.set_files(files=[file2])
-
-    # take away hover focus of button
-    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
-    wait_for_app_run(app)
+    file_upload_helper(app, chat_input, [file2])
 
     expect(uploaded_files.get_by_text(file_name1)).not_to_be_visible()
     expect(uploaded_files.get_by_text(file_name2)).to_be_visible()
@@ -287,6 +286,7 @@ def test_uploads_and_deletes_multiple_files(
 ):
     """Test that uploading multiple files at once works correctly."""
     app.set_viewport_size({"width": 750, "height": 2000})
+    chat_input = app.get_by_test_id("stChatInput").nth(4)
 
     file_name1 = "file1.txt"
     file_content1 = b"file1content"
@@ -299,15 +299,7 @@ def test_uploads_and_deletes_multiple_files(
         FilePayload(name=file_name2, mimeType="text/plain", buffer=file_content2),
     ]
 
-    chat_input = app.get_by_test_id("stChatInput").nth(4)
-    with app.expect_file_chooser() as fc_info:
-        chat_input.get_by_role("button").nth(0).click()
-        file_chooser = fc_info.value
-        file_chooser.set_files(files=files)
-
-    # take away hover focus of button
-    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
-    wait_for_app_run(app, wait_delay=500)
+    file_upload_helper(app, chat_input, files)
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(2)
     assert_snapshot(uploaded_files, name="st_chat_input-multiple_files_uploaded")
@@ -326,14 +318,58 @@ def test_uploads_and_deletes_multiple_files(
     expect(uploaded_file_names).to_have_text(files[1]["name"], use_inner_text=True)
 
 
+def test_file_upload_error_message_disallowed_files(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that shows error message for disallowed files."""
+    app.set_viewport_size({"width": 750, "height": 2000})
+
+    file_name1 = "file1.json"
+    file1 = FilePayload(
+        name=file_name1,
+        mimeType="application/json",
+        buffer=b"{}",
+    )
+
+    file_upload_helper(app, app.get_by_test_id("stChatInput").nth(3), [file1])
+
+    uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
+    expect(uploaded_files.get_by_text(file_name1)).to_be_visible()
+    assert_snapshot(uploaded_files, name="st_chat_input-file_uploaded_error")
+
+    uploaded_files.get_by_test_id("stTooltipHoverTarget").nth(0).hover()
+    wait_for_app_run(app, wait_delay=1500)
+    expect(app.get_by_text("json files are not allowed.")).to_be_visible()
+
+
+def test_file_upload_error_message_file_too_large(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that shows error message for files exceeding max size limit."""
+    app.set_viewport_size({"width": 750, "height": 2000})
+
+    file_name1 = "large.txt"
+    file1 = FilePayload(
+        name=file_name1,
+        mimeType="text/plain",
+        buffer=b"x" * (2 * 1024 * 1024),  # 2MB
+    )
+
+    file_upload_helper(
+        app, app.get_by_test_id("stChatInput").nth(3), [file1], wait_delay=2000
+    )
+
+    uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
+    uploaded_files.get_by_test_id("stTooltipHoverTarget").nth(0).hover()
+    expect(app.get_by_text("File must be 1.0MB or smaller.")).to_be_visible()
+
+
 def test_single_file_upload_button_tooltip(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that the single file upload button tooltip renders correctly."""
     chat_input = app.get_by_test_id("stChatInput").nth(3)
     chat_input.get_by_role("button").nth(0).hover()
-    wait_for_app_run(app, wait_delay=1500)
-
     expect(app.get_by_text("Upload or drag and drop a file")).to_be_visible()
 
 
@@ -343,8 +379,6 @@ def test_multi_file_upload_button_tooltip(
     """Test that the single file upload button tooltip renders correctly."""
     chat_input = app.get_by_test_id("stChatInput").nth(4)
     chat_input.get_by_role("button").nth(0).hover()
-    wait_for_app_run(app, wait_delay=1500)
-
     expect(app.get_by_text("Upload or drag and drop files")).to_be_visible()
 
 
