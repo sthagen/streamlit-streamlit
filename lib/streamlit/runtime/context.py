@@ -146,12 +146,16 @@ class ContextProxy:
 
         Examples
         --------
+        **Example 1: Access all available headers**
+
         Show a dictionary of headers (with only the last instance of any
         repeated key):
 
         >>> import streamlit as st
         >>>
         >>> st.context.headers
+
+        **Example 2: Access a specific header**
 
         Show the value of a specific header (or the last instance if it's
         repeated):
@@ -183,11 +187,15 @@ class ContextProxy:
 
         Examples
         --------
+        **Example 1: Access all available cookies**
+
         Show a dictionary of cookies:
 
         >>> import streamlit as st
         >>>
         >>> st.context.cookies
+
+        **Example 2: Access a specific cookie**
 
         Show the value of a specific cookie:
 
@@ -209,7 +217,26 @@ class ContextProxy:
     @property
     @gather_metrics("context.timezone")
     def timezone(self) -> str | None:
-        """The timezone of the user's browser, read-only."""
+        """The read-only timezone of the user's browser.
+
+        Example
+        -------
+        Access the user's timezone, and format a datetime to display locally:
+
+        >>> import streamlit as st
+        >>> from datetime import datetime, timezone
+        >>> import pytz
+        >>>
+        >>> tz = st.context.timezone
+        >>> tz_obj = pytz.timezone(tz)
+        >>>
+        >>> now = datetime.now(timezone.utc)
+        >>>
+        >>> f"The user's timezone is {tz}."
+        >>> f"The UTC time is {now}."
+        >>> f"The user's local time is {now.astimezone(tz_obj)}"
+
+        """
         ctx = get_script_run_ctx()
 
         if ctx is None or ctx.context_info is None:
@@ -219,7 +246,25 @@ class ContextProxy:
     @property
     @gather_metrics("context.timezone_offset")
     def timezone_offset(self) -> int | None:
-        """The timezone offset of the user's browser, read-only."""
+        """The read-only timezone offset of the user's browser.
+
+        Example
+        -------
+        Access the user's timezone offset, and format a datetime to display locally:
+
+        >>> import streamlit as st
+        >>> from datetime import datetime, timezone, timedelta
+        >>>
+        >>> tzoff = st.context.timezone_offset
+        >>> tz_obj = timezone(-timedelta(minutes=tzoff))
+        >>>
+        >>> now = datetime.now(timezone.utc)
+        >>>
+        >>> f"The user's timezone is {tz}."
+        >>> f"The UTC time is {now}."
+        >>> f"The user's local time is {now.astimezone(tz_obj)}"
+
+        """
         ctx = get_script_run_ctx()
         if ctx is None or ctx.context_info is None:
             return None

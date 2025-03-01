@@ -125,6 +125,9 @@ def login(provider: str | None = None) -> None:
         ``cookie_secret``, while ignoring any other values in the ``[auth]``
         dictionary.
 
+        Due to internal implementation details, Streamlit does not support
+        using an underscore within ``provider`` at this time.
+
     Examples
     --------
 

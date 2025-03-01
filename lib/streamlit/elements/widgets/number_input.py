@@ -240,8 +240,9 @@ class NumberInputMixin:
         format : str or None
             A printf-style format string controlling how the interface should
             display numbers. The output must be purely numeric. This does not
-            impact the return value of the widget. Formatting is handled by
-            `sprintf.js <https://github.com/alexei/sprintf.js>`_.
+            impact the return value of the widget. For more information about
+            the formatting specification, see `sprintf.js
+            <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.
 
             For example, ``format="%0.1f"`` adjusts the displayed decimal
             precision to only show one digit after the decimal.

@@ -23,9 +23,7 @@ from e2e_playwright.conftest import (
 from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
 
 
-def file_upload_helper(
-    app: Page, chat_input: Locator, files: list[FilePayload], wait_delay=500
-):
+def file_upload_helper(app: Page, chat_input: Locator, files: list[FilePayload]):
     with app.expect_file_chooser() as fc_info:
         chat_input.get_by_role("button").nth(0).click()
         file_chooser = fc_info.value
@@ -33,7 +31,7 @@ def file_upload_helper(
 
     # take away hover focus of button
     app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
-    wait_for_app_run(app, wait_delay)
+    wait_for_app_run(app, 500)
 
 
 def test_chat_input_rendering(app: Page, assert_snapshot: ImageCompareFunction):
@@ -338,7 +336,6 @@ def test_file_upload_error_message_disallowed_files(
     assert_snapshot(uploaded_files, name="st_chat_input-file_uploaded_error")
 
     uploaded_files.get_by_test_id("stTooltipHoverTarget").nth(0).hover()
-    wait_for_app_run(app, wait_delay=1500)
     expect(app.get_by_text("json files are not allowed.")).to_be_visible()
 
 
@@ -355,9 +352,7 @@ def test_file_upload_error_message_file_too_large(
         buffer=b"x" * (2 * 1024 * 1024),  # 2MB
     )
 
-    file_upload_helper(
-        app, app.get_by_test_id("stChatInput").nth(3), [file1], wait_delay=2000
-    )
+    file_upload_helper(app, app.get_by_test_id("stChatInput").nth(3), [file1])
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
     uploaded_files.get_by_test_id("stTooltipHoverTarget").nth(0).hover()

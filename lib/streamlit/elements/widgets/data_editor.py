@@ -636,10 +636,10 @@ class DataEditorMixin:
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent
-            container. If ``use_container_width`` is ``False``, Streamlit
-            sets the data editor's width according to ``width``. If
-            ``use_container_width`` is ``True`` (default), Streamlit sets the
-            width of the data editor to match the width of the parent container.
+            container. If this is ``True`` (default), Streamlit sets the width
+            of the data editor to match the width of the parent container. If
+            this is ``False``, Streamlit sets the data editor's width according
+            to ``width``.
 
         hide_index : bool or None
             Whether to hide the index column(s). If ``hide_index`` is ``None``
@@ -697,7 +697,8 @@ class DataEditorMixin:
 
         row_height : int or None
             The height of each row in the data editor in pixels. If ``row_height``
-            is ``None`` (default), Streamlit will use a default row height.
+            is ``None`` (default), Streamlit will use a default row height,
+            which fits one line of text.
 
         Returns
         -------

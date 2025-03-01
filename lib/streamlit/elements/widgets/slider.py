@@ -415,9 +415,17 @@ class SliderMixin:
         format : str or None
             A printf-style format string controlling how the interface should
             display numbers. This does not impact the return value.
-            Formatter for int/float supports: %d %e %f %g %i
-            Formatter for date/time/datetime uses Moment.js notation:
-            https://momentjs.com/docs/#/displaying/format/
+
+            For information about formatting integers and floats, see
+            `sprintf.js
+            <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.
+            For example, ``format="%0.1f"`` adjusts the displayed decimal
+            precision to only show one digit after the decimal.
+
+            For information about formatting datetimes, dates, and times, see
+            `momentJS <https://momentjs.com/docs/#/displaying/format/>`_.
+            For example, ``format="ddd ha"`` adjusts the displayed datetime to
+            show the day of the week and the hour ("Tue 8pm").
 
         key : str or int
             An optional string or integer to use as the unique key for the widget.
