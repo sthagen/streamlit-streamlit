@@ -110,7 +110,7 @@
     "typed-signals": "^3.0.0",
     "unist-util-visit": "^5.0.0",
     "urlpattern-polyfill": "^10.0.0",
-    "uuid": "^9.0.0",
+    "uuid": "^11.1.0",
     "vega": "^5.32.0",
     "vega-embed": "^6.29.0",
     "vega-interpreter": "^1.2.0",
