@@ -3059,7 +3059,7 @@ __metadata:
     eslint-plugin-vitest: "npm:^0.5.4"
     hard-source-webpack-plugin: "npm:^0.13.1"
     hoist-non-react-statics: "npm:^3.3.2"
-    humanize-string: "npm:^2.1.0"
+    humanize-string: "npm:^3.0.0"
     iframe-resizer: "npm:4.3.11"
     immer: "npm:^9.0.19"
     jsdom: "npm:24.1.3"
@@ -3084,9 +3084,9 @@ __metadata:
     tree-kill: "npm:^1.2.2"
     tsconfig-paths-webpack-plugin: "npm:^4.2.0"
     typed-signals: "npm:^3.0.0"
-    ua-parser-js: "npm:^1.0.39"
+    ua-parser-js: "npm:^1.0.40"
     util: "npm:^0.12.5"
-    uuid: "npm:^9.0.0"
+    uuid: "npm:^11.1.0"
     vite: "npm:^6.2.0"
     vite-plugin-svgr: "npm:^4.2.0"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -3154,7 +3154,7 @@ __metadata:
     "@types/d3-graphviz": "npm:^2.6.10"
     "@types/plotly.js": "npm:^2.29.2"
     "@types/react": "npm:^18.2.0"
-    "@types/react-color": "npm:^3.0.6"
+    "@types/react-color": "npm:^3.0.13"
     "@types/react-dom": "npm:^18.2.0"
     "@types/react-plotly.js": "npm:^2.6.3"
     "@types/react-syntax-highlighter": "npm:^15.5.5"
@@ -3227,11 +3227,11 @@ __metadata:
     typed-signals: "npm:^3.0.0"
     unist-util-visit: "npm:^5.0.0"
     urlpattern-polyfill: "npm:^10.0.0"
-    uuid: "npm:^9.0.0"
+    uuid: "npm:^11.1.0"
     vega: "npm:^5.32.0"
     vega-embed: "npm:^6.29.0"
     vega-interpreter: "npm:^1.2.0"
-    vega-lite: "npm:5.21.0"
+    vega-lite: "npm:5.23.0"
     vite: "npm:^6.2.0"
     vite-plugin-dts: "npm:^4.5.1"
     vite-plugin-svgr: "npm:^4.2.0"
@@ -3239,7 +3239,7 @@ __metadata:
     vitest: "npm:^3.0.7"
     vitest-canvas-mock: "npm:^0.3.3"
     vitest-fetch-mock: "npm:^0.4.3"
-    wavesurfer.js: "npm:^7.8.10"
+    wavesurfer.js: "npm:^7.9.1"
     xxhashjs: "npm:^0.2.2"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0
@@ -4509,13 +4509,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-color@npm:^3.0.6":
-  version: 3.0.12
-  resolution: "@types/react-color@npm:3.0.12"
+"@types/react-color@npm:^3.0.13":
+  version: 3.0.13
+  resolution: "@types/react-color@npm:3.0.13"
   dependencies:
-    "@types/react": "npm:*"
     "@types/reactcss": "npm:*"
-  checksum: 10c0/1ac1012466b27b8678a1129056427e7ebe2c7c301d241f3669c52ed5ac33f5fc8e4cbeeb566c2eaa674b2fc57c7a306528046e15e1117906e4ec137418c6be8f
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 10c0/a26a2a628dc98d2186743a52e18fc1a4622ba9ec69989be1e51614084fd90a52c139ea6689aa9706fcea94356d277c87d69f11a5c1f66c19b45e6b0132db40bb
   languageName: node
   linkType: hard
 
@@ -8046,15 +8047,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decamelize@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "decamelize@npm:2.0.0"
-  dependencies:
-    xregexp: "npm:4.0.0"
-  checksum: 10c0/7908c37fa2e20022cfbf425c03aebdc8dee3c57b6c64135bbf23007f40528dd2463b4fb28755ee5dec7be3aca4b1d136de962bea6a886518b27c558b0f3a8bb5
-  languageName: node
-  linkType: hard
-
 "decamelize@npm:^6.0.0":
   version: 6.0.0
   resolution: "decamelize@npm:6.0.0"
@@ -11233,12 +11225,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-string@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "humanize-string@npm:2.1.0"
+"humanize-string@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "humanize-string@npm:3.0.0"
   dependencies:
-    decamelize: "npm:^2.0.0"
-  checksum: 10c0/a0ed69264b5069137afb369b46e18e8dbeb67edc7fb2ad1de18554108943e2fc59155f898013fb7a2f03522879adad7c9a93f1c88428844bcbee006c98db8f0a
+    decamelize: "npm:^6.0.0"
+  checksum: 10c0/700d337913151a2f96949aa7d6afda7ab8254e4fd8790f79255ddd90dc53d49d6bd45ece122afbf310f9ec6bae11d3c6ca8b1fcd9220eb310f337254e27baf07
   languageName: node
   linkType: hard
 
@@ -12439,17 +12431,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-stringify-pretty-compact@npm:^4.0.0":
+"json-stringify-pretty-compact@npm:^4.0.0, json-stringify-pretty-compact@npm:~4.0.0":
   version: 4.0.0
   resolution: "json-stringify-pretty-compact@npm:4.0.0"
   checksum: 10c0/505781b4be7c72047ae8dfa667b520d20461ceac451b6516cb8ac5e12a758fbd7491d99d5e3f7e60423ce9d26ed4e4bcaccab3420bf651298901635c849017cf
-  languageName: node
-  linkType: hard
-
-"json-stringify-pretty-compact@npm:~3.0.0":
-  version: 3.0.0
-  resolution: "json-stringify-pretty-compact@npm:3.0.0"
-  checksum: 10c0/fc522c25047bd96d72ded77af4002e7f12e9ba9f4b7e7e12a9316aee166f1b8f9c7b0d0d989a8494e3fdd804a23819f411479f68f2ef10b2f7a144581b2c68f4
   languageName: node
   linkType: hard
 
@@ -18816,17 +18801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.6.2, tslib@npm:^2.7.0, tslib@npm:^2.8.1":
+"tslib@npm:2, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.6.2, tslib@npm:^2.7.0, tslib@npm:^2.8.1, tslib@npm:~2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
-  languageName: node
-  linkType: hard
-
-"tslib@npm:~2.6.3":
-  version: 2.6.3
-  resolution: "tslib@npm:2.6.3"
-  checksum: 10c0/2598aef53d9dbe711af75522464b2104724d6467b26a60f2bdac8297d2b5f1f6b86a71f61717384aa8fd897240467aaa7bcc36a0700a0faf751293d1331db39a
   languageName: node
   linkType: hard
 
@@ -19071,12 +19049,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:^1.0.33, ua-parser-js@npm:^1.0.35, ua-parser-js@npm:^1.0.39":
+"ua-parser-js@npm:^1.0.33, ua-parser-js@npm:^1.0.35":
   version: 1.0.39
   resolution: "ua-parser-js@npm:1.0.39"
   bin:
     ua-parser-js: script/cli.js
   checksum: 10c0/c6452b0c683000f10975cb0a7e74cb1119ea95d4522ae85f396fa53b0b17884358a24ffdd86a66030c6b2981bdc502109a618c79fdaa217ee9032c9e46fcc78a
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:^1.0.40":
+  version: 1.0.40
+  resolution: "ua-parser-js@npm:1.0.40"
+  bin:
+    ua-parser-js: script/cli.js
+  checksum: 10c0/2b6ac642c74323957dae142c31f72287f2420c12dced9603d989b96c132b80232779c429b296d7de4012ef8b64e0d8fadc53c639ef06633ce13d785a78b5be6c
   languageName: node
   linkType: hard
 
@@ -19492,12 +19479,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
-  version: 9.0.1
-  resolution: "uuid@npm:9.0.1"
+"uuid@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
   bin:
-    uuid: dist/bin/uuid
-  checksum: 10c0/1607dd32ac7fc22f2d8f77051e6a64845c9bce5cd3dd8aa0070c074ec73e666a1f63c7b4e0f4bf2bc8b9d59dc85a15e17807446d9d2b17c8485fbc2147b27f9b
+    uuid: dist/esm/bin/uuid
+  checksum: 10c0/34aa51b9874ae398c2b799c88a127701408cd581ee89ec3baa53509dd8728cbb25826f2a038f9465f8b7be446f0fbf11558862965b18d21c993684297628d4d3
   languageName: node
   linkType: hard
 
@@ -19701,12 +19688,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vega-lite@npm:5.21.0":
-  version: 5.21.0
-  resolution: "vega-lite@npm:5.21.0"
+"vega-lite@npm:5.23.0":
+  version: 5.23.0
+  resolution: "vega-lite@npm:5.23.0"
   dependencies:
-    json-stringify-pretty-compact: "npm:~3.0.0"
-    tslib: "npm:~2.6.3"
+    json-stringify-pretty-compact: "npm:~4.0.0"
+    tslib: "npm:~2.8.1"
     vega-event-selector: "npm:~3.0.1"
     vega-expression: "npm:~5.1.1"
     vega-util: "npm:~1.17.2"
@@ -19718,7 +19705,7 @@ __metadata:
     vl2png: bin/vl2png
     vl2svg: bin/vl2svg
     vl2vg: bin/vl2vg
-  checksum: 10c0/e5566555b594d47d3995e6eb5011976a5feb333df129d5bb4868f57ab62518aa930e70ee7b1988340a41ac3c0b74c4abe97ec2f5b12903c7433ca3f2b8a68f58
+  checksum: 10c0/8188136d5266d71b05672a18a3553ab79cdaf34b541b104a9985fd783cefcabcd8a5c0b35ac6f73072397ed6c058ee6559c43ada072f0bd6db97e7e743d1955b
   languageName: node
   linkType: hard
 
@@ -20355,10 +20342,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wavesurfer.js@npm:^7.8.10":
-  version: 7.8.10
-  resolution: "wavesurfer.js@npm:7.8.10"
-  checksum: 10c0/878ef8ccb07964ca239bb16145a1b103c191c64b28d7090992a22163492e926679a3b839b00b6c0c117445766a86a6f92031e333b73f5ebc2ad8d816146784a5
+"wavesurfer.js@npm:^7.9.1":
+  version: 7.9.1
+  resolution: "wavesurfer.js@npm:7.9.1"
+  checksum: 10c0/2edb8bca573c394014ba892d31b4c05f83e2813d6f7ff98d293f447241aa922d46d90b3b279002afc57259a6ec128828955b018853633a66f16acd34a4e20520
   languageName: node
   linkType: hard
 
@@ -20769,13 +20756,6 @@ __metadata:
   version: 2.0.4
   resolution: "xmlcreate@npm:2.0.4"
   checksum: 10c0/fc4234e2d1942877d761d4f3d64410b54633d2ec60b13a5d56a6a06545aba39a0df8ed7ded10785a302f632eb4f0a4fedbf4bf10e17892e11d5075244b9e5705
-  languageName: node
-  linkType: hard
-
-"xregexp@npm:4.0.0":
-  version: 4.0.0
-  resolution: "xregexp@npm:4.0.0"
-  checksum: 10c0/cc7f49f03b999013544ce9d58ffc356f71c95c21b5e0478386f2c639fb2a89adf02cf9dbe25e9262e1e336d7b812c220aa3a644a4ac39020747ddb6773b6284f
   languageName: node
   linkType: hard
 
