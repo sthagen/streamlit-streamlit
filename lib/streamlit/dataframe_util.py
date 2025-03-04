@@ -498,7 +498,7 @@ def _fix_column_naming(data_df: DataFrame) -> DataFrame:
         # Pandas automatically names the first column with 0 if it is not named.
         # We rename it to "value" to make it more descriptive if there is only
         # one column in the dataframe.
-        data_df.rename(columns={0: "value"}, inplace=True)
+        data_df = data_df.rename(columns={0: "value"})
     return data_df
 
 

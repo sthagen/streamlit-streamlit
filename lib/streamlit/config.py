@@ -1089,6 +1089,15 @@ _create_option(
     visibility="hidden",
 )
 
+_create_option(
+    "theme.showSidebarSeparator",
+    description="""
+        Whether to show a vertical separator between the sidebar and the main content.
+    """,
+    type_=bool,
+    visibility="hidden",
+)
+
 # Config Section: Secrets #
 
 _create_section("secrets", "Secrets configuration.")

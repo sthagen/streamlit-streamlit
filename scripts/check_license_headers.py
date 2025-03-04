@@ -47,6 +47,7 @@ IGNORE_PATTERN = re.compile(
     r"|yarn\.lock$"
     # Exclude pytest config files, because they don't have any degree of creativity.
     r"|pytest\.ini$"
+    r"|\.coveragerc$"
     # Exclude empty files, because they don't have any degree of creativity.
     r"|py\.typed$"
     # Exclude dev-tools configuration files, because they don't have any
@@ -55,8 +56,8 @@ IGNORE_PATTERN = re.compile(
     r"|^frontend/(\.dockerignore|\.eslintrc.js|\.prettierignore)$"
     r"|^frontend/\.yarn"  # Exclude everything in the .yarn folder
     r"|^component-lib/\.yarn"
-    r"|^lib/(\.coveragerc|\.dockerignore|MANIFEST\.in|mypy\.ini)$"
-    r"|^lib/.*-requirements\.txt$"
+    r"|^lib/(\.dockerignore|MANIFEST\.in|mypy\.ini)$"
+    r"|^.*-requirements\.txt$"
     r"|^lib/min-constraints-gen\.txt"
     r"|\.isort\.cfg$"
     r"|\.credentials/\.gitignore$"

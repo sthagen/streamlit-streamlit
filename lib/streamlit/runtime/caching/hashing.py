@@ -425,7 +425,7 @@ class _CacheFuncHasher:
                 obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)
 
             try:
-                self.update(h, pd.util.hash_pandas_object(obj).values.tobytes())
+                self.update(h, pd.util.hash_pandas_object(obj).to_numpy().tobytes())
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(

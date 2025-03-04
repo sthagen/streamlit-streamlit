@@ -157,6 +157,7 @@ export const createEmotionTheme = (
     showBorderAroundInputs,
     bodyFont,
     codeFont,
+    showSidebarSeparator,
     ...customColors
   } = themeInput
 
@@ -275,6 +276,10 @@ export const createEmotionTheme = (
 
     // Set the root font size to the configured value (used on global styles):
     conditionalOverrides.fontSizes.baseFontSize = baseFontSize
+  }
+
+  if (notNullOrUndefined(showSidebarSeparator)) {
+    conditionalOverrides.showSidebarSeparator = showSidebarSeparator
   }
 
   return {

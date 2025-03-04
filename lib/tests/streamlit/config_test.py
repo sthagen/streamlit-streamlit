@@ -400,6 +400,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.borderColor",
                 "theme.showBorderAroundInputs",
                 "theme.linkColor",
+                "theme.showSidebarSeparator",
                 "global.appTest",
                 "global.developmentMode",
                 "global.disableWidgetStateDuplicationWarning",
@@ -564,6 +565,7 @@ class ConfigTest(unittest.TestCase):
             "codeFont": None,
             "fontFaces": None,
             "baseFontSize": None,
+            "showSidebarSeparator": None,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -594,6 +596,7 @@ class ConfigTest(unittest.TestCase):
         )
         config._set_option("theme.codeFont", "Monaspace Argon", "test")
         config._set_option("theme.baseFontSize", 14, "test")
+        config._set_option("theme.showSidebarSeparator", True, "test")
 
         expected = {
             "base": "dark",
@@ -615,6 +618,7 @@ class ConfigTest(unittest.TestCase):
                 },
             ],
             "baseFontSize": 14,
+            "showSidebarSeparator": True,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 

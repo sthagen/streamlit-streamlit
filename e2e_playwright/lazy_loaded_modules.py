@@ -38,7 +38,6 @@ lazy_loaded_modules = [
     "tenacity",
     # toml is automatically loaded if there is a secret.toml, config.toml or
     # a local credentials.toml file. So, we cannot test this here.
-    "unittest",
     # Internal modules:
     "streamlit.emojis",
     "streamlit.external",

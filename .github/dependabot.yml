@@ -41,9 +41,21 @@ updates:
       - dependency-name: "remark-gfm"
         # Breaks our current markdown rendering logic.
         versions: [">=4.0.0"]
+      - dependency-name: "remark-math"
+        # Requires update of the remark / rehype dependencies
+        versions: [">=6.0.0"]
       - dependency-name: "remark-emoji"
         # Requires update of the remark / rehype dependencies
         versions: [">=3.1.2"]
+      - dependency-name: "rehype-raw"
+        # Requires update of the remark / rehype dependencies
+        versions: [">=7.0.0"]
+      - dependency-name: "rehype-katex"
+        # Requires update of the remark / rehype dependencies
+        versions: [">=7.0.0"]
+      - dependency-name: "react-markdown"
+        # Requires update of the remark / rehype dependencies
+        versions: [">=9.0.0"]
       - dependency-name: "@vitejs/plugin-react-swc"
         # Breaks our build pipeline, needs more investigation
         versions: [">=3.8.0"]
@@ -63,6 +75,32 @@ updates:
       - dependency-name: "jsdom"
         # Breaks some of our RTL unit tests
         versions: [">=25.0.0"]
+      - dependency-name: "prettier"
+        # Breaks our build process, needs more investigation
+        versions: [">=3.0.0"]
+      - dependency-name: "eslint-plugin-prettier"
+        # Breaks our build process, needs more investigation
+        versions: [">=5.0.0"]
+      - dependency-name: "@vitejs/plugin-react-swc"
+        # Breaks our build process, needs more investigation
+        versions: [">=3.7.1"]
+      - dependency-name: "@swc/plugin-emotion"
+        # Breaks our build process, needs more investigation
+        versions: [">=4.0.0"]
+      - dependency-name: "immer"
+        # Breaks our build process, needs more investigation
+        versions: [">=10.0.0"]
+      - dependency-name: "eslint-plugin-react-compiler"
+        # Still in beta and gets very frequent updates.
+      - dependency-name: "sass"
+        # Breaks our build process, needs more investigation
+        versions: [">=1.80.0"]
+      - dependency-name: "@testing-library/react"
+        # Breaks our build process, needs more investigation
+        versions: [">=15.0.0"]
+      - dependency-name: "typescript"
+        # Requires bigger updates to our types used in tests.
+        versions: [">=5.8.0"]
 
   # Keep Pipfile up to date
   - package-ecosystem: "pip"

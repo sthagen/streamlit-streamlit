@@ -361,7 +361,7 @@ def _get_lat_or_lon_col_name(
     # (Read about ExtensionArrays here: # https://pandas.pydata.org/community/blog/extension-arrays.html)
     # However, after a performance test I found the solution below runs basically as
     # fast as .values.any().
-    if any(data[col_name].isnull().array):
+    if any(data[col_name].isna().array):
         raise StreamlitAPIException(
             f"Column {col_name} is not allowed to contain null values, such "
             "as NaN, NaT, or None."
@@ -421,7 +421,9 @@ def _convert_color_arg_or_column(
 
     if color_col_name is not None:
         # Convert color column to the right format.
-        if len(data[color_col_name]) > 0 and is_color_like(data[color_col_name].iat[0]):
+        if len(data[color_col_name]) > 0 and is_color_like(
+            data[color_col_name].iloc[0]
+        ):
             # Use .loc[] to avoid a SettingWithCopyWarning in some cases.
             data.loc[:, color_col_name] = data.loc[:, color_col_name].map(
                 to_int_color_tuple

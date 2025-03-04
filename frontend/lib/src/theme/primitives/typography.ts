@@ -32,8 +32,8 @@ export const fontSizes = {
   // baseFontSize equals to md, but in pixels (this value can also be configured by the user)
   // The baseFontSize should only be used in global styles.
   baseFontSize: 16,
-  twoSm: `0.75rem`,
-  sm: `0.875rem`,
+  twoSm: "0.75rem",
+  sm: "0.875rem",
   md: "1rem",
   mdLg: "1.125rem",
   lg: "1.25rem",

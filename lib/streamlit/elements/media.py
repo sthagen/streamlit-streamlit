@@ -103,7 +103,8 @@ class MediaMixin:
 
         format : str
             The MIME type for the audio file. This defaults to ``"audio/wav"``.
-            For more information, see https://tools.ietf.org/html/rfc4281.
+            For more information about MIME types, see
+            https://www.iana.org/assignments/media-types/media-types.xhtml.
 
         start_time: int, float, timedelta, str, or None
             The time from which the element should start playing. This can be
@@ -238,7 +239,8 @@ class MediaMixin:
 
         format : str
             The MIME type for the video file. This defaults to ``"video/mp4"``.
-            For more information, see https://tools.ietf.org/html/rfc4281.
+            For more information about MIME types, see
+            https://www.iana.org/assignments/media-types/media-types.xhtml.
 
         start_time: int, float, timedelta, str, or None
             The time from which the element should start playing. This can be

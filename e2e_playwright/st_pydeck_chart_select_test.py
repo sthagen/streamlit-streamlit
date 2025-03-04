@@ -13,10 +13,12 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 from typing import Literal
 
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Locator, Page, Position, expect
 
 from e2e_playwright.conftest import (
     ImageCompareFunction,
@@ -35,15 +37,60 @@ from e2e_playwright.shared.pydeck_utils import (
 # The pydeck tests are a lot flakier than need be so increase the pixel threshold
 PIXEL_THRESHOLD = 1.0
 
+# Common selection values
 EMPTY_SELECTION = "{'selection': {'indices': {}, 'objects': {}}}"
+FIRST_POINT_SELECTION = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
+SECOND_POINT_SELECTION = "{'selection': {'indices': {'MyHexLayer': [2]}, 'objects': {'MyHexLayer': [{'count': 100, 'hex': '88283082a9fffff'}]}}}"
+MULTI_SELECTION = "{'selection': {'indices': {'MyHexLayer': [0, 2]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}, {'count': 100, 'hex': '88283082a9fffff'}]}}}"
+
+
+FIRST_POINT_COORDS: Position = {"x": 344.0, "y": 201.0}
+SECOND_POINT_COORDS: Position = {"x": 417.0, "y": 229.0}
+DESELECT_COORDS: Position = {"x": 0.0, "y": 0.0}
+SCATTERPLOT_POINT_COORDS: Position = {"x": 279.0, "y": 331.0}
+# Coordinates for the form test (slightly different from FIRST_POINT_COORDS)
+FORM_POINT_COORDS: Position = {"x": 326.0, "y": 208.0}
+
+# Standard wait delay for app runs after interactions
+STANDARD_WAIT_DELAY = 5000
 
 
 def _set_selection_mode(app: Page, mode: Literal["single-object", "multi-object"]):
+    """Set the selection mode for the PyDeck chart."""
     app.get_by_test_id("stSelectbox").nth(0).locator("input").click()
     selection_dropdown = app.locator('[data-baseweb="popover"]').first
     selection_dropdown.locator("li").nth(1 if mode == "multi-object" else 0).click()
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
+
+
+def _click_point_and_verify_selection(
+    app: Page,
+    click_handling_div: Locator,
+    coords: Position,
+    expected_selection: str,
+    markdown_prefix: str = "managed_map selection:",
+    markdown_prefix_session_state: str | None = "session_state.managed_map:",
+    wait_delay: int = STANDARD_WAIT_DELAY,
+):
+    """Helper function to click on a point and verify the selection."""
+    click_handling_div.click(position=coords)
+
+    wait_for_app_run(app, wait_delay=wait_delay)
+
+    if markdown_prefix:
+        expect_prefixed_markdown(
+            app,
+            markdown_prefix,
+            expected_selection,
+        )
+
+    if markdown_prefix_session_state:
+        expect_prefixed_markdown(
+            app,
+            markdown_prefix_session_state,
+            expected_selection,
+        )
 
 
 # A note on browser testing strategy. We are only testing on Chromium because:
@@ -86,51 +133,18 @@ def test_pydeck_chart_multiselect_interactions_and_return_values(app: Page):
     )
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
-
-    first_point_selection = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
-    # Assert the values returned are correct for the point we selected
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        first_point_selection,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        first_point_selection,
+    _click_point_and_verify_selection(
+        app, click_handling_div, FIRST_POINT_COORDS, FIRST_POINT_SELECTION
     )
 
     # Multiselect and click the hex that has count: 100
-    click_handling_div.click(position={"x": 417, "y": 229})
-
-    second_point_selection = "{'selection': {'indices': {'MyHexLayer': [0, 2]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}, {'count': 100, 'hex': '88283082a9fffff'}]}}}"
-    # Now we assert that the values include the new point we selected as well as
-    # the previous one
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        second_point_selection,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        second_point_selection,
+    _click_point_and_verify_selection(
+        app, click_handling_div, SECOND_POINT_COORDS, MULTI_SELECTION
     )
 
     # Deselect everything by clicking away from an object in a layer
-    click_handling_div.click(position={"x": 0, "y": 0})
-
-    # Assert that we have deselected everything
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        EMPTY_SELECTION,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        EMPTY_SELECTION,
+    _click_point_and_verify_selection(
+        app, click_handling_div, DESELECT_COORDS, EMPTY_SELECTION
     )
 
 
@@ -146,75 +160,34 @@ def test_pydeck_chart_single_select_interactions_and_return_values(
     wait_for_chart(app)
 
     click_handling_div = get_click_handling_div(app, nth=0)
-    markdown_prefix_session_state = "session_state.managed_map:"
-    markdown_prefix = "managed_map selection:"
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
-    point_selection = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        point_selection,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        point_selection,
+    _click_point_and_verify_selection(
+        app, click_handling_div, FIRST_POINT_COORDS, FIRST_POINT_SELECTION
     )
 
     # Click the hex that has count: 100
-    click_handling_div.click(position={"x": 417, "y": 229})
-
-    point_selection = "{'selection': {'indices': {'MyHexLayer': [2]}, 'objects': {'MyHexLayer': [{'count': 100, 'hex': '88283082a9fffff'}]}}}"
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        point_selection,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        point_selection,
+    _click_point_and_verify_selection(
+        app, click_handling_div, SECOND_POINT_COORDS, SECOND_POINT_SELECTION
     )
 
-    # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
-    point_selection = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        point_selection,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        point_selection,
+    # Click on the hex that has count: 10 again
+    _click_point_and_verify_selection(
+        app, click_handling_div, FIRST_POINT_COORDS, FIRST_POINT_SELECTION
     )
 
     # Deselect everything by clicking away from an object in a layer
-    click_handling_div.click(position={"x": 0, "y": 0})
-
-    # Assert that we have deselected everything
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix,
-        EMPTY_SELECTION,
-    )
-    expect_prefixed_markdown(
-        app,
-        markdown_prefix_session_state,
-        EMPTY_SELECTION,
+    _click_point_and_verify_selection(
+        app, click_handling_div, DESELECT_COORDS, EMPTY_SELECTION
     )
 
     # Scatterplot checks
     click_handling_div = get_click_handling_div(app, nth=4)
-    click_handling_div.scroll_into_view_if_needed()
 
     # Click on the scatterplot point with the biggest size
-    click_handling_div.click(position={"x": 279, "y": 331})
+    click_handling_div.click(position=SCATTERPLOT_POINT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     # Assert that we have deselected everything
     assert_snapshot(
@@ -244,9 +217,9 @@ def test_pydeck_chart_multiselect_has_consistent_visuals(
     )
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
+    click_handling_div.click(position=FIRST_POINT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     assert_snapshot(
         click_handling_div,
@@ -255,9 +228,9 @@ def test_pydeck_chart_multiselect_has_consistent_visuals(
     )
 
     # Multiselect and click the hex that has count: 100
-    click_handling_div.click(position={"x": 417, "y": 229})
+    click_handling_div.click(position=SECOND_POINT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     assert_snapshot(
         click_handling_div,
@@ -266,9 +239,9 @@ def test_pydeck_chart_multiselect_has_consistent_visuals(
     )
 
     # Deselect everything by clicking away from an object in a layer
-    click_handling_div.click(position={"x": 0, "y": 0})
+    click_handling_div.click(position=DESELECT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     # Assert that we have deselected everything
     assert_snapshot(
@@ -292,17 +265,17 @@ def test_pydeck_chart_selection_state_remains_after_unmounting(
     click_handling_div = get_click_handling_div(app, nth=0)
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
+    click_handling_div.click(position=FIRST_POINT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     # Multiselect and click the hex that has count: 100
-    click_handling_div.click(position={"x": 417, "y": 229})
+    click_handling_div.click(position=SECOND_POINT_COORDS)
 
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     click_button(app, "Create some elements to unmount component")
-    wait_for_app_run(app, wait_delay=5000)
+    wait_for_app_run(app, wait_delay=STANDARD_WAIT_DELAY)
 
     wait_for_chart(app)
 
@@ -328,13 +301,13 @@ def test_pydeck_chart_selection_callback(app: Page):
     expect(app.get_by_text(markdown_prefix)).to_have_count(0)
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
-
-    # Assert that the debug values are written out since we clicked on the map
-    expect_prefixed_markdown(
+    _click_point_and_verify_selection(
         app,
+        click_handling_div,
+        FIRST_POINT_COORDS,
+        FIRST_POINT_SELECTION,
         markdown_prefix,
-        "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}",
+        markdown_prefix_session_state=None,
     )
 
 
@@ -352,21 +325,20 @@ def test_pydeck_chart_selection_in_form(app: Page):
     markdown_prefix_session_state = "PyDeck-in-form selection in session state:"
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 326, "y": 208})
+    click_handling_div.click(position=FORM_POINT_COORDS)
 
     wait_for_app_run(app)
 
-    empty_selection = "{'selection': {'indices': {}, 'objects': {}}}"
     # Nothing should be shown yet because we did not submit the form
     expect_prefixed_markdown(
         app,
         markdown_prefix,
-        empty_selection,
+        EMPTY_SELECTION,
     )
     expect_prefixed_markdown(
         app,
         markdown_prefix_session_state,
-        empty_selection,
+        EMPTY_SELECTION,
     )
 
     # submit the form. The selection uses a debounce of 200ms; if we click too
@@ -376,10 +348,8 @@ def test_pydeck_chart_selection_in_form(app: Page):
 
     click_form_button(app, "Submit")
 
-    expected_selection = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
-
-    expect_prefixed_markdown(app, markdown_prefix, expected_selection)
-    expect_prefixed_markdown(app, markdown_prefix_session_state, expected_selection)
+    expect_prefixed_markdown(app, markdown_prefix, FIRST_POINT_SELECTION)
+    expect_prefixed_markdown(app, markdown_prefix_session_state, FIRST_POINT_SELECTION)
     expect(app.get_by_test_id("stForm")).not_to_contain_text("Error")
 
 
@@ -402,17 +372,17 @@ def test_pydeck_chart_selection_in_fragment(app: Page):
     expect_prefixed_markdown(
         app,
         markdown_prefix,
-        "{'selection': {'indices': {}, 'objects': {}}}",
+        EMPTY_SELECTION,
     )
 
     # Click on the hex that has count: 10
-    click_handling_div.click(position={"x": 344, "y": 201})
-
-    # Assert that the debug values are written out since we clicked on the map
-    expect_prefixed_markdown(
+    _click_point_and_verify_selection(
         app,
+        click_handling_div,
+        FIRST_POINT_COORDS,
+        FIRST_POINT_SELECTION,
         markdown_prefix,
-        "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}",
+        markdown_prefix_session_state=None,
     )
 
     # Check that the main script has not re-run

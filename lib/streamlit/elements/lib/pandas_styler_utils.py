@@ -269,6 +269,6 @@ def _use_display_values(df: DataFrame, styles: Mapping[str, Any]) -> DataFrame:
                 if "id" in cell:
                     if match := cell_selector_regex.match(cell["id"]):
                         r, c = map(int, match.groups())
-                        new_df.iat[r, c] = str(cell["display_value"])
+                        new_df.iloc[r, c] = str(cell["display_value"])
 
     return new_df

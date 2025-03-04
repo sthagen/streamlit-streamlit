@@ -270,12 +270,12 @@ def _apply_cell_edits(
                 # The edited cell is part of the index
                 # TODO(lukasmasuch): To support multi-index in the future:
                 # use a tuple of values here instead of a single value
-                df.index.values[row_pos] = _parse_value(
+                df.index.to_numpy()[row_pos] = _parse_value(
                     value, dataframe_schema[INDEX_IDENTIFIER]
                 )
             else:
                 col_pos = df.columns.get_loc(col_name)
-                df.iat[row_pos, col_pos] = _parse_value(
+                df.iloc[row_pos, col_pos] = _parse_value(
                     value, dataframe_schema[col_name]
                 )
 
@@ -352,7 +352,7 @@ def _apply_row_deletions(df: pd.DataFrame, deleted_rows: list[int]) -> None:
         A list of row numbers to delete.
     """
     # Drop rows based in numeric row positions
-    df.drop(df.index[deleted_rows], inplace=True)
+    df.drop(df.index[deleted_rows], inplace=True)  # noqa: PD002
 
 
 def _apply_dataframe_edits(
@@ -439,7 +439,7 @@ def _fix_column_headers(data_df: pd.DataFrame) -> None:
         # to avoid issues with editing:
         data_df.rename(
             columns={column: str(column) for column in data_df.columns},
-            inplace=True,
+            inplace=True,  # noqa: PD002
         )
 
 

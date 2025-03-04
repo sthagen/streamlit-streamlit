@@ -50,8 +50,11 @@ jobs:
           uv pip install polars
       - name: Run make frontend-build-with-profiler
         run: make frontend-build-with-profiler
-      - name: Run make performance-playwright
-        run: make performance-playwright
+      - name: Run playwright performance tests
+        run: |
+          cd e2e_playwright
+          rm -rf ./test-results
+          pytest --browser chromium -n 1 --reruns 1 -m "performance" --count=10
       - name: Run make performance-pytest
         run: make performance-pytest
       - name: Run make performance-lighthouse

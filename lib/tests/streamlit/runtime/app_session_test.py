@@ -656,6 +656,7 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
         "showBorderAroundInputs": True,
         "textColor": "black",
         "baseFontSize": 14,
+        "showSidebarSeparator": True,
     }
 
     for k, v in overrides.items():
@@ -1018,6 +1019,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "showBorderAroundInputs": None,
                     "textColor": None,
                     "baseFontSize": None,
+                    "showSidebarSeparator": None,
                 }
             )
         )
@@ -1046,6 +1048,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "showBorderAroundInputs": None,
                     "textColor": None,
                     "baseFontSize": None,
+                    "showSidebarSeparator": None,
                 }
             )
         )
@@ -1071,6 +1074,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.HasField("show_border_around_inputs")
         assert not new_session_msg.custom_theme.HasField("link_color")
         assert not new_session_msg.custom_theme.HasField("base_font_size")
+        assert not new_session_msg.custom_theme.HasField("show_sidebar_separator")
 
     @patch("streamlit.runtime.app_session.config")
     def test_can_specify_all_options(self, patched_config):
@@ -1093,6 +1097,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert new_session_msg.custom_theme.show_border_around_inputs is True
         assert new_session_msg.custom_theme.link_color == "#2EC163"
         assert new_session_msg.custom_theme.base_font_size == 14
+        assert new_session_msg.custom_theme.show_sidebar_separator is True
         # The value from `theme.font` will be placed in body_font since
         # font uses a deprecated enum:
         assert new_session_msg.custom_theme.body_font == "Inter"

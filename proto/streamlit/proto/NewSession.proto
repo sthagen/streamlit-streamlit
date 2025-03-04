@@ -131,7 +131,7 @@ message Config {
 // Custom theme configuration options. Like other config options, these are set
 // in .streamlit/config.toml.
 //
-// IMPORTANT: This message is passed in JSON format in a host-to-guest postMessage. So DOT NOT
+// IMPORTANT: This message is passed in JSON format in a host-to-guest postMessage. So DO NOT
 // rename its proto fields!
 message CustomThemeConfig {
   enum BaseTheme {
@@ -171,6 +171,7 @@ message CustomThemeConfig {
   optional bool show_border_around_inputs = 20;
   optional string link_color = 21;
   optional int32 base_font_size = 22;
+  optional bool show_sidebar_separator = 23;
 }
 
 message FontFace {

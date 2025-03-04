@@ -351,35 +351,6 @@ jstest: frontend-dependencies
 jstestcoverage: frontend-dependencies
 	cd frontend; TESTPATH=$(TESTPATH) yarn workspaces foreach --all run test --coverage
 
-.PHONY: playwright
-# Run playwright E2E tests (without custom component tests).
-custom_components_test_folder = ./custom_components
-playwright:
-	cd e2e_playwright; \
-	rm -rf ./test-results; \
-	pytest --ignore ${custom_components_test_folder} --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -m "not performance"
-
-.PHONY: performance-playwright
-performance-playwright:
-	cd e2e_playwright; \
-	rm -rf ./test-results; \
-	pytest --browser chromium --output ./test-results/ -n 1 --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -m "performance" --count=10
-
-.PHONY: playwright-custom-components
-# Run playwright custom component E2E tests.
-playwright-custom-components:
-	cd e2e_playwright; \
-	rm -rf ./test-results; \
-	pip_args="extra-streamlit-components streamlit-ace streamlit-antd-components streamlit-aggrid streamlit-autorefresh streamlit-chat streamlit-echarts streamlit-folium streamlit-option-menu streamlit-url-fragment"; \
-	if command -v "uv" > /dev/null; then \
-		echo "Running command: uv pip install $${pip_args}"; \
-		uv pip install $${pip_args}; \
-	else \
-		echo "Running command: pip install $${pip_args}"; \
-		pip install $${pip_args}; \
-	fi; \
-	pytest ${custom_components_test_folder} --browser webkit --browser chromium --browser firefox --video retain-on-failure --screenshot only-on-failure --output ./test-results/ -n auto --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v
-
 .PHONY: update-snapshots
 # Update e2e playwright snapshots based on the latest completed CI run.
 update-snapshots:
@@ -463,3 +434,32 @@ streamlit-lib-prod:
 	make mini-init;
 	make frontend-lib-prod;
 
+.PHONY: debug-e2e-test
+# Run an e2e playwright test in debug mode with Playwright Inspector. Use it via make debug-e2e-test st_command_test.py
+debug-e2e-test:
+	@if [[ ! "$(filter-out $@,$(MAKECMDGOALS))" == *"_test"* ]]; then \
+		echo "Error: Test script name must contain '_test' in the filename"; \
+		exit 1; \
+	fi
+	@echo "Running test: $(filter-out $@,$(MAKECMDGOALS)) in debug mode."
+	@TEST_SCRIPT=$$(echo $(filter-out $@,$(MAKECMDGOALS)) | sed 's|^e2e_playwright/||'); \
+	cd e2e_playwright && PWDEBUG=1 pytest $$TEST_SCRIPT || ( \
+		echo "If you implemented changes in the frontend, make sure to call \`make frontend-fast\` to use the up-to-date frontend build in the test."; \
+		echo "You can find test-results in ./e2e_playwright/test-results"; \
+		exit 1 \
+	)
+
+.PHONY: run-e2e-test
+# Run an e2e playwright test. Use it via make run-e2e-test st_command_test.py
+run-e2e-test:
+	@if [[ ! "$(filter-out $@,$(MAKECMDGOALS))" == *"_test"* ]]; then \
+		echo "Error: Test script name must contain '_test' in the filename"; \
+		exit 1; \
+	fi
+	@echo "Running test: $(filter-out $@,$(MAKECMDGOALS))"
+	@TEST_SCRIPT=$$(echo $(filter-out $@,$(MAKECMDGOALS)) | sed 's|^e2e_playwright/||'); \
+	cd e2e_playwright && pytest $$TEST_SCRIPT --tracing retain-on-failure --reruns 0 || ( \
+		echo "If you implemented changes in the frontend, make sure to call \`make frontend-fast\` to use the up-to-date frontend build in the test."; \
+		echo "You can find test-results in ./e2e_playwright/test-results"; \
+		exit 1 \
+	)

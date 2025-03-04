@@ -48,6 +48,7 @@ select = [
   "TID",    # Helps you write tidier imports.
   "UP",     # pyupgrade
   "W",      # pycodestyle warnings
+  "PD",     # Opinionated linting for pandas
   "S324",   # Check usage of insecure hashlib functions
 ]
 ignore = [
@@ -61,7 +62,8 @@ ignore = [
   "PYI051",  # Checks for redundant unions between a Literal and a builtin supertype of that Literal.
   "UP031",   # Checks for printf-style string formatting, and offers to replace it with str.format calls.
   "PLC0208", # Checks for iterations over set literals.
-  "G004",    # Checks for usage of f-strings in logging messages
+  "G004",    # Checks for usage of f-strings in logging messages.
+  "PD901",   # Checks for usage of `df` variable name.
 ]
 # Do not lint files in tests, scripts, and vendor directory:
 exclude = [
@@ -71,8 +73,9 @@ exclude = [
 ]
 
 [lint.per-file-ignores]
-"e2e_playwright/**" = ["T20", "B018"]
+"e2e_playwright/**" = ["T20", "B018", "PD"]
 "lib/streamlit/__init__.py" = ["E402", "PLC0414"]
+"lib/tests/**" = ["PD"]
 
 [lint.flake8-tidy-imports]
 # Disallow all relative imports.

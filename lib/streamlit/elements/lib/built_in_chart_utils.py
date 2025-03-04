@@ -567,7 +567,7 @@ def _maybe_reset_index_in_place(
             x_column = df.index.name
 
         df.index.name = x_column
-        df.reset_index(inplace=True)
+        df.reset_index(inplace=True)  # noqa: PD002
 
     return x_column
 
@@ -598,7 +598,7 @@ def _maybe_convert_color_column_in_place(df: pd.DataFrame, color_column: str | N
     if color_column is None or len(df[color_column]) == 0:
         return
 
-    first_color_datum = df[color_column].iat[0]
+    first_color_datum = df[color_column].iloc[0]
 
     if is_hex_color_like(first_color_datum):
         # Hex is already CSS-valid.
@@ -988,7 +988,7 @@ def _get_color_encoding(
 
         # If the 0th element in the color column looks like a color, we'll use the color column's
         # values as the colors in our chart.
-        elif len(df[color_column]) and is_color_like(df[color_column].iat[0]):
+        elif len(df[color_column]) and is_color_like(df[color_column].iloc[0]):
             color_range = [to_css_color(c) for c in df[color_column].unique()]
             color_enc["scale"] = alt.Scale(range=color_range)
             # Don't show the color legend, because it will just show text with the color values,

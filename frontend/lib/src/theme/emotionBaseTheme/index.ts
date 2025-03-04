@@ -33,6 +33,7 @@ import genericColors from "./themeColors"
 
 export default {
   inSidebar: false,
+  showSidebarSeparator: false,
   breakpoints,
   colors: createEmotionColors(genericColors),
   fonts,
