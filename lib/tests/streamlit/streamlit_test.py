@@ -18,12 +18,14 @@ from __future__ import annotations
 
 import os
 import re
+import statistics
 import subprocess
 import sys
 import tempfile
 import unittest
 
 import matplotlib
+import pytest
 
 import streamlit as st
 from streamlit import __version__
@@ -162,3 +164,63 @@ class StreamlitTest(unittest.TestCase):
             self.assertIn("Help on package streamlit:", output)
         finally:
             os.chdir(cwd)
+
+
+@pytest.mark.usefixtures("benchmark")
+def test_cold_import_time(benchmark):
+    """
+    Measure the import time of `streamlit` by spawning a new Python subprocess.
+
+    This simulates a “cold” import because each run starts a fresh
+    interpreter session. It includes Python startup overhead, so it
+    approximates how a user experiences an import in a newly launched
+    Python process.
+    """
+
+    def do_cold_import():
+        # We invoke a separate Python process that just imports the package.
+        subprocess.check_call([sys.executable, "-c", "import streamlit"])
+
+    benchmark(do_cold_import)
+
+
+def test_importtime_median_under_threshold():
+    """
+    Measure the import time of Streamlit via the built-in `importtime`
+    in a fresh interpreter, compute the median import time,
+    and check if it's under a static threshold.
+    """
+    # Define an acceptable threshold for import time (in microseconds).
+    # This value is also depenend a bit on the machine it's run on,
+    # so needs to be mainly adjusted to our CI runners.
+    # While its important to keep the import time low, you can
+    # modify this threshold if it's really needed to add some new features.
+    # But make sure that its justified and intended.
+    max_allowed_import_time_us = 500_000
+
+    import_times = []
+
+    for _ in range(25):
+        # Spawn a subprocess that imports `streamlit` with Python's importtime
+        # instrumentation
+        cmd = [sys.executable, "-X", "importtime", "-c", "import streamlit"]
+        p = subprocess.run(cmd, stderr=subprocess.PIPE, check=True)
+
+        # The last line of stderr has the total import time, e.g.:
+        # "import time: self [us] | cumulative [us] | streamlit"
+        line = p.stderr.splitlines()[-1]
+        field = line.split(b"|")[-2].strip()  # e.g. b"123456"
+        total_us = int(field)  # convert to integer microseconds
+        import_times.append(total_us)
+
+    # Calculate the median import time across all runs
+    median_time_us = statistics.median(import_times)
+
+    # Check if the median is within the desired threshold
+    assert median_time_us <= max_allowed_import_time_us, (
+        f"Median import time {round(median_time_us)}us of streamlit exceeded the max "
+        f"allowed threshold {max_allowed_import_time_us}us (percentage: "
+        f"{round(median_time_us / max_allowed_import_time_us * 100)}%)."
+        "In case this is expected and justified, you can change the "
+        "threshold in the test."
+    )

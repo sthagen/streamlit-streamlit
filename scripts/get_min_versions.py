@@ -20,10 +20,16 @@
 import pkg_resources
 
 package = pkg_resources.working_set.find(pkg_resources.Requirement.parse("streamlit"))
+if package is None:
+    package = pkg_resources.working_set.find(
+        pkg_resources.Requirement.parse("streamlit-nightly")
+    )
+if package is None:
+    raise ValueError("streamlit/streamlit-nightly packages not found")
 
 oldest_dependencies = []
 
-for requirement in package.requires():  # type: ignore
+for requirement in package.requires():
     dependency = requirement.project_name
     if requirement.extras:
         dependency += "[" + ",".join(requirement.extras) + "]"

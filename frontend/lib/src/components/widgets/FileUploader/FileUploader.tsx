@@ -20,6 +20,7 @@ import axios from "axios"
 import isEqual from "lodash/isEqual"
 import zip from "lodash/zip"
 import { FileRejection } from "react-dropzone"
+import { flushSync } from "react-dom"
 
 import {
   FileUploader as FileUploaderProto,
@@ -104,7 +105,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
   }
 
   get initialValue(): State {
-    const emptyState = { files: [], newestServerFileId: 0 }
+    const emptyState = { files: [] }
     const { widgetMgr, element } = this.props
 
     const widgetValue = widgetMgr.getFileUploaderStateValue(element)
@@ -221,13 +222,6 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
       })
 
     return new FileUploaderStateProto({ uploadedFileInfo })
-  }
-
-  /**
-   * Clear files and errors, and reset the widget to its READY state.
-   */
-  private reset = (): void => {
-    this.setState({ files: [] })
   }
 
   /**
@@ -404,19 +398,31 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
 
   /** Append the given file to `state.files`. */
   private addFile = (file: UploadFileInfo): void => {
-    this.setState(state => ({ files: [...state.files, file] }))
+    // Using flushSync here because we need the state to be immediately updated
+    // before any subsequent file upload operations occur.
+    flushSync(() => {
+      this.setState(state => ({ files: [...state.files, file] }))
+    })
   }
 
   /** Append the given files to `state.files`. */
   private addFiles = (files: UploadFileInfo[]): void => {
-    this.setState(state => ({ files: [...state.files, ...files] }))
+    // Using flushSync here because we need the state to be immediately updated
+    // before any subsequent file upload operations occur.
+    flushSync(() => {
+      this.setState(state => ({ files: [...state.files, ...files] }))
+    })
   }
 
   /** Remove the file with the given ID from `state.files`. */
   private removeFile = (idToRemove: number): void => {
-    this.setState(state => ({
-      files: state.files.filter(file => file.id !== idToRemove),
-    }))
+    // Using flushSync here because we need the state to be immediately updated
+    // before any subsequent file upload operations occur.
+    flushSync(() => {
+      this.setState(state => ({
+        files: state.files.filter(file => file.id !== idToRemove),
+      }))
+    })
   }
 
   /**
@@ -428,12 +434,16 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
 
   /** Replace the file with the given id in `state.files`. */
   private updateFile = (curFileId: number, newFile: UploadFileInfo): void => {
-    this.setState(curState => {
-      return {
-        files: curState.files.map(file =>
-          file.id === curFileId ? newFile : file
-        ),
-      }
+    // Using flushSync here because we need the state to be immediately updated
+    // before any subsequent file upload operations occur.
+    flushSync(() => {
+      this.setState(curState => {
+        return {
+          files: curState.files.map(file =>
+            file.id === curFileId ? newFile : file
+          ),
+        }
+      })
     })
   }
 
@@ -468,19 +478,23 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
    * form is submitted. Restore our default value and update the WidgetManager.
    */
   private onFormCleared = (): void => {
-    this.setState({ files: [] }, () => {
-      const newWidgetValue = this.createWidgetValue()
-      if (isNullOrUndefined(newWidgetValue)) {
-        return
-      }
+    // Using flushSync here because we need the state to be immediately updated
+    // before any subsequent file upload operations occur.
+    flushSync(() => {
+      this.setState({ files: [] }, () => {
+        const newWidgetValue = this.createWidgetValue()
+        if (isNullOrUndefined(newWidgetValue)) {
+          return
+        }
 
-      const { widgetMgr, element, fragmentId } = this.props
-      widgetMgr.setFileUploaderStateValue(
-        element,
-        newWidgetValue,
-        { fromUi: true },
-        fragmentId
-      )
+        const { widgetMgr, element, fragmentId } = this.props
+        widgetMgr.setFileUploaderStateValue(
+          element,
+          newWidgetValue,
+          { fromUi: true },
+          fragmentId
+        )
+      })
     })
   }
 

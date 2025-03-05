@@ -50,9 +50,6 @@ export function render(
   return reactTestingLibraryRender(ui, {
     wrapper: ({ children }) => <TestAppWrapper>{children}</TestAppWrapper>,
     ...options,
-    // TODO: Remove this to have RTL run on React 18
-    // react-18-upgrade
-    legacyRoot: true,
   })
 }
 

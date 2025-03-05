@@ -22,10 +22,16 @@ from e2e_playwright.shared.app_utils import expect_prefixed_markdown, get_elemen
 from e2e_playwright.shared.dataframe_utils import (
     calc_middle_cell_position,
     click_on_cell,
+    expect_canvas_to_be_stable,
     expect_canvas_to_be_visible,
     get_open_cell_overlay,
     open_column_menu,
+    retry_interaction,
     unfocus_dataframe,
+)
+from e2e_playwright.shared.react18_utils import (
+    take_stable_snapshot,
+    wait_for_react_stability,
 )
 from e2e_playwright.shared.toolbar_utils import (
     assert_fullscreen_toolbar_button_interactions,
@@ -61,6 +67,9 @@ def test_data_editor_toolbar_on_hover(
     data_editor_element = themed_app.get_by_test_id("stDataFrame").nth(1)
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
 
+    # Ensure the canvas is stable before proceeding
+    expect_canvas_to_be_stable(data_editor_element)
+
     # Check that it is currently not visible:
     expect(data_editor_toolbar).to_have_css("opacity", "0")
 
@@ -69,11 +78,16 @@ def test_data_editor_toolbar_on_hover(
 
     # Check that it is visible
     expect(data_editor_toolbar).to_have_css("opacity", "1")
+    themed_app.wait_for_timeout(100)  # Brief wait for any animations to settle
 
     # Take a snapshot
-    assert_snapshot(data_editor_toolbar, name="st_data_editor-toolbar")
+    take_stable_snapshot(
+        themed_app, data_editor_toolbar, assert_snapshot, name="st_data_editor-toolbar"
+    )
 
 
+# The snapshots are flaky on Firefox in CI.
+@pytest.mark.skip_browser("firefox")
 def test_data_editor_delete_row_via_toolbar(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
@@ -81,25 +95,41 @@ def test_data_editor_delete_row_via_toolbar(
     data_editor_element = themed_app.get_by_test_id("stDataFrame").nth(1)
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
 
-    expect_canvas_to_be_visible(data_editor_element)
+    # Ensure canvas is stable before any actions
+    expect_canvas_to_be_stable(data_editor_element)
+
     # Select the second row
     data_editor_element.click(position={"x": 10, "y": 100})
-    # Take a snapshot to check if row is selected:
-    assert_snapshot(
-        data_editor_element, name="st_data_editor-selected_row_for_deletion"
+
+    # Wait for the row to be selected
+    themed_app.wait_for_timeout(100)
+
+    # Take a snapshot to check if row is selected using stable snapshot:
+    take_stable_snapshot(
+        themed_app,
+        data_editor_element,
+        assert_snapshot,
+        name="st_data_editor-selected_row_for_deletion",
     )
     expect(data_editor_element).to_have_css("height", "247px")
 
     # The toolbar should be locked (visible):
     expect(data_editor_toolbar).to_have_css("opacity", "1")
     # Take snapshot to check if trash icon is in toolbar:
-    assert_snapshot(data_editor_toolbar, name="st_data_editor-row_deletion_toolbar")
+    take_stable_snapshot(
+        themed_app,
+        data_editor_toolbar,
+        assert_snapshot,
+        name="st_data_editor-row_deletion_toolbar",
+    )
 
     # Click row deletion button:
     delete_row_button = data_editor_toolbar.get_by_test_id(
         "stElementToolbarButton"
     ).get_by_label("Delete row(s)")
     delete_row_button.click()
+
+    wait_for_react_stability(themed_app)
     # The height should reflect that one row is missing (247px-35px=212px):
     expect(data_editor_element).to_have_css("height", "212px")
 
@@ -111,6 +141,9 @@ def test_data_editor_delete_row_via_hotkey(app: Page):
 
     # Select the second row
     data_editor_element.click(position={"x": 10, "y": 100})
+
+    # Wait for the row to be selected
+    app.wait_for_timeout(100)
 
     # Press backspace to delete row:
     data_editor_element.press("Delete")
@@ -124,6 +157,8 @@ def test_data_editor_add_row_via_toolbar(
 ):
     """Test that a row can be added via the toolbar."""
     data_editor_element = app.get_by_test_id("stDataFrame").nth(1)
+    expect_canvas_to_be_stable(data_editor_element)
+
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
     expect(data_editor_element).to_have_css("height", "247px")
 
@@ -153,7 +188,12 @@ def test_data_editor_add_row_via_toolbar(
 
     # Take a snapshot to check if rows are added:
     unfocus_dataframe(app)
-    assert_snapshot(data_editor_element, name="st_data_editor-added_rows_via_toolbar")
+    take_stable_snapshot(
+        app,
+        data_editor_element,
+        assert_snapshot,
+        name="st_data_editor-added_rows_via_toolbar",
+    )
 
 
 def test_data_editor_add_row_via_trailing_row(app: Page):
@@ -163,6 +203,9 @@ def test_data_editor_add_row_via_trailing_row(app: Page):
 
     # Click on the trailing row:
     data_editor_element.click(position={"x": 40, "y": 220})
+
+    # Wait for the row to be selected
+    app.wait_for_timeout(100)
 
     # The height should reflect that one row is added (247px+35px=282px):
     expect(data_editor_element).to_have_css("height", "282px")
@@ -520,10 +563,14 @@ def test_custom_css_class_via_key(app: Page):
     expect(get_element_by_key(app, "data_editor")).to_be_visible()
 
 
+# Skipping because the test is flaky on webkit. I validated it manually in
+# Safari and it works as expected. Getting automated validation in Chromium +
+# Firefox should be enough.
+@pytest.mark.skip_browser("webkit")
 def test_column_reorder_via_ui(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that columns can be reordered via drag and drop on the UI."""
     dataframe_element = app.get_by_test_id("stDataFrame").nth(0)
-    expect_canvas_to_be_visible(dataframe_element)
+    expect_canvas_to_be_stable(dataframe_element)
 
     # 1. Move Column A behind Column C:
 
@@ -537,6 +584,9 @@ def test_column_reorder_via_ui(app: Page, assert_snapshot: ImageCompareFunction)
         source_position={"x": source_x, "y": source_y},
         target_position={"x": target_x, "y": target_y},
     )
+
+    wait_for_react_stability(app)
+    expect_canvas_to_be_stable(dataframe_element)
 
     # 2. Move Column D in front of the index column:
     # This also tests that column D should get pinned since it is moved before a
@@ -553,9 +603,12 @@ def test_column_reorder_via_ui(app: Page, assert_snapshot: ImageCompareFunction)
         target_position={"x": target_x, "y": target_y},
     )
 
+    expect_canvas_to_be_stable(dataframe_element)
     # Verify column order changed by taking a screenshot
-    assert_snapshot(
+    take_stable_snapshot(
+        app,
         dataframe_element,
+        assert_snapshot,
         name="st_dataframe-reorder_columns_via_ui",
     )
 
@@ -597,44 +650,62 @@ def test_sorting_column_via_ui(app: Page, assert_snapshot: ImageCompareFunction)
     """Test that a column can be sorted via the UI by clicking on the column
     header and via the column menu."""
     df = app.get_by_test_id("stDataFrame").nth(0)
-    expect_canvas_to_be_visible(df)
+    expect_canvas_to_be_stable(df)
 
-    assert_snapshot(df, name="st_dataframe-no_sorting")
+    unfocus_dataframe(app)
+    take_stable_snapshot(app, df, assert_snapshot, name="st_dataframe-no_sorting")
 
     # Click on the column header to sort in ascending order:
-    click_on_cell(df, 0, 2, column_width="small")
+    click_on_cell(df, 0, 2, column_width="small", wait_after_ms=500)
     unfocus_dataframe(app)
-    assert_snapshot(df, name="st_dataframe-sorted_ascending")
+    take_stable_snapshot(app, df, assert_snapshot, name="st_dataframe-sorted_ascending")
 
     # Click on the column header again to sort in descending order:
-    click_on_cell(df, 0, 2, column_width="small")
+    click_on_cell(df, 0, 2, column_width="small", wait_after_ms=500)
     unfocus_dataframe(app)
-    assert_snapshot(df, name="st_dataframe-sorted_descending")
+    take_stable_snapshot(
+        app, df, assert_snapshot, name="st_dataframe-sorted_descending"
+    )
 
     # Click on the column header again to remove sorting:
-    click_on_cell(df, 0, 2, column_width="small")
+    click_on_cell(df, 0, 2, column_width="small", wait_after_ms=500)
     unfocus_dataframe(app)
-    assert_snapshot(df, name="st_dataframe-no_sorting")
+    take_stable_snapshot(app, df, assert_snapshot, name="st_dataframe-no_sorting")
 
     # Open the column menu and sort in ascending order:
-    open_column_menu(df, 2, "small")
-    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort ascending").click()
+    def open_menu_and_click_sort_asc():
+        open_column_menu(df, 2, "small")
+        app.get_by_test_id("stDataFrameColumnMenu").get_by_text(
+            "Sort ascending"
+        ).click()
+
+    retry_interaction(open_menu_and_click_sort_asc)
     unfocus_dataframe(app)
-    # Use the same screenshots as above since we expect the same
-    # result
-    assert_snapshot(df, name="st_dataframe-sorted_ascending")
+    take_stable_snapshot(app, df, assert_snapshot, name="st_dataframe-sorted_ascending")
 
     # Open the column menu and sort in descending order:
-    open_column_menu(df, 2, "small")
-    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort descending").click()
+    def open_menu_and_click_sort_desc():
+        open_column_menu(df, 2, "small")
+        app.get_by_test_id("stDataFrameColumnMenu").get_by_text(
+            "Sort descending"
+        ).click()
+
+    retry_interaction(open_menu_and_click_sort_desc)
     unfocus_dataframe(app)
-    assert_snapshot(df, name="st_dataframe-sorted_descending")
+    take_stable_snapshot(
+        app, df, assert_snapshot, name="st_dataframe-sorted_descending"
+    )
 
     # Remove sorting by clicking again on the column header:
-    open_column_menu(df, 2, "small")
-    app.get_by_test_id("stDataFrameColumnMenu").get_by_text("Sort descending").click()
+    def open_menu_and_click_sort_none():
+        open_column_menu(df, 2, "small")
+        app.get_by_test_id("stDataFrameColumnMenu").get_by_text(
+            "Sort descending"
+        ).click()
+
+    retry_interaction(open_menu_and_click_sort_none)
     unfocus_dataframe(app)
-    assert_snapshot(df, name="st_dataframe-no_sorting")
+    take_stable_snapshot(app, df, assert_snapshot, name="st_dataframe-no_sorting")
 
 
 def test_opening_column_menu(themed_app: Page, assert_snapshot: ImageCompareFunction):

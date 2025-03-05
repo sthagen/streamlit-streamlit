@@ -237,7 +237,7 @@ describe("StreamlitLibExample", () => {
     )
   })
 
-  it("handles Delta messages", () => {
+  it("handles Delta messages", async () => {
     // there's nothing within the app ui to cycle through script run messages so we need a reference
     let streamlitLibInstance: any
     render(
@@ -270,7 +270,7 @@ describe("StreamlitLibExample", () => {
     expect(screen.queryByText("Please wait...")).not.toBeInTheDocument()
 
     // And we should have the single Text element we created
-    expect(screen.getByText("Hello, world!")).toBeInTheDocument()
+    expect(await screen.findByText("Hello, world!")).toBeInTheDocument()
   })
 
   it("sees app config as the same structure", () => {

@@ -234,6 +234,28 @@ def get_expander(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
     return element
 
 
+def get_number_input(locator: Locator | Page, label: str | Pattern[str]) -> Locator:
+    """Get a number input with the given label.
+
+    Parameters
+    ----------
+
+    locator : Locator
+        The locator to search for the element.
+
+    label : str or Pattern[str]
+        The label of the element to get.
+
+    Returns
+    -------
+    Locator
+        The number input element.
+    """
+    element = locator.get_by_test_id("stNumberInput").filter(has_text=label)
+    expect(element).to_be_visible()
+    return element
+
+
 def get_markdown(
     locator: Locator | Page, text_inside_markdown: str | Pattern[str]
 ) -> Locator:
@@ -423,6 +445,33 @@ def click_toggle(
         The label of the toggle to click.
     """
     click_checkbox(page, label)
+
+
+def fill_number_input(
+    locator: Locator | Page,
+    label: str | Pattern[str],
+    value: int,
+) -> None:
+    """Set the value of a number input.
+
+    Parameters
+    ----------
+
+    locator : Locator
+        The locator to search for the number input.
+
+    label : str or Pattern[str]
+        The label of the number input.
+
+    value : int
+        The value to set the number input to.
+    """
+
+    number_input_element = get_number_input(locator, label)
+    number_input_element.locator("input").fill(str(value))
+    # Submit value:
+    number_input_element.press("Enter")
+    wait_for_app_run(locator)
 
 
 def select_radio_option(

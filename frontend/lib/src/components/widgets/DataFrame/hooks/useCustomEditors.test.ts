@@ -15,7 +15,7 @@
  */
 
 import { GridCellKind, NumberCell, TextCell } from "@glideapps/glide-data-grid"
-import { renderHook } from "@testing-library/react-hooks"
+import { renderHook } from "@testing-library/react"
 
 import { JsonTextCellEditor } from "~lib/components/widgets/DataFrame/columns/cells/JsonCell"
 

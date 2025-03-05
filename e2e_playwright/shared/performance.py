@@ -105,7 +105,8 @@ def measure_performance(
 
     Args:
         page (Page): The page to measure performance on.
-        cpu_throttling_rate (int | None, optional): Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc). Defaults to None.
+        cpu_throttling_rate (int | None, optional): Throttling rate as a slowdown factor
+            (1 is no throttle, 2 is 2x slowdown, etc). Defaults to None.
     """
     with with_cdp_session(page) as client:
         if cpu_throttling_rate is not None:

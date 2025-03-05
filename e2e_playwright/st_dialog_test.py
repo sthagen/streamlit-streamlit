@@ -30,7 +30,9 @@ from e2e_playwright.shared.app_utils import (
     get_markdown,
     is_child_bounding_box_inside_parent,
 )
-from e2e_playwright.shared.dataframe_utils import open_column_menu
+from e2e_playwright.shared.dataframe_utils import (
+    open_column_menu,
+)
 
 modal_test_id = "stDialog"
 
@@ -431,8 +433,9 @@ def test_dialog_with_dataframe_shows_column_menu_correctly(app: Page):
     expect(dialog).to_be_visible()
     df_element = dialog.get_by_test_id("stDataFrame")
     expect(df_element).to_be_visible()
+
     open_column_menu(df_element, 1, "small")
-    # Check that the column menu is within the bounds of the dataframe
+
     column_menu = app.get_by_test_id("stDataFrameColumnMenu")
     expect(column_menu).to_be_visible()
     expect(column_menu).to_be_in_viewport()

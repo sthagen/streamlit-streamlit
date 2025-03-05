@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import "../../../utils/src/polyfills/index"
+
 import { MockInstance } from "vitest"
 
 import HostCommunicationManager, {

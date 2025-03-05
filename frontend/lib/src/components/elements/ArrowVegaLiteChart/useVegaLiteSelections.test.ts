@@ -16,7 +16,7 @@
 
 import { Mock, Mocked } from "vitest"
 import { View as VegaView } from "vega"
-import { act, renderHook } from "@testing-library/react-hooks"
+import { act, renderHook } from "@testing-library/react"
 
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { debounce } from "~lib/util/utils"

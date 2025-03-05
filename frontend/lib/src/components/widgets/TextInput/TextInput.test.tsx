@@ -16,7 +16,7 @@
 
 import React from "react"
 
-import { act, screen, within } from "@testing-library/react"
+import { act, screen, waitFor, within } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
 import {
@@ -431,11 +431,13 @@ describe("TextInput widget", () => {
 
     // Remove focus
     textInput.blur()
-    expect(screen.queryByTestId("InputInstructions")).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByTestId("InputInstructions")).not.toBeInTheDocument()
+    })
 
     // Then focus again
     textInput.focus()
-    expect(screen.getByText("Press Enter to submit form")).toBeVisible()
+    expect(await screen.findByText("Press Enter to submit form")).toBeVisible()
   })
 
   it("hides Input Instructions if in form that doesn't allow submit on enter", async () => {

@@ -17,7 +17,7 @@
 import React from "react"
 
 import { GridCellKind } from "@glideapps/glide-data-grid"
-import { renderHook } from "@testing-library/react-hooks"
+import { renderHook } from "@testing-library/react"
 import { Field, Utf8 } from "apache-arrow"
 
 import { Arrow as ArrowProto } from "@streamlit/protobuf"

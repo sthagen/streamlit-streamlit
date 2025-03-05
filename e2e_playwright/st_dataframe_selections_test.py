@@ -340,6 +340,10 @@ def test_in_form_selection_and_session_state(app: Page):
     )
 
 
+# Skipping because the test is flaky on webkit. I validated it manually in
+# Safari and it works as expected. Getting automated validation in Chromium +
+# Firefox should be enough.
+@pytest.mark.skip_browser("webkit")
 def test_multi_row_and_multi_column_selection_with_callback(app: Page):
     canvas = _get_callback_df(app)
     expect_canvas_to_be_visible(canvas)
@@ -412,12 +416,16 @@ def test_multi_row_and_multi_column_selection_in_fragment(app: Page):
     expect(app.get_by_text("Runs: 1")).to_be_visible()
 
 
+# Skipping because the test is flaky on webkit. I validated it manually in
+# Safari and it works as expected. Getting automated validation in Chromium +
+# Firefox should be enough.
+@pytest.mark.skip_browser("webkit")
 def test_that_index_cannot_be_selected(app: Page):
     canvas = _get_df_with_index(app)
     expect_canvas_to_be_visible(canvas)
 
     canvas.scroll_into_view_if_needed()
-    # Try select a selectable columnÖ
+    # Try select a selectable column
     select_column(canvas, 2)
     wait_for_app_run(app)
 

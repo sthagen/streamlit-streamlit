@@ -401,7 +401,7 @@ describe("#useDeckGl", () => {
         })
       })
 
-      rerender()
+      rerender(initialProps)
 
       expect(result.current.hasActiveSelection).toBe(true)
     })

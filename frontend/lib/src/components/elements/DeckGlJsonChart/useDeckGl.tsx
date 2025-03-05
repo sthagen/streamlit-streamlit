@@ -59,7 +59,7 @@ type UseDeckGlShape = {
   setSelection: React.Dispatch<
     React.SetStateAction<ValueWithSource<DeckGlElementState> | null>
   >
-  viewState: Record<string, unknown>
+  viewState: Record<string, unknown> | null
   width: number | string
 }
 
@@ -180,11 +180,9 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     fragmentId,
   })
 
-  const [viewState, setViewState] = useState<Record<string, unknown>>({
-    bearing: 0,
-    pitch: 0,
-    zoom: 11,
-  })
+  const [viewState, setViewState] = useState<Record<string, unknown> | null>(
+    null
+  )
 
   const { height, width } = useStWidthHeight({
     element,
@@ -192,13 +190,14 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     shouldUseContainerWidth,
     container: { height: propsHeight, width: propsWidth },
     heightFallback:
-      (viewState.initialViewState as { height: number } | undefined)?.height ||
-      theme.sizes.defaultMapHeight,
+      (viewState?.initialViewState as { height: number } | undefined)
+        ?.height || theme.sizes.defaultMapHeight,
   })
 
-  const [initialViewState, setInitialViewState] = useState<
-    Record<string, unknown>
-  >({})
+  const [initialViewState, setInitialViewState] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
 
   /**
    * Our proto for selectionMode is an array in order to support future-looking
@@ -349,7 +348,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
       const diff = Object.keys(deck.initialViewState).reduce(
         (diff, key): any => {
           // @ts-expect-error
-          if (deck.initialViewState[key] === initialViewState[key]) {
+          if (deck.initialViewState[key] === initialViewState?.[key]) {
             return diff
           }
 
@@ -362,7 +361,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
         {}
       )
 
-      setViewState({ ...viewState, ...diff })
+      setViewState(existing => ({ ...existing, ...diff }))
       setInitialViewState(deck.initialViewState)
     }
   }, [deck.initialViewState, initialViewState, viewState])

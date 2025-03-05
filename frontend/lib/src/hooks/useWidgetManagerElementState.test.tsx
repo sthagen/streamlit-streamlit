@@ -16,8 +16,7 @@
 
 import React, { FC } from "react"
 
-import { act, renderHook } from "@testing-library/react-hooks"
-import { render, screen } from "@testing-library/react"
+import { act, render, renderHook, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
 import { WidgetStateManager } from "~lib/WidgetStateManager"

@@ -16,7 +16,7 @@
 
 import { createRef } from "react"
 
-import { act, renderHook } from "@testing-library/react-hooks"
+import { act, renderHook } from "@testing-library/react"
 import { View as VegaView } from "vega"
 import embed from "vega-embed"
 import { expressionInterpreter } from "vega-interpreter"

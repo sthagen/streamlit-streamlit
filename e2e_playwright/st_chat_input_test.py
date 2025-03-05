@@ -30,7 +30,9 @@ def file_upload_helper(app: Page, chat_input: Locator, files: list[FilePayload])
         file_chooser.set_files(files=files)
 
     # take away hover focus of button
-    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0})
+    app.keyboard.press("Escape")
+    app.get_by_test_id("stApp").click(position={"x": 0, "y": 0}, force=True)
+
     wait_for_app_run(app, 500)
 
 
@@ -339,9 +341,7 @@ def test_file_upload_error_message_disallowed_files(
     expect(app.get_by_text("json files are not allowed.")).to_be_visible()
 
 
-def test_file_upload_error_message_file_too_large(
-    app: Page, assert_snapshot: ImageCompareFunction
-):
+def test_file_upload_error_message_file_too_large(app: Page):
     """Test that shows error message for files exceeding max size limit."""
     app.set_viewport_size({"width": 750, "height": 2000})
 
@@ -352,7 +352,11 @@ def test_file_upload_error_message_file_too_large(
         buffer=b"x" * (2 * 1024 * 1024),  # 2MB
     )
 
+    expect(app.get_by_text(file_name1)).not_to_be_attached()
+
     file_upload_helper(app, app.get_by_test_id("stChatInput").nth(3), [file1])
+
+    expect(app.get_by_text(file_name1)).to_be_visible()
 
     uploaded_files = app.get_by_test_id("stChatUploadedFiles").nth(1)
     uploaded_files.get_by_test_id("stTooltipHoverTarget").nth(0).hover()

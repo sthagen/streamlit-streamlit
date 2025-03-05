@@ -19,6 +19,7 @@ import React, { memo, ReactElement, useEffect, useRef, useState } from "react"
 import { useTheme } from "@emotion/react"
 import { getLogger } from "loglevel"
 import queryString from "query-string"
+import { flushSync } from "react-dom"
 
 import {
   ComponentInstance as ComponentInstanceProto,
@@ -224,10 +225,13 @@ function ComponentInstance(props: Props): ReactElement {
     () => LOG.warn(getWarnMessage(componentName, url)),
     COMPONENT_READY_WARNING_TIME_MS / 4
   )
-  const clearTimeoutWarningElement = useTimeout(
-    () => setIsReadyTimeout(true),
-    COMPONENT_READY_WARNING_TIME_MS
-  )
+  const clearTimeoutWarningElement = useTimeout(() => {
+    // To keep behavior the same as before introducing `createRoot` and after,
+    // we ensure that the state updates are flushed immediately.
+    flushSync(() => {
+      setIsReadyTimeout(true)
+    })
+  }, COMPONENT_READY_WARNING_TIME_MS)
 
   // Send a render message to the custom component everytime relevant props change, such as the
   // input args or the theme / width
@@ -268,7 +272,11 @@ function ComponentInstance(props: Props): ReactElement {
       // immediately change their frameHeight after mounting). This is wasteful,
       // and it also breaks certain components.
       iframeRef.current.height = height.toString()
-      setFrameHeight(height)
+      // To keep behavior the same as before introducing `createRoot` and after,
+      // we ensure that the state updates are flushed immediately.
+      flushSync(() => {
+        setFrameHeight(height)
+      })
     }
 
     const componentReadyCallback = (): void => {
@@ -283,7 +291,11 @@ function ComponentInstance(props: Props): ReactElement {
       clearTimeoutLog()
       clearTimeoutWarningElement()
       isReadyRef.current = true
-      setIsReadyTimeout(false)
+      // To keep behavior the same as before introducing `createRoot` and after,
+      // we ensure that the state updates are flushed immediately.
+      flushSync(() => {
+        setIsReadyTimeout(false)
+      })
     }
 
     // Update the reference fields for the callback that we
