@@ -916,7 +916,7 @@ describe("getCellFromArrow", () => {
       styler: {
         uuid: "FAKE_UUID",
         styles:
-          "#T_FAKE_UUIDrow1_col1, #T_FAKE_UUIDrow0_col0 { color: white; background-color: pink }",
+          "#T_FAKE_UUID_row1_col1, #T_FAKE_UUID_row0_col0 { color: white; background-color: pink }",
         displayValues: DISPLAY_VALUES,
         caption: "FAKE_CAPTION",
       },
@@ -957,7 +957,7 @@ it("doesn't apply Pandas Styler CSS for editable columns", () => {
     styler: {
       uuid: "FAKE_UUID",
       styles:
-        "#T_FAKE_UUIDrow1_col1, #T_FAKE_UUIDrow0_col0 { color: white; background-color: pink }",
+        "#T_FAKE_UUID_row1_col1, #T_FAKE_UUID_row0_col0 { color: white; background-color: pink }",
       displayValues: DISPLAY_VALUES,
       caption: "FAKE_CAPTION",
     },

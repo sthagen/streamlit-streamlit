@@ -28,3 +28,9 @@ def test_timezone(app: Page):
 def test_timezone_offset(app: Page):
     """Test that the timezone offset is correctly set."""
     expect_prefixed_markdown(app, "Timezone offset:", "-240")
+
+
+@pytest.mark.browser_context_args(locale="it-IT")
+def test_locale(app: Page):
+    """Test that the locale correctly set."""
+    expect_prefixed_markdown(app, "Locale primary language:", "it-IT")

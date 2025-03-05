@@ -1525,6 +1525,7 @@ export class App extends PureComponent<Props, State> {
     const contextInfo = {
       timezone: this.getTimezone(),
       timezoneOffset: this.getTimezoneOffset(),
+      locale: this.getLocaleLanguage(),
     }
 
     if (pageScriptHash) {
@@ -1807,6 +1808,10 @@ export class App extends PureComponent<Props, State> {
 
   getTimezoneOffset = (): number => {
     return new Date().getTimezoneOffset()
+  }
+
+  getLocaleLanguage = (): string => {
+    return navigator.language
   }
 
   getQueryString = (): string => {

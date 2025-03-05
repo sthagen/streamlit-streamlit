@@ -142,13 +142,27 @@ function generateTableCell(
   const { type, content, contentType } = table.getCell(rowIndex, columnIndex)
   const styledCell = getStyledCell(table, rowIndex, columnIndex)
 
-  const formattedContent =
+  let formattedContent =
     styledCell?.displayContent || formatArrowCell(content, contentType)
+  let hasStylerTooltip: boolean = false
 
   const style: React.CSSProperties = {
     textAlign: isNumericType(contentType) ? "right" : "left",
   }
 
+  if (
+    formattedContent &&
+    formattedContent.endsWith(`<span class="pd-t"></span>`)
+  ) {
+    // This is a bit hacky, but to support the Pandas Styler's tooltip feature,
+    // we need to convert the specific HTML element (used for tooltips) from
+    // the display value into an actual span element.
+    formattedContent = formattedContent.replace(
+      /<span class="pd-t"><\/span>$/,
+      ""
+    )
+    hasStylerTooltip = true
+  }
   switch (type) {
     // Index cells are from index columns which only exist if the DataFrame was created
     // based on a Pandas DataFrame.
@@ -160,6 +174,7 @@ function generateTableCell(
           id={styledCell?.cssId}
           className={styledCell?.cssClass}
         >
+          {hasStylerTooltip && <span className="pd-t" />}
           <StreamlitMarkdown
             source={formattedContent || "\u00A0"}
             allowHTML={false}
@@ -175,6 +190,7 @@ function generateTableCell(
           className={styledCell?.cssClass}
           style={style}
         >
+          {hasStylerTooltip && <span className="pd-t" />}
           <StreamlitMarkdown
             source={formattedContent || "\u00A0"}
             allowHTML={false}

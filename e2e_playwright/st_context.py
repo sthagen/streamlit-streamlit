@@ -18,3 +18,5 @@ import streamlit as st
 st.write(f"Timezone name: {st.context.timezone}")
 
 st.write(f"Timezone offset: {st.context.timezone_offset}")
+
+st.write(f"Locale primary language: {st.context.locale}")

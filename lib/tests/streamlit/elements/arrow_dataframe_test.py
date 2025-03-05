@@ -184,7 +184,7 @@ class ArrowDataFrameProtoTest(DeltaGeneratorTestCase):
 
         proto = self.get_delta_from_queue().new_element.arrow_data_frame
         self.assertEqual(
-            proto.styler.styles, "#T_FAKE_UUIDrow1_col2 { background-color: yellow }"
+            proto.styler.styles, "#T_FAKE_UUID_row1_col2 { background-color: yellow }"
         )
 
     def test_display_values(self):

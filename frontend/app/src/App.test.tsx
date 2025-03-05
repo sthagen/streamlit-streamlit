@@ -2282,6 +2282,7 @@ describe("App", () => {
           queryString: "",
           widgetStates: {},
           contextInfo: {
+            locale: "en-US",
             timezone: "UTC",
             timezoneOffset: 0,
           },
@@ -2849,6 +2850,7 @@ describe("App", () => {
           queryString: "",
           widgetStates: {},
           contextInfo: {
+            locale: "en-US",
             timezone: "UTC",
             timezoneOffset: 0,
           },
@@ -3060,6 +3062,7 @@ describe("App", () => {
           queryString: "",
           widgetStates: {},
           contextInfo: {
+            locale: "en-US",
             timezone: "UTC",
             timezoneOffset: 0,
           },
