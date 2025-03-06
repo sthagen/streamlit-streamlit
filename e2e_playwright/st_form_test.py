@@ -266,3 +266,6 @@ def test_check_form_submit_button_types(
 
     form_10 = app.get_by_test_id("stForm").nth(9)
     assert_snapshot(form_10, name="st_form-tertiary_submit_button")
+
+    form_11 = app.get_by_test_id("stForm").nth(10)
+    assert_snapshot(form_11, name="st_form-submit_button_just_help")

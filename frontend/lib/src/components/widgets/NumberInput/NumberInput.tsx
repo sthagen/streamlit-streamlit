@@ -204,6 +204,17 @@ const NumberInput: React.FC<Props> = ({
       commitValue({ value, source: { fromUi: false } })
     }
 
+    const numberInput = inputRef.current
+    if (numberInput) {
+      // Issue #8867: Disable wheel events on the input to avoid accidental changes
+      // caused by scrolling.
+      numberInput.addEventListener("wheel", e => e.preventDefault())
+
+      return () => {
+        numberInput.removeEventListener("wheel", e => e.preventDefault())
+      }
+    }
+
     // I don't want to run this effect on every render, only on mount.
     // Additionally, it's okay if commitValue changes, because we only call
     // it once in the beginning anyways.

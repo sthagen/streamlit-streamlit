@@ -61,6 +61,11 @@ st.button(
     ":material/search: _button 7_ (**styled** :green[label]) :material/arrow_forward:"
 )
 
+st.button(
+    "button 8 (just help)",
+    help="help text",
+)
+
 st.button("Like Button", icon=":material/thumb_up:")
 st.button("Star Button", icon="⭐")
 

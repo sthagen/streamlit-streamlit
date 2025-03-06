@@ -98,6 +98,12 @@ st.download_button(
     disabled=True,
 )
 
+st.download_button(
+    "Download button with help",
+    data="Hello world!",
+    help="help text",
+)
+
 random_str = str(random())
 clicked = st.download_button(label="Download random text", data=random_str)
 

@@ -28,7 +28,7 @@ def test_button_widget_rendering(
 ):
     """Test that the button widgets are correctly rendered via screenshot matching."""
     button_elements = themed_app.get_by_test_id("stButton")
-    expect(button_elements).to_have_count(21)
+    expect(button_elements).to_have_count(22)
 
     assert_snapshot(button_elements.nth(0), name="st_button-default")
     assert_snapshot(button_elements.nth(1), name="st_button-disabled")
@@ -37,18 +37,19 @@ def test_button_widget_rendering(
     assert_snapshot(button_elements.nth(4), name="st_button-use_container_width")
     assert_snapshot(button_elements.nth(5), name="st_button-use_container_width_help")
     assert_snapshot(button_elements.nth(6), name="st_button-styled_label")
-    assert_snapshot(button_elements.nth(7), name="st_button-material_icon")
-    assert_snapshot(button_elements.nth(8), name="st_button-emoji_icon")
-    assert_snapshot(button_elements.nth(9), name="st_button-tertiary")
-    assert_snapshot(button_elements.nth(10), name="st_button-disabled_tertiary")
-    assert_snapshot(button_elements.nth(11), name="st_button-material_icon_1k_icon")
-    assert_snapshot(button_elements.nth(12), name="st_button-material_icon_1k_markdown")
+    assert_snapshot(button_elements.nth(7), name="st_button-just_help")
+    assert_snapshot(button_elements.nth(8), name="st_button-material_icon")
+    assert_snapshot(button_elements.nth(9), name="st_button-emoji_icon")
+    assert_snapshot(button_elements.nth(10), name="st_button-tertiary")
+    assert_snapshot(button_elements.nth(11), name="st_button-disabled_tertiary")
+    assert_snapshot(button_elements.nth(12), name="st_button-material_icon_1k_icon")
+    assert_snapshot(button_elements.nth(13), name="st_button-material_icon_1k_markdown")
 
     # The rest is tested in one screenshot in the following test
 
 
 def test_material_icon_hover(app: Page, assert_snapshot: ImageCompareFunction):
-    material_icon_button = app.get_by_test_id("stButton").nth(7)
+    material_icon_button = app.get_by_test_id("stButton").nth(8)
     app.get_by_text("Like Button").hover()
     assert_snapshot(material_icon_button, name="st_button-material_icon_hover")
 

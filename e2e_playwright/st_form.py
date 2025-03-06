@@ -148,3 +148,13 @@ with st.form("form_10"):
     )
     if submitted_10:
         st.write("Form submitted")
+
+with st.form("form_11"):
+    st.write("Inside form 11")
+    text_input = st.text_input("Form 11 - Text Input")
+    submitted_11 = st.form_submit_button(
+        "Form 11 - Submit",
+        help="Submit by clicking",
+    )
+    if submitted_11:
+        st.write("Form submitted")

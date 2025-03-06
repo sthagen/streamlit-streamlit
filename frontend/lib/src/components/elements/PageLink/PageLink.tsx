@@ -83,13 +83,17 @@ function PageLink(props: Readonly<Props>): ReactElement {
 
   return (
     <div className="stPageLink" data-testid="stPageLink">
-      <BaseButtonTooltip help={element.help} placement={Placement.TOP_RIGHT}>
+      <BaseButtonTooltip
+        help={element.help}
+        placement={Placement.TOP_RIGHT}
+        containerWidth={useContainerWidth}
+      >
         <StyledNavLinkContainer>
           <StyledNavLink
             data-testid="stPageLink-NavLink"
             disabled={disabled}
             isCurrentPage={isCurrentPage}
-            fluidWidth={useContainerWidth || !!element.help}
+            containerWidth={useContainerWidth}
             href={element.page}
             target={element.external ? "_blank" : ""}
             rel="noreferrer"

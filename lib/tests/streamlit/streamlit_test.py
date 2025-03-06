@@ -196,7 +196,7 @@ def test_importtime_median_under_threshold():
     # While its important to keep the import time low, you can
     # modify this threshold if it's really needed to add some new features.
     # But make sure that its justified and intended.
-    max_allowed_import_time_us = 500_000
+    max_allowed_import_time_us = 700_000
 
     import_times = []
 

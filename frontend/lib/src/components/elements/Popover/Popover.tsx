@@ -136,7 +136,7 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
               kind={BaseButtonKind.SECONDARY}
               size={BaseButtonSize.SMALL}
               disabled={empty || element.disabled}
-              fluidWidth={element.useContainerWidth || !!element.help}
+              containerWidth={element.useContainerWidth}
               onClick={() => setOpen(!open)}
             >
               <DynamicButtonLabel icon={element.icon} label={element.label} />

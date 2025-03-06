@@ -92,6 +92,21 @@ describe("FormSubmitButton", () => {
     expect(formSubmitButton).toBeInTheDocument()
   })
 
+  it("renders with help properly", async () => {
+    const user = userEvent.setup()
+    render(<FormSubmitButton {...getProps({}, { help: "mockHelpText" })} />)
+
+    const formSubmitButton = screen.getByRole("button")
+    expect(formSubmitButton).toHaveStyle("width: auto")
+    const tooltipTarget = screen.getByTestId("stTooltipHoverTarget")
+    expect(tooltipTarget).toHaveStyle("width: auto")
+
+    await user.hover(tooltipTarget)
+
+    const tooltipContent = await screen.findByTestId("stTooltipContent")
+    expect(tooltipContent).toHaveTextContent("mockHelpText")
+  })
+
   it("calls submitForm when clicked", async () => {
     const user = userEvent.setup()
     const props = getProps()

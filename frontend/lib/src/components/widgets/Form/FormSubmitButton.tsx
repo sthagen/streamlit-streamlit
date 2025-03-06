@@ -54,11 +54,14 @@ export function FormSubmitButton(props: Props): ReactElement {
 
   return (
     <Box className="stFormSubmitButton" data-testid="stFormSubmitButton">
-      <BaseButtonTooltip help={element.help}>
+      <BaseButtonTooltip
+        help={element.help}
+        containerWidth={element.useContainerWidth}
+      >
         <BaseButton
           kind={kind}
           size={BaseButtonSize.SMALL}
-          fluidWidth={element.useContainerWidth || !!element.help}
+          containerWidth={element.useContainerWidth}
           disabled={disabled || hasInProgressUpload}
           onClick={() => {
             widgetMgr.submitForm(element.formId, fragmentId, element)

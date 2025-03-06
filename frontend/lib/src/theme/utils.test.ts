@@ -176,6 +176,7 @@ describe("Cached theme helpers", () => {
         backgroundColor: "orange",
         secondaryBackgroundColor: "yellow",
         textColor: "green",
+        bodyFont: '"Source Sans Pro", sans-serif',
       }
 
       const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
@@ -220,6 +221,7 @@ describe("Cached theme helpers", () => {
       backgroundColor: "orange",
       secondaryBackgroundColor: "yellow",
       textColor: "green",
+      bodyFont: '"Source Sans Pro", sans-serif',
     }
     const customTheme = createTheme(CUSTOM_THEME_NAME, themeInput)
 
@@ -693,6 +695,7 @@ describe("toThemeInput", () => {
     const { colors } = lightTheme.emotion
     expect(toThemeInput(lightTheme.emotion)).toEqual({
       primaryColor: colors.primary,
+      bodyFont: `"Source Sans Pro", sans-serif`,
       backgroundColor: colors.bgColor,
       secondaryBackgroundColor: colors.secondaryBg,
       textColor: colors.bodyText,

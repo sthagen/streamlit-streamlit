@@ -30,6 +30,7 @@ from parameterized import parameterized
 
 import streamlit as st
 from streamlit import dataframe_util
+from streamlit.type_util import get_fqn_type
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 from tests.streamlit.data_mocks.snowpandas_mocks import DataFrame as SnowpandasDataFrame
 from tests.streamlit.data_mocks.snowpandas_mocks import Index as SnowpandasIndex
@@ -577,21 +578,27 @@ class DataframeUtilTest(unittest.TestCase):
 
         dask_df = dask.datasets.timeseries()
 
-        assert dataframe_util.is_dask_object(dask_df) is True
+        assert dataframe_util.is_dask_object(dask_df) is True, (
+            f"Failed to detect dask dataframe with type {get_fqn_type(dask_df)}"
+        )
         assert isinstance(
             dataframe_util.convert_anything_to_pandas_df(dask_df),
             pd.DataFrame,
         )
 
         dask_series = dask_df["x"]
-        assert dataframe_util.is_dask_object(dask_series) is True
+        assert dataframe_util.is_dask_object(dask_series) is True, (
+            f"Failed to detect dask series with type {get_fqn_type(dask_series)}"
+        )
         assert isinstance(
             dataframe_util.convert_anything_to_pandas_df(dask_series),
             pd.DataFrame,
         )
 
         dask_index = dask_df.index
-        assert dataframe_util.is_dask_object(dask_index) is True
+        assert dataframe_util.is_dask_object(dask_index) is True, (
+            f"Failed to detect dask index with type {get_fqn_type(dask_index)}"
+        )
         assert isinstance(
             dataframe_util.convert_anything_to_pandas_df(dask_index),
             pd.DataFrame,

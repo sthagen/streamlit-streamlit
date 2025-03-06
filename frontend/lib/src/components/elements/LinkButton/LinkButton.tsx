@@ -52,7 +52,10 @@ function LinkButton(props: Readonly<Props>): ReactElement {
 
   return (
     <Box className="stLinkButton" data-testid="stLinkButton">
-      <BaseButtonTooltip help={element.help}>
+      <BaseButtonTooltip
+        help={element.help}
+        containerWidth={element.useContainerWidth}
+      >
         {/* We use separate BaseLinkButton instead of BaseButton here, because
         link behavior requires tag <a> instead of <button>.*/}
         <BaseLinkButton
@@ -60,7 +63,7 @@ function LinkButton(props: Readonly<Props>): ReactElement {
           size={BaseButtonSize.SMALL}
           disabled={disabled}
           onClick={handleClick}
-          fluidWidth={element.useContainerWidth || !!element.help}
+          containerWidth={element.useContainerWidth}
           href={element.url}
           target="_blank"
           rel="noreferrer"

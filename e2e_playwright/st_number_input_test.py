@@ -200,6 +200,24 @@ def test_empty_number_input_behaves_correctly(
     )
 
 
+def test_number_input_does_not_allow_wheel_events(app: Page):
+    """Test that st.number_input does not allow wheel events."""
+    number_input = app.locator(".stNumberInput input[type='number']").nth(1)
+
+    # Click/focus needed to bring mouse to center of input
+    number_input.click()
+    # Scroll a little at a time to see the effect of a wheel event
+    # Negative y delta scrolls up, would increase value if wheel event was allowed
+    app.mouse.wheel(0, -50)
+    number_input.focus()
+    app.mouse.wheel(0, -50)
+    number_input.focus()
+    app.mouse.wheel(0, -50)
+    number_input.press("Enter")
+
+    expect(number_input).to_have_value("1")
+
+
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "number_input_9")).to_be_visible()

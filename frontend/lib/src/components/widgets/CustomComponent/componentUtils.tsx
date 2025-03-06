@@ -262,7 +262,12 @@ export function sendRenderMessage(
       args: currentArgs,
       dfs: currentDataframeArgs,
       disabled: disabled,
-      theme: toExportedTheme(theme),
+      theme: {
+        ...toExportedTheme(theme),
+        // TODO(lukasmasuch): adds backwards compatibility for the deprecated font
+        // property. Should be cleaned-up at some point when we revamp custom components.
+        font: theme.genericFonts.bodyFont,
+      },
     },
     "*"
   )

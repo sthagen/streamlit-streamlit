@@ -819,6 +819,8 @@ describe("ComponentInstance", () => {
     disabled = false,
     theme = {
       ...toExportedTheme(mockTheme.emotion),
+      // Fills in the deprecated font property for backwards compatibility
+      font: mockTheme.emotion.genericFonts.bodyFont,
       base: bgColorToBaseString(mockTheme.emotion.colors.bgColor),
     }
   ): any {

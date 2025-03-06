@@ -78,6 +78,23 @@ describe("DownloadButton widget", () => {
     expect(downloadButton).toBeInTheDocument()
   })
 
+  it("renders with help properly", async () => {
+    const user = userEvent.setup()
+    render(<DownloadButton {...getProps({ help: "mockHelpText" })} />)
+
+    // Ensure both the button and the tooltip target have the correct width
+    const downloadButton = screen.getByRole("button")
+    expect(downloadButton).toHaveStyle("width: auto")
+    const tooltipTarget = screen.getByTestId("stTooltipHoverTarget")
+    expect(tooltipTarget).toHaveStyle("width: auto")
+
+    // Ensure the tooltip content is visible and has the correct text
+    await user.hover(tooltipTarget)
+
+    const tooltipContent = await screen.findByTestId("stTooltipContent")
+    expect(tooltipContent).toHaveTextContent("mockHelpText")
+  })
+
   describe("wrapped BaseButton", () => {
     it("sets widget triggerValue and creates a download URL on click", async () => {
       const user = userEvent.setup()

@@ -59,6 +59,7 @@ export interface TooltipProps {
   style?: React.CSSProperties
   onMouseEnterDelay?: number
   overrides?: PopoverOverrides
+  containerWidth?: boolean
 }
 
 function Tooltip({
@@ -69,6 +70,7 @@ function Tooltip({
   style,
   onMouseEnterDelay,
   overrides,
+  containerWidth,
 }: TooltipProps): ReactElement {
   const theme: EmotionTheme = useTheme()
   const { colors, fontSizes, radii, fontWeights } = theme
@@ -156,7 +158,7 @@ function Tooltip({
           display: "flex",
           flexDirection: "row",
           justifyContent: inline ? "flex-end" : "",
-          width: "100%",
+          width: containerWidth ? "100%" : "auto",
           ...style,
         }}
         data-testid="stTooltipHoverTarget"

@@ -106,7 +106,7 @@ const PromptButton = (props: PromptButtonProps): ReactElement => {
       <BaseButton
         kind={BaseButtonKind.HEADER_BUTTON}
         disabled={props.disabled}
-        fluidWidth
+        containerWidth
         onClick={props.onClick}
       >
         {props.title}

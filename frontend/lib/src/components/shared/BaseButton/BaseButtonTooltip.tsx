@@ -25,12 +25,14 @@ interface Props {
   children: ReactElement
   help?: string
   placement?: Placement
+  containerWidth?: boolean
 }
 
 export function BaseButtonTooltip({
   children,
   help,
   placement,
+  containerWidth,
 }: Props): ReactElement {
   if (!help) {
     return children
@@ -38,7 +40,11 @@ export function BaseButtonTooltip({
   return (
     <>
       <StyledTooltipNormal>
-        <TooltipIcon content={help} placement={placement || Placement.TOP}>
+        <TooltipIcon
+          content={help}
+          placement={placement || Placement.TOP}
+          containerWidth={containerWidth}
+        >
           {children}
         </TooltipIcon>
       </StyledTooltipNormal>
