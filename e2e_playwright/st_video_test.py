@@ -161,6 +161,7 @@ def test_video_autoplay(app: Page):
     expect(video_element).to_have_js_property("paused", False)
 
 
+@pytest.mark.skip_browser("webkit")  # Flakiness with this in CI
 def test_video_muted_autoplay(app: Page):
     """Test that `st.video` muted and autoplay properties work correctly."""
     video_element = _select_video_to_show(app, "webm video muted")

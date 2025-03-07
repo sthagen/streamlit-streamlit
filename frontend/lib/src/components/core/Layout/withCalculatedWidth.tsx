@@ -36,7 +36,7 @@ export const withCalculatedWidth = <P extends { width?: number }>(
 
     return (
       <Box ref={elementRef}>
-        {width ? <WrappedComponent {...(props as P)} width={width} /> : null}
+        <WrappedComponent {...(props as P)} width={width || -1} />
       </Box>
     )
   }

@@ -14,7 +14,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import ImageCompareFunction
+from e2e_playwright.conftest import ImageCompareFunction, wait_until
 from e2e_playwright.shared.app_utils import check_top_level_class, get_element_by_key
 
 
@@ -59,6 +59,16 @@ def test_shows_disabled_widget_correctly(
     camera_input_widgets = themed_app.get_by_test_id("stCameraInput")
     expect(camera_input_widgets).to_have_count(2)
     disabled_camera_input = camera_input_widgets.nth(1)
+
+    # The width is debounced in this component, so we need to wait until the
+    # webcam view has a non-zero width/height
+    def check_dimensions():
+        bbox = disabled_camera_input.get_by_test_id(
+            "stCameraInputWebcamStyledBox"
+        ).bounding_box()
+        return bbox is not None and bbox["width"] > 0 and bbox["height"] > 0
+
+    wait_until(themed_app, check_dimensions)
     assert_snapshot(disabled_camera_input, name="st_camera_input-disabled")
 
 

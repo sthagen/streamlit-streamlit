@@ -47,7 +47,6 @@ describe("Video Element", () => {
       ...elementProps,
     }),
     endpoints: mockEndpoints({ buildMediaURL: buildMediaURL }),
-    width: 250,
     elementMgr: elementMgrMock as unknown as ElementStateManager,
   })
 

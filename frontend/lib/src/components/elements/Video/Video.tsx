@@ -20,15 +20,11 @@ import { ISubtitleTrack, Video as VideoProto } from "@streamlit/protobuf"
 
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManager"
-import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 
 import { StyledVideoIframe } from "./styled-components"
 
-const DEFAULT_HEIGHT = 528
-
 export interface VideoProps {
   endpoints: StreamlitEndpoints
-  width: number
   element: VideoProto
   elementMgr: ElementStateManager
 }
@@ -38,9 +34,10 @@ export interface Subtitle {
   url: string
 }
 
+const VIDEO_STYLE = { width: "100%" }
+
 function Video({
   element,
-  width,
   endpoints,
   elementMgr,
 }: Readonly<VideoProps>): ReactElement {
@@ -215,7 +212,7 @@ function Video({
       muted={muted}
       autoPlay={autoplay && !preventAutoplay}
       src={endpoints.buildMediaURL(url)}
-      style={{ width, height: width === 0 ? DEFAULT_HEIGHT : undefined }}
+      style={VIDEO_STYLE}
       crossOrigin={
         process.env.NODE_ENV === "development" && subtitles.length > 0
           ? "anonymous"
@@ -236,4 +233,4 @@ function Video({
   )
 }
 
-export default withCalculatedWidth(memo(Video))
+export default memo(Video)
