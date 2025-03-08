@@ -37,7 +37,7 @@ def dialog_with_images():
     st.subheader("Images", help="Some images are generated")
     # render multiple images. This will make the Close button to go out of
     # screen and allows scrollability of the dialog
-    for _ in range(0, 3):
+    for _ in range(3):
         st.image(np.repeat(0, 1000000).reshape(1000, 1000))
 
     if st.button("Submit", key="dialog-btn"):

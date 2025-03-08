@@ -776,9 +776,7 @@ class AppSession:
 
             repository_name, branch, module = repo_info
 
-            if repository_name.endswith(".git"):
-                # Remove the .git extension from the repository name
-                repository_name = repository_name[:-4]
+            repository_name = repository_name.removesuffix(".git")
 
             msg.git_info_changed.repository = repository_name
             msg.git_info_changed.branch = branch

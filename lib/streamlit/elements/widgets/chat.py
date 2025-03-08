@@ -27,7 +27,10 @@ from typing import (
 
 from streamlit import config, runtime
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
-from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
+from streamlit.elements.lib.file_uploader_utils import (
+    enforce_filename_restriction,
+    normalize_upload_file_type,
+)
 from streamlit.elements.lib.form_utils import is_in_form
 from streamlit.elements.lib.image_utils import AtomicImage, WidthBehavior, image_to_url
 from streamlit.elements.lib.policies import check_widget_policies
@@ -52,7 +55,7 @@ from streamlit.runtime.state import (
     WidgetKwargs,
     register_widget,
 )
-from streamlit.runtime.uploaded_file_manager import UploadedFile
+from streamlit.runtime.uploaded_file_manager import DeletedFile, UploadedFile
 from streamlit.string_util import is_emoji, validate_material_icon
 
 if TYPE_CHECKING:
@@ -190,6 +193,7 @@ def _pop_upload_files(
 @dataclass
 class ChatInputSerde:
     accept_files: bool = False
+    allowed_types: Sequence[str] | None = None
 
     def deserialize(
         self,
@@ -201,9 +205,14 @@ class ChatInputSerde:
         if not self.accept_files:
             return ui_value.data
         else:
+            uploaded_files = _pop_upload_files(ui_value.file_uploader_state)
+            for file in uploaded_files:
+                if self.allowed_types and not isinstance(file, DeletedFile):
+                    enforce_filename_restriction(file.name, self.allowed_types)
+
             return ChatInputValue(
                 text=ui_value.data,
-                files=_pop_upload_files(ui_value.file_uploader_state),
+                files=uploaded_files,
             )
 
     def serialize(self, v: str | None) -> ChatInputValueProto:
@@ -599,7 +608,10 @@ class ChatMixin:
         chat_input_proto.file_type[:] = file_type if file_type is not None else []
         chat_input_proto.max_upload_size_mb = config.get_option("server.maxUploadSize")
 
-        serde = ChatInputSerde(accept_files=bool(accept_file))
+        serde = ChatInputSerde(
+            accept_files=bool(accept_file),
+            allowed_types=file_type,
+        )
         widget_state = register_widget(  # type: ignore[misc]
             chat_input_proto.id,
             on_change_handler=on_submit,

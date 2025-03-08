@@ -14,11 +14,15 @@
 
 """camera_input unit test."""
 
+from unittest.mock import patch
+
 from parameterized import parameterized
 
 import streamlit as st
 from streamlit.errors import StreamlitAPIException
+from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
+from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
@@ -72,3 +76,24 @@ class CameraInputTest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue(-2).new_element.exception
         self.assertEqual(el.type, "CachedWidgetWarning")
         self.assertTrue(el.is_warning)
+
+    @patch("streamlit.elements.widgets.camera_input._get_upload_files")
+    def test_not_allowed_file_extension_raise_an_exception_for_camera_input(
+        self, get_upload_files_patch
+    ):
+        rec1 = UploadedFileRec("file1", "file1.png", "type", b"123")
+
+        uploaded_files = [
+            UploadedFile(
+                rec1, FileURLsProto(file_id="file1", delete_url="d1", upload_url="u1")
+            ),
+        ]
+
+        get_upload_files_patch.return_value = uploaded_files
+        with self.assertRaises(StreamlitAPIException) as e:
+            return_val = st.camera_input("label")
+            st.write(return_val)
+        self.assertEqual(
+            str(e.exception),
+            "Invalid file extension: `.png`. Allowed: ['.jpg']",
+        )

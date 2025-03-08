@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Literal, Union
 
@@ -39,7 +40,7 @@ PageType: TypeAlias = Union[str, Path, Callable[[], None], StreamlitPage]
 
 
 def convert_to_streamlit_page(
-    page_input: str | Path | Callable[[], None] | StreamlitPage,
+    page_input: PageType,
 ) -> StreamlitPage:
     """Convert various input types to StreamlitPage objects."""
     if isinstance(page_input, StreamlitPage):
@@ -80,7 +81,7 @@ def send_page_not_found(ctx: ScriptRunContext):
 
 @gather_metrics("navigation")
 def navigation(
-    pages: list[PageType] | dict[SectionHeader, list[PageType]],
+    pages: Sequence[PageType] | Mapping[SectionHeader, Sequence[PageType]],
     *,
     position: Literal["sidebar", "hidden"] = "sidebar",
     expanded: bool = False,
@@ -108,7 +109,7 @@ def navigation(
 
     Parameters
     ----------
-    pages : list[page-like], dict[str, list[page-like]]
+    pages : Sequence[page-like], Mapping[str, Sequence[page-like]]
         The available pages for the app.
 
         To create a navigation menu with no sections or page groupings,
@@ -262,12 +263,12 @@ def navigation(
 
 
 def _navigation(
-    pages: list[PageType] | dict[SectionHeader, list[PageType]],
+    pages: Sequence[PageType] | Mapping[SectionHeader, Sequence[PageType]],
     *,
     position: Literal["sidebar", "hidden"],
     expanded: bool,
 ) -> StreamlitPage:
-    if isinstance(pages, list):
+    if isinstance(pages, Sequence):
         converted_pages = [convert_to_streamlit_page(p) for p in pages]
         nav_sections = {"": converted_pages}
     else:

@@ -224,7 +224,7 @@ def test_latex_elements(themed_app: Page, assert_snapshot: ImageCompareFunction)
     expect(latex_elements).to_have_count(3)
 
     assert_snapshot(latex_elements.nth(0), name="st_latex-latex")
-    expect(latex_elements.nth(0)).to_contain_text("LATE​X")
+    expect(latex_elements.nth(0)).to_contain_text("LATEX")
 
     assert_snapshot(latex_elements.nth(1), name="st_latex-formula")
 

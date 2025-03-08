@@ -526,6 +526,13 @@ class NumberInputMixin:
 
         if widget_state.value_changed:
             if widget_state.value is not None:
+                # Min/Max bounds checks when the value is updated.
+                if number_input_proto.has_min and widget_state.value < number_input_proto.min:
+                    raise StreamlitValueBelowMinError(value=widget_state.value, min_value=number_input_proto.min)
+
+                if number_input_proto.has_max and widget_state.value > number_input_proto.max:
+                    raise StreamlitValueAboveMaxError(value=widget_state.value, max_value=number_input_proto.max)
+
                 number_input_proto.value = widget_state.value
             number_input_proto.set_value = True
 

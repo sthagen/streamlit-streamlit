@@ -272,7 +272,6 @@ jobs:
       fail-fast: false
 
     env:
-      PYTHON_VERSION: "${{needs.build_info.outputs.PYTHON_MIN_VERSION}}"
       COVERAGE_FILE: .coverage.min_deps
 
     steps:
@@ -283,10 +282,10 @@ jobs:
           persist-credentials: false
           submodules: "recursive"
           fetch-depth: 2
-      - name: Set up Python ${{ env.PYTHON_MIN_VERSION }}
+      - name: Set up Python ${{ needs.build_info.outputs.PYTHON_MIN_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: "${{ env.PYTHON_MIN_VERSION }}"
+          python-version: "${{ needs.build_info.outputs.PYTHON_MIN_VERSION }}"
       - name: Setup virtual env
         uses: ./.github/actions/make_init
         with:

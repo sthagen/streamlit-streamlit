@@ -338,7 +338,7 @@ class StreamlitValueAboveMaxError(LocalizableStreamlitException):
 
     def __init__(self, value: int | float, max_value: int | float):
         super().__init__(
-            "The `value` {value} is greater than than the `max_value` {max_value}.",
+            "The `value` {value} is greater than the `max_value` {max_value}.",
             value=value,
             max_value=max_value,
         )

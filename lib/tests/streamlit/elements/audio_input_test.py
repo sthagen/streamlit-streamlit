@@ -14,11 +14,15 @@
 
 """experimental_audio_input unit test."""
 
+from unittest.mock import patch
+
 from parameterized import parameterized
 
 import streamlit as st
 from streamlit.errors import StreamlitAPIException
+from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
+from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
@@ -58,4 +62,25 @@ class AudioInputTest(DeltaGeneratorTestCase):
             str(e.exception),
             "Unsupported label_visibility option 'wrong_value'. Valid values are "
             "'visible', 'hidden' or 'collapsed'.",
+        )
+
+    @patch("streamlit.elements.widgets.audio_input._get_upload_files")
+    def test_not_allowed_file_extension_raise_an_exception_for_camera_input(
+        self, get_upload_files_patch
+    ):
+        rec1 = UploadedFileRec("file1", "file1.mp3", "type", b"123")
+
+        uploaded_files = [
+            UploadedFile(
+                rec1, FileURLsProto(file_id="file1", delete_url="d1", upload_url="u1")
+            ),
+        ]
+
+        get_upload_files_patch.return_value = uploaded_files
+        with self.assertRaises(StreamlitAPIException) as e:
+            return_val = st.audio_input("label")
+            st.write(return_val)
+        self.assertEqual(
+            str(e.exception),
+            "Invalid file extension: `.mp3`. Allowed: ['.wav']",
         )

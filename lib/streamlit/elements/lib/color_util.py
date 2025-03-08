@@ -125,9 +125,7 @@ def _is_cssrgb_color_like(color: MaybeColor) -> bool:
     NOTE: We only accept hex colors and color tuples as user input. So do not use this function to
     validate user input! Instead use is_hex_color_like and is_color_tuple_like.
     """
-    return isinstance(color, str) and (
-        color.startswith("rgb(") or color.startswith("rgba(")
-    )
+    return isinstance(color, str) and color.startswith(("rgb(", "rgba("))
 
 
 def is_color_tuple_like(color: MaybeColor) -> bool:

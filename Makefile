@@ -202,7 +202,7 @@ cli-regression-tests: install
 distribution:
 	# Get rid of the old build and dist folders to make sure that we clean old js and css.
 	rm -rfv lib/build lib/dist
-	cd lib ; python3 setup.py bdist_wheel --universal sdist
+	cd lib ; python3 setup.py bdist_wheel sdist
 
 .PHONY: package
 # Build lib and frontend, and then run 'distribution'.

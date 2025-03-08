@@ -889,7 +889,7 @@ class ScriptRunnerTest(AsyncTestCase):
         # for full app run, the dg_stack should have been reset
         assert len(scriptrunner.get_runner_thread_dg_stack()) == 1
 
-    # TODO re-enable after flakiness is fixed
+    # TODO: re-enable after flakiness is fixed
     def off_test_multiple_scriptrunners(self):
         """Tests that multiple scriptrunners can run simultaneously."""
         # This scriptrunner will run before the other 3. It's used to retrieve

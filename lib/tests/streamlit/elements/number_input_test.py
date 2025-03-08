@@ -24,6 +24,7 @@ from streamlit.elements.lib.js_number import JSNumber
 from streamlit.errors import (
     StreamlitAPIException,
     StreamlitValueAboveMaxError,
+    StreamlitValueBelowMinError,
 )
 from streamlit.proto.Alert_pb2 import Alert as AlertProto
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
@@ -374,6 +375,20 @@ class NumberInputTest(DeltaGeneratorTestCase):
         max_value = 10
         with self.assertRaises(StreamlitValueAboveMaxError):
             st.number_input("My Label", value=value, max_value=max_value)
+
+    def test_should_raise_exception_when_session_state_value_out_of_range(self):
+        """Test out of range interactions by using st.session_state to set number input widget values beyond min/max."""
+        with pytest.raises(StreamlitValueAboveMaxError):
+            st.session_state.number_input = 10
+            st.number_input(
+                "number_input", min_value=1, max_value=5, key="number_input"
+            )
+
+        with pytest.raises(StreamlitValueBelowMinError):
+            st.session_state.number_input_1 = 10
+            st.number_input(
+                "number_input_1", min_value=15, max_value=20, key="number_input_1"
+            )
 
     def test_shows_cached_widget_replay_warning(self):
         """Test that a warning is shown when this widget is used inside a cached function."""

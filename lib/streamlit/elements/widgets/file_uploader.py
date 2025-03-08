@@ -21,7 +21,10 @@ from typing import TYPE_CHECKING, Literal, Union, cast, overload
 from typing_extensions import TypeAlias
 
 from streamlit import config
-from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
+from streamlit.elements.lib.file_uploader_utils import (
+    enforce_filename_restriction,
+    normalize_upload_file_type,
+)
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.policies import (
     check_widget_policies,
@@ -97,11 +100,19 @@ def _get_upload_files(
 @dataclass
 class FileUploaderSerde:
     accept_multiple_files: bool
+    allowed_types: Sequence[str] | None = None
 
     def deserialize(
         self, ui_value: FileUploaderStateProto | None, widget_id: str
     ) -> SomeUploadedFiles:
         upload_files = _get_upload_files(ui_value)
+
+        for file in upload_files:
+            if isinstance(file, DeletedFile):
+                continue
+
+            if self.allowed_types:
+                enforce_filename_restriction(file.name, self.allowed_types)
 
         if len(upload_files) == 0:
             return_value: SomeUploadedFiles = [] if self.accept_multiple_files else None
@@ -444,7 +455,7 @@ class FileUploaderMixin:
         if help is not None:
             file_uploader_proto.help = dedent(help)
 
-        serde = FileUploaderSerde(accept_multiple_files)
+        serde = FileUploaderSerde(accept_multiple_files, allowed_types=type)
 
         # FileUploader's widget value is a list of file IDs
         # representing the current set of files that this uploader should

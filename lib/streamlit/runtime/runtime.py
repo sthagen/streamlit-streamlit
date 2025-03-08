@@ -580,7 +580,7 @@ class Runtime:
             session.request_rerun(None)
 
             now = time.perf_counter()
-            while (
+            while (  # noqa: ASYNC110
                 SCRIPT_RUN_WITHOUT_ERRORS_KEY not in session.session_state
                 and (time.perf_counter() - now) < SCRIPT_RUN_CHECK_TIMEOUT
             ):

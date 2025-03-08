@@ -24,6 +24,7 @@ from streamlit.deprecation_util import (
     make_deprecated_name_warning,
     show_deprecation_warning,
 )
+from streamlit.elements.lib.file_uploader_utils import enforce_filename_restriction
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.policies import (
     check_widget_policies,
@@ -83,6 +84,8 @@ class AudioInputSerde:
             return_value = None
         else:
             return_value = upload_files[0]
+        if return_value is not None and not isinstance(return_value, DeletedFile):
+            enforce_filename_restriction(return_value.name, [".wav"])
         return return_value
 
 

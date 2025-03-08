@@ -101,7 +101,7 @@ def test_custom_css_class_via_key(app: Page):
     expect(get_element_by_key(app, "component_1")).to_be_visible()
 
 
-# TODO (willhuang1997): Add tests for handling bytes, JSON, DFs, theme
-# TODO (willhuang1997):add tests to ensure the messages actually go to the iframe
+# TODO(willhuang1997): Add tests for handling bytes, JSON, DFs, theme
+# TODO(willhuang1997): add tests to ensure the messages actually go to the iframe
 # Relevant code is here from the past: https://github.com/streamlit/streamlit/blob/3d0b0603627037255790fe55a483f55fce5eff67/frontend/lib/src/components/widgets/CustomComponent/ComponentInstance.test.tsx#L257
 # Relevant PR is here: https://github.com/streamlit/streamlit/pull/7971

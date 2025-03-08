@@ -260,7 +260,7 @@ class StHelpTest(DeltaGeneratorTestCase):
                 return 5
 
             @staticmethod
-            def staticmethod1(self, x=10):
+            def staticmethod1(x=10):
                 "Static method 1"
 
             @classmethod
@@ -302,7 +302,7 @@ class StHelpTest(DeltaGeneratorTestCase):
                 return 5
 
             @staticmethod
-            def staticmethod1(self, x=10):
+            def staticmethod1(x=10):
                 "Static method 1"
 
             @classmethod

@@ -85,11 +85,35 @@ class FileUploaderTest(DeltaGeneratorTestCase):
         self.assertEqual(c.type, [".png", ".jpg", ".jpeg"])
 
     @patch("streamlit.elements.widgets.file_uploader._get_upload_files")
+    def test_not_allowed_file_extension_raise_an_exception(
+        self, get_upload_files_patch
+    ):
+        rec1 = UploadedFileRec("file1", "file1.pdf", "type", b"123")
+
+        uploaded_files = [
+            UploadedFile(
+                rec1, FileURLsProto(file_id="file1", delete_url="d1", upload_url="u1")
+            ),
+        ]
+
+        get_upload_files_patch.return_value = uploaded_files
+        with self.assertRaises(StreamlitAPIException) as e:
+            return_val = st.file_uploader(
+                "label",
+                type="png",
+            )
+            st.write(return_val)
+        self.assertEqual(
+            str(e.exception),
+            "Invalid file extension: `.pdf`. Allowed: ['.png']",
+        )
+
+    @patch("streamlit.elements.widgets.file_uploader._get_upload_files")
     def test_multiple_files(self, get_upload_files_patch):
         """Test the accept_multiple_files flag"""
         # Patch UploadFileManager to return two files
-        rec1 = UploadedFileRec("file1", "file1", "type", b"123")
-        rec2 = UploadedFileRec("file2", "file2", "type", b"456")
+        rec1 = UploadedFileRec("file1", "file1.png", "type", b"123")
+        rec2 = UploadedFileRec("file2", "file2.png", "type", b"456")
 
         uploaded_files = [
             UploadedFile(

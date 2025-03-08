@@ -91,7 +91,7 @@ class InitialValue:
     pass
 
 
-# TODO This class serves as a fallback option for elements that have not
+# TODO: This class serves as a fallback option for elements that have not
 # been implemented yet, as well as providing implementations of some
 # trivial methods. It may have significantly reduced scope once all elements
 # have been implemented.
@@ -1258,7 +1258,7 @@ class TextArea(Widget):
         Set the value of the widget only if the value does not exceed the\
         maximum allowed characters.
         """
-        # TODO should input be setting or appending?
+        # TODO: should input be setting or appending?
         if self.max_chars and len(v) > self.max_chars:
             return self
         return self.set_value(v)
@@ -1311,7 +1311,7 @@ class TextInput(Widget):
         Set the value of the widget only if the value does not exceed the\
         maximum allowed characters.
         """
-        # TODO should input be setting or appending?
+        # TODO: should input be setting or appending?
         if self.max_chars and len(v) > self.max_chars:
             return self
         return self.set_value(v)

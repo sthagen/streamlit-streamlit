@@ -23,7 +23,11 @@ from parameterized import parameterized
 
 import streamlit as st
 from streamlit.elements.lib.js_number import JSNumber
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import (
+    StreamlitAPIException,
+    StreamlitValueAboveMaxError,
+    StreamlitValueBelowMinError,
+)
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.testing.v1.app_test import AppTest
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
@@ -317,6 +321,49 @@ class SliderTest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue(-2).new_element.exception
         self.assertEqual(el.type, "CachedWidgetWarning")
         self.assertTrue(el.is_warning)
+
+    def test_should_raise_exception_when_session_state_value_out_of_range(self):
+        """Test out of range using st.session_state to set slider values beyond min/max."""
+        # Test for integer values
+        with pytest.raises(StreamlitValueAboveMaxError) as e:
+            st.session_state.slider = 10
+            st.slider("slider", min_value=1, max_value=5, key="slider")
+        self.assertEqual(
+            str(e.value), "The `value` 10 is greater than the `max_value` 5."
+        )
+        with pytest.raises(StreamlitValueBelowMinError) as e:
+            st.session_state.slider_1 = 10
+            st.slider("slider_1", min_value=15, max_value=20, key="slider_1")
+        self.assertEqual(
+            str(e.value), "The `value` 10 is less than the `min_value` 15."
+        )
+
+        # Test for dates
+        with pytest.raises(StreamlitValueAboveMaxError) as e:
+            st.session_state.slider_2 = date(2025, 1, 1)
+            st.slider(
+                "slider_2",
+                min_value=date(2024, 1, 1),
+                max_value=date(2024, 12, 31),
+                key="slider_2",
+            )
+        self.assertEqual(
+            str(e.value),
+            "The `value` 2025-01-01 is greater than the `max_value` 2024-12-31.",
+        )
+
+        with pytest.raises(StreamlitValueBelowMinError) as e:
+            st.session_state.slider_3 = date(2023, 1, 1)
+            st.slider(
+                "slider_3",
+                min_value=date(2024, 1, 1),
+                max_value=date(2024, 12, 31),
+                key="slider_3",
+            )
+        self.assertEqual(
+            str(e.value),
+            "The `value` 2023-01-01 is less than the `min_value` 2024-01-01.",
+        )
 
 
 def test_id_stability():

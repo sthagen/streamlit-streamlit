@@ -1296,7 +1296,7 @@ class BuiltInChartTest(DeltaGeneratorTestCase):
         self, chart_command: Callable, altair_type: str
     ):
         """Test that built-in charts support ordered categorical data."""
-        df = df = pd.DataFrame(
+        df = pd.DataFrame(
             {
                 "categorical": pd.Series(
                     pd.Categorical(

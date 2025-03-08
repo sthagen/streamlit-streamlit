@@ -875,7 +875,7 @@ class TimeWidgetsMixin:
         else:
             parsed = parse_date_deterministic_for_id(value)
 
-        # TODO this is missing the error path, integrate with the dateinputvalues parsing
+        # TODO: this is missing the error path, integrate with the dateinputvalues parsing
 
         element_id = compute_and_register_element_id(
             "date_input",
