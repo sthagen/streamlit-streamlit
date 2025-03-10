@@ -33,8 +33,8 @@ const getProps = (elementProps: Partial<NumberInputProto> = {}): Props => ({
   element: NumberInputProto.create({
     label: "Label",
     default: 0,
-    hasMin: false,
-    hasMax: false,
+    hasMin: true,
+    hasMax: true,
     ...elementProps,
   }),
   disabled: false,
@@ -49,7 +49,7 @@ const getIntProps = (elementProps: Partial<NumberInputProto> = {}): Props => {
     dataType: NumberInputProto.DataType.INT,
     default: 10,
     min: 0,
-    max: 0,
+    max: 100,
     ...elementProps,
   })
 }
@@ -61,7 +61,7 @@ const getFloatProps = (
     dataType: NumberInputProto.DataType.FLOAT,
     default: 10.0,
     min: 0.0,
-    max: 0.0,
+    max: 100.0,
     ...elementProps,
   })
 }
@@ -146,16 +146,6 @@ describe("NumberInput widget", () => {
     render(<NumberInput {...props} />)
 
     expect(screen.getByTestId("stWidgetLabel")).toHaveStyle("display: none")
-  })
-
-  it("sets min/max defaults", () => {
-    const props = getIntProps()
-    render(<NumberInput {...props} />)
-
-    const numberInput = screen.getByTestId("stNumberInputField")
-
-    expect(numberInput).toHaveAttribute("min", "-Infinity")
-    expect(numberInput).toHaveAttribute("max", "Infinity")
   })
 
   it("sets input mode to empty string", () => {

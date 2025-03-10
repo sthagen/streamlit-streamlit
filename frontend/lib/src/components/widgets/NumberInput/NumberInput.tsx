@@ -85,9 +85,9 @@ const NumberInput: React.FC<Props> = ({
     formId: elementFormId,
     default: elementDefault,
     format: elementFormat,
+    min,
+    max,
   } = element
-  const min = element.hasMin ? element.min : -Infinity
-  const max = element.hasMax ? element.max : +Infinity
 
   const {
     values: [width],

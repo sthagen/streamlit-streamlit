@@ -2831,7 +2831,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.6.1"
     "@types/hoist-non-react-statics": "npm:^3.3.6"
     "@types/lodash": "npm:^4.17.16"
-    "@types/node": "npm:^22.13.9"
+    "@types/node": "npm:^22.13.10"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/react-transition-group": "npm:^4.4.12"
@@ -4236,12 +4236,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.13.9":
-  version: 22.13.9
-  resolution: "@types/node@npm:22.13.9"
+"@types/node@npm:^22.13.10":
+  version: 22.13.10
+  resolution: "@types/node@npm:22.13.10"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: 10c0/eb6acd04169a076631dcaab712128d492cd17a1b3f10daae4a377f3d439c860c3cd3e32f4ef221671f56183b976ac7c4089f4193457314a88675ead4663438a4
+  checksum: 10c0/a3865f9503d6f718002374f7b87efaadfae62faa499c1a33b12c527cfb9fd86f733e1a1b026b80c5a0e4a965701174bc3305595a7d36078aa1abcf09daa5dee9
   languageName: node
   linkType: hard
 
@@ -19828,8 +19828,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "vite@npm:6.2.0"
+  version: 6.2.1
+  resolution: "vite@npm:6.2.1"
   dependencies:
     esbuild: "npm:^0.25.0"
     fsevents: "npm:~2.3.3"
@@ -19875,7 +19875,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/db62c93d4a823e805c6f8429de035528b3c35cc7f6de4948b41e0528f94ed2ac55047d90f8534f626ef3a04e682883b570fe5ec9ee92f51bf0c3c210dbec5ac1
+  checksum: 10c0/2c024376a840eae2ce9cfba98d62e9f1eae93caa8304875854dbc0740414aedcfbe157c2244567bd456cdb60a300312af02ae9b5c63c147d35cf4da3a0591312
   languageName: node
   linkType: hard
 
