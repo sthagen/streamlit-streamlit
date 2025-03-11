@@ -19,7 +19,6 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react"
@@ -48,7 +47,7 @@ import {
   WidgetLabel,
 } from "~lib/components/widgets/BaseWidget"
 import { EmotionTheme } from "~lib/theme"
-import { useResizeObserver } from "~lib/hooks/useResizeObserver"
+import { useCalculatedWidth } from "~lib/hooks/useCalculatedWidth"
 
 import {
   canDecrement,
@@ -89,10 +88,7 @@ const NumberInput: React.FC<Props> = ({
     max,
   } = element
 
-  const {
-    values: [width],
-    elementRef,
-  } = useResizeObserver(useMemo(() => ["width"], []))
+  const [width, elementRef] = useCalculatedWidth()
 
   const [step, setStep] = useState<number>(getStep(element))
   const initialValue = getInitialValue({ element, widgetMgr })

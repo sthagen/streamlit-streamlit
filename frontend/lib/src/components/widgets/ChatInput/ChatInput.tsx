@@ -21,7 +21,6 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react"
@@ -54,8 +53,8 @@ import {
 } from "~lib/components/widgets/FileUploader/UploadFileInfo"
 import { FileUploadClient } from "~lib/FileUploadClient"
 import { getAccept } from "~lib/components/widgets/FileUploader/utils"
-import { useResizeObserver } from "~lib/hooks/useResizeObserver"
 import { FileSize, sizeConverter } from "~lib/util/FileHelper"
+import { useCalculatedWidth } from "~lib/hooks/useCalculatedWidth"
 
 import {
   StyledChatInput,
@@ -109,10 +108,7 @@ function ChatInput({
   const counterRef = useRef(0)
   const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
 
-  const {
-    values: [width],
-    elementRef,
-  } = useResizeObserver(useMemo(() => ["width"], []))
+  const [width, elementRef] = useCalculatedWidth()
 
   // True if the user-specified state.value has not yet been synced to the WidgetStateManager.
   const [dirty, setDirty] = useState(false)
