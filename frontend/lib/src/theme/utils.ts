@@ -155,6 +155,7 @@ export const createEmotionTheme = (
     baseFontSize,
     baseRadius,
     showBorderAroundInputs,
+    headingFont,
     bodyFont,
     codeFont,
     showSidebarSeparator,
@@ -282,20 +283,25 @@ export const createEmotionTheme = (
     conditionalOverrides.showSidebarSeparator = showSidebarSeparator
   }
 
+  const fontOverrides: any = {}
+  if (headingFont) {
+    fontOverrides.headingFont = parseFont(headingFont)
+  } else if (bodyFont) {
+    fontOverrides.headingFont = parseFont(bodyFont)
+  }
+
   return {
     ...baseThemeConfig.emotion,
     colors: createEmotionColors(newGenericColors),
     genericFonts: {
       ...genericFonts,
       ...(bodyFont && {
-        // We currently do not allow to set different fonts for body and heading
-        // so we use the same font for both.
         bodyFont: parseFont(bodyFont),
-        headingFont: parseFont(bodyFont),
       }),
       ...(codeFont && {
         codeFont: parseFont(codeFont),
       }),
+      ...fontOverrides,
     },
     ...conditionalOverrides,
   }

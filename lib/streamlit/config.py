@@ -1056,6 +1056,15 @@ _create_option(
 )
 
 _create_option(
+    "theme.headingFont",
+    description="""
+        The font family to use for headings in the app.
+        To use a custom font, it needs to be added via [theme.fontFaces].
+    """,
+    visibility="hidden",
+)
+
+_create_option(
     "theme.fontFaces",
     description="""
     Configure a list of font faces that you can use for the app & code fonts.

@@ -15,6 +15,8 @@
 
 """Retrieve the branch name from the release PR"""
 
+from __future__ import annotations
+
 import requests
 
 
@@ -35,7 +37,7 @@ def get_release_branch():
     # Response is in an array, must map over each pull (dict)
     for pull in response:
         ref = check_for_release_pr(pull)
-        if ref != None:
+        if ref is not None:
             return ref
 
 

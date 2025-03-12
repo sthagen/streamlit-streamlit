@@ -35,6 +35,7 @@ def configure_custom_theme():
     os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"] = "True"
     os.environ["STREAMLIT_THEME_LINK_COLOR"] = "#2EC163"
     os.environ["STREAMLIT_THEME_SHOW_SIDEBAR_SEPARATOR"] = "True"
+    os.environ["STREAMLIT_THEME_HEADING_FONT"] = "bold, serif"
     os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"] = "minimal"
     yield
     del os.environ["STREAMLIT_THEME_BASE"]
@@ -47,6 +48,7 @@ def configure_custom_theme():
     del os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"]
     del os.environ["STREAMLIT_THEME_LINK_COLOR"]
     del os.environ["STREAMLIT_THEME_SHOW_SIDEBAR_SEPARATOR"]
+    del os.environ["STREAMLIT_THEME_HEADING_FONT"]
     del os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"]
 
 

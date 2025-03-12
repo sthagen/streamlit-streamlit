@@ -15,6 +15,8 @@
 
 """Create a release using Github API"""
 
+from __future__ import annotations
+
 import os
 
 import requests
