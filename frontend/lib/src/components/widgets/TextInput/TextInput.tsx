@@ -60,7 +60,7 @@ function TextInput({
    * widget's UI, the default value is used.
    */
   const [uiValue, setUiValue] = useState<string | null>(
-    getStateFromWidgetMgr(widgetMgr, element) ?? null
+    () => getStateFromWidgetMgr(widgetMgr, element) ?? null
   )
 
   const [width, elementRef] = useCalculatedWidth()

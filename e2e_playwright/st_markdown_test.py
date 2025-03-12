@@ -232,6 +232,23 @@ def test_latex_elements(themed_app: Page, assert_snapshot: ImageCompareFunction)
     assert_snapshot(latex_elements.nth(2), name="st_latex-sympy")
 
 
+def test_badge_elements(themed_app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that badge elements are displayed correctly."""
+    badge_container = get_element_by_key(themed_app, "badge_elements")
+
+    # Check that the badge texts are displayed correctly
+    expect(badge_container).to_contain_text("Simple badge")
+    expect(badge_container).to_contain_text("Green badge with emoji")
+    expect(badge_container).to_contain_text("Red badge with material icon")
+    expect(badge_container).to_contain_text("🚀")
+    expect(badge_container).to_contain_text("This is a very long badge")
+    expect(badge_container).to_contain_text("Blue markdown badge")
+    expect(badge_container).to_contain_text("🌱 Green markdown badge")
+
+    # Take a snapshot of all badges together
+    assert_snapshot(badge_container, name="st_badge-examples")
+
+
 def test_large_image_in_markdown(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that large images in markdown are displayed correctly with max width 100%."""
     markdown_element = get_markdown(

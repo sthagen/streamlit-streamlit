@@ -91,6 +91,8 @@ function StackTrace({ stackTrace }: Readonly<StackTraceProps>): ReactElement {
           <StyledCode>
             {stackTrace.map((row: string, index: number) => (
               <StyledStackTraceRow
+                // TODO: Update to match React best practices
+                // eslint-disable-next-line @eslint-react/no-array-index-key
                 key={index}
                 data-testid="stExceptionTraceRow"
               >

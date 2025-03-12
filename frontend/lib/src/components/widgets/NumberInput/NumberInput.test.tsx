@@ -69,7 +69,7 @@ const getFloatProps = (
 describe("NumberInput widget", () => {
   beforeEach(() => {
     vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
-      elementRef: React.createRef(),
+      elementRef: { current: null },
       forceRecalculate: vitest.fn(),
       values: [250],
     })
@@ -600,7 +600,7 @@ describe("NumberInput widget", () => {
 
     it("hides stepUp and stepDown buttons when width is smaller than 120px", () => {
       vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
-        elementRef: React.createRef(),
+        elementRef: { current: null },
         forceRecalculate: vitest.fn(),
         values: [100],
       })
@@ -626,7 +626,7 @@ describe("NumberInput widget", () => {
 
     it("hides Please enter to apply text when width is smaller than 120px", async () => {
       vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
-        elementRef: React.createRef(),
+        elementRef: { current: null },
         forceRecalculate: vitest.fn(),
         values: [100],
       })

@@ -13,7 +13,6 @@
   "scripts": {
     "start": "yarn workspace @streamlit/app start",
     "buildWithProfiler": "yarn workspace @streamlit/app buildWithProfiler",
-    "lint:interactive": "yarn eslint-interactive ./app/src ./lib/src",
     "dev": "concurrently \"yarn workspaces foreach --all --parallel --exclude @streamlit/app --exclude @streamlit/lib run buildWatch\" \"yarn workspace @streamlit/app start\""
   },
   "resolutions": {

@@ -82,6 +82,8 @@ function Html({ element }: Readonly<HtmlProps>): ReactElement {
           className="stHtml"
           data-testid="stHtml"
           ref={htmlRef}
+          // TODO: Update to match React best practices
+          // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
           dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
       )}

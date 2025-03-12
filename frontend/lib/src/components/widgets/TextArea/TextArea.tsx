@@ -101,7 +101,7 @@ const TextArea: FC<Props> = ({ disabled, element, widgetMgr, fragmentId }) => {
    * widget's UI, the default value is used.
    */
   const [uiValue, setUiValue] = useState<string | null>(
-    getStateFromWidgetMgr(widgetMgr, element) ?? null
+    () => getStateFromWidgetMgr(widgetMgr, element) ?? null
   )
 
   const onFormCleared = useCallback(() => {
