@@ -288,9 +288,7 @@ def test_pydeck_chart_selection_state_remains_after_unmounting(
 
 @pytest.mark.only_browser("chromium")
 def test_pydeck_chart_selection_callback(app: Page):
-    """
-    Test the callback functionality of a PyDeck chart.
-    """
+    """Test the callback functionality of a PyDeck chart."""
     wait_for_chart(app)
 
     click_handling_div = get_click_handling_div(app, nth=1)
@@ -313,9 +311,7 @@ def test_pydeck_chart_selection_callback(app: Page):
 
 @pytest.mark.only_browser("chromium")
 def test_pydeck_chart_selection_in_form(app: Page):
-    """
-    Test the selection functionality of a PyDeck chart within a form.
-    """
+    """Test the selection functionality of a PyDeck chart within a form."""
     wait_for_chart(app)
 
     click_handling_div = get_click_handling_div(app, nth=2)
@@ -355,9 +351,7 @@ def test_pydeck_chart_selection_in_form(app: Page):
 
 @pytest.mark.only_browser("chromium")
 def test_pydeck_chart_selection_in_fragment(app: Page):
-    """
-    Test the selection functionality of a PyDeck chart within a fragment.
-    """
+    """Test the selection functionality of a PyDeck chart within a fragment."""
     wait_for_chart(app)
 
     click_handling_div = get_click_handling_div(app, nth=3)

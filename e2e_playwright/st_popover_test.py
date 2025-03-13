@@ -91,7 +91,8 @@ def test_popover_container_rendering(
 
 def test_popover_with_use_container_width(app: Page):
     """Test that the popover container is correctly stretched to the button width
-    if `use_container_width=True`."""
+    if `use_container_width=True`.
+    """
     # Get the stretched popover container:
     popover_container = open_popover(app, "popover 2 (use_container_width)")
 
@@ -102,7 +103,8 @@ def test_popover_with_use_container_width(app: Page):
 
 def test_popover_with_use_container_width_and_help(app: Page):
     """Test that the popover container is correctly stretched to the button width
-    if `use_container_width=True` and `help` is provided."""
+    if `use_container_width=True` and `help` is provided.
+    """
     # Get the stretched popover container:
     popover_container = open_popover(app, "popover 9 (use_container_width) with help")
 

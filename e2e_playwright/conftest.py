@@ -73,7 +73,7 @@ def pytest_configure(config: pytest.Config):
 
 
 def reorder_early_fixtures(metafunc: pytest.Metafunc):
-    """Put fixtures with `pytest.mark.early` first during execution
+    """Put fixtures with `pytest.mark.early` first during execution.
 
     This allows patch of configurations before the application is initialized
 
@@ -457,7 +457,8 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
             response: Response,
         ) -> bool:
             """Ensure that the routing-interception worked and that Streamlit app is
-            indeed loaded with the CSP header we expect"""
+            indeed loaded with the CSP header we expect.
+            """
 
             return (
                 response.url == src

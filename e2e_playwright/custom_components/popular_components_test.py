@@ -40,7 +40,7 @@ def _expect_iframe_attached(app: Page):
 
 
 def test_components_html(app: Page):
-    """Test that components.html can be imported and used"""
+    """Test that components.html can be imported and used."""
     _select_component(app, "componentsHtml")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
@@ -70,60 +70,60 @@ def test_components_import(app: Page, name: str, expected_text: str):
 
 
 def test_ace(app: Page):
-    """Test that the ace component renders"""
+    """Test that the ace component renders."""
     _select_component(app, "ace")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
 
 
 def test_aggrid(app: Page):
-    """Test that the aggrid component renders"""
+    """Test that the aggrid component renders."""
     _select_component(app, "aggrid")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
 
 
 def test_antd(app: Page):
-    """Test that the ace component renders"""
+    """Test that the ace component renders."""
     _select_component(app, "antd")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
 
 
 def test_autorefresh(app: Page):
-    """Test that the autorefresh component renders"""
+    """Test that the autorefresh component renders."""
     _select_component(app, "autorefresh")
     _expect_no_exception(app)
 
 
 def test_chat(app: Page):
-    """Test that the chat component renders"""
+    """Test that the chat component renders."""
     _select_component(app, "chat")
     _expect_iframe_attached(app)
 
 
 def test_echarts(app: Page):
-    """Test that the echarts component renders"""
+    """Test that the echarts component renders."""
     _select_component(app, "echarts")
     _expect_no_exception(app)
 
 
 def test_extra_streamlit_components(app: Page):
-    """Test that the extra-strealit-components component renders"""
+    """Test that the extra-strealit-components component renders."""
     _select_component(app, "extraStreamlitComponents")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
 
 
 def test_folium(app: Page):
-    """Test that the folium component renders"""
+    """Test that the folium component renders."""
     _select_component(app, "folium")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
 
 
 def test_option_menu(app: Page):
-    """Test that the option-menu component renders"""
+    """Test that the option-menu component renders."""
     _select_component(app, "optionMenu")
     _expect_no_exception(app)
     _expect_iframe_attached(app)
@@ -137,7 +137,7 @@ def test_option_menu(app: Page):
 
 
 def test_url_fragment(app: Page):
-    """Test that the url-fragment component renders"""
+    """Test that the url-fragment component renders."""
     _select_component(app, "urlFragment")
     _expect_no_exception(app)
     _expect_iframe_attached(app)

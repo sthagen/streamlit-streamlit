@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Send slack notifications"""
+"""Send slack notifications."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ import requests
 
 
 def send_notification():
-    """Create a slack message"""
+    """Create a slack message."""
 
     webhook = os.getenv("SLACK_WEBHOOK")
 

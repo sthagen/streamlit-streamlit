@@ -43,7 +43,8 @@ class DeprecationError(Error):
 
 class FragmentStorageKeyError(Error, KeyError):
     """A KeyError raised when a KeyError is encountered during a FragmentStorage
-    operation."""
+    operation.
+    """
 
     pass
 
@@ -150,7 +151,8 @@ class StreamlitAPIWarning(StreamlitAPIException, Warning):
 
 class StreamlitModuleNotFoundError(StreamlitAPIWarning):
     """Print a pretty message when a Streamlit command requires a dependency
-    that is not one of our core dependencies."""
+    that is not one of our core dependencies.
+    """
 
     def __init__(self, module_name, *args):
         message = (

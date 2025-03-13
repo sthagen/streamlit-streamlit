@@ -15,7 +15,8 @@
 # limitations under the License.
 
 """Update the list of material icon names in `lib/streamlit/material_icon_names.py.
-and download the latest material symbols font file to
+
+And download the latest material symbols font file to
 ./frontend/app/src/assets/fonts/MaterialSymbols/MaterialSymbols-Rounded.woff2
 """
 
