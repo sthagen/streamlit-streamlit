@@ -36,7 +36,7 @@
     "@deck.gl/core": "^9.1.4",
     "@deck.gl/geo-layers": "^9.1.5",
     "@deck.gl/json": "^9.1.4",
-    "@deck.gl/layers": "^9.1.4",
+    "@deck.gl/layers": "^9.1.5",
     "@deck.gl/mesh-layers": "^9.1.5",
     "@deck.gl/react": "^9.1.4",
     "@emotion-icons/emotion-icon": "^4.1.0",

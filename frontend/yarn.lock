@@ -715,7 +715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/layers@npm:9.1.4, @deck.gl/layers@npm:^9.1.4":
+"@deck.gl/layers@npm:9.1.4":
   version: 9.1.4
   resolution: "@deck.gl/layers@npm:9.1.4"
   dependencies:
@@ -733,6 +733,27 @@ __metadata:
     "@luma.gl/core": ^9.1.0
     "@luma.gl/engine": ^9.1.0
   checksum: 10c0/74eae408ad1fe2392117419cef4988fb9ea00375f2c24ac450834957a5b6164845e07c93c1b6575afe7af3136dc9d619274f15113d683657de35b14b54891d9c
+  languageName: node
+  linkType: hard
+
+"@deck.gl/layers@npm:^9.1.5":
+  version: 9.1.5
+  resolution: "@deck.gl/layers@npm:9.1.5"
+  dependencies:
+    "@loaders.gl/images": "npm:^4.2.0"
+    "@loaders.gl/schema": "npm:^4.2.0"
+    "@luma.gl/shadertools": "npm:^9.1.3"
+    "@mapbox/tiny-sdf": "npm:^2.0.5"
+    "@math.gl/core": "npm:^4.1.0"
+    "@math.gl/polygon": "npm:^4.1.0"
+    "@math.gl/web-mercator": "npm:^4.1.0"
+    earcut: "npm:^2.2.4"
+  peerDependencies:
+    "@deck.gl/core": ^9.1.0
+    "@loaders.gl/core": ^4.2.0
+    "@luma.gl/core": ^9.1.3
+    "@luma.gl/engine": ^9.1.3
+  checksum: 10c0/53e23df08cfb9f1661fb5621561701171b877d89493f413aef5b35ce5c62527d64c42de6ac8c0da99fae080ab44140a059da1ded4032c2ee727f9bb229e3d8e1
   languageName: node
   linkType: hard
 
@@ -3154,7 +3175,7 @@ __metadata:
     "@deck.gl/core": "npm:^9.1.4"
     "@deck.gl/geo-layers": "npm:^9.1.5"
     "@deck.gl/json": "npm:^9.1.4"
-    "@deck.gl/layers": "npm:^9.1.4"
+    "@deck.gl/layers": "npm:^9.1.5"
     "@deck.gl/mesh-layers": "npm:^9.1.5"
     "@deck.gl/react": "npm:^9.1.4"
     "@emotion-icons/emotion-icon": "npm:^4.1.0"
