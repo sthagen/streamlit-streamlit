@@ -64,6 +64,7 @@ def test_data_editor_toolbar_on_hover(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that the toolbar is shown when hovering over a data editor component."""
+
     data_editor_element = themed_app.get_by_test_id("stDataFrame").nth(1)
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
 
@@ -92,6 +93,7 @@ def test_data_editor_delete_row_via_toolbar(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that a row can be deleted via the toolbar."""
+
     data_editor_element = themed_app.get_by_test_id("stDataFrame").nth(1)
     data_editor_toolbar = data_editor_element.get_by_test_id("stElementToolbar")
 
