@@ -43,6 +43,7 @@ select = [
   "FURB",   # Rules to refurbish and modernize Python codebases.
   "G",      # Better usage of built-in logging
   "I",      # isort - Import sorting
+  "ICN",    # Checks import naming conventions.
   "INT",    # Checks wrong usage of gettext module.
   "ISC",    # Encourage correct string literal concatenation.
   "LOG",    # Checks for issues using the standard library logging module.

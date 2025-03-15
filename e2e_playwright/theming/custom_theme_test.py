@@ -52,9 +52,8 @@ def configure_custom_theme():
     del os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"]
 
 
-def test_custom_theme(
-    app: Page, assert_snapshot: ImageCompareFunction, configure_custom_theme
-):
+@pytest.mark.usefixtures("configure_custom_theme")
+def test_custom_theme(app: Page, assert_snapshot: ImageCompareFunction):
     # Make sure that all elements are rendered and no skeletons are shown:
     expect(app.get_by_test_id("stSkeleton")).to_have_count(0, timeout=25000)
     # Add some additional timeout to ensure that fonts can load without

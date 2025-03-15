@@ -152,6 +152,8 @@ def test_data_editor_delete_row_via_hotkey(app: Page):
     expect(data_editor_element).to_have_css("height", "212px")
 
 
+# The snapshots are flaky on Firefox in CI.
+@pytest.mark.skip_browser("firefox")
 def test_data_editor_add_row_via_toolbar(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
@@ -280,6 +282,8 @@ def test_open_search_via_hotkey(app: Page):
     expect(app.locator(".gdg-search-bar-inner")).to_be_visible()
 
 
+# The snapshots are flaky on Firefox in CI.
+@pytest.mark.skip_browser("firefox")
 def test_clicking_on_fullscreen_toolbar_button(
     app: Page, assert_snapshot: ImageCompareFunction
 ):

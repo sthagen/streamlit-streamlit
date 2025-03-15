@@ -129,7 +129,7 @@ export const isColor = (strColor: string): boolean => {
   return s.color !== ""
 }
 
-const parseFont = (font: string): string => {
+export const parseFont = (font: string): string => {
   // Try to map a short font family to our default
   // font families
   const fontMap: Record<string, string> = {
@@ -137,9 +137,12 @@ const parseFont = (font: string): string => {
     serif: fonts.serif,
     monospace: fonts.monospace,
   }
+  // The old font config supported "sans serif" as a font family, but this
+  // isn't a valid font family, so we need to support it by converting it to
+  // "sans-serif".
   const fontKey = font.toLowerCase().replaceAll(" ", "-")
   if (fontKey in fontMap) {
-    return fontMap[font]
+    return fontMap[fontKey]
   }
 
   // If the font is not in the map, return the font as is:

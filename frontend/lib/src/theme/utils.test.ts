@@ -42,6 +42,7 @@ import {
   getSystemTheme,
   isColor,
   isPresetTheme,
+  parseFont,
   removeCachedTheme,
   setCachedTheme,
   toThemeInput,
@@ -805,5 +806,26 @@ describe("theme overrides", () => {
     const module = await import("./utils")
     expect(module.getMergedLightTheme()).toEqual(lightTheme)
     expect(module.getMergedDarkTheme()).toEqual(darkTheme)
+  })
+})
+
+describe("parseFont", () => {
+  it.each([
+    // Test standard font mappings
+    ["sans-serif", '"Source Sans Pro", sans-serif'],
+    ["Sans-Serif", '"Source Sans Pro", sans-serif'], // Case insensitive
+    ["SANS-SERIF", '"Source Sans Pro", sans-serif'], // All caps
+    ["sans serif", '"Source Sans Pro", sans-serif'], // With space
+    ["serif", '"Source Serif Pro", serif'],
+    ["monospace", '"Source Code Pro", monospace'],
+
+    // Test fonts that aren't in the map (should return as-is)
+    ["Arial", "Arial"],
+    ["Helvetica", "Helvetica"],
+    ["Times New Roman", "Times New Roman"],
+    ["Comic Sans MS", "Comic Sans MS"],
+    ["", ""],
+  ])("correctly maps '%s' to '%s'", (input, expected) => {
+    expect(parseFont(input)).toBe(expected)
   })
 })

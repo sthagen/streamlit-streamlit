@@ -292,8 +292,8 @@ class StreamlitPage:
             else:
                 code = ctx.pages_manager.get_page_script_byte_code(str(self._page))
                 module = types.ModuleType("__main__")
-                # We want __file__ to be the path to the script
-                module.__dict__["__file__"] = self._page
+                # We want __file__ to be the string path to the script
+                module.__dict__["__file__"] = str(self._page)
                 exec(code, module.__dict__)
 
     @property

@@ -101,9 +101,8 @@ def configure_snowflake_dark_theme():
     del os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"]
 
 
-def test_snowflake_dark_theme(
-    app: Page, assert_snapshot: ImageCompareFunction, configure_snowflake_dark_theme
-):
+@pytest.mark.usefixtures("configure_snowflake_dark_theme")
+def test_snowflake_dark_theme(app: Page, assert_snapshot: ImageCompareFunction):
     # Make sure that all elements are rendered and no skeletons are shown:
     expect(app.get_by_test_id("stSkeleton")).to_have_count(0, timeout=25000)
     # Add some additional timeout to ensure that fonts can load without
