@@ -405,7 +405,7 @@ def marshall_images(
     elif isinstance(image, np.ndarray) and len(cast(NumpyShape, image.shape)) == 4:
         images = _4d_to_list_3d(image)
     else:
-        images = [image]  # type: ignore
+        images = cast(Sequence[AtomicImage], [image])
 
     if isinstance(caption, list):
         captions: Sequence[str | None] = caption

@@ -681,7 +681,7 @@ def _validate_and_normalize(data: npt.NDArray[Any]) -> tuple[bytes, int]:
     if transformed_data.size == 0:
         return transformed_data.astype(np.int16).tobytes(), nchan
 
-    max_abs_value = np.max(np.abs(transformed_data))
+    max_abs_value: npt.NDArray[Any] = np.max(np.abs(transformed_data))
     # 16-bit samples are stored as 2's-complement signed integers,
     # ranging from -32768 to 32767.
     # scaled_data is PCM 16 bit numpy array, that's why we multiply [-1, 1] float

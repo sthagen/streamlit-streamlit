@@ -122,6 +122,7 @@ export interface Props {
 export function createAnchorFromText(text: string | null): string {
   let newAnchor = ""
   // Check if the text is valid ASCII characters - necessary for fully functional anchors (issue #5291)
+  // eslint-disable-next-line no-control-regex
   const isASCII = text && /^[\x00-\x7F]*$/.test(text)
 
   if (isASCII) {

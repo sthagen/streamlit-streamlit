@@ -24,6 +24,9 @@ module.exports = {
     es6: true,
   },
   extends: [
+    // Activate recommended eslint rules: https://eslint.org/docs/latest/rules
+    "eslint:recommended",
+    // Uses the recommended rules from airbnb-typescript/base
     "airbnb-typescript/base",
     // Uses the recommended rules from @eslint-plugin-react
     "plugin:react/recommended",

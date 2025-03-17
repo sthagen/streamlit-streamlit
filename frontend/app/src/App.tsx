@@ -1194,7 +1194,7 @@ export class App extends PureComponent<Props, State> {
       }
     }
 
-    if (themeInput?.fontFaces) {
+    if (themeInput?.fontFaces && themeInput.fontFaces.length > 0) {
       // If font faces are provided, we need to set the imported theme with the theme
       // manager to make the font faces available.
       this.props.theme.setImportedTheme(themeInput)

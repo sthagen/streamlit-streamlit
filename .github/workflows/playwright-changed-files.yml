@@ -32,7 +32,7 @@ jobs:
           git_output=$(git diff-tree --no-commit-id --name-only -r HEAD^ HEAD)
 
           # Filter files in e2e_playwright directory that match the pattern **/*_test.py
-          # and exclude files in custom_components directory
+          # and exclude files in custom_components directory and deleted files
           changed_files=()
           changed_files_count=0
 
@@ -43,10 +43,13 @@ jobs:
               if [[ $file == *_test.py ]]; then
                 # Check if file is not in custom_components directory
                 if [[ $file != *custom_components* ]]; then
-                  # Remove the e2e_playwright/ prefix from the file path
-                  relative_file="${file#e2e_playwright/}"
-                  changed_files+=("$relative_file")
-                  changed_files_count=$((changed_files_count + 1))
+                  # Check if the file still exists (not deleted)
+                  if [[ -f "$file" ]]; then
+                    # Remove the e2e_playwright/ prefix from the file path
+                    relative_file="${file#e2e_playwright/}"
+                    changed_files+=("$relative_file")
+                    changed_files_count=$((changed_files_count + 1))
+                  fi
                 fi
               fi
             fi
