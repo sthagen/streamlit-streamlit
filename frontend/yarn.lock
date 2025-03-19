@@ -1376,16 +1376,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@glideapps/glide-data-grid-cells@npm:6.0.4-alpha8":
-  version: 6.0.4-alpha8
-  resolution: "@glideapps/glide-data-grid-cells@npm:6.0.4-alpha8"
+"@glideapps/glide-data-grid-cells@npm:6.0.4-alpha9":
+  version: 6.0.4-alpha9
+  resolution: "@glideapps/glide-data-grid-cells@npm:6.0.4-alpha9"
   dependencies:
-    "@glideapps/glide-data-grid": "npm:6.0.4-alpha8"
+    "@glideapps/glide-data-grid": "npm:6.0.4-alpha9"
     "@linaria/react": "npm:^4.5.3"
     "@toast-ui/editor": "npm:3.1.10"
     "@toast-ui/react-editor": "npm:3.1.10"
     react-select: "npm:^5.8.0"
-  checksum: 10c0/bb6eee1b335e78b06185d021ebc33382e2504f23886da86b21e5a355f6bd13cf44d38f8e00e572abe0ef61fe76c67017cb4d391d8f6e4cf8a860e3965d099858
+  checksum: 10c0/b7b7b213a6e40b297015106132c3714b52ddfcf722047f31182af8fd11a2600c6bc2fbd69e4b2541dd4e0333a27385a57607797ce044772a802ba40326f8df2f
   languageName: node
   linkType: hard
 
@@ -1416,6 +1416,23 @@ __metadata:
     react-dom: ^16.12.0 || 17.x || 18.x
     react-responsive-carousel: ^3.2.7
   checksum: 10c0/9bf7212982f139433ed87b262ab060fbbbfcce65e3623eadef6d42b186c9093b9b6299bb0f90907cd83fa87456b5288038939ca86ef3a2a44f05dc68067696d9
+  languageName: node
+  linkType: hard
+
+"@glideapps/glide-data-grid@npm:6.0.4-alpha9":
+  version: 6.0.4-alpha9
+  resolution: "@glideapps/glide-data-grid@npm:6.0.4-alpha9"
+  dependencies:
+    "@linaria/react": "npm:^4.5.3"
+    canvas-hypertxt: "npm:^1.0.3"
+    react-number-format: "npm:^5.0.0"
+  peerDependencies:
+    lodash: ^4.17.19
+    marked: ^4.0.10
+    react: ^16.12.0 || 17.x || 18.x
+    react-dom: ^16.12.0 || 17.x || 18.x
+    react-responsive-carousel: ^3.2.7
+  checksum: 10c0/cbed6e29d5229ad541c6e25790ca9f5b070ac86d9c93e0f27dbe45dfc4c07d12fbb9279cc5361a03917e12f577366849e218a22c8bba0bfa2195e1f0da2bfa13
   languageName: node
   linkType: hard
 
@@ -3098,7 +3115,7 @@ __metadata:
     "@emotion/react": "npm:^11.13.5"
     "@emotion/styled": "npm:^11.13.5"
     "@glideapps/glide-data-grid": "npm:6.0.4-alpha8"
-    "@glideapps/glide-data-grid-cells": "npm:6.0.4-alpha8"
+    "@glideapps/glide-data-grid-cells": "npm:6.0.4-alpha9"
     "@glideapps/glide-data-grid-source": "npm:6.0.4-alpha8"
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/csv": "npm:^4.3.3"
