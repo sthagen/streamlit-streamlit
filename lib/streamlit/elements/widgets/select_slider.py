@@ -56,15 +56,13 @@ from streamlit.runtime.state import (
     WidgetKwargs,
     register_widget,
 )
-from streamlit.runtime.state.common import (
-    RegisterWidgetResult,
-)
 from streamlit.type_util import T, check_python_comparable
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from streamlit.delta_generator import DeltaGenerator
+    from streamlit.runtime.state.common import RegisterWidgetResult
 
 
 def _is_range_value(value: T | Sequence[T]) -> TypeGuard[Sequence[T]]:
@@ -91,7 +89,7 @@ class SelectSliderSerde(Generic[T]):
 
         # The widget always returns floats, so convert to ints before indexing
         return_value: tuple[T, T] = cast(
-            tuple[T, T],
+            "tuple[T, T]",
             tuple(self.options[int(x)] for x in ui_value),
         )
 
@@ -416,7 +414,7 @@ class SelectSliderMixin:
         )
         if isinstance(widget_state.value, tuple):
             widget_state = maybe_coerce_enum_sequence(
-                cast(RegisterWidgetResult[tuple[T, T]], widget_state), options, opt
+                cast("RegisterWidgetResult[tuple[T, T]]", widget_state), options, opt
             )
         else:
             widget_state = maybe_coerce_enum(widget_state, options, opt)

@@ -114,7 +114,9 @@ SyntaxError: invalid syntax
 
         # Marshall it.
         proto = ExceptionProto()
-        exception.marshall(proto, cast(Exception, err), is_uncaught_app_exception=True)
+        exception.marshall(
+            proto, cast("Exception", err), is_uncaught_app_exception=True
+        )
 
         user_module_path = os.path.join(os.path.realpath(user_module_path), "")
         self.assertIn(user_module_path, proto.stack_trace[0], "Stack not stripped")
@@ -153,7 +155,9 @@ SyntaxError: invalid syntax
 
         # Marshall it.
         proto = ExceptionProto()
-        exception.marshall(proto, cast(Exception, err), is_uncaught_app_exception=False)
+        exception.marshall(
+            proto, cast("Exception", err), is_uncaught_app_exception=False
+        )
 
         user_module_path = os.path.join(os.path.realpath(user_module_path), "")
         self.assertFalse(any(user_module_path in t for t in proto.stack_trace))

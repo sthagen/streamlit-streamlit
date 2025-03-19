@@ -227,13 +227,13 @@ class PlotlyChartSelectionSerde:
         selection_state = (
             empty_selection_state
             if ui_value is None
-            else cast(PlotlyState, AttributeDictionary(json.loads(ui_value)))
+            else cast("PlotlyState", AttributeDictionary(json.loads(ui_value)))
         )
 
         if "selection" not in selection_state:
             selection_state = empty_selection_state
 
-        return cast(PlotlyState, AttributeDictionary(selection_state))
+        return cast("PlotlyState", AttributeDictionary(selection_state))
 
     def serialize(self, selection_state: PlotlyState) -> str:
         return json.dumps(selection_state, default=str)
@@ -474,7 +474,7 @@ class PlotlyMixin:
             check_widget_policies(
                 self.dg,
                 key,
-                on_change=cast(WidgetCallback, on_select) if is_callback else None,
+                on_change=cast("WidgetCallback", on_select) if is_callback else None,
                 default_value=None,
                 writes_allowed=False,
                 enable_check_callback_rules=is_callback,
@@ -536,7 +536,7 @@ class PlotlyMixin:
             )
 
             self.dg._enqueue("plotly_chart", plotly_chart_proto)
-            return cast(PlotlyState, widget_state.value)
+            return cast("PlotlyState", widget_state.value)
         else:
             return self.dg._enqueue("plotly_chart", plotly_chart_proto)
 

@@ -52,6 +52,11 @@ export const StyledSidebar = styled.section<StyledSidebarProps>(
       // Nudge the sidebar by 2px so the header decoration doesn't go below it
       top: adjustTop ? theme.sizes.headerDecorationHeight : theme.spacing.none,
       backgroundColor: theme.colors.bgColor,
+      // Since the sidebar can have a different theme (+ background)
+      // we need to explicitly set the font color and color scheme
+      // here again so that it is inherited correctly by all sidebar elements:
+      color: theme.colors.bodyText,
+      colorScheme: hasLightBackgroundColor(theme) ? "light" : "dark",
       zIndex: theme.zIndices.header + 1,
 
       minWidth,

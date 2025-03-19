@@ -261,7 +261,7 @@ class HeadingMixin:
             "rainbow",
         ]
         if divider in valid_colors:
-            return cast(str, divider)
+            return cast("str", divider)
         else:
             raise StreamlitAPIException(
                 f"Divider parameter has invalid value: `{divider}`. Please choose from: {', '.join(valid_colors)}."

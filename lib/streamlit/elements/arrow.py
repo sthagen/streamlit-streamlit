@@ -174,7 +174,7 @@ class DataframeSelectionSerde:
         if "selection" not in selection_state:
             selection_state = empty_selection_state
 
-        return cast(DataframeState, AttributeDictionary(selection_state))
+        return cast("DataframeState", AttributeDictionary(selection_state))
 
     def serialize(self, editing_state: DataframeState) -> str:
         return json.dumps(editing_state, default=str)
@@ -549,7 +549,7 @@ class ArrowMixin:
             check_widget_policies(
                 self.dg,
                 key,
-                on_change=cast(WidgetCallback, on_select) if is_callback else None,
+                on_change=cast("WidgetCallback", on_select) if is_callback else None,
                 default_value=None,
                 writes_allowed=False,
                 enable_check_callback_rules=is_callback,
@@ -644,7 +644,7 @@ class ArrowMixin:
                 value_type="string_value",
             )
             self.dg._enqueue("arrow_data_frame", proto)
-            return cast(DataframeState, widget_state.value)
+            return cast("DataframeState", widget_state.value)
         else:
             return self.dg._enqueue("arrow_data_frame", proto)
 

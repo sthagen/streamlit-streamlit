@@ -102,13 +102,54 @@ updates:
         # Requires bigger updates to our types used in tests.
         versions: [">=5.8.0"]
 
-  # Keep Pipfile up to date
+    groups:
+      deck-gl:
+        patterns:
+          - "@deck.gl/*"
+          - "deck.gl"
+          - "@loaders.gl/*"
+          - "mapbox-gl"
+      vega:
+        patterns:
+          - "vega"
+          - "vega-*"
+      glide-data-grid:
+        patterns:
+          - "@glideapps/glide-data-grid*"
+      markdown-processing:
+        patterns:
+          - "remark-*"
+          - "rehype-*"
+          - "react-markdown"
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@typescript-eslint/*"
+          - "@eslint-react/*"
+      emotion:
+        patterns:
+          - "@emotion/*"
+          - "@emotion-icons/*"
+      vitest:
+        patterns:
+          - "vitest"
+          - "vitest-*"
+          - "@vitest/*"
+      vite:
+        patterns:
+          - "vite"
+          - "vite-*"
+          - "@vitejs/*"
+
+  # Keep python dependencies up to date
   - package-ecosystem: "pip"
     directory: "/lib"
     schedule:
       interval: "daily"
-    # Pause Dependabot updates. Security updates are unaffected
-    open-pull-requests-limit: 0
+    # Allow a limited number of update PRs at a time
+    # to keep the number of parallel dependency updates manageable.
+    open-pull-requests-limit: 1
 
     labels:
       - "change:chore"
@@ -119,3 +160,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+    labels:
+      - "change:chore"
+      - "impact:internal"

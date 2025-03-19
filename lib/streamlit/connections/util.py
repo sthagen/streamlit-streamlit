@@ -92,6 +92,6 @@ def running_in_sis() -> bool:
             is_in_stored_procedure,
         )
 
-        return cast(bool, is_in_stored_procedure())
+        return cast("bool", is_in_stored_procedure())
     except ModuleNotFoundError:
         return False

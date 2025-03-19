@@ -251,7 +251,7 @@ class PydeckSelectionSerde:
         if "selection" not in selection_state:
             selection_state = empty_selection_state
 
-        return cast(PydeckState, AttributeDictionary(selection_state))
+        return cast("PydeckState", AttributeDictionary(selection_state))
 
     def serialize(self, selection_state: PydeckState) -> str:
         return json.dumps(selection_state, default=str)
@@ -488,7 +488,7 @@ class PydeckMixin:
             check_widget_policies(
                 self.dg,
                 key,
-                on_change=cast(WidgetCallback, on_select) if is_callback else None,
+                on_change=cast("WidgetCallback", on_select) if is_callback else None,
                 default_value=None,
                 writes_allowed=False,
                 enable_check_callback_rules=is_callback,
@@ -518,7 +518,7 @@ class PydeckMixin:
 
             self.dg._enqueue("deck_gl_json_chart", pydeck_proto)
 
-            return cast(PydeckState, widget_state.value)
+            return cast("PydeckState", widget_state.value)
 
         return self.dg._enqueue("deck_gl_json_chart", pydeck_proto)
 
@@ -541,6 +541,6 @@ def _get_pydeck_tooltip(pydeck_obj: Deck | None) -> dict[str, str] | None:
     # For details, see: https://github.com/visgl/deck.gl/pull/7125/files
     tooltip = getattr(pydeck_obj, "_tooltip", None)
     if tooltip is not None and isinstance(tooltip, dict):
-        return cast(dict[str, str], tooltip)
+        return cast("dict[str, str]", tooltip)
 
     return None

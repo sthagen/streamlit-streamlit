@@ -151,7 +151,7 @@ def _parse_date_value(value: DateValue) -> tuple[list[date] | None, bool]:
         value_tuple = value
     else:
         is_range = False
-        value_tuple = [cast(NullableScalarDateValue, value)]
+        value_tuple = [cast("NullableScalarDateValue", value)]
 
     if len(value_tuple) not in {0, 1, 2}:
         raise StreamlitAPIException(
@@ -227,7 +227,7 @@ class _DateInputValues:
         )
 
         if value == "today":
-            v = cast(list[date], parsed_value)[0]
+            v = cast("list[date]", parsed_value)[0]
             if v < parsed_min:
                 parsed_value = [parsed_min]
             if v > parsed_max:
@@ -300,7 +300,7 @@ class DateInputSerde:
 
         if not self.value.is_range:
             return return_value[0]
-        return cast(DateWidgetReturn, tuple(return_value))
+        return cast("DateWidgetReturn", tuple(return_value))
 
     def serialize(self, v: DateWidgetReturn) -> list[str]:
         if v is None:
@@ -869,7 +869,7 @@ class TimeWidgetsMixin:
             parsed = None
         elif isinstance(value, Sequence):
             parsed = [
-                parse_date_deterministic_for_id(cast(NullableScalarDateValue, v))
+                parse_date_deterministic_for_id(cast("NullableScalarDateValue", v))
                 for v in value
             ]
         else:

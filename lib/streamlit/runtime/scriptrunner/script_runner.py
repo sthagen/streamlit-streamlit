@@ -149,7 +149,7 @@ def _mpa_v1(main_script_path: str):
         else "sidebar"
     )
     page = _navigation(
-        cast(list[PageType], all_pages),
+        cast("list[PageType]", all_pages),
         position=position,
         expanded=False,
     )

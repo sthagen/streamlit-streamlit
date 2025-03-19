@@ -110,7 +110,7 @@ class WStates(MutableMapping[str, Any]):
             # trying to access it. Pretend it doesn't exist.
             raise KeyError(k)
         value_field_name = cast(
-            ValueFieldName,
+            "ValueFieldName",
             wstate.value.WhichOneof("value"),
         )
         value = (
@@ -252,7 +252,7 @@ class WStates(MutableMapping[str, Any]):
             for widget_id in self.states.keys()
             if self.get_serialized(widget_id)
         ]
-        states = cast(list[WidgetStateProto], states)
+        states = cast("list[WidgetStateProto]", states)
         return states
 
     def call_callback(self, widget_id: str) -> None:
@@ -689,7 +689,7 @@ class SessionState:
         # Get the current value of the widget for use as its return value.
         # We return a copy, so that reference types can't be accidentally
         # mutated by user code.
-        widget_value = cast(T, self[widget_id])
+        widget_value = cast("T", self[widget_id])
         widget_value = deepcopy(widget_value)
 
         # widget_value_changed indicates to the caller that the widget's

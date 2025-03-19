@@ -125,7 +125,7 @@ def check_licenses(licenses) -> NoReturn:
         license_json = json.loads(license)
         license_name = license_json["value"]
         for package_name in license_json["children"].keys():
-            packages.append(cast(PackageInfo, (package_name, license_name)))
+            packages.append(cast("PackageInfo", (package_name, license_name)))
 
     # Discover dependency exceptions that are no longer used and can be
     # jettisoned, and print them out with a warning.

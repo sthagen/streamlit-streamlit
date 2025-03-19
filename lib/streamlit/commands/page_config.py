@@ -262,7 +262,7 @@ def set_page_config(
     msg.page_config_changed.initial_sidebar_state = pb_sidebar_state
 
     if menu_items is not None:
-        lowercase_menu_items = cast(MenuItems, _lower_clean_dict_keys(menu_items))
+        lowercase_menu_items = cast("MenuItems", _lower_clean_dict_keys(menu_items))
         validate_menu_items(lowercase_menu_items)
         menu_items_proto = msg.page_config_changed.menu_items
         set_menu_items_proto(lowercase_menu_items, menu_items_proto)

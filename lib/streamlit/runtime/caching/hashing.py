@@ -417,7 +417,7 @@ class _CacheFuncHasher:
         elif type_util.is_type(obj, "pandas.core.series.Series"):
             import pandas as pd
 
-            obj = cast(pd.Series, obj)
+            obj = cast("pd.Series", obj)
             self.update(h, obj.size)
             self.update(h, obj.dtype.name)
 
@@ -440,7 +440,7 @@ class _CacheFuncHasher:
         elif type_util.is_type(obj, "pandas.core.frame.DataFrame"):
             import pandas as pd
 
-            obj = cast(pd.DataFrame, obj)
+            obj = cast("pd.DataFrame", obj)
             self.update(h, obj.shape)
 
             if len(obj) >= _PANDAS_ROWS_LARGE:
@@ -466,7 +466,7 @@ class _CacheFuncHasher:
         elif type_util.is_type(obj, "polars.series.series.Series"):
             import polars as pl  # type: ignore[import-not-found]
 
-            obj = cast(pl.Series, obj)
+            obj = cast("pl.Series", obj)
             self.update(h, str(obj.dtype).encode())
             self.update(h, obj.shape)
 
@@ -486,9 +486,9 @@ class _CacheFuncHasher:
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "polars.dataframe.frame.DataFrame"):
-            import polars as pl
+            import polars as pl  # noqa: TC002
 
-            obj = cast(pl.DataFrame, obj)
+            obj = cast("pl.DataFrame", obj)
             self.update(h, obj.shape)
 
             if len(obj) >= _PANDAS_ROWS_LARGE:
@@ -532,9 +532,9 @@ class _CacheFuncHasher:
             return h.digest()
         elif type_util.is_type(obj, "PIL.Image.Image"):
             import numpy as np
-            from PIL.Image import Image
+            from PIL.Image import Image  # noqa: TC002
 
-            obj = cast(Image, obj)
+            obj = cast("Image", obj)
 
             # we don't just hash the results of obj.tobytes() because we want to use
             # the sampling logic for numpy data

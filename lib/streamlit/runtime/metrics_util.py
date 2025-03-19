@@ -432,7 +432,7 @@ def gather_metrics(name: str, func: F | None = None) -> Callable[[F], F] | F:
         # attributes.
         wrapped_func.__dict__.update(non_optional_func.__dict__)
         wrapped_func.__signature__ = inspect.signature(non_optional_func)  # type: ignore
-    return cast(F, wrapped_func)
+    return cast("F", wrapped_func)
 
 
 def create_page_profile_message(

@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import pickle
 import threading
-import types
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -68,6 +67,7 @@ from streamlit.runtime.stats import CacheStat, CacheStatsProvider, group_stats
 from streamlit.time_util import time_to_seconds
 
 if TYPE_CHECKING:
+    import types
     from datetime import timedelta
 
     from streamlit.runtime.caching.hashing import HashFuncsDict
@@ -581,7 +581,7 @@ class CacheDataAPI:
 
         return make_cached_func_wrapper(
             CachedDataFuncInfo(
-                func=cast(types.FunctionType, func),
+                func=cast("types.FunctionType", func),
                 persist=persist_string,
                 show_spinner=show_spinner,
                 max_entries=max_entries,

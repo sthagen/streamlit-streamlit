@@ -693,7 +693,7 @@ class SliderMixin:
             ) and max_value - min_value < timedelta(days=1):
                 step = timedelta(minutes=15)
         if format is None:
-            format = cast(str, DEFAULTS[data_type]["format"])
+            format = cast("str", DEFAULTS[data_type]["format"])
 
         if step == 0:
             raise StreamlitAPIException(
@@ -811,7 +811,7 @@ class SliderMixin:
             value = list(map(_datetime_to_micros, value))
             min_value = _datetime_to_micros(min_value)
             max_value = _datetime_to_micros(max_value)
-            step = _delta_to_micros(cast(timedelta, step))
+            step = _delta_to_micros(cast("timedelta", step))
 
         # It would be great if we could guess the number of decimal places from
         # the `step` argument, but this would only be meaningful if step were a
@@ -826,7 +826,7 @@ class SliderMixin:
         slider_proto.default[:] = value
         slider_proto.min = min_value
         slider_proto.max = max_value
-        slider_proto.step = cast(float, step)
+        slider_proto.step = cast("float", step)
         slider_proto.data_type = data_type
         slider_proto.options[:] = []
         slider_proto.form_id = current_form_id(self.dg)
@@ -872,7 +872,7 @@ class SliderMixin:
             slider_proto.set_value = True
 
         self.dg._enqueue("slider", slider_proto)
-        return cast(SliderReturn, widget_state.value)
+        return cast("SliderReturn", widget_state.value)
 
     @property
     def dg(self) -> DeltaGenerator:

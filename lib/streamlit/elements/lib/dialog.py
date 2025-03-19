@@ -92,7 +92,7 @@ class Dialog(DeltaGenerator):
         delta_path: list[int] = (
             parent._active_dg._cursor.delta_path if parent._active_dg._cursor else []
         )
-        dialog = cast(Dialog, parent._block(block_proto=block_proto, dg_type=Dialog))
+        dialog = cast("Dialog", parent._block(block_proto=block_proto, dg_type=Dialog))
 
         dialog._delta_path = delta_path
         dialog._current_proto = block_proto

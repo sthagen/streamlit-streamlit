@@ -336,7 +336,7 @@ class _FolderEventHandler(events.FileSystemEventHandler):
         elif event.event_type == events.EVENT_TYPE_MOVED:
             # Teach mypy that this event has a dest_path, because it can't infer
             # the desired subtype from the event_type check
-            event = cast(events.FileSystemMovedEvent, event)
+            event = cast("events.FileSystemMovedEvent", event)
 
             _LOGGER.debug(
                 "Move event: src %s; dest %s", event.src_path, event.dest_path

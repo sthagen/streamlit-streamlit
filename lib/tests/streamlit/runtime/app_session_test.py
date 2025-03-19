@@ -354,7 +354,7 @@ class AppSessionTest(unittest.TestCase):
         assert session._scriptrunner is not None
 
         # And that the ScriptRunner was initialized and started.
-        scriptrunner: MagicMock = cast(MagicMock, session._scriptrunner)
+        scriptrunner: MagicMock = cast("MagicMock", session._scriptrunner)
         scriptrunner.on_event.connect.assert_called_once_with(
             session._on_scriptrunner_event
         )

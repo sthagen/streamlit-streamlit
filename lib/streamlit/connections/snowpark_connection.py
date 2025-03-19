@@ -91,7 +91,7 @@ class SnowparkConnection(BaseConnection["Session"]):
             if p not in conn_params:
                 raise StreamlitAPIException(f"Missing Snowpark connection param: {p}")
 
-        return cast(Session, Session.builder.configs(conn_params).create())
+        return cast("Session", Session.builder.configs(conn_params).create())
 
     def query(
         self,

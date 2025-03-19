@@ -78,7 +78,7 @@ class SessionInfo:
         # NOTE: The cast here (rather than copying this SessionInfo's fields into a new
         # ActiveSessionInfo) is important as the Runtime expects to be able to mutate
         # what's returned from get_active_session_info to increment script_run_count.
-        return cast(ActiveSessionInfo, self)
+        return cast("ActiveSessionInfo", self)
 
 
 class SessionStorageError(Exception):

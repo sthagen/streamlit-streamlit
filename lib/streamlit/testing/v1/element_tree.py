@@ -329,7 +329,7 @@ class Button(Widget):
         else:
             state = self.root.session_state
             assert state
-            return cast(bool, state[TESTING_KEY][self.id])
+            return cast("bool", state[TESTING_KEY][self.id])
 
     def set_value(self, v: bool) -> Button:
         """Set the value of the button."""
@@ -407,7 +407,7 @@ class Checkbox(Widget):
         else:
             state = self.root.session_state
             assert state
-            return cast(bool, state[self.id])
+            return cast("bool", state[self.id])
 
     def set_value(self, v: bool) -> Checkbox:
         """Set the value of the widget."""
@@ -468,7 +468,7 @@ class ColorPicker(Widget):
         else:
             state = self.root.session_state
             assert state
-            return cast(str, state[self.id])
+            return cast("str", state[self.id])
 
     @property
     def _widget_state(self) -> WidgetState:
@@ -727,7 +727,7 @@ class ButtonGroup(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(list[T], state[self.id])
+            return cast("list[T]", state[self.id])
 
     @property
     def indices(self) -> Sequence[int]:
@@ -738,7 +738,7 @@ class ButtonGroup(Widget, Generic[T]):
     def format_func(self) -> Callable[[Any], Any]:
         """The widget's formatting function for displaying options. (callable)"""  # noqa: D400
         ss = self.root.session_state
-        return cast(Callable[[Any], Any], ss[TESTING_KEY][self.id])
+        return cast("Callable[[Any], Any]", ss[TESTING_KEY][self.id])
 
     def set_value(self, v: list[T]) -> ButtonGroup[T]:
         """Set the value of the multiselect widget. (list)"""  # noqa: D400
@@ -815,7 +815,7 @@ class Multiselect(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(list[T], state[self.id])
+            return cast("list[T]", state[self.id])
 
     @property
     def indices(self) -> Sequence[int]:
@@ -826,7 +826,7 @@ class Multiselect(Widget, Generic[T]):
     def format_func(self) -> Callable[[Any], Any]:
         """The widget's formatting function for displaying options. (callable)"""  # noqa: D400
         ss = self.root.session_state
-        return cast(Callable[[Any], Any], ss[TESTING_KEY][self.id])
+        return cast("Callable[[Any], Any]", ss[TESTING_KEY][self.id])
 
     def set_value(self, v: list[T]) -> Multiselect[T]:
         """Set the value of the multiselect widget. (list)"""  # noqa: D400
@@ -965,13 +965,13 @@ class Radio(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(T, state[self.id])
+            return cast("T", state[self.id])
 
     @property
     def format_func(self) -> Callable[[Any], Any]:
         """The widget's formatting function for displaying options. (callable)"""  # noqa: D400
         ss = self.root.session_state
-        return cast(Callable[[Any], Any], ss[TESTING_KEY][self.id])
+        return cast("Callable[[Any], Any]", ss[TESTING_KEY][self.id])
 
     def set_value(self, v: T | None) -> Radio[T]:
         """Set the selection by value."""
@@ -1027,13 +1027,13 @@ class Selectbox(Widget, Generic[T]):
         else:
             state = self.root.session_state
             assert state
-            return cast(T, state[self.id])
+            return cast("T", state[self.id])
 
     @property
     def format_func(self) -> Callable[[Any], Any]:
         """The widget's formatting function for displaying options. (callable)"""  # noqa: D400
         ss = self.root.session_state
-        return cast(Callable[[Any], Any], ss[TESTING_KEY][self.id])
+        return cast("Callable[[Any], Any]", ss[TESTING_KEY][self.id])
 
     def set_value(self, v: T | None) -> Selectbox[T]:
         """Set the selection by value."""
@@ -1048,7 +1048,7 @@ class Selectbox(Widget, Generic[T]):
         """Set the selection by index."""
         if index is None:
             return self.set_value(None)
-        return self.set_value(cast(T, self.options[index]))
+        return self.set_value(cast("T", self.options[index]))
 
     @property
     def _widget_state(self) -> WidgetState:
@@ -1117,7 +1117,7 @@ class SelectSlider(Widget, Generic[T]):
     def format_func(self) -> Callable[[Any], Any]:
         """The widget's formatting function for displaying options. (callable)"""  # noqa: D400
         ss = self.root.session_state
-        return cast(Callable[[Any], Any], ss[TESTING_KEY][self.id])
+        return cast("Callable[[Any], Any]", ss[TESTING_KEY][self.id])
 
     def set_range(self, lower: T, upper: T) -> SelectSlider[T]:
         """Set the ranged selection by values."""
@@ -1426,7 +1426,7 @@ class Toggle(Widget):
         else:
             state = self.root.session_state
             assert state
-            return cast(bool, state[self.id])
+            return cast("bool", state[self.id])
 
     def set_value(self, v: bool) -> Toggle:
         """Set the value of the widget."""

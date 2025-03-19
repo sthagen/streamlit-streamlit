@@ -34,7 +34,7 @@ st.map()
 # an array by a list of numbers.
 np.random.seed(0)
 coords: "np.typing.NDArray[np.float64]" = cast(
-    Any,
+    "Any",
     np.random.randn(1000, 2) / [50, 50],
 ) + [37.76, -122.4]
 simple_map_df = pd.DataFrame(coords, columns=["lat", "lon"])

@@ -26,18 +26,23 @@ from e2e_playwright.conftest import ImageCompareFunction
 def configure_sidebar_custom_theme():
     """Configure sidebar custom theme."""
     os.environ["STREAMLIT_THEME_BASE"] = "light"
-    os.environ["STREAMLIT_THEME_SIDEBAR_BACKGROUND_COLOR"] = "#e8e7dd"
+    os.environ["STREAMLIT_THEME_BASE_FONT_SIZE"] = "14"
+    os.environ["STREAMLIT_THEME_BASE_RADIUS"] = "full"
+    os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"] = "True"
+    os.environ["STREAMLIT_THEME_SIDEBAR_BACKGROUND_COLOR"] = "black"
     os.environ["STREAMLIT_THEME_SIDEBAR_BASE_RADIUS"] = "none"
-    os.environ["STREAMLIT_THEME_SIDEBAR_BORDER_COLOR"] = "#d3d2ca"
+    os.environ["STREAMLIT_THEME_SIDEBAR_BORDER_COLOR"] = "white"
     os.environ["STREAMLIT_THEME_SIDEBAR_HEADING_FONT"] = "bold, serif"
-    os.environ["STREAMLIT_THEME_SIDEBAR_LINK_COLOR"] = "#3d3a2a"
-    os.environ["STREAMLIT_THEME_SIDEBAR_PRIMARY_COLOR"] = "#bb5a38"
-    os.environ["STREAMLIT_THEME_SIDEBAR_SECONDARY_BACKGROUND_COLOR"] = "#ecebe3"
-    os.environ["STREAMLIT_THEME_SIDEBAR_SHOW_BORDER_AROUND_INPUTS"] = "True"
-    os.environ["STREAMLIT_THEME_SIDEBAR_TEXT_COLOR"] = "#3d3a2a"
+    os.environ["STREAMLIT_THEME_SIDEBAR_LINK_COLOR"] = "#90EE90"
+    os.environ["STREAMLIT_THEME_SIDEBAR_PRIMARY_COLOR"] = "blue"
+    os.environ["STREAMLIT_THEME_SIDEBAR_SECONDARY_BACKGROUND_COLOR"] = "#222222"
+    os.environ["STREAMLIT_THEME_SIDEBAR_TEXT_COLOR"] = "white"
     os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"] = "minimal"
     yield
     del os.environ["STREAMLIT_THEME_BASE"]
+    del os.environ["STREAMLIT_THEME_BASE_FONT_SIZE"]
+    del os.environ["STREAMLIT_THEME_BASE_RADIUS"]
+    del os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_BACKGROUND_COLOR"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_BASE_RADIUS"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_BORDER_COLOR"]
@@ -45,7 +50,6 @@ def configure_sidebar_custom_theme():
     del os.environ["STREAMLIT_THEME_SIDEBAR_LINK_COLOR"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_PRIMARY_COLOR"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_SECONDARY_BACKGROUND_COLOR"]
-    del os.environ["STREAMLIT_THEME_SIDEBAR_SHOW_BORDER_AROUND_INPUTS"]
     del os.environ["STREAMLIT_THEME_SIDEBAR_TEXT_COLOR"]
     del os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"]
 
@@ -58,4 +62,4 @@ def test_sidebar_custom_theme(app: Page, assert_snapshot: ImageCompareFunction):
     # Add some additional timeout to ensure that fonts can load without
     # creating flakiness:
     app.wait_for_timeout(5000)
-    assert_snapshot(app, name="sidebar_custom_theme")
+    assert_snapshot(app, name="sidebar_custom_theme", image_threshold=0.0003)

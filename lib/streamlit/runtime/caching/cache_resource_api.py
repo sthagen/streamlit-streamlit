@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import math
 import threading
-import types
 from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar, cast, overload
 
 from cachetools import TTLCache
@@ -45,6 +44,7 @@ from streamlit.runtime.stats import CacheStat, CacheStatsProvider, group_stats
 from streamlit.time_util import time_to_seconds
 
 if TYPE_CHECKING:
+    import types
     from datetime import timedelta
 
     from streamlit.runtime.caching.hashing import HashFuncsDict
@@ -430,7 +430,7 @@ class CacheResourceAPI:
 
         return make_cached_func_wrapper(
             CachedResourceFuncInfo(
-                func=cast(types.FunctionType, func),
+                func=cast("types.FunctionType", func),
                 show_spinner=show_spinner,
                 max_entries=max_entries,
                 ttl=ttl,

@@ -238,13 +238,13 @@ class VegaLiteStateSerde:
         selection_state = (
             empty_selection_state
             if ui_value is None
-            else cast(VegaLiteState, AttributeDictionary(json.loads(ui_value)))
+            else cast("VegaLiteState", AttributeDictionary(json.loads(ui_value)))
         )
 
         if "selection" not in selection_state:
             selection_state = empty_selection_state
 
-        return cast(VegaLiteState, AttributeDictionary(selection_state))
+        return cast("VegaLiteState", AttributeDictionary(selection_state))
 
     def serialize(self, selection_state: VegaLiteState) -> str:
         return json.dumps(selection_state, default=str)
@@ -255,7 +255,7 @@ def _prepare_vega_lite_spec(
     use_container_width: bool,
     **kwargs,
 ) -> VegaLiteSpec:
-    if len(kwargs):
+    if kwargs:
         # Support passing in kwargs. Example:
         #   marshall(proto, {foo: 'bar'}, baz='boz')
         # Merge spec with unflattened kwargs, where kwargs take precedence.
@@ -1884,7 +1884,7 @@ class VegaChartsMixin:
             check_widget_policies(
                 self.dg,
                 key,
-                on_change=cast(WidgetCallback, on_select) if is_callback else None,
+                on_change=cast("WidgetCallback", on_select) if is_callback else None,
                 default_value=None,
                 writes_allowed=False,
                 enable_check_callback_rules=is_callback,
@@ -1970,7 +1970,7 @@ class VegaChartsMixin:
                 vega_lite_proto,
                 add_rows_metadata=add_rows_metadata,
             )
-            return cast(VegaLiteState, widget_state.value)
+            return cast("VegaLiteState", widget_state.value)
         # If its not used with selections activated, just return
         # the delta generator related to this element.
         return self.dg._enqueue(

@@ -538,7 +538,7 @@ class DeltaGenerator(
             dg_type = DeltaGenerator
 
         block_dg = cast(
-            DeltaGenerator,
+            "DeltaGenerator",
             dg_type(
                 root_container=dg._root_container,
                 cursor=block_cursor,
@@ -566,7 +566,7 @@ class DeltaGenerator(
 
 def _writes_directly_to_sidebar(dg: DeltaGenerator) -> bool:
     in_sidebar = any(a._root_container == RootContainer.SIDEBAR for a in dg._ancestors)
-    has_container = bool(len(list(dg._ancestor_block_types)))
+    has_container = bool(list(dg._ancestor_block_types))
     return in_sidebar and not has_container
 
 

@@ -14,7 +14,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import dataclass, field
 from textwrap import dedent
 from typing import TYPE_CHECKING, Any, Callable, Generic, cast
@@ -52,6 +51,8 @@ from streamlit.type_util import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from streamlit.dataframe_util import OptionSequence
     from streamlit.delta_generator import DeltaGenerator
     from streamlit.runtime.state import (
@@ -86,7 +87,7 @@ def _get_default_count(default: Sequence[Any] | Any | None) -> int:
         return 0
     if not is_iterable(default):
         return 1
-    return len(cast(Sequence[Any], default))
+    return len(cast("Sequence[Any]", default))
 
 
 def _check_max_selections(

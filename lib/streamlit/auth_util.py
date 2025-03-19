@@ -79,7 +79,7 @@ def get_secrets_auth_section() -> AttrDict:
     auth_section = AttrDict({})
     """Get the 'auth' section of the secrets.toml."""
     if secrets_singleton.load_if_toml_exists():
-        auth_section = cast(AttrDict, secrets_singleton.get("auth"))
+        auth_section = cast("AttrDict", secrets_singleton.get("auth"))
 
     return auth_section
 

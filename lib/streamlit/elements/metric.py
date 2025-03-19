@@ -196,7 +196,7 @@ class MetricMixin:
             metric_proto.help = dedent(help)
 
         color_and_direction = _determine_delta_color_and_direction(
-            cast(DeltaColor, clean_text(delta_color)), delta
+            cast("DeltaColor", clean_text(delta_color)), delta
         )
         metric_proto.color = color_and_direction.color
         metric_proto.direction = color_and_direction.direction

@@ -264,7 +264,7 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
 
             return snowflake.connector.connect(**kwargs)
         except SnowflakeError as e:
-            if not len(st_secrets) and not len(kwargs):
+            if not len(st_secrets) and not kwargs:
                 raise StreamlitAPIException(
                     "Missing Snowflake connection configuration. "
                     "Did you forget to set this in `secrets.toml`, a Snowflake configuration file, "
@@ -557,5 +557,5 @@ class SnowflakeConnection(BaseConnection["InternalSnowflakeConnection"]):
             return get_active_session()
 
         return cast(
-            Session, Session.builder.configs({"connection": self._instance}).create()
+            "Session", Session.builder.configs({"connection": self._instance}).create()
         )

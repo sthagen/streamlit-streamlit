@@ -35,6 +35,7 @@ import {
   isColoredLineDisplayed,
   isEmbed,
   IsSidebarContext,
+  LibContext,
 } from "@streamlit/lib"
 import { IAppPage, Logo, PageConfig } from "@streamlit/protobuf"
 import { localStorageAvailable } from "@streamlit/utils"
@@ -128,6 +129,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [lastInnerWidth, setLastInnerWidth] = useState<number>(
     window ? window.innerWidth : Infinity
   )
+
+  const { activeTheme } = React.useContext(LibContext)
 
   useEffect(() => {
     setCollapsedSidebar(
@@ -270,7 +273,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         data-testid="stSidebarCollapsedControl"
       >
         {renderLogo(true)}
-        <StyledOpenSidebarButton>
+        <StyledOpenSidebarButton
+          theme={
+            // Use the active theme from the LibContext to use the main theme
+            // for styling the open button since otherwise it would use the colors
+            // of the sidebar theme (which is not what we want here).
+            activeTheme.emotion
+          }
+        >
           <BaseButton
             kind={BaseButtonKind.HEADER_NO_PADDING}
             onClick={toggleCollapse}

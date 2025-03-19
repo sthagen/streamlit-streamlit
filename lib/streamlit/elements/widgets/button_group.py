@@ -149,7 +149,7 @@ class SingleOrMultiSelectSerde(Generic[T]):
         )
 
     def serialize(self, value: T | list[T] | None) -> list[int]:
-        return self.serde.serialize(cast(Any, value))
+        return self.serde.serialize(cast("Any", value))
 
     def deserialize(
         self, ui_value: list[int] | None, widget_id: str = ""

@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Hashable, Sequence
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
@@ -42,6 +41,8 @@ from streamlit.elements.lib.color_util import (
 from streamlit.errors import Error, StreamlitAPIException
 
 if TYPE_CHECKING:
+    from collections.abc import Collection, Hashable, Sequence
+
     import altair as alt
     import pandas as pd
 
@@ -287,7 +288,7 @@ def _add_improved_hover_tooltips(
         )
     )
 
-    return cast(alt.LayerChart, layer_chart)
+    return cast("alt.LayerChart", layer_chart)
 
 
 def prep_chart_data_for_add_rows(
@@ -301,7 +302,7 @@ def prep_chart_data_for_add_rows(
     """
     import pandas as pd
 
-    df = cast(pd.DataFrame, dataframe_util.convert_anything_to_pandas_df(data))
+    df = cast("pd.DataFrame", dataframe_util.convert_anything_to_pandas_df(data))
 
     # Make range indices start at last_index.
     if isinstance(df.index, pd.RangeIndex):
@@ -440,7 +441,7 @@ def _prep_data(
 def _last_index_for_melted_dataframes(
     data: pd.DataFrame,
 ) -> Hashable | None:
-    return cast(Hashable, data.index[-1]) if data.index.size > 0 else None
+    return cast("Hashable", data.index[-1]) if data.index.size > 0 else None
 
 
 def _is_date_column(df: pd.DataFrame, name: str | None) -> bool:
@@ -939,21 +940,21 @@ def _get_color_encoding(
     # color column (be they manual or auto-assigned due to melting)
     if has_color_value:
         # If the color value is color-like, return that.
-        if is_color_like(cast(Any, color_value)):
+        if is_color_like(cast("Any", color_value)):
             if len(y_column_list) != 1:
                 raise StreamlitColorLengthError([color_value], y_column_list)
 
-            return alt.ColorValue(to_css_color(cast(Any, color_value)))
+            return alt.ColorValue(to_css_color(cast("Any", color_value)))
 
         # If the color value is a list of colors of approriate length, return that.
         elif isinstance(color_value, (list, tuple)):
-            color_values = cast(Collection[Color], color_value)
+            color_values = cast("Collection[Color]", color_value)
 
             if len(color_values) != len(y_column_list):
                 raise StreamlitColorLengthError(color_values, y_column_list)
 
             if len(color_values) == 1:
-                return alt.ColorValue(to_css_color(cast(Any, color_value[0])))
+                return alt.ColorValue(to_css_color(cast("Any", color_value[0])))
             else:
                 return alt.Color(
                     field=color_column

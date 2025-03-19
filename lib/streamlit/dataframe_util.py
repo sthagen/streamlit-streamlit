@@ -559,13 +559,13 @@ def convert_anything_to_pandas_df(
     import pandas as pd
 
     if isinstance(data, pd.DataFrame):
-        return data.copy() if ensure_copy else cast(pd.DataFrame, data)
+        return data.copy() if ensure_copy else cast("pd.DataFrame", data)
 
     if isinstance(data, (pd.Series, pd.Index, pd.api.extensions.ExtensionArray)):
         return pd.DataFrame(data)
 
     if is_pandas_styler(data):
-        return cast(pd.DataFrame, data.data.copy() if ensure_copy else data.data)
+        return cast("pd.DataFrame", data.data.copy() if ensure_copy else data.data)
 
     if isinstance(data, np.ndarray):
         return (
@@ -589,7 +589,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `collect()` on the dataframe to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_xarray_dataset(data):
         if ensure_copy:
@@ -614,7 +614,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `compute()` on the data object to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_ray_dataset(data):
         data = data.limit(max_unevaluated_rows).to_pandas()
@@ -624,7 +624,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `to_pandas()` on the dataset to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_modin_data_object(data):
         data = data.head(max_unevaluated_rows)._to_pandas()
@@ -637,7 +637,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `_to_pandas()` on the data object to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_pyspark_data_object(data):
         data = data.limit(max_unevaluated_rows).toPandas()
@@ -646,7 +646,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `toPandas()` on the data object to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_snowpandas_data_object(data):
         data = data[:max_unevaluated_rows].to_pandas()
@@ -659,7 +659,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `to_pandas()` on the data object to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_snowpark_data_object(data):
         data = data.limit(max_unevaluated_rows).to_pandas()
@@ -668,7 +668,7 @@ def convert_anything_to_pandas_df(
                 f"⚠️ Showing only {string_util.simplify_number(max_unevaluated_rows)} "
                 "rows. Call `to_pandas()` on the data object to show more."
             )
-        return cast(pd.DataFrame, data)
+        return cast("pd.DataFrame", data)
 
     if is_duckdb_relation(data):
         data = data.limit(max_unevaluated_rows).df()
@@ -800,7 +800,7 @@ def convert_arrow_table_to_arrow_bytes(table: pa.Table) -> bytes:
     writer = pa.RecordBatchStreamWriter(sink, table.schema)
     writer.write_table(table)
     writer.close()
-    return cast(bytes, sink.getvalue().to_pybytes())
+    return cast("bytes", sink.getvalue().to_pybytes())
 
 
 def convert_pandas_df_to_arrow_bytes(df: DataFrame) -> bytes:
@@ -951,7 +951,7 @@ def convert_anything_to_list(obj: OptionSequence[V_co]) -> list[V_co]:
         return (
             []
             if data_df.empty
-            else cast(list[V_co], list(data_df.iloc[:, 0].to_list()))
+            else cast("list[V_co]", list(data_df.iloc[:, 0].to_list()))
         )
     except errors.StreamlitAPIException:
         # Wrap the object into a list
@@ -1167,7 +1167,7 @@ def determine_data_format(input_data: Any) -> DataFormat:
     elif isinstance(input_data, pd.DataFrame):
         return DataFormat.PANDAS_DATAFRAME
     elif isinstance(input_data, np.ndarray):
-        if len(cast(NumpyShape, input_data.shape)) == 1:
+        if len(cast("NumpyShape", input_data.shape)) == 1:
             # For technical reasons, we need to distinguish one
             # one-dimensional numpy array from multidimensional ones.
             return DataFormat.NUMPY_LIST

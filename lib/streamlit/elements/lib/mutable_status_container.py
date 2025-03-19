@@ -65,7 +65,7 @@ class StatusContainer(DeltaGenerator):
         )
 
         status_container = cast(
-            StatusContainer,
+            "StatusContainer",
             parent._block(block_proto=block_proto, dg_type=StatusContainer),
         )
 

@@ -157,11 +157,11 @@ class WebsocketSessionManager(SessionManager):
     def get_session_info(self, session_id: str) -> SessionInfo | None:
         session_info = self.get_active_session_info(session_id)
         if session_info:
-            return cast(SessionInfo, session_info)
+            return cast("SessionInfo", session_info)
         return self._session_storage.get(session_id)
 
     def list_sessions(self) -> list[SessionInfo]:
         return (
-            cast(list[SessionInfo], self.list_active_sessions())
+            cast("list[SessionInfo]", self.list_active_sessions())
             + self._session_storage.list()
         )

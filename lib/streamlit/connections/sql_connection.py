@@ -390,7 +390,7 @@ class SQLConnection(BaseConnection["Engine"]):
         str
             The name of the driver. For example, ``"pyodbc"`` or ``"psycopg2"``.
         """
-        return cast(str, self._instance.driver)
+        return cast("str", self._instance.driver)
 
     @property
     def session(self) -> Session:

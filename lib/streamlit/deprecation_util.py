@@ -105,7 +105,7 @@ def deprecate_func_name(
     # Update the wrapped func's name & docstring so st.help does the right thing
     wrapped_func.__name__ = old_name
     wrapped_func.__doc__ = func.__doc__
-    return cast(TFunc, wrapped_func)
+    return cast("TFunc", wrapped_func)
 
 
 def deprecate_obj_name(
@@ -206,4 +206,4 @@ def _create_deprecated_obj_wrapper(obj: TObj, show_warning: Callable[[], Any]) -
 
             return proxy
 
-    return cast(TObj, Wrapper())
+    return cast("TObj", Wrapper())

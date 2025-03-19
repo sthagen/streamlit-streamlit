@@ -528,7 +528,7 @@ class WriteMixin:
                 flush_buffer()
                 # We cast arg to type here to appease mypy, due to bug in mypy:
                 # https://github.com/python/mypy/issues/12933
-                self.dg.help(cast(type, arg))
+                self.dg.help(cast("type", arg))
             elif unsafe_allow_html and type_util.has_callable_attr(arg, "_repr_html_"):
                 self.dg.html(arg._repr_html_())
             elif type_util.has_callable_attr(
