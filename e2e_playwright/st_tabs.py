@@ -46,3 +46,9 @@ st.tabs(
         ":material/check_circle: Icon",
     ]
 )
+
+
+tabs = st.tabs(["HTML Tab 1", "HTML Tab 2", "HTML Tab 3"])
+
+for i, tab in enumerate(tabs):
+    tab.html(f"<h1>Hello</h1><p>This is HTML tab {i + 1}</p>")

@@ -30,6 +30,7 @@ class ConfigOptionTest(unittest.TestCase):
             ("has spaces",),
             ("_.key"),
             ("section.v_1_name"),
+            ("section.another_section.key"),
         ]
     )
     def test_invalid_key(self, key):
@@ -43,6 +44,7 @@ class ConfigOptionTest(unittest.TestCase):
             ("section.numbered12", "section", "numbered12"),
             ("numbered1.allowCaps", "numbered1", "allowCaps"),
             ("allowCaps.numbered2", "allowCaps", "numbered2"),
+            ("section.subSection.name", "section.subSection", "name"),
         ]
     )
     def test_valid_keys(self, key, section, name):

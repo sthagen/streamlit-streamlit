@@ -152,8 +152,11 @@ class ConfigOption:
             # with a lowercase letter with an optional "_" preceding it.
             # Examples: "_section", "section1"
             r"\_?[a-z][a-zA-Z0-9]*"
+            # Handling zero or additional parts, separated by period
+            # Examples: "_section.subsection", "section1._section2"
+            r"(\.[a-z][a-zA-Z0-9]*)*"
             r")"
-            # Separator between groups
+            # The final period, separating section and name
             r"\."
             # Capture a group called "name"
             r"(?P<name>"

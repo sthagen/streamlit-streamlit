@@ -249,7 +249,9 @@ class ConfigUtilTest(unittest.TestCase):
 
     @patch("click.secho")
     def test_show_config_section_formatting(self, patched_echo):
-        config_options = create_config_options({"server.address": "localhost"})
+        config_options = create_config_options(
+            {"server.address": "localhost", "theme.sidebar.primaryColor": "red"}
+        )
         config_util.show_config(CONFIG_SECTION_DESCRIPTIONS, config_options)
 
         [(args, _)] = patched_echo.call_args_list
@@ -257,6 +259,9 @@ class ConfigUtilTest(unittest.TestCase):
         lines = output.split("\n")
 
         self.assertIn("[server]", lines)
+        self.assertIn('address = "localhost"', lines)
+        self.assertIn("[theme.sidebar]", lines)
+        self.assertIn('primaryColor = "red"', lines)
 
     @patch("click.secho")
     def test_show_config_hidden_option(self, patched_echo):

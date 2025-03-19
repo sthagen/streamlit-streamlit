@@ -631,6 +631,24 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
     if not overrides:
         overrides = {}
 
+    sidebar_theme_opts = {
+        "backgroundColor": "white",
+        "baseRadius": "1.2rem",
+        "borderColor": "#ff0000",
+        "codeFont": "Monaspace Argon",
+        "font": "Inter",
+        "headingFont": "Inter Bold",
+        "linkColor": "#2EC163",
+        "primaryColor": "red",
+        "secondaryBackgroundColor": "blue",
+        "showBorderAroundInputs": True,
+        "textColor": "black",
+    }
+
+    if overrides.get("sidebar") is not None:
+        for k, v in overrides.get("sidebar").items():
+            sidebar_theme_opts[k] = v
+
     theme_opts = {
         "backgroundColor": "white",
         "base": "dark",
@@ -665,11 +683,14 @@ def _mock_get_options_for_section(overrides=None) -> Callable[..., Any]:
     }
 
     for k, v in overrides.items():
-        theme_opts[k] = v
+        if k != "sidebar":
+            theme_opts[k] = v
 
     def get_options_for_section(section):
         if section == "theme":
             return theme_opts
+        elif section == "theme.sidebar":
+            return sidebar_theme_opts
         return config.get_options_for_section(section)
 
     return get_options_for_section
@@ -1026,6 +1047,7 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "showBorderAroundInputs": None,
                     "showSidebarSeparator": None,
                     "textColor": None,
+                    "sidebar": None,
                 }
             )
         )
@@ -1056,6 +1078,19 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                     "showBorderAroundInputs": None,
                     "showSidebarSeparator": None,
                     "textColor": None,
+                    "sidebar": {
+                        # primaryColor not set to None
+                        "backgroundColor": None,
+                        "baseRadius": None,
+                        "borderColor": None,
+                        "codeFont": None,
+                        "font": None,
+                        "headingFont": None,
+                        "linkColor": None,
+                        "secondaryBackgroundColor": None,
+                        "showBorderAroundInputs": None,
+                        "textColor": None,
+                    },
                 }
             )
         )
@@ -1083,6 +1118,26 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
         assert not new_session_msg.custom_theme.HasField("link_color")
         assert not new_session_msg.custom_theme.HasField("base_font_size")
         assert not new_session_msg.custom_theme.HasField("show_sidebar_separator")
+
+        app_session._populate_theme_msg(
+            new_session_msg.custom_theme.sidebar,
+            "theme.sidebar",
+        )
+
+        assert new_session_msg.custom_theme.HasField("sidebar")
+        assert new_session_msg.custom_theme.sidebar.primary_color == "red"
+        assert new_session_msg.custom_theme.sidebar.background_color == ""
+        assert new_session_msg.custom_theme.sidebar.heading_font == ""
+        assert new_session_msg.custom_theme.sidebar.code_font == ""
+        assert new_session_msg.custom_theme.sidebar.body_font == ""
+
+        # Fields that are marked as optional in proto:
+        assert not new_session_msg.custom_theme.sidebar.HasField("base_radius")
+        assert not new_session_msg.custom_theme.sidebar.HasField("border_color")
+        assert not new_session_msg.custom_theme.sidebar.HasField(
+            "show_border_around_inputs"
+        )
+        assert not new_session_msg.custom_theme.sidebar.HasField("link_color")
 
     @patch("streamlit.runtime.app_session.config")
     def test_can_specify_all_options(self, patched_config):
@@ -1127,6 +1182,31 @@ class PopulateCustomThemeMsgTest(unittest.TestCase):
                 weight=400,
             ),
         ]
+
+        app_session._populate_theme_msg(
+            new_session_msg.custom_theme.sidebar,
+            "theme.sidebar",
+        )
+        assert new_session_msg.custom_theme.HasField("sidebar")
+        assert new_session_msg.custom_theme.sidebar.primary_color == "red"
+        assert new_session_msg.custom_theme.sidebar.background_color == "white"
+        assert new_session_msg.custom_theme.sidebar.text_color == "black"
+        assert new_session_msg.custom_theme.sidebar.secondary_background_color == "blue"
+        assert new_session_msg.custom_theme.sidebar.base_radius == "1.2rem"
+        assert new_session_msg.custom_theme.sidebar.border_color == "#ff0000"
+        assert new_session_msg.custom_theme.sidebar.show_border_around_inputs is True
+        assert new_session_msg.custom_theme.sidebar.link_color == "#2EC163"
+        assert new_session_msg.custom_theme.sidebar.heading_font == "Inter Bold"
+        assert new_session_msg.custom_theme.sidebar.body_font == "Inter"
+        assert new_session_msg.custom_theme.sidebar.code_font == "Monaspace Argon"
+
+        # Default values for unsupported fields in sidebar
+        assert new_session_msg.custom_theme.sidebar.base == 0
+        assert not new_session_msg.custom_theme.sidebar.font_faces
+        assert not new_session_msg.custom_theme.sidebar.HasField("base_font_size")
+        assert not new_session_msg.custom_theme.sidebar.HasField(
+            "show_sidebar_separator"
+        )
 
     @patch("streamlit.runtime.app_session._LOGGER")
     @patch("streamlit.runtime.app_session.config")

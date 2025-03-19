@@ -82,7 +82,6 @@ def configure_snowflake_dark_theme():
     os.environ["STREAMLIT_THEME_CODE_FONT"] = (
         '"Monaspace Argon", Menlo, Monaco, Consolas, "Courier New", monospace'
     )
-    os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"] = "minimal"
     os.environ["STREAMLIT_THEME_BASE_FONT_SIZE"] = "14"
     os.environ["STREAMLIT_CLIENT_TOOLBAR_MODE"] = "minimal"
     yield

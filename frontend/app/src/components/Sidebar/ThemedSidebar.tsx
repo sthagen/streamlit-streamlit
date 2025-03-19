@@ -23,16 +23,23 @@ import {
   ThemeProvider,
 } from "@streamlit/lib"
 import { AppContext } from "@streamlit/app/src/components/AppContext"
+import { notNullOrUndefined } from "@streamlit/utils"
 
 import Sidebar, { SidebarProps } from "./Sidebar"
 
 const createSidebarTheme = (theme: ThemeConfig): ThemeConfig => {
+  let sidebarOverride = {}
+  if (notNullOrUndefined(theme.themeInput?.sidebar)) {
+    sidebarOverride = theme.themeInput.sidebar
+  }
+
   return createTheme(
     "Sidebar",
     {
       ...theme.themeInput,
       secondaryBackgroundColor: theme.emotion.colors.bgColor,
       backgroundColor: theme.emotion.colors.secondaryBg,
+      ...sidebarOverride,
     },
     theme,
     // inSidebar

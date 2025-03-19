@@ -21,6 +21,7 @@ import { screen } from "@testing-library/react"
 import { Html as HtmlProto } from "@streamlit/protobuf"
 
 import { render } from "~lib/test_util"
+import * as UseCalculatedWidth from "~lib/hooks/useCalculatedWidth"
 
 import Html, { HtmlProps } from "./Html"
 
@@ -32,12 +33,20 @@ const getProps = (elementProps: Partial<HtmlProto> = {}): HtmlProps => ({
 })
 
 describe("HTML element", () => {
+  beforeEach(() => {
+    vi.spyOn(UseCalculatedWidth, "useCalculatedWidth").mockReturnValue([
+      100,
+      { current: null },
+    ])
+  })
+
   it("renders the element as expected", () => {
     const props = getProps()
     render(<Html {...props} />)
     const html = screen.getByTestId("stHtml")
     expect(html).toBeInTheDocument()
     expect(html).toHaveTextContent("Test Html")
+    expect(html).toHaveStyle("width: 100px")
     expect(html).toHaveClass("stHtml")
   })
 
