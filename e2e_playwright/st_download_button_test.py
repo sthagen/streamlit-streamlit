@@ -14,12 +14,28 @@
 
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import ImageCompareFunction
+from e2e_playwright.conftest import ImageCompareFunction, wait_until
 from e2e_playwright.shared.app_utils import (
     check_top_level_class,
     click_checkbox,
     get_element_by_key,
 )
+
+DOWNLOAD_BUTTON_ELEMENTS = 15
+
+
+def check_download_button_source_error_count(messages: list[str], expected_count: int):
+    """Check that the expected number of download button source error messages are logged."""
+    assert (
+        len(
+            [
+                message
+                for message in messages
+                if "Client Error: Download Button source error" in message
+            ]
+        )
+        == expected_count
+    )
 
 
 def test_download_button_widget_rendering(
@@ -171,3 +187,29 @@ def test_check_top_level_class(app: Page):
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "download_button")).to_be_visible()
+
+
+def test_download_button_source_error(app: Page, app_port: int):
+    """Test that the download button source error is correctly logged."""
+    # Ensure download source request return a 404 status
+    app.route(
+        f"http://localhost:{app_port}/media/**",
+        lambda route: route.fulfill(
+            status=404, headers={"Content-Type": "text/plain"}, body="Not Found"
+        ),
+    )
+
+    # Capture console messages
+    messages = []
+    app.on("console", lambda msg: messages.append(msg.text))
+
+    # Navigate to the app
+    app.goto(f"http://localhost:{app_port}")
+
+    # Wait until the expected error is logged, indicating CLIENT_ERROR was sent
+    wait_until(
+        app,
+        lambda: check_download_button_source_error_count(
+            messages, DOWNLOAD_BUTTON_ELEMENTS
+        ),
+    )

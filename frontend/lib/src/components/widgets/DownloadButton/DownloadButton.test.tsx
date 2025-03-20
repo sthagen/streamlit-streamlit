@@ -155,4 +155,14 @@ describe("DownloadButton widget", () => {
       expect(downloadButton).toBeDisabled()
     })
   })
+
+  it("triggers checkSourceUrlResponse to check download url", () => {
+    const props = getProps()
+    render(<DownloadButton {...props} />)
+
+    expect(props.endpoints.checkSourceUrlResponse).toHaveBeenCalledWith(
+      props.element.url,
+      "Download Button"
+    )
+  })
 })

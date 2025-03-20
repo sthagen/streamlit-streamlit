@@ -70,6 +70,16 @@ interface Props {
   resetHostAuthToken: () => void
 
   /**
+   * Sends message to host when websocket connection errors encountered to
+   * inform where/why the error occurred.
+   */
+  sendClientError: (
+    error: string | number,
+    message: string,
+    source: string
+  ) => void
+
+  /**
    * Function to set the host config for this app (if in a relevant deployment
    * scenario).
    */
@@ -168,7 +178,12 @@ export class ConnectionManager {
         this.websocketConnection = await this.connectToRunningServer()
       } catch (e) {
         const err = e instanceof Error ? e : new Error(`${e}`)
-        LOG.error(err.message)
+        LOG.error(`Client Error: Websocket connection - ${err.message}`)
+        this.props.sendClientError(
+          "Failed to establish websocket connection",
+          err.message,
+          "Connection Manager"
+        )
         this.setConnectionState(
           ConnectionState.DISCONNECTED_FOREVER,
           err.message
@@ -220,6 +235,7 @@ export class ConnectionManager {
       onRetry: this.showRetryError,
       claimHostAuthToken: this.props.claimHostAuthToken,
       resetHostAuthToken: this.props.resetHostAuthToken,
+      sendClientError: this.props.sendClientError,
       onHostConfigResp: this.props.onHostConfigResp,
     })
   }

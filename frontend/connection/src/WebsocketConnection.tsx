@@ -85,6 +85,16 @@ export interface Args {
   resetHostAuthToken: () => void
 
   /**
+   * Sends message to host when websocket connection errors encountered to
+   * inform where/why the error occurred.
+   */
+  sendClientError: (
+    error: string | number,
+    message: string,
+    source: string
+  ) => void
+
+  /**
    * Function to set the host config and allowed-message-origins for this app (if in a relevant deployment
    * scenario).
    */
@@ -240,6 +250,15 @@ export class WebsocketConnection {
       event === "FATAL_ERROR" &&
       this.state !== ConnectionState.DISCONNECTED_FOREVER
     ) {
+      LOG.error(
+        `Client Error: Websocket connection encountered fatal error - ${errMsg}`
+      )
+      this.args.sendClientError(
+        "Websocket connection fatal error encountered",
+        // @ts-expect-error - errMsg always passed with FATAL_ERROR event
+        errMsg,
+        "Websocket Connection"
+      )
       // If we get a fatal error, we transition to DISCONNECTED_FOREVER
       // regardless of our current state.
       this.setFsmState(ConnectionState.DISCONNECTED_FOREVER, errMsg)
@@ -313,6 +332,7 @@ export class WebsocketConnection {
       PING_MINIMUM_RETRY_PERIOD_MS,
       PING_MAXIMUM_RETRY_PERIOD_MS,
       this.args.onRetry,
+      this.args.sendClientError,
       this.args.onHostConfigResp
     )
 
@@ -404,9 +424,14 @@ export class WebsocketConnection {
       }
     })
 
-    this.websocket.addEventListener("error", () => {
+    this.websocket.addEventListener("error", (event: unknown) => {
       if (checkWebsocket()) {
-        LOG.error("WebSocket onerror")
+        LOG.error("Client Error: WebSocket onerror")
+        this.args.sendClientError(
+          "Websocket connection onerror triggered",
+          `Error: ${event}`,
+          "Websocket Connection"
+        )
         this.closeConnection()
         this.stepFsm("CONNECTION_ERROR")
       }
@@ -443,7 +468,12 @@ export class WebsocketConnection {
       }
 
       if (this.websocket.readyState === 0 /* CONNECTING */) {
-        LOG.info(`${uri} timed out`)
+        LOG.info(`Client error: ${uri} timed out`)
+        this.args.sendClientError(
+          "Websocket connection timed out",
+          `${uri} timed out`,
+          "Websocket Connection"
+        )
         this.closeConnection()
         this.stepFsm("CONNECTION_TIMED_OUT")
       }

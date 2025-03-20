@@ -78,7 +78,7 @@ const genericColors = {
 
 const emotionMockTheme = {
   inSidebar: false,
-  showSidebarSeparator: false,
+  showSidebarBorder: false,
   breakpoints,
   colors: createEmotionColors(genericColors),
   fonts,

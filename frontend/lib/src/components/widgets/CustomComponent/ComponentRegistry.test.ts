@@ -87,4 +87,43 @@ describe("ComponentRegistry", () => {
     expect(msgListener1).not.toHaveBeenCalled()
     expect(msgListener2).toHaveBeenCalledWith(messageData.type, messageData)
   })
+
+  test("Sends CLIENT_ERROR when sendTimeoutError is called", () => {
+    const registry = new ComponentRegistry(mockEndpoints())
+    const sendClientErrorToHostSpy = vi.spyOn(
+      // @ts-expect-error - registry.endpoints is private
+      registry.endpoints,
+      "sendClientErrorToHost"
+    )
+    const url = registry.getComponentURL("foo", "index.html")
+    registry.sendTimeoutError(url, "foo")
+    expect(sendClientErrorToHostSpy).toHaveBeenCalledWith(
+      "Custom Component",
+      "Request Timeout",
+      "Your app is having trouble loading the component.",
+      url,
+      "foo"
+    )
+  })
+
+  test("Triggers call to endpoint's checkSourceUrlResponse when registry's checkSourceUrlResponse is called", () => {
+    const registry = new ComponentRegistry(mockEndpoints())
+    const url = registry.getComponentURL("foo", "index.html")
+    const registryCheckSourceResponseSpy = vi.spyOn(
+      registry,
+      "checkSourceUrlResponse"
+    )
+    const endpointsCheckSourceResponseSpy = vi.spyOn(
+      // @ts-expect-error - registry.endpoints is private
+      registry.endpoints,
+      "checkSourceUrlResponse"
+    )
+    registry.checkSourceUrlResponse(url, "foo")
+    expect(registryCheckSourceResponseSpy).toHaveBeenCalledWith(url, "foo")
+    expect(endpointsCheckSourceResponseSpy).toHaveBeenCalledWith(
+      url,
+      "Custom Component",
+      "foo"
+    )
+  })
 })

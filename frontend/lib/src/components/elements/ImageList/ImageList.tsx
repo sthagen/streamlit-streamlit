@@ -16,6 +16,8 @@
 
 import React, { CSSProperties, memo, ReactElement } from "react"
 
+import { getLogger } from "loglevel"
+
 import {
   ImageList as ImageListProto,
   Image as ImageProto,
@@ -35,6 +37,8 @@ import {
   StyledImageContainer,
   StyledImageList,
 } from "./styled-components"
+
+const LOG = getLogger("ImageList")
 
 export interface ImageListProps {
   endpoints: StreamlitEndpoints
@@ -113,6 +117,19 @@ function ImageList({
     imgStyle.maxWidth = "100%"
   }
 
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement>
+  ): void => {
+    const imageUrl = e.currentTarget.src
+    LOG.error(`Client Error: Image source error - ${imageUrl}`)
+    endpoints.sendClientErrorToHost(
+      "Image",
+      "Image source failed to load",
+      "onerror triggered",
+      imageUrl
+    )
+  }
+
   return (
     <StyledToolbarElementContainer
       width={elementWidth}
@@ -138,6 +155,7 @@ function ImageList({
                 style={imgStyle}
                 src={endpoints.buildMediaURL(image.url)}
                 alt={idx.toString()}
+                onError={handleImageError}
               />
               {image.caption && (
                 <StyledCaption data-testid="stImageCaption" style={imgStyle}>

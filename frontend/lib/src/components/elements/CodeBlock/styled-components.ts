@@ -30,7 +30,7 @@ export const StyledInlineCode = styled.code(({ theme }) => ({
   whiteSpace: "pre-wrap",
   margin: 0,
   borderRadius: theme.radii.md,
-  background: theme.colors.codeHighlightColor,
+  background: theme.colors.codeBackgroundColor,
   color: theme.colors.codeTextColor,
   fontFamily: theme.genericFonts.codeFont,
   // Use em here so that it works correctly within captions
@@ -72,7 +72,7 @@ interface StyledPreProps {
 */
 export const StyledPre = styled.pre<StyledPreProps>(({ theme, height }) => ({
   height: height ? `${height}px` : undefined,
-  background: theme.colors.codeHighlightColor,
+  background: theme.colors.codeBackgroundColor,
   borderRadius: theme.radii.default,
   color: theme.colors.bodyText,
   fontSize: theme.fontSizes.twoSm,

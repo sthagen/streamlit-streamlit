@@ -33,7 +33,7 @@ def configure_snowflake_light_theme():
     os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"] = "#f7f7f7"
     os.environ["STREAMLIT_THEME_TEXT_COLOR"] = "#1e252f"
     os.environ["STREAMLIT_THEME_BORDER_COLOR"] = "#d5dae4"
-    os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"] = "True"
+    os.environ["STREAMLIT_THEME_SHOW_WIDGET_BORDER"] = "True"
     os.environ["STREAMLIT_THEME_FONT_FACES"] = json.dumps(
         [
             {
@@ -91,7 +91,7 @@ def configure_snowflake_light_theme():
     del os.environ["STREAMLIT_THEME_SECONDARY_BACKGROUND_COLOR"]
     del os.environ["STREAMLIT_THEME_TEXT_COLOR"]
     del os.environ["STREAMLIT_THEME_BORDER_COLOR"]
-    del os.environ["STREAMLIT_THEME_SHOW_BORDER_AROUND_INPUTS"]
+    del os.environ["STREAMLIT_THEME_SHOW_WIDGET_BORDER"]
     del os.environ["STREAMLIT_THEME_FONT_FACES"]
     del os.environ["STREAMLIT_THEME_FONT"]
     del os.environ["STREAMLIT_THEME_HEADING_FONT"]

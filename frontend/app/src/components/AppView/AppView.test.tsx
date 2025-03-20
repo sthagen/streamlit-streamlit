@@ -16,7 +16,7 @@
 
 import React from "react"
 
-import { screen, within } from "@testing-library/react"
+import { fireEvent, screen, within } from "@testing-library/react"
 
 import {
   AppRoot,
@@ -75,7 +75,12 @@ function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
   }
 }
 
-const mockEndpointProp = mockEndpoints()
+const buildMediaURL = vi.fn((url: string) => url)
+const sendClientErrorToHost = vi.fn()
+const mockEndpointProp = mockEndpoints({
+  buildMediaURL,
+  sendClientErrorToHost,
+})
 
 function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
   const formsData = createFormsData()
@@ -492,6 +497,22 @@ describe("AppView element", () => {
     it("renders logo - large size when specified", () => {
       render(<AppView {...getProps({ appLogo: imageWithSize })} />)
       expect(screen.getByTestId("stLogo")).toHaveStyle({ height: "2rem" })
+    })
+
+    it("sends an CLIENT_ERROR message when the logo source fails to load", () => {
+      const props = getProps({ appLogo: imageOnly })
+      render(<AppView {...props} />)
+      const logoElement = screen.getByTestId("stLogo")
+      expect(logoElement).toBeInTheDocument()
+
+      fireEvent.error(logoElement)
+
+      expect(sendClientErrorToHost).toHaveBeenCalledWith(
+        "Logo",
+        "Logo source failed to load",
+        "onerror triggered",
+        "https://global.discourse-cdn.com/business7/uploads/streamlit/original/2X/8/8cb5b6c0e1fe4e4ebfd30b769204c0d30c332fec.png"
+      )
     })
   })
 

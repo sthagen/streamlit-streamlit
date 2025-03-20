@@ -449,9 +449,10 @@ class ConfigTest(unittest.TestCase):
                 "theme.codeFont",
                 "theme.fontFaces",
                 "theme.borderColor",
-                "theme.showBorderAroundInputs",
+                "theme.showWidgetBorder",
                 "theme.linkColor",
-                "theme.showSidebarSeparator",
+                "theme.codeBackgroundColor",
+                "theme.showSidebarBorder",
                 "theme.sidebar.primaryColor",
                 "theme.sidebar.backgroundColor",
                 "theme.sidebar.secondaryBackgroundColor",
@@ -461,8 +462,9 @@ class ConfigTest(unittest.TestCase):
                 "theme.sidebar.headingFont",
                 "theme.sidebar.codeFont",
                 "theme.sidebar.borderColor",
-                "theme.sidebar.showBorderAroundInputs",
+                "theme.sidebar.showWidgetBorder",
                 "theme.sidebar.linkColor",
+                "theme.sidebar.codeBackgroundColor",
                 "global.appTest",
                 "global.developmentMode",
                 "global.disableWidgetStateDuplicationWarning",
@@ -621,14 +623,15 @@ class ConfigTest(unittest.TestCase):
             "backgroundColor": None,
             "textColor": None,
             "borderColor": None,
-            "showBorderAroundInputs": None,
+            "showWidgetBorder": None,
             "linkColor": None,
             "font": None,
             "headingFont": None,
             "codeFont": None,
             "fontFaces": None,
             "baseFontSize": None,
-            "showSidebarSeparator": None,
+            "codeBackgroundColor": None,
+            "showSidebarBorder": None,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -643,8 +646,9 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.secondaryBackgroundColor", "#021A09", "test")
         config._set_option("theme.backgroundColor", "#001200", "test")
         config._set_option("theme.borderColor", "#0B4C0B", "test")
-        config._set_option("theme.showBorderAroundInputs", True, "test")
+        config._set_option("theme.showWidgetBorder", True, "test")
         config._set_option("theme.linkColor", "#2EC163", "test")
+        config._set_option("theme.codeBackgroundColor", "#29361e", "test")
         config._set_option("theme.font", "Inter", "test")
         config._set_option("theme.headingFont", "Inter", "test")
         config._set_option(
@@ -660,7 +664,7 @@ class ConfigTest(unittest.TestCase):
         )
         config._set_option("theme.codeFont", "Monaspace Argon", "test")
         config._set_option("theme.baseFontSize", 14, "test")
-        config._set_option("theme.showSidebarSeparator", True, "test")
+        config._set_option("theme.showSidebarBorder", True, "test")
 
         expected = {
             "base": "dark",
@@ -670,11 +674,12 @@ class ConfigTest(unittest.TestCase):
             "backgroundColor": "#001200",
             "textColor": "#DFFDE0",
             "borderColor": "#0B4C0B",
-            "showBorderAroundInputs": True,
+            "showWidgetBorder": True,
             "linkColor": "#2EC163",
             "font": "Inter",
             "headingFont": "Inter",
             "codeFont": "Monaspace Argon",
+            "codeBackgroundColor": "#29361e",
             "fontFaces": [
                 {
                     "family": "Inter",
@@ -683,7 +688,7 @@ class ConfigTest(unittest.TestCase):
                 },
             ],
             "baseFontSize": 14,
-            "showSidebarSeparator": True,
+            "showSidebarBorder": True,
         }
         self.assertEqual(config.get_options_for_section("theme"), expected)
 
@@ -697,11 +702,12 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.sidebar.secondaryBackgroundColor", "#021A09", "test")
         config._set_option("theme.sidebar.backgroundColor", "#001200", "test")
         config._set_option("theme.sidebar.borderColor", "#0B4C0B", "test")
-        config._set_option("theme.sidebar.showBorderAroundInputs", True, "test")
+        config._set_option("theme.sidebar.showWidgetBorder", True, "test")
         config._set_option("theme.sidebar.linkColor", "#2EC163", "test")
         config._set_option("theme.sidebar.font", "Inter", "test")
         config._set_option("theme.sidebar.headingFont", "Inter", "test")
         config._set_option("theme.sidebar.codeFont", "Monaspace Argon", "test")
+        config._set_option("theme.sidebar.codeBackgroundColor", "#29361e", "test")
 
         expected = {
             "primaryColor": "#FFF000",
@@ -710,17 +716,18 @@ class ConfigTest(unittest.TestCase):
             "backgroundColor": "#001200",
             "textColor": "#DFFDE0",
             "borderColor": "#0B4C0B",
-            "showBorderAroundInputs": True,
+            "showWidgetBorder": True,
             "linkColor": "#2EC163",
             "font": "Inter",
             "headingFont": "Inter",
             "codeFont": "Monaspace Argon",
+            "codeBackgroundColor": "#29361e",
         }
         self.assertEqual(config.get_options_for_section("theme.sidebar"), expected)
 
     def test_with_sidebar_theme_unsupported_options(self):
         """Test that the sidebar theme cannot set unsupported options."""
-        unsupported_options = ["showSidebarSeparator"]
+        unsupported_options = ["showSidebarBorder"]
 
         for option in unsupported_options:
             with self.assertLogs(logger="streamlit.config", level="WARNING") as cm:

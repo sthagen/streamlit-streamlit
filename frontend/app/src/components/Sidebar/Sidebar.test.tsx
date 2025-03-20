@@ -34,7 +34,12 @@ vi.mock("~lib/util/Hooks", async () => ({
   useIsOverflowing: vi.fn(),
 }))
 
-const mockEndpointProp = mockEndpoints()
+const buildMediaURL = vi.fn((url: string) => url)
+const sendClientErrorToHost = vi.fn()
+const mockEndpointProp = mockEndpoints({
+  buildMediaURL,
+  sendClientErrorToHost,
+})
 
 function renderSidebar(props: Partial<SidebarProps> = {}): RenderResult {
   return render(
@@ -360,6 +365,23 @@ describe("Sidebar Component", () => {
       // L & R padding (twoXL) + R margin (sm) + collapse button (2.25rem)
       expect(sidebarLogo).toHaveStyle(
         `max-width: calc(${sidebarWidth} - 2 * 1.5rem - 0.5rem - 2.25rem)`
+      )
+    })
+
+    it("sends an CLIENT_ERROR message when the logo source fails to load", () => {
+      renderSidebar({ appLogo: fullAppLogo })
+      const sidebarLogo = within(
+        screen.getByTestId("stSidebarHeader")
+      ).getByTestId("stLogo")
+      expect(sidebarLogo).toBeInTheDocument()
+
+      fireEvent.error(sidebarLogo)
+
+      expect(sendClientErrorToHost).toHaveBeenCalledWith(
+        "Sidebar Logo",
+        "Logo source failed to load",
+        "onerror triggered",
+        "https://global.discourse-cdn.com/business7/uploads/streamlit/original/2X/8/8cb5b6c0e1fe4e4ebfd30b769204c0d30c332fec.png"
       )
     })
   })

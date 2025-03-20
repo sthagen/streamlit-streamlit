@@ -920,7 +920,7 @@ def _populate_config_msg(msg: Config) -> None:
 
 def _populate_theme_msg(msg: CustomThemeConfig, section: str = "theme") -> None:
     theme_opts = config.get_options_for_section(section)
-    if not any(theme_opts.values()):
+    if all(val is None for val in theme_opts.values()):
         return
 
     for option_name, option_val in theme_opts.items():

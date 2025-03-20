@@ -217,6 +217,7 @@ describe("StaticConnection", () => {
     const endpoints = new DefaultStreamlitEndpoints({
       getServerUri: () => MOCK_SERVER_URI,
       csrfEnabled: false,
+      sendClientError: vi.fn(),
     })
 
     beforeEach(() => {

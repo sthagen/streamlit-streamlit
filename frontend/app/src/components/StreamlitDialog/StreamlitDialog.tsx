@@ -208,7 +208,7 @@ function clearCacheDialog(props: ClearCacheProps): ReactElement {
   )
 }
 
-interface ScriptCompileErrorProps {
+export interface ScriptCompileErrorProps {
   type: DialogType.SCRIPT_COMPILE_ERROR
   exception: IException | null | undefined
   onClose: PlainEventHandler
@@ -241,7 +241,7 @@ function settingsDialog(props: SettingsProps): ReactElement {
   return <SettingsDialog {...props} />
 }
 
-interface WarningProps {
+export interface WarningProps {
   type: DialogType.WARNING
   title: string
   msg: ReactNode

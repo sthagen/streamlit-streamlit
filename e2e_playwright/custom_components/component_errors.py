@@ -12,32 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-import pandas as pd
+from streamlit_ace import st_ace
 
 import streamlit as st
 
-
-def page2():
-    st.header("Page 2")
-
-
-def page3():
-    st.header("Page 3")
-
-
-# Make MPA to use for dialog blocking test
-st.navigation(
-    [
-        st.Page(page2, title="02_App_Page_2", default=True),
-        st.Page(page3, title="03_App_Page_3"),
-    ]
-)
-
-# always generate the same data
-np.random.seed(0)
-
-st.image(np.repeat(0, 100).reshape(10, 10))
-st.dataframe(
-    pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list("ABCD"))
-)
+## Spawn a new Ace editor
+st.subheader("Ace Editor Component", divider="blue")
+content = st_ace()
+st.write(content)

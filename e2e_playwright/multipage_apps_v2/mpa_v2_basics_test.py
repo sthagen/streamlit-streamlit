@@ -20,6 +20,7 @@ from e2e_playwright.conftest import (
     ImageCompareFunction,
     wait_for_app_loaded,
     wait_for_app_run,
+    wait_until,
 )
 from e2e_playwright.shared.app_utils import (
     click_button,
@@ -539,3 +540,35 @@ def test_sidebar_interaction_performance(app: Page):
     options = sidebar.locator("li")
     for option in options.all():
         option.hover()
+
+
+def test_logo_source_errors(app: Page, app_port: int):
+    """Test that logo source errors are logged."""
+    app.route(
+        f"http://localhost:{app_port}/media/**",
+        lambda route: route.fulfill(
+            status=404, headers={"Content-Type": "text/plain"}, body="Not Found"
+        ),
+    )
+
+    # Capture console messages
+    messages = []
+    app.on("console", lambda msg: messages.append(msg.text))
+
+    # Navigate to the app
+    app.goto(f"http://localhost:{app_port}")
+
+    # Wait until the expected error is logged, indicating CLIENT_ERROR was sent
+    # for the logo in the main app area and the sidebar
+    wait_until(
+        app,
+        lambda: any(
+            "Client Error: Logo source error" in message for message in messages
+        ),
+    )
+    wait_until(
+        app,
+        lambda: any(
+            "Client Error: Sidebar Logo source error" in message for message in messages
+        ),
+    )

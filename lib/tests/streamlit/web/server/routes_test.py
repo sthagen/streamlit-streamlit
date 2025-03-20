@@ -305,6 +305,7 @@ class HostConfigHandlerTest(tornado.testing.AsyncHTTPTestCase):
                 "enableCustomParentMessages": False,
                 "enforceDownloadInNewTab": False,
                 "metricsUrl": "",
+                "blockErrorDialogs": False,
             },
             response_body,
         )

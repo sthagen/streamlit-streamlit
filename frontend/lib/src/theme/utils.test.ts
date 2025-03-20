@@ -658,6 +658,9 @@ describe("createEmotionTheme", () => {
     [" FULL ", "1.4rem", "0.7rem", "2.1rem", "2.8rem"],
     ["  medium  ", "0.5rem", "0.25rem", "0.75rem", "1rem"],
     ["2 rem ", "2rem", "1rem", "3rem", "4rem"],
+    // Test only numbers:
+    ["10", "10px", "5px", "15px", "20px"],
+    ["24foo", "24px", "12px", "36px", "48px"],
   ])(
     "correctly applies baseRadius '%s'",
     (baseRadius, expectedDefault, expectedMd, expectedXl, expectedXxl) => {
@@ -676,7 +679,6 @@ describe("createEmotionTheme", () => {
 
   it.each([
     "invalid",
-    "123", // Missing unit
     "rem", // Missing number
     "px", // Missing number
     "", // Empty string

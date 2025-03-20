@@ -16,6 +16,8 @@
 
 import React, { ReactElement } from "react"
 
+import { getLogger } from "loglevel"
+
 import { StreamlitEndpoints } from "@streamlit/connection"
 import {
   AppRoot,
@@ -54,6 +56,7 @@ import {
 } from "./styled-components"
 import ScrollToBottomContainer from "./ScrollToBottomContainer"
 
+const LOG = getLogger("AppView")
 export interface AppViewProps {
   elements: AppRoot
 
@@ -178,6 +181,18 @@ function AppView(props: AppViewProps): ReactElement {
     removeScriptFinishedHandler,
   ])
 
+  const handleLogoError = (logoUrl: string): void => {
+    // StyledLogo does not retain the e.currentEvent.src like other onerror cases
+    // store and read from ref instead
+    LOG.error(`Client Error: Logo source error - ${logoUrl}`)
+    endpoints.sendClientErrorToHost(
+      "Logo",
+      "Logo source failed to load",
+      "onerror triggered",
+      logoUrl
+    )
+  }
+
   const renderLogo = (appLogo: Logo): ReactElement => {
     const displayImage = appLogo.iconImage ? appLogo.iconImage : appLogo.image
     const source = endpoints.buildMediaURL(displayImage)
@@ -189,6 +204,8 @@ function AppView(props: AppViewProps): ReactElement {
         alt="Logo"
         className="stLogo"
         data-testid="stLogo"
+        // Save to logo's src to send on load error
+        onError={_ => handleLogoError(source)}
       />
     )
 

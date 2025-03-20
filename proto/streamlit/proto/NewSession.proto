@@ -155,7 +155,7 @@ message CustomThemeConfig {
   BaseTheme base = 6;
   // DEPRECATED: This color is not applied anymore:
   string widget_background_color = 7;
-  // DEPRECATED: Use the border_color and show_border_around_inputs instead:
+  // DEPRECATED: Use the border_color and show_widget_border instead:
   string widget_border_color = 8;
   // DEPRECATED: Please use the base_radius theme config instead:
   Radii radii = 9;
@@ -169,12 +169,12 @@ message CustomThemeConfig {
   string skeleton_background_color = 17;
   optional string base_radius = 18;
   optional string border_color = 19;
-  optional bool show_border_around_inputs = 20;
+  optional bool show_widget_border = 20;
   optional string link_color = 21;
   optional int32 base_font_size = 22;
-  optional bool show_sidebar_separator = 23;
-
+  optional bool show_sidebar_border = 23;
   optional CustomThemeConfig sidebar = 24;
+  optional string code_background_color = 25;
 }
 
 message FontFace {

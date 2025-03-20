@@ -54,8 +54,25 @@ class Endpoints implements StreamlitEndpoints {
     throw new Error("Unimplemented")
   }
 
-  public buildComponentURL(): string {
+  public sendClientErrorToHost(
+    component: string,
+    error: string | number,
+    message: string,
+    source: string,
+    customComponentName?: string
+  ): void {
     throw new Error("Unimplemented")
+  }
+
+  public checkSourceUrlResponse(
+    sourceUrl: string,
+    componentName?: string
+  ): Promise<void> {
+    return Promise.reject(new Error("Unimplemented"))
+  }
+
+  public buildComponentURL(componentName: string, path: string): string {
+    return path
   }
 
   public buildMediaURL(url: string): string {

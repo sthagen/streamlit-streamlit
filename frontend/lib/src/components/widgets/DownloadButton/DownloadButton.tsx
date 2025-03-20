@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement } from "react"
+import React, { memo, ReactElement, useEffect } from "react"
 
 import { DownloadButton as DownloadButtonProto } from "@streamlit/protobuf"
 
@@ -62,6 +62,12 @@ function DownloadButton(props: Props): ReactElement {
   } else if (element.type === "tertiary") {
     kind = BaseButtonKind.TERTIARY
   }
+
+  useEffect(() => {
+    // Since we use a hidden link to download, we can't use the onerror event
+    // to catch src url load errors. Catch with direct check instead.
+    endpoints.checkSourceUrlResponse(element.url, "Download Button")
+  }, [element.url, endpoints])
 
   const handleDownloadClick: () => void = () => {
     if (!element.ignoreRerun) {

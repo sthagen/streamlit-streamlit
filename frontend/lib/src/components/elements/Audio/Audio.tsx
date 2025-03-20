@@ -16,6 +16,8 @@
 
 import React, { memo, ReactElement, useEffect, useMemo, useRef } from "react"
 
+import { getLogger } from "loglevel"
+
 import { Audio as AudioProto } from "@streamlit/protobuf"
 
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
@@ -23,6 +25,7 @@ import { WidgetStateManager as ElementStateManager } from "~lib/WidgetStateManag
 
 import { StyledAudio, StyledAudioContainer } from "./styled-components"
 
+const LOG = getLogger("Audio")
 export interface AudioProps {
   endpoints: StreamlitEndpoints
   element: AudioProto
@@ -147,6 +150,19 @@ function Audio({
 
   const uri = endpoints.buildMediaURL(element.url)
 
+  const handleAudioError = (
+    e: React.SyntheticEvent<HTMLAudioElement>
+  ): void => {
+    const audioUrl = e.currentTarget.src
+    LOG.error(`Client Error: Audio source error - ${audioUrl}`)
+    endpoints.sendClientErrorToHost(
+      "Audio",
+      "Audio source failed to load",
+      "onerror triggered",
+      audioUrl
+    )
+  }
+
   return (
     <StyledAudioContainer>
       <StyledAudio
@@ -156,6 +172,7 @@ function Audio({
         controls
         autoPlay={autoplay && !preventAutoplay}
         src={uri}
+        onError={handleAudioError}
       />
     </StyledAudioContainer>
   )
