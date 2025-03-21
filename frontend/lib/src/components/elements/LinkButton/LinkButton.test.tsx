@@ -34,7 +34,6 @@ const getProps = (
     url: "https://streamlit.io",
     ...elementProps,
   }),
-  disabled: false,
   ...widgetProps,
 })
 
@@ -96,7 +95,7 @@ describe("LinkButton widget", () => {
       })
 
       it(`renders disabled ${type} correctly`, () => {
-        render(<LinkButton {...getProps({ type }, { disabled: true })} />)
+        render(<LinkButton {...getProps({ type, disabled: true })} />)
 
         const linkButton = screen.getByRole("link")
         expect(linkButton).toHaveAttribute("disabled")

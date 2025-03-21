@@ -64,6 +64,10 @@ def test_disconnected_states(app: Page, assert_snapshot: ImageCompareFunction):
 
     expect(app.get_by_test_id("stMarkdown").first).to_contain_text("Value 1: 25")
 
+    expect(app.get_by_test_id("stLinkButton").locator("a")).not_to_be_disabled()
+    expect(app.get_by_test_id("stTab").first).not_to_be_disabled()
+    expect(app.get_by_test_id("stExpander").locator("details")).not_to_be_disabled()
+
     # After some time the disconnected dialog will appear.
     # It would be nicer to have this in a separate function, but we can't do that easily
     # because the runtime is shutdown for all test functions. We would need to start the
