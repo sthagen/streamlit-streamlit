@@ -212,6 +212,45 @@ export function isInChildFrame(): boolean {
 }
 
 /**
+ * Returns the URL of the app, handling both embedded and non-embedded cases.
+ * If the app is embedded in an iframe, it attempts to get the parent frame's URL.
+ */
+export function getUrl(): string {
+  try {
+    // Try to access top location if we're in an iframe
+    if (isInChildFrame() && window.top) {
+      return window.top.location.href
+    }
+  } catch (e) {
+    // CSP error might occur when trying to access parent frame
+    // Just fall through to default case
+  }
+  // Default to current document location
+  return document.location.href
+}
+
+/**
+ * Returns the timezone from the browser's Intl API.
+ */
+export function getTimezone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
+/**
+ * Returns the timezone offset in minutes from the browser's Date API.
+ */
+export function getTimezoneOffset(): number {
+  return new Date().getTimezoneOffset()
+}
+
+/**
+ * Returns the browser's locale language setting.
+ */
+export function getLocaleLanguage(): string {
+  return navigator.language
+}
+
+/**
  * Returns a string with the type of loading screen to use while the app is
  * waiting for the backend to send displayable protos.
  */

@@ -167,6 +167,26 @@ class FormAssociationTest(DeltaGeneratorTestCase):
 
         self.assertEqual("form", self._get_last_checkbox_form_id())
 
+    def test_widget_inside_dg_outside_form_it_was_created_in(self):
+        """Test that a widget belongs to a form if its DG was created inside a DG that was created inside a form."""
+
+        with st.form("form"):
+            empty = st.empty()
+
+        with empty:
+            st.checkbox("widget")
+
+        self.assertEqual("form", self._get_last_checkbox_form_id())
+
+    def test_widget_parent_parent_created_on_form(self):
+        """Test that a widget belongs to a form if its parent's parent was created inside a form."""
+
+        with st.form("form"):
+            e = st.empty()
+        e.empty().checkbox("widget")
+
+        self.assertEqual("form", self._get_last_checkbox_form_id())
+
 
 @patch("streamlit.runtime.Runtime.exists", MagicMock(return_value=True))
 class FormMarshallingTest(DeltaGeneratorTestCase):

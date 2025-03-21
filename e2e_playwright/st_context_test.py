@@ -34,3 +34,9 @@ def test_timezone_offset(app: Page):
 def test_locale(app: Page):
     """Test that the locale correctly set."""
     expect_prefixed_markdown(app, "Locale primary language:", "it-IT")
+
+
+def test_url(app: Page, app_port):
+    """Test that the URL is correctly set."""
+    expected_url = f"http://localhost:{app_port}/"
+    expect_prefixed_markdown(app, "Full url:", expected_url)

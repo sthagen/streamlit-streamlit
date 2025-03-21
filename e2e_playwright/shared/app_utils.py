@@ -19,7 +19,7 @@ import re
 from re import Pattern
 from typing import Literal
 
-from playwright.sync_api import Frame, Locator, Page, expect
+from playwright.sync_api import Frame, FrameLocator, Locator, Page, expect
 
 from e2e_playwright.conftest import wait_for_app_run
 
@@ -276,7 +276,7 @@ def get_markdown(
 
 
 def expect_prefixed_markdown(
-    locator: Locator | Page,
+    locator: FrameLocator | Locator | Page,
     expected_prefix: str,
     expected_markdown: str | Pattern[str],
     exact_match: bool = False,

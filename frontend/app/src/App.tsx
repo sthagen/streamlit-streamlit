@@ -43,6 +43,10 @@ import {
   getEmbeddingIdClassName,
   getHostSpecifiedTheme,
   getIFrameEnclosingApp,
+  getLocaleLanguage,
+  getTimezone,
+  getTimezoneOffset,
+  getUrl,
   handleFavicon,
   hashString,
   HostCommunicationManager,
@@ -1578,9 +1582,10 @@ export class App extends PureComponent<Props, State> {
     let pageName = ""
 
     const contextInfo = {
-      timezone: this.getTimezone(),
-      timezoneOffset: this.getTimezoneOffset(),
-      locale: this.getLocaleLanguage(),
+      timezone: getTimezone(),
+      timezoneOffset: getTimezoneOffset(),
+      locale: getLocaleLanguage(),
+      url: getUrl(),
     }
 
     if (pageScriptHash) {
@@ -1856,18 +1861,6 @@ export class App extends PureComponent<Props, State> {
     this.connectionManager
       ? this.connectionManager.getBaseUriParts()
       : undefined
-
-  getTimezone = (): string => {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone
-  }
-
-  getTimezoneOffset = (): number => {
-    return new Date().getTimezoneOffset()
-  }
-
-  getLocaleLanguage = (): string => {
-    return navigator.language
-  }
 
   getQueryString = (): string => {
     const { queryParams } = this.state

@@ -27,12 +27,15 @@ from e2e_playwright.conftest import (
     wait_until,
 )
 from e2e_playwright.shared.app_utils import (
+    expect_prefixed_markdown,
     get_observed_connection_statuses,
     register_connection_status_observer,
 )
 
 TEST_ASSETS_DIR: Final[Path] = Path(__file__).parent / "test_assets"
 HOSTFRAME_TEST_HTML: Final[str] = (TEST_ASSETS_DIR / "hostframe.html").read_text()
+
+EXPANDER_HEADER_IDENTIFIER = "summary"
 
 
 def _load_html_and_get_locators(
@@ -141,6 +144,19 @@ def test_handles_host_rerun_script_message(iframed_app: IframedPage):
     toolbar_buttons.get_by_text("Rerun Script").click()
     expect(frame_locator.get_by_test_id("stApp")).to_have_attribute(
         "data-test-script-state", "running"
+    )
+
+
+def test_context_url_is_correct_when_hosted_in_iframe(
+    iframed_app: IframedPage, app_port: int
+):
+    frame_locator, _ = _load_html_and_get_locators(iframed_app)
+
+    frame_locator.get_by_test_id("stExpander").locator(
+        EXPANDER_HEADER_IDENTIFIER
+    ).click()
+    expect_prefixed_markdown(
+        frame_locator, "Full url:", f"http://localhost:{app_port}/"
     )
 
 

@@ -487,6 +487,10 @@ class DeltaGenerator(
                 cursor=new_cursor,
                 parent=dg,
             )
+
+            # Elements inherit their parent form ids.
+            # NOTE: Form ids aren't set in dg constructor.
+            output_dg._form_data = FormData(current_form_id(dg))
         else:
             # If the message was not enqueued, just return self since it's a
             # no-op from the point of view of the app.
