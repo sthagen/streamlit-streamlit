@@ -42,9 +42,8 @@ from streamlit.runtime.state import (
     get_session_state,
     register_widget,
 )
-from streamlit.type_util import (
-    SupportsStr,
-)
+from streamlit.string_util import validate_icon_or_emoji
+from streamlit.type_util import SupportsStr
 
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
@@ -91,6 +90,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str:
         pass
 
@@ -111,6 +111,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str | None:
         pass
 
@@ -131,6 +132,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
     ) -> str | None:
         r"""Display a single-line text input widget.
 
@@ -212,7 +214,23 @@ class TextWidgetsMixin:
             The visibility of the label. The default is ``"visible"``. If this
             is ``"hidden"``, Streamlit displays an empty spacer instead of the
             label, which can help keep the widget alligned with other widgets.
-            If this is ``"collapsed"``, Streamlit displays no label or spacer.
+
+        icon : str, None
+            An optional emoji or icon to display next to the alert. If ``icon``
+            is ``None`` (default), no icon is displayed. If ``icon`` is a
+            string, the following options are valid:
+
+            - A single-character emoji. For example, you can set ``icon="🚨"``
+              or ``icon="🔥"``. Emoji short codes are not supported.
+
+            - An icon from the Material Symbols library (rounded style) in the
+              format ``":material/icon_name:"`` where "icon_name" is the name
+              of the icon in snake case.
+
+              For example, ``icon=":material/thumb_up:"`` will display the
+              Thumb Up icon. Find additional icons in the `Material Symbols \
+              <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
+              font library.
 
         Returns
         -------
@@ -247,6 +265,7 @@ class TextWidgetsMixin:
             placeholder=placeholder,
             disabled=disabled,
             label_visibility=label_visibility,
+            icon=icon,
             ctx=ctx,
         )
 
@@ -266,6 +285,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        icon: str | None = None,
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
         key = to_key(key)
@@ -292,6 +312,7 @@ class TextWidgetsMixin:
             help=help,
             autocomplete=autocomplete,
             placeholder=str(placeholder),
+            icon=icon,
         )
 
         session_state = get_session_state().filtered_state
@@ -317,6 +338,9 @@ class TextWidgetsMixin:
 
         if placeholder is not None:
             text_input_proto.placeholder = str(placeholder)
+
+        if icon is not None:
+            text_input_proto.icon = validate_icon_or_emoji(icon)
 
         if type == "default":
             text_input_proto.type = TextInputProto.DEFAULT

@@ -35,6 +35,7 @@ import {
   StyledWidgetLabelHelp,
   WidgetLabel,
 } from "~lib/components/widgets/BaseWidget"
+import { DynamicIcon } from "~lib/components/shared/Icon"
 import TooltipIcon from "~lib/components/shared/TooltipIcon"
 import { Placement } from "~lib/components/shared/Tooltip"
 import { isInForm, labelVisibilityProtoValueToEnum } from "~lib/util/utils"
@@ -141,6 +142,11 @@ function TextInput({
     fragmentId
   )
 
+  // Material icons need to be larger to render similar size of emojis,
+  // and we change their text color
+  const isMaterialIcon = element.icon?.startsWith(":material")
+  const dynamicIconSize = isMaterialIcon ? "lg" : "base"
+
   return (
     <StyledTextInput
       className="stTextInput"
@@ -176,6 +182,15 @@ function TextInput({
         id={id}
         type={getTypeString(element)}
         autoComplete={element.autocomplete}
+        startEnhancer={
+          element.icon && (
+            <DynamicIcon
+              data-testid="stTextInputIcon"
+              iconValue={element.icon}
+              size={dynamicIconSize}
+            />
+          )
+        }
         overrides={{
           Input: {
             style: {
@@ -206,6 +221,17 @@ function TextInput({
               borderRightWidth: theme.sizes.borderWidth,
               borderTopWidth: theme.sizes.borderWidth,
               borderBottomWidth: theme.sizes.borderWidth,
+              paddingLeft: element.icon ? theme.spacing.sm : 0,
+            },
+          },
+          StartEnhancer: {
+            style: {
+              paddingLeft: 0,
+              paddingRight: 0,
+              // Keeps emoji icons from being cut off on the right
+              minWidth: theme.iconSizes.lg,
+              // Material icons color changed as inactionable
+              color: isMaterialIcon ? theme.colors.fadedText60 : "inherit",
             },
           },
         }}

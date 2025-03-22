@@ -113,6 +113,20 @@ class TextInputTest(DeltaGeneratorTestCase):
         proto = self.get_delta_from_queue().new_element.text_input
         self.assertEqual(proto.form_id, "")
 
+    def test_emoji_icon(self):
+        """Test that it can be called with an emoji icon."""
+        st.text_input("foo", icon="📋")
+
+        c = self.get_delta_from_queue().new_element.text_input
+        self.assertEqual(c.icon, "📋")
+
+    def test_material_icon(self):
+        """Test that it can be called with a material icon."""
+        st.text_input("foo", icon=":material/search:")
+
+        c = self.get_delta_from_queue().new_element.text_input
+        self.assertEqual(c.icon, ":material/search:")
+
     @patch("streamlit.runtime.Runtime.exists", MagicMock(return_value=True))
     def test_inside_form(self):
         """Test that form id is marshalled correctly inside of a form."""

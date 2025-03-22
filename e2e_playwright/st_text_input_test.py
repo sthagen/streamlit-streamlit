@@ -22,13 +22,15 @@ from e2e_playwright.shared.app_utils import (
     get_element_by_key,
 )
 
+TEXT_INPUT_ELEMENTS = 16
+
 
 def test_text_input_widget_rendering(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that the st.text_input widgets are correctly rendered via screenshot matching."""
     text_input_widgets = themed_app.get_by_test_id("stTextInput")
-    expect(text_input_widgets).to_have_count(14)
+    expect(text_input_widgets).to_have_count(TEXT_INPUT_ELEMENTS)
 
     assert_snapshot(text_input_widgets.nth(0), name="st_text_input-default")
     assert_snapshot(text_input_widgets.nth(1), name="st_text_input-value_some_text")
@@ -42,12 +44,17 @@ def test_text_input_widget_rendering(
     assert_snapshot(text_input_widgets.nth(9), name="st_text_input-max_chars_5")
     assert_snapshot(text_input_widgets.nth(10), name="st_text_input-type_password")
     assert_snapshot(text_input_widgets.nth(13), name="st_text_input-markdown_label")
+    assert_snapshot(text_input_widgets.nth(14), name="st_text_input-emoji_icon")
+    assert_snapshot(text_input_widgets.nth(15), name="st_text_input-material_icon")
 
 
 def test_text_input_has_correct_initial_values(app: Page):
     """Test that st.text_input has the correct initial values."""
     markdown_elements = app.get_by_test_id("stMarkdown")
-    expect(markdown_elements).to_have_count(15)
+    # 1 st.write for each text input value (1-13)
+    # + 1 extra st.write for input 9 ("text input changed")
+    # + 1 st.write for "Rerun counter"
+    expect(markdown_elements).to_have_count(TEXT_INPUT_ELEMENTS - 1)
 
     expected = [
         "value 1: ",
@@ -62,6 +69,9 @@ def test_text_input_has_correct_initial_values(app: Page):
         "text input changed: False",
         "value 10: 1234",
         "value 11: my password",
+        "text input 12 (value from state) - value: xyz",
+        "text input 13 (value from form) - value:",
+        "Rerun counter: 1",
     ]
 
     for markdown_element, expected_text in zip(markdown_elements.all(), expected):
