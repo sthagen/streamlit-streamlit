@@ -137,26 +137,24 @@ export const SettingsDialog: FC<Props> = memo(function SettingsDialog({
       <ModalBody>
         <StyledDialogBody>
           {allowRunOnSave && (
-            <React.Fragment>
-              <StyledFullRow>
-                <StyledHeader>Development</StyledHeader>
-                <label>
-                  <StyledCheckbox
-                    disabled={!isServerConnected}
-                    type="checkbox"
-                    name="runOnSave"
-                    checked={state.runOnSave && isServerConnected}
-                    onChange={handleCheckboxChange}
-                  />{" "}
-                  Run on save
-                </label>
-                <StreamlitMarkdown
-                  source="Automatically updates the app when the underlying code is updated."
-                  allowHTML={false}
-                  isCaption
-                />
-              </StyledFullRow>
-            </React.Fragment>
+            <StyledFullRow>
+              <StyledHeader>Development</StyledHeader>
+              <label>
+                <StyledCheckbox
+                  disabled={!isServerConnected}
+                  type="checkbox"
+                  name="runOnSave"
+                  checked={state.runOnSave && isServerConnected}
+                  onChange={handleCheckboxChange}
+                />{" "}
+                Run on save
+              </label>
+              <StreamlitMarkdown
+                source="Automatically updates the app when the underlying code is updated."
+                allowHTML={false}
+                isCaption
+              />
+            </StyledFullRow>
           )}
 
           <StyledFullRow>

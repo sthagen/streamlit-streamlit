@@ -103,6 +103,8 @@ module.exports = {
     // Turning off for now until we have clearer guidance on how to fix existing
     // usages
     "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "off",
+    // We don't want to warn about empty fragments
+    "@eslint-react/no-useless-fragment": "off",
     // Some of these are being caught erroneously
     "@typescript-eslint/camelcase": "off",
     // Empty interfaces are ok
