@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactElement, ReactNode } from "react"
+import React, { memo, MouseEvent, ReactElement, ReactNode } from "react"
 
 import ProgressBar, {
   Size as ProgressBarSize,
@@ -78,4 +78,4 @@ function CameraInputButton({
   )
 }
 
-export default CameraInputButton
+export default memo(CameraInputButton)

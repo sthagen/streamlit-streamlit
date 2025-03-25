@@ -104,4 +104,4 @@ export const JsonViewer: React.FC<JsonViewerProps> = ({
   )
 }
 
-export default JsonViewer
+export default React.memo(JsonViewer)

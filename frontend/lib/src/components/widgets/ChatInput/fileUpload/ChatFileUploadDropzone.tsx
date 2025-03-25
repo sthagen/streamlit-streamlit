@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import { AcceptFileValue } from "~lib/util/utils"
 
@@ -48,4 +48,4 @@ const ChatFileUploadDropzone = ({
   </>
 )
 
-export default ChatFileUploadDropzone
+export default memo(ChatFileUploadDropzone)

@@ -15,6 +15,7 @@
  */
 
 import React, {
+  memo,
   ReactElement,
   useCallback,
   useEffect,
@@ -181,4 +182,4 @@ const WebcamComponent = ({
   )
 }
 
-export default WebcamComponent
+export default memo(WebcamComponent)

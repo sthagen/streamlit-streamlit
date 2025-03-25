@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import Dropzone, { FileRejection } from "react-dropzone"
 
@@ -82,4 +82,4 @@ const FileDropzone = ({
   </Dropzone>
 )
 
-export default FileDropzone
+export default memo(FileDropzone)

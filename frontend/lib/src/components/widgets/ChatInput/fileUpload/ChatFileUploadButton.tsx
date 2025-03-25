@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { memo } from "react"
 
 import { AttachFile } from "@emotion-icons/material-outlined"
 
@@ -75,4 +75,4 @@ const ChatFileUploadButton = ({
   </StyledFileUploadButtonContainer>
 )
 
-export default ChatFileUploadButton
+export default memo(ChatFileUploadButton)

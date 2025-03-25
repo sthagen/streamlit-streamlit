@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect, useLayoutEffect, useRef } from "react"
+import React, { FC, memo, useEffect, useLayoutEffect, useRef } from "react"
 
 import { Global } from "@emotion/react"
 
@@ -123,4 +123,4 @@ const ArrowVegaLiteChart: FC<Props> = ({
 
 const ArrowVegaLiteChartWithFullScreen =
   withFullScreenWrapper(ArrowVegaLiteChart)
-export default ArrowVegaLiteChartWithFullScreen
+export default memo(ArrowVegaLiteChartWithFullScreen)

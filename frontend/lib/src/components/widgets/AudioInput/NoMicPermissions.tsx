@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import { ENABLE_PERIPHERALS_DOCS_URL } from "~lib/urls"
 
@@ -37,4 +37,4 @@ const NoMicPermissions = (): ReactElement => {
   )
 }
 
-export default NoMicPermissions
+export default memo(NoMicPermissions)

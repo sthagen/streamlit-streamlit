@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useCallback } from "react"
+import React, { memo, ReactElement, useCallback } from "react"
 
 import {
   createElement,
@@ -36,7 +36,7 @@ export interface StreamlitSyntaxHighlighterProps {
   height?: number
 }
 
-export default function StreamlitSyntaxHighlighter({
+function StreamlitSyntaxHighlighter({
   language,
   showLineNumbers,
   wrapLines,
@@ -104,3 +104,5 @@ export default function StreamlitSyntaxHighlighter({
     </StyledCodeBlock>
   )
 }
+
+export default memo(StreamlitSyntaxHighlighter)

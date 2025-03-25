@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import {
   BaseButtonKind,
@@ -67,4 +67,4 @@ function BaseLinkButton({
 }
 export type BaseButtonProps = BaseLinkButtonPropsT
 export { BaseButtonKind, BaseButtonSize }
-export default BaseLinkButton
+export default memo(BaseLinkButton)

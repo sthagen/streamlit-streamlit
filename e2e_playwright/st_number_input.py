@@ -78,3 +78,19 @@ st.write("number input 12 (value from state & min=1) - value: ", v12)
 st.number_input(
     "number input 13 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_"
 )
+
+st.number_input(
+    "number input 14 - emoji icon",
+    value=5,
+    min_value=0,
+    max_value=10,
+    icon="💵",
+)
+
+st.number_input(
+    "number input 15 - material icon",
+    value=5,
+    min_value=0,
+    max_value=10,
+    icon=":material/attach_money:",
+)

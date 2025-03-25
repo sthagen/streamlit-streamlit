@@ -9507,15 +9507,15 @@ __metadata:
 
 "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom::locator=%40streamlit%2Fapp%40workspace%3Aapp":
   version: 1.0.0
-  resolution: "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom#../eslint-plugin-streamlit-custom::hash=c66950&locator=%40streamlit%2Fapp%40workspace%3Aapp"
-  checksum: 10c0/6b9c770d5aef73537fd3d246bacd021b8828751646a35f6c752c4628e0cfd18ee4488e3f58282ea2039fd97fbd609c0e278581ffb1accbfe3a8361792c239f33
+  resolution: "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom#../eslint-plugin-streamlit-custom::hash=8326b0&locator=%40streamlit%2Fapp%40workspace%3Aapp"
+  checksum: 10c0/95c60220f91f17b9ccfe5ad3dd0e7c8f27ee51393151b90990103108af32e2213c59ded8d786fc2252b1ed499b75e7f0b73061c5a25c1517611eb2eb9a22ef6d
   languageName: node
   linkType: hard
 
 "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom::locator=%40streamlit%2Flib%40workspace%3Alib":
   version: 1.0.0
-  resolution: "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom#../eslint-plugin-streamlit-custom::hash=c66950&locator=%40streamlit%2Flib%40workspace%3Alib"
-  checksum: 10c0/6b9c770d5aef73537fd3d246bacd021b8828751646a35f6c752c4628e0cfd18ee4488e3f58282ea2039fd97fbd609c0e278581ffb1accbfe3a8361792c239f33
+  resolution: "eslint-plugin-streamlit-custom@file:../eslint-plugin-streamlit-custom#../eslint-plugin-streamlit-custom::hash=8326b0&locator=%40streamlit%2Flib%40workspace%3Alib"
+  checksum: 10c0/95c60220f91f17b9ccfe5ad3dd0e7c8f27ee51393151b90990103108af32e2213c59ded8d786fc2252b1ed499b75e7f0b73061c5a25c1517611eb2eb9a22ef6d
   languageName: node
   linkType: hard
 

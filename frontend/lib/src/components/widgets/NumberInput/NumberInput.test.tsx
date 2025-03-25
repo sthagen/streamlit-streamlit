@@ -273,6 +273,26 @@ describe("NumberInput widget", () => {
     expect(screen.queryByTestId("InputInstructions")).toHaveTextContent("")
   })
 
+  it("renders an emoji icon when provided", () => {
+    const props = getFloatProps({ icon: "💵" })
+    render(<NumberInput {...props} />)
+    // Dynamic Icon parent element
+    expect(screen.getByTestId("stNumberInputIcon")).toBeInTheDocument()
+    // Element rendering emoji icon
+    const emojiIcon = screen.getByTestId("stIconEmoji")
+    expect(emojiIcon).toHaveTextContent("💵")
+  })
+
+  it("renders a material icon when provided", () => {
+    const props = getFloatProps({ icon: ":material/attach_money:" })
+    render(<NumberInput {...props} />)
+    // Dynamic Icon parent element
+    expect(screen.getByTestId("stNumberInputIcon")).toBeInTheDocument()
+    // Element rendering material icon
+    const materialIcon = screen.getByTestId("stIconMaterial")
+    expect(materialIcon).toHaveTextContent("attach_money")
+  })
+
   describe("FloatData", () => {
     it("changes state on ArrowDown", async () => {
       const user = userEvent.setup()

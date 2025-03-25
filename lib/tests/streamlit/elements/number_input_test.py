@@ -89,6 +89,20 @@ class NumberInputTest(DeltaGeneratorTestCase):
         c = self.get_delta_from_queue().new_element.number_input
         self.assertEqual(c.placeholder, "Type a number...")
 
+    def test_emoji_icon(self):
+        """Test that it can be called with an emoji icon."""
+        st.number_input("the label", icon="💵")
+
+        c = self.get_delta_from_queue().new_element.number_input
+        self.assertEqual(c.icon, "💵")
+
+    def test_material_icon(self):
+        """Test that it can be called with a material icon."""
+        st.number_input("the label", icon=":material/attach_money:")
+
+        c = self.get_delta_from_queue().new_element.number_input
+        self.assertEqual(c.icon, ":material/attach_money:")
+
     def test_none_value(self):
         """Test that it can be called with None as value."""
         st.number_input("the label", value=None)

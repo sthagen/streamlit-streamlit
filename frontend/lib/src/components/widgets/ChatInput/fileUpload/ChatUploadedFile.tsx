@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from "react"
+import React, { FC, memo } from "react"
 
 import {
   Clear,
@@ -116,4 +116,4 @@ const ChatUploadedFile = ({
   </StyledChatUploadedFile>
 )
 
-export default ChatUploadedFile
+export default memo(ChatUploadedFile)

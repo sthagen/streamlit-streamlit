@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { memo, ReactElement } from "react"
 
 import ErrorElement from "~lib/components/shared/ErrorElement"
 import { StyledInlineCode } from "~lib/components/elements/CodeBlock/styled-components"
@@ -97,4 +97,4 @@ const MapboxTokenError = ({ error, deltaType }: Props): ReactElement => {
   )
 }
 
-export default MapboxTokenError
+export default memo(MapboxTokenError)
