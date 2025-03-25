@@ -41,7 +41,7 @@
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.9",
-    "vitest-websocket-mock": "^0.4.0"
+    "vitest-websocket-mock": "^0.5.0"
   },
   "browserslist": [
     ">0.2%",

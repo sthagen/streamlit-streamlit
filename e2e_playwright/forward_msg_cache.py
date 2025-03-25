@@ -35,7 +35,13 @@ kb_message_size = st.number_input(
 message_1kb = "\n\n".join(
     2
     * [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis neque eu orci faucibus pellentesque. Vivamus dapibus pellentesque sem, vitae ultricies sem pharetra at. Curabitur eu congue magna, eu tempor libero. Donec vitae condimentum odio. Sed neque elit, porttitor eget laoreet volutpat, imperdiet et leo. Phasellus vel velit sit amet nulla hendrerit pharetra et non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In malesuada sem sit amet felis vestibulum, maximus."
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis neque "
+        "eu orci faucibus pellentesque. Vivamus dapibus pellentesque sem, vitae "
+        "ultricies sem pharetra at. Curabitur eu congue magna, eu tempor libero. "
+        "Donec vitae condimentum odio. Sed neque elit, porttitor eget laoreet "
+        "volutpat, imperdiet et leo. Phasellus vel velit sit amet nulla hendrerit "
+        "pharetra et non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing "
+        "elit. In malesuada sem sit amet felis vestibulum, maximus."
     ]
 )
 
@@ -45,6 +51,19 @@ with st.container(height=300):
             f"**Message {i + 1}:** \n\n",
             "\n\n".join(kb_message_size * [message_1kb]),
         )
+
+
+@st.fragment
+def my_fragment():
+    st.button("Rerun fragment")
+    with st.expander("Message in Fragment", expanded=False):
+        st.write(
+            "**Message in Fragment:** \n\n",
+            "\n\n".join(kb_message_size * [message_1kb]),
+        )
+
+
+my_fragment()
 
 st.button("Re-run")
 st.write(f"Rerun count: {st.session_state['rerun_count']}")

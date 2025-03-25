@@ -291,7 +291,6 @@ class MarkdownMixin:
             "violet",
             "gray",
             "grey",
-            "rainbow",
             "primary",
         ] = "blue",
     ) -> DeltaGenerator:
