@@ -281,3 +281,18 @@ class ConfigUtilTest(unittest.TestCase):
         lines = output.split("\n")
 
         self.assertNotIn("# This is a hidden option.", lines)
+
+    @patch("click.secho")
+    def test_correctly_handles_show_error_details(self, patched_echo):
+        """Test that show_config correctly handles showErrorDetails = "full"
+        based on a regression.
+        """
+        config_util.show_config(
+            CONFIG_SECTION_DESCRIPTIONS,
+            create_config_options({}),
+        )
+
+        [(args, _)] = patched_echo.call_args_list
+        output = re.compile(r"\x1b[^m]*m").sub("", args[0])
+
+        self.assertIn('showErrorDetails = "full"', output)

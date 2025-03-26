@@ -568,7 +568,7 @@ _create_option(
         - False        : This is deprecated. Streamlit displays "stacktrace"
                          error details.
     """,
-    default_val=ShowErrorDetailsConfigOptions.FULL,
+    default_val=ShowErrorDetailsConfigOptions.FULL.value,
     type_=str,
     scriptable=True,
 )
