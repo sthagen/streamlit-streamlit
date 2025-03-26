@@ -105,3 +105,8 @@ st.selectbox(
     "selectbox 13 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
     options=options,
 )
+
+v14 = st.selectbox(
+    "selectbox 14 (test dismiss behavior)", options, index=0, key="selectbox_esc_test"
+)
+st.write("value 14:", v14)

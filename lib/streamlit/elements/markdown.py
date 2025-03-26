@@ -81,9 +81,10 @@ class MarkdownMixin:
               configuration option.
 
             - Colored badges, using the syntax ``:color-badge[text in the badge]``.
-              Supported colors are: blue, green, orange, red, violet, gray/grey,
-              or primary. For example, you can use ``:orange-badge[your text here]``
-              or ``:blue-badge[your text here]``.
+              ``color`` must be replaced with any of the following supported
+              colors: blue, green, orange, red, violet, gray/grey, or primary.
+              For example, you can use ``:orange-badge[your text here]`` or
+              ``:blue-badge[your text here]``.
 
             - Small text, using the syntax ``:small[text to show small]``.
 
@@ -296,10 +297,16 @@ class MarkdownMixin:
     ) -> DeltaGenerator:
         """Display a colored badge with an icon and label.
 
-        You can also insert badges directly in Markdown, e.g. via
-        `st.markdown(":blue-badge[Home]")`. This works in all places where Streamlit
-        supports Markdown, e.g. widget labels or `st.table` cells. See `st.markdown`
-        for more information.
+        This is a thin wrapper around the color-badge Markdown directive.
+        The following are equivalent:
+
+        - ``st.markdown(":blue-badge[Home]")``
+        - ``st.badge("Home", color="blue")``
+
+        .. note::
+            You can insert badges everywhere Streamlit supports Markdown by
+            using the color-badge Markdown directive. See ``st.markdown`` for
+            more information.
 
         Parameters
         ----------
@@ -309,7 +316,9 @@ class MarkdownMixin:
             Strikethroughs, Inline Code.
 
             See the ``body`` parameter of |st.markdown|_ for additional,
-            supported Markdown directives.
+            supported Markdown directives. Because this command escapes square
+            brackets (``[ ]``) in this parameter, any directive requiring
+            square brackets is not supported.
 
             .. |st.markdown| replace:: ``st.markdown``
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
@@ -332,26 +341,32 @@ class MarkdownMixin:
               font library.
 
         color : str
-            The color to use for the badge. Supported colors are: blue, green,
-            orange, red, violet, gray/grey, primary.
-            If you use "primary" for color, Streamlit will use the default
-            primary accent color unless you set the ``theme.primaryColor``
-            configuration option.
+            The color to use for the badge. This defaults to ``"blue"``.
+
+            This can be one of the following supported colors: blue, green,
+            orange, red, violet, gray/grey, or primary. If you use
+            ``"primary"``, Streamlit will use the default primary accent color
+            unless you set the ``theme.primaryColor`` configuration option.
 
         Examples
         --------
+        Create standalone badges with ``st.badge`` (with or without icons). If
+        you want to have multiple, side-by-side badges, you can use the
+        Markdown directive in ``st.markdown``.
+
         >>> import streamlit as st
         >>>
-        >>> # Simple badge
-        >>> st.badge("Home")
-        >>>
-        >>> # Badge with icon and color
+        >>> st.badge("New")
         >>> st.badge("Success", icon=":material/check:", color="green")
         >>>
-        >>> # Multiple badges side by side in Markdown
         >>> st.markdown(
-        ...     "Here are some badges: :orange-badge[⭐️ Favorite] :blue-badge[🏠 Home] :green-badge[✅ Success]"
-        ... )
+        >>>     ":violet-badge[:material/star: Favorite] :orange-badge[⚠️ Needs review] :gray-badge[Deprecated]"
+        >>> )
+
+        .. output ::
+            https://doc-badge.streamlit.app/
+            height: 220px
+
         """
         if icon is not None:
             icon_str = validate_icon_or_emoji(icon) + " "

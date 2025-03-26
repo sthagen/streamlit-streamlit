@@ -1052,53 +1052,72 @@ _create_theme_options(
     categories=["theme"],
     description="""
         The preset Streamlit theme that your custom theme inherits from.
-        One of "light" or "dark".
+        This can be one of the following: "light" or "dark".
     """,
 )
 
 _create_theme_options(
     "primaryColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Primary accent color for interactive elements.",
+    description="""
+        Primary accent color.
+    """,
 )
 
 _create_theme_options(
     "backgroundColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Background color for the main content area.",
+    description="""
+        Background color of the app.
+    """,
 )
 
 _create_theme_options(
     "secondaryBackgroundColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Background color used for the sidebar and most interactive widgets.",
+    description="""
+        Background color used for most interactive widgets.
+    """,
 )
 
 _create_theme_options(
     "textColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Color used for almost all text.",
+    description="""
+        Color used for almost all text.
+    """,
 )
 
 _create_theme_options(
     "linkColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Color used for all links.",
+    description="""
+        Color used for all links.
+    """,
 )
 
 _create_theme_options(
     "codeBackgroundColor",
     categories=["theme", CustomThemeCategories.SIDEBAR],
-    description="Background color used for code blocks.",
+    description="""
+        Background color used for code blocks.
+    """,
 )
 
 _create_theme_options(
     "font",
     categories=["theme", CustomThemeCategories.SIDEBAR],
     description="""
-        The font family for all text in the app, except code blocks. One of "sans serif",
-        "serif", or "monospace".
-        To use a custom font, it needs to be added via [theme.fontFaces].
+        The font family for all text, except code blocks. This can be one of
+        the following:
+        - "sans-serif"
+        - "serif"
+        - "monospace"
+        - the `font` value for a custom font table under [[theme.fontFaces]]
+        - a comma-separated list of these (as a single string) to specify
+          fallbacks
+        For example, you can use the following:
+        font = "cool-font, fallback-cool-font, sans-serif"
     """,
 )
 
@@ -1106,8 +1125,14 @@ _create_theme_options(
     "codeFont",
     categories=["theme", CustomThemeCategories.SIDEBAR],
     description="""
-        The font family to use for code (monospace) in the app.
-        To use a custom font, it needs to be added via [theme.fontFaces].
+        The font family to use for code (monospace) in the sidebar. This can be
+        one of the following:
+        - "sans-serif"
+        - "serif"
+        - "monospace"
+        - the `font` value for a custom font table under [[theme.fontFaces]]
+        - a comma-separated list of these (as a single string) to specify
+          fallbacks
     """,
 )
 
@@ -1115,8 +1140,14 @@ _create_theme_options(
     "headingFont",
     categories=["theme", CustomThemeCategories.SIDEBAR],
     description="""
-        The font family to use for headings in the app.
-        To use a custom font, it needs to be added via [theme.fontFaces].
+        The font family to use for headings. This can be one of the following:
+        - "sans-serif"
+        - "serif"
+        - "monospace"
+        - the `font` value for a custom font table under [[theme.fontFaces]]
+        - a comma-separated list of these (as a single string) to specify
+          fallbacks
+        If no heading font is set, Streamlit uses `theme.font` for headings.
     """,
 )
 
@@ -1124,17 +1155,31 @@ _create_theme_options(
     "fontFaces",
     categories=["theme"],
     description="""
-    Configure a list of font faces that you can use for the app & code fonts.
-""",
+        An array of fonts to use in your app. Each font in the array is a table
+        (dictionary) with the following three attributes: font, url, weight,
+        and style. To host a font with your app, enable static file serving
+        with `server.enableStaticServing=true`. You can define multiple
+        [[theme.fontFaces]] tables.
+
+        For example, each font is defined in a [[theme.fontFaces]] table as
+        follows:
+        [[theme.fontFaces]]
+        font = "font_name"
+        url = "app/static/font_file.woff"
+        weight = 400
+        style = "normal"
+    """,
 )
 
 _create_theme_options(
     "baseRadius",
     categories=["theme", CustomThemeCategories.SIDEBAR],
     description="""
-        The radius used as basis for the corners of most UI elements. Can be:
-        "none", "small", "medium", "large", "full", or the number in pixel or rem.
-        For example: "10px", "0.5rem", "1.2rem", "2rem".
+        The radius used as basis for the corners of most UI elements. This can
+        be one of the following: "none", "small", "medium", "large", "full",
+        or the number in pixels or rem. For example, you can use "10px",
+        "0.5rem", or "2rem". To follow best practices, use rem instead of
+        pixels when specifying a numeric size.
     """,
 )
 
@@ -1150,8 +1195,7 @@ _create_theme_options(
     "showWidgetBorder",
     categories=["theme", CustomThemeCategories.SIDEBAR],
     description="""
-        Whether to show a border around input widgets (e.g. text_input, number_input,
-        file_uploader, etc).
+        Whether to show a border around input widgets.
     """,
     type_=bool,
 )
@@ -1160,8 +1204,8 @@ _create_theme_options(
     "baseFontSize",
     categories=["theme"],
     description="""
-        Sets the root font size (in pixels) for the app, which determines the overall
-        scale of text and UI elements. The default base font size is 16.
+        Sets the root font size (in pixels) for the app, which determines the
+        overall scale of text and UI elements. The default base font size is 16.
     """,
     type_=int,
 )
@@ -1170,7 +1214,8 @@ _create_theme_options(
     "showSidebarBorder",
     categories=["theme"],
     description="""
-        Whether to show a vertical separator between the sidebar and the main content.
+        Whether to show a vertical separator between the sidebar and the main
+        content area.
     """,
     type_=bool,
 )

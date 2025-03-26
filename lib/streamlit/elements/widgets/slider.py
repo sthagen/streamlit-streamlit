@@ -398,20 +398,32 @@ class SliderMixin:
 
         min_value : a supported type or None
             The minimum permitted value.
-            Defaults to 0 if the value is an int, 0.0 if a float,
-            value - timedelta(days=14) if a date/datetime, time.min if a time
+            If this is ``None`` (default), the minimum value depends on the
+            type as follows:
+
+            - integer: ``0``
+            - float: ``0.0``
+            - date or datetime: ``value - timedelta(days=14)``
+            - time: ``time.min``
 
         max_value : a supported type or None
             The maximum permitted value.
-            Defaults to 100 if the value is an int, 1.0 if a float,
-            value + timedelta(days=14) if a date/datetime, time.max if a time
+            If this is ``None`` (default), the maximum value depends on the
+            type as follows:
+
+            - integer: ``100``
+            - float: ``1.0``
+            - date or datetime: ``value + timedelta(days=14)``
+            - time: ``time.max``
 
         value : a supported type or a tuple/list of supported types or None
             The value of the slider when it first renders. If a tuple/list
             of two values is passed here, then a range slider with those lower
             and upper bounds is rendered. For example, if set to `(1, 10)` the
             slider will have a selectable range between 1 and 10.
-            Defaults to min_value.
+            This defaults to ``min_value``. If the type is not otherwise
+            specified in any of the numeric parameters, the widget will have an
+            integer value.
 
         step : int, float, timedelta, or None
             The stepping interval.

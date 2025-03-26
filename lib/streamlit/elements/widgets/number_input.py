@@ -222,17 +222,22 @@ class NumberInputMixin:
 
         min_value : int, float, or None
             The minimum permitted value.
-            If None, there will be no minimum.
+            If this is ``None`` (default), there will be no minimum for float
+            values and a minimum of ``- (1<<53) + 1`` for integer values.
 
         max_value : int, float, or None
             The maximum permitted value.
-            If None, there will be no maximum.
+            If this is ``None`` (default), there will be no maximum for float
+            values and a maximum of ``(1<<53) - 1`` for integer values.
 
         value : int, float, "min" or None
-            The value of this widget when it first renders. If ``None``, will initialize
-            empty and return ``None`` until the user provides input.
-            If "min" (default), will initialize with min_value, or 0.0 if
-            min_value is None.
+            The value of this widget when it first renders. If this is
+            ``"min"`` (default), the initial value is ``min_value`` unless
+            ``min_value`` is ``None``. If ``min_value`` is ``None``, the widget
+            initializes with a value of ``0.0`` or ``0``.
+
+            If ``value`` is ``None``, the widget will initialize with no value
+            and return ``None`` until the user provides input.
 
         step : int, float, or None
             The stepping interval.

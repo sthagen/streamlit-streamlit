@@ -209,6 +209,42 @@ describe("Selectbox widget", () => {
     rerender(<Selectbox {...props} />)
     expect(screen.getByText(props.options[1])).toBeInTheDocument()
   })
+
+  it("does not commit changes when clicking outside of the selectbox", async () => {
+    const user = userEvent.setup()
+    render(<Selectbox {...props} />)
+    const selectbox = screen.getByRole("combobox")
+    await user.type(selectbox, "b")
+
+    // Click outside of the selectbox
+    await user.click(document.body)
+
+    // Check that clicking outside of the selectbox does not commit the change and the default is kept
+    expect(props.onChange).toHaveBeenCalledTimes(0)
+    expect(screen.getByTestId("stSelectbox")).toHaveTextContent(
+      props.options[0]
+    )
+  })
+
+  it("does not call onChange when the user deletes characters", async () => {
+    render(<Selectbox {...props} />)
+    const selectbox = screen.getByRole("combobox")
+
+    // Simulate deleting a character
+    // we are using fireEvent here instead of userEvent because userEvent
+    // did not trigger the backspace event correctly.
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.keyDown(selectbox, {
+      key: "Backspace",
+      keyCode: 8,
+      code: "Backspace",
+    })
+
+    // ensure that onChange was not called for the remove
+    expect(props.onChange).toHaveBeenCalledTimes(0)
+    // ensure that the input-internal value was updated
+    expect(selectbox).toHaveValue("")
+  })
 })
 
 describe("Selectbox widget with optional props", () => {

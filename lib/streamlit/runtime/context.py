@@ -273,7 +273,27 @@ class ContextProxy:
     @property
     @gather_metrics("context.locale")
     def locale(self) -> str | None:
-        """The locale of the user browser, read-only."""
+        """The read-only locale of the user's browser.
+
+        ``st.context.locale`` returns the value of |navigator.language|_ from
+        the user's DOM. This is a string representing the user's preferred
+        language (e.g. "en-US").
+
+        .. |navigator.language| replace:: ``navigator.language``
+        .. _navigator.language: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
+
+        Example
+        -------
+        Access the user's locale to display locally:
+
+        >>> import streamlit as st
+        >>>
+        >>> if st.context.locale == "fr-FR":
+        >>>     st.write("Bonjour!")
+        >>> else:
+        >>>     st.write("Hello!")
+
+        """
         ctx = get_script_run_ctx()
         if ctx is None or ctx.context_info is None:
             return None
