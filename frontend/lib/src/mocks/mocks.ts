@@ -32,6 +32,7 @@ export function mockSessionInfoProps(
     installationIdV3: "mockInstallationIdV3",
     maxCachedMessageAge: 123,
     isHello: false,
+    isConnected: true,
     ...overrides,
   }
 }

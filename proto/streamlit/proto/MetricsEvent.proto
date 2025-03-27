@@ -33,6 +33,9 @@ message MetricsEvent {
   string source = 6;
   string streamlit_version = 7;
   bool is_hello = 8;
+  string app_id = 33;
+  string session_id = 35;
+  string python_version = 36;
 
   // Host tracking fields:
   string hosted_at = 9;
@@ -70,10 +73,7 @@ message MetricsEvent {
   bool is_fragment_run = 32;
 
   // Addtl for page profile metrics
-  string app_id = 33;
   int64 numPages = 34;
-  string session_id = 35;
-  string python_version = 36;
   string page_script_hash = 37;
   string active_theme = 38;
   int64 total_load_time = 39;

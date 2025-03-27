@@ -45,7 +45,7 @@ export const StyledDocContainer = styled.span(({ theme }) => ({
 export const StyledDocHeader = styled.div(({ theme }) => ({
   padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
   backgroundColor: transparentize(theme.colors.secondaryBg, 0.6),
-  borderBottom: `${theme.sizes.borderWidth} solid ${theme.colors.borderColorLight}`,
+  borderBottom: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
   // Add rounded corners to the top of the container to prevent the background
   // color from bleeding into the surrounding area.
   borderTopLeftRadius: theme.radii.default,
@@ -62,7 +62,7 @@ export const StyledDocString = styled.div(({ theme }) => ({
   fontSize: theme.fontSizes.sm,
 
   "&:not(:last-child)": {
-    borderBottom: `${theme.sizes.borderWidth} solid ${theme.colors.borderColorLight}`,
+    borderBottom: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
   },
 }))
 
@@ -76,7 +76,7 @@ export const StyledMembersTable = styled.table(({ theme }) => ({
 
 export const StyledMembersRow = styled.tr(({ theme }) => ({
   "&:not(:last-child)": {
-    borderBottom: `${theme.sizes.borderWidth} dotted ${theme.colors.borderColorLight}`,
+    borderBottom: `${theme.sizes.borderWidth} dotted ${theme.colors.borderColor}`,
   },
 }))
 

@@ -1005,6 +1005,7 @@ describe("App", () => {
       sendForwardMessage("newSession", NEW_SESSION_JSON)
       expect(setCurrentSpy).not.toHaveBeenCalled()
       expect(sessionInfo.isSet).toBe(true)
+      expect(sessionInfo.current.isConnected).toBe(true)
 
       act(() => {
         getMockConnectionManagerProp("connectionStateChanged")(
@@ -1012,7 +1013,9 @@ describe("App", () => {
         )
       })
 
-      expect(sessionInfo.isSet).toBe(false)
+      // the sessioninfo is set but is now marked as disconnected
+      expect(sessionInfo.isSet).toBe(true)
+      expect(sessionInfo.current.isConnected).toBe(false)
       // For clearing the current session info
       expect(setCurrentSpy).toHaveBeenCalledTimes(1)
 
@@ -1026,6 +1029,7 @@ describe("App", () => {
 
       expect(setCurrentSpy).toHaveBeenCalledTimes(2)
       expect(sessionInfo.isSet).toBe(true)
+      expect(sessionInfo.current.isConnected).toBe(true)
     })
 
     it("should set window.prerenderReady to true after app script is run successfully first time", () => {

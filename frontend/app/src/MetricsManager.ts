@@ -241,6 +241,9 @@ export class MetricsManager {
       source: "browser",
       streamlitVersion: this.sessionInfo.current.streamlitVersion,
       isHello: this.sessionInfo.isHello,
+      appId: this.sessionInfo.current.appId,
+      sessionId: this.sessionInfo.current.sessionId,
+      pythonVersion: this.sessionInfo.current.pythonVersion,
       ...this.getContextData(),
     })
 

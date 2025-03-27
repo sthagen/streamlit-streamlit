@@ -37,6 +37,7 @@ export interface Props {
   readonly maxCachedMessageAge: number
   readonly commandLine?: string // Unused, but kept around for compatibility
   readonly isHello: boolean
+  readonly isConnected: boolean
 }
 
 export class SessionInfo {
@@ -73,9 +74,14 @@ export class SessionInfo {
     this._current = notNullOrUndefined(props) ? { ...props } : undefined
   }
 
-  /** Clear `SessionInfo.current` and copy its previous props to `SessionInfo.last`. */
-  public clearCurrent(): void {
-    this.setCurrent(undefined)
+  /** Marks `SessionInfo.current` as not connected and copy its previous props to `SessionInfo.last`. */
+  public disconnect(): void {
+    if (this._current) {
+      this.setCurrent({
+        ...this._current,
+        isConnected: false,
+      })
+    }
   }
 
   /** True if `SessionInfo.current` exists. */
@@ -103,6 +109,8 @@ export class SessionInfo {
       installationIdV3: userInfo.installationIdV3,
       maxCachedMessageAge: config.maxCachedMessageAge,
       isHello: initialize.isHello,
+      // We assume we are always connected because the message came directly from the server.
+      isConnected: true,
     }
   }
 }
