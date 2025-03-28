@@ -392,7 +392,7 @@ export function initAllColumnsFromArrow(data: Quiver): BaseColumnProps[] {
  * cell data from the Quiver (Arrow) object. Different types of data will
  * result in different cell types.
  *
- * @param column - The colum of the cell.
+ * @param column - The column of the cell.
  * @param arrowCell - The dataframe cell object from Arrow.
  * @param cssStyles - Optional css styles to apply on the cell.
  *

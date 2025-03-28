@@ -501,7 +501,7 @@ describe("useColumnLoader hook", () => {
     expect(columns[1].isIndex).toBe(false)
   })
 
-  it("activates colum stretch if configured by user", () => {
+  it("activates column stretch if configured by user", () => {
     const element = ArrowProto.create({
       data: UNICODE,
       useContainerWidth: true,

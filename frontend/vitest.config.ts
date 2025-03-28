@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["../.eslintrc.js"], // Extend from the root configuration
-  // Explicitly override plugins to avoid duplicate plugin loading
-  plugins: [],
-  rules: {
-    "no-restricted-imports": [
-      "error",
-      {
-        patterns: [
-          {
-            group: ["~lib/*"],
-            message:
-              "Direct imports from '~lib/*' are not allowed. Please import from '@streamlit/lib' instead.",
-          },
-        ],
-      },
-    ],
+import { coverageConfigDefaults, defineConfig } from "vitest/config"
+
+export default defineConfig({
+  test: {
+    // Include all packages that have a vite.config.ts file
+    workspace: ["*/vite.config.ts"],
+
+    // Global coverage configuration
+    coverage: {
+      provider: "v8",
+      reporter: ["text-summary", "json-summary", "html"],
+      include: ["*/src/**/*"],
+      exclude: ["lib/src/vendor/**", ...coverageConfigDefaults.exclude],
+    },
   },
-}
+})

@@ -253,7 +253,7 @@ function formatDate(date: number | Date): string {
   // Date values from arrow are already converted to a date object
   // or a timestamp in milliseconds even if the field unit belonging to the
   // passed date might have indicated a different unit.
-  // Thats why we don't need the field information here (aka its not passed to the function)
+  // That's why we don't need the field information here (aka its not passed to the function)
   // and we don't need to apply any unit conversion.
   // https://github.com/apache/arrow/blob/9e08c57c0986531879aadf7942998d26a94a5d1b/js/src/visitor/get.ts#L167-L171
 

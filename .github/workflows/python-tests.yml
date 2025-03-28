@@ -332,6 +332,11 @@ jobs:
       - py-integration-tests
       - py-min-deps-test
     runs-on: ubuntu-latest
+    permissions:
+      # Required for downloading artifacts
+      actions: read
+      # Required for creating/updating PR comments
+      pull-requests: write
 
     steps:
       - name: Checkout Streamlit code
@@ -366,8 +371,16 @@ jobs:
           # Generate HTML report
           python -m coverage html --directory=htmlcov
 
-          # Report and write to summary
-          python -m coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          # Save report to a file first
+          python -m coverage report --format=markdown > coverage-report.md
+
+          # Set as environment variable with proper delimiter syntax for multiline content
+          echo "COVERAGE_REPORT<<EOF" >> $GITHUB_ENV
+          cat coverage-report.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+          # Also write to summary
+          cat coverage-report.md >> $GITHUB_STEP_SUMMARY
         working-directory: lib
 
       - name: Upload combined coverage data
@@ -387,3 +400,129 @@ jobs:
           name: combined_coverage_report
           path: lib/htmlcov
           retention-days: 14
+
+      - name: Get latest develop run ID
+        if: github.event_name == 'pull_request'
+        id: get-latest-run
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'python-tests.yml',
+              branch: 'develop',
+              status: 'success',
+              per_page: 1
+            });
+
+            if (runs.workflow_runs.length === 0) {
+              throw new Error('No successful workflow runs found on develop branch');
+            }
+
+            core.setOutput('run_id', runs.workflow_runs[0].id);
+
+      - name: Download develop coverage
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          repository: streamlit/streamlit
+          run-id: ${{ steps.get-latest-run.outputs.run_id }}
+          name: combined_coverage_json
+          path: /tmp/develop_coverage
+
+      - name: Check coverage changes and comment
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const COVERAGE_CHANGE_THRESHOLD = 0.02; // 0.02%
+
+            try {
+              // Read current coverage from the existing file
+              const currentCoverage = require('./lib/coverage.json');
+
+              // Read develop coverage from downloaded artifact
+              const developCoverage = require('/tmp/develop_coverage/coverage.json');
+
+              // Calculate total coverage
+              const currentTotal = currentCoverage.totals.percent_covered;
+              const developTotal = developCoverage.totals.percent_covered;
+
+              // Calculate percentage difference
+              const diffPercent = currentTotal - developTotal;
+              const absDiffPercent = Math.abs(diffPercent);
+
+              console.log(`Current coverage: ${currentTotal.toFixed(4)}%`);
+              console.log(`Develop coverage: ${developTotal.toFixed(4)}%`);
+              console.log(`Coverage difference: ${diffPercent.toFixed(4)}%`);
+
+              const changeType = diffPercent > 0 ? 'increased' : 'decreased';
+              const emoji = diffPercent > 0 ? '📈' : '📉';
+
+              const commentBody = `### ${emoji} Python coverage change detected
+
+              The Python unit test coverage has **${changeType} by ${Math.abs(diffPercent).toFixed(4)}%**
+
+              - Current PR: ${currentTotal.toFixed(4)}% (${currentCoverage.totals.num_statements} statements, ${currentCoverage.totals.missing_lines} missed)
+              - Latest `develop`: ${developTotal.toFixed(4)}% (${developCoverage.totals.num_statements} statements, ${developCoverage.totals.missing_lines} missed)
+
+              ${absDiffPercent >= COVERAGE_CHANGE_THRESHOLD
+                ? (diffPercent > 0
+                    ? '🎉 Great job on improving test coverage!'
+                    : '💡 Consider adding more unit tests to maintain or improve coverage.'
+                  )
+                : '✅ Coverage change is within normal range.'
+              }
+
+              <details>
+              <summary>Coverage by files</summary>
+
+              ${process.env.COVERAGE_REPORT}
+              </details>
+
+              📊 [View detailed coverage comparison](https://issues.streamlit.app/Test_Coverage_(Python)?pr=${context.issue.number})`;
+
+
+              // Unique identifier for our comment
+              const commentIdentifier = '<!-- STREAMLIT-PYTHON-COVERAGE-CHECK -->';
+              const fullCommentBody = `${commentIdentifier}\n${commentBody}`;
+
+              // Get all comments on the PR
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+
+              // Look for our previous coverage comment
+              const coverageComment = comments.find(comment => comment.body.includes(commentIdentifier));
+
+              if (coverageComment) {
+                // Update existing comment
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: coverageComment.id,
+                  body: fullCommentBody
+                });
+                console.log('Updated existing coverage comment');
+              } else if (absDiffPercent >= COVERAGE_CHANGE_THRESHOLD) {
+                // Only create new comment for significant changes
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: fullCommentBody
+                });
+                console.log('Created new coverage comment');
+              } else {
+                console.log('Coverage change is not significant and no existing comment found, skipping comment');
+              }
+            } catch (error) {
+              console.error(`Error checking coverage changes: ${error.message}`);
+              throw error;
+            }

@@ -709,7 +709,7 @@ describe("getCellFromArrow", () => {
     expect((cell as any).data.displayDate).toEqual("FOOO")
   })
 
-  it("doesnt apply display content from styler if format is set", () => {
+  it("doesn't apply display content from styler if format is set", () => {
     const MOCK_TIME_COLUMN = {
       ...TimeColumn({
         id: "1",

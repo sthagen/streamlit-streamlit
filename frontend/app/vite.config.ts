@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { defineConfig } from "vite"
 import { version } from "./package.json"
-import react from "@vitejs/plugin-react-swc"
-import viteTsconfigPaths from "vite-tsconfig-paths"
 
+import react from "@vitejs/plugin-react-swc"
 import path from "path"
+import viteTsconfigPaths from "vite-tsconfig-paths"
 
 const BASE = "./"
 const HASH = process.env.OMIT_HASH_FROM_MAIN_FILES ? "" : ".[hash]"
@@ -133,11 +132,6 @@ export default defineConfig({
           include: ["vitest-canvas-mock"],
         },
       },
-    },
-    coverage: {
-      reporter: ["text", "json", "html"],
-      include: ["src/**/*"],
-      exclude: [],
     },
     server: {
       // Want a Non-Dev port for testing

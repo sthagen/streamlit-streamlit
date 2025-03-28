@@ -88,7 +88,7 @@ def test_checkbox_values_on_click(app: Page):
         # flaky with the last checkbox without it.
         # It seems that it sometimes fails to click,
         # and in these cases the checkbox was not scrolled into view.
-        # So, maybe thats the reason why it fails to click it.
+        # So, maybe that's the reason why it fails to click it.
         # But this is just a guess.
         checkbox_element.scroll_into_view_if_needed()
         checkbox_element.locator("label").first.click(delay=50, force=True)

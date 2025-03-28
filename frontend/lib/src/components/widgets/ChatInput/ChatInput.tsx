@@ -105,6 +105,8 @@ function ChatInput({
 }: Props): React.ReactElement {
   const theme = useTheme()
 
+  const { placeholder, maxChars } = element
+
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
   const counterRef = useRef(0)
   const heightGuidance = useRef({ minHeight: 0, maxHeight: 0 })
@@ -274,11 +276,8 @@ function ChatInput({
     let scrollHeight = 0
     const { current: textarea } = chatInputRef
     if (textarea) {
-      const placeholder = textarea.placeholder
-      textarea.placeholder = ""
       textarea.style.height = "auto"
       scrollHeight = textarea.scrollHeight
-      textarea.placeholder = placeholder
       textarea.style.height = ""
     }
 
@@ -414,7 +413,10 @@ function ChatInput({
     )
   }, [scrollHeight])
 
-  const { placeholder, maxChars } = element
+  useLayoutEffect(() => {
+    setScrollHeight(getScrollHeight())
+  }, [placeholder])
+
   const { maxHeight } = heightGuidance.current
 
   const showDropzone = acceptFile !== AcceptFileValue.None && fileDragged

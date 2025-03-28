@@ -218,11 +218,11 @@ export const StyledResizeHandle = styled.div(({ theme }) => ({
   cursor: "col-resize",
   zIndex: theme.zIndices.sidebarMobile,
   backgroundImage: theme.showSidebarBorder
-    ? `linear-gradient(to right, transparent 20%, ${theme.colors.fadedText20} 28%, transparent 36%)`
+    ? `linear-gradient(to right, transparent 20%, ${theme.colors.borderColor} 28%, transparent 36%)`
     : "none",
 
   "&:hover": {
-    backgroundImage: `linear-gradient(to right, transparent 20%, ${theme.colors.fadedText20} 28%, transparent 36%)`,
+    backgroundImage: `linear-gradient(to right, transparent 20%, ${theme.colors.borderColor} 28%, transparent 44%)`,
   },
 }))
 

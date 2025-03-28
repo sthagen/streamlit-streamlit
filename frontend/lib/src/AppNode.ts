@@ -120,7 +120,7 @@ export interface AppNode {
   // A timestamp indicating based on which delta message the node was created.
   // If the node was created without a delta message, this field is undefined.
   // This helps us to update React components based on a new backend message even though other
-  // props have not changed; this can happen for UI-only interactions such as dimissing a dialog.
+  // props have not changed; this can happen for UI-only interactions such as dismissing a dialog.
   readonly deltaMsgReceivedAt?: number
 
   /**

@@ -344,12 +344,12 @@ jsformat:
 .PHONY: jstest
 # Run JS unit tests.
 jstest: frontend-dependencies
-	cd frontend; TESTPATH=$(TESTPATH) yarn workspaces foreach --all run test
+	cd frontend; TESTPATH=$(TESTPATH) yarn test
 
 .PHONY: jstestcoverage
 # Run JS unit tests and generate a coverage report.
 jstestcoverage: frontend-dependencies
-	cd frontend; TESTPATH=$(TESTPATH) yarn workspaces foreach --all run test --coverage
+	cd frontend; TESTPATH=$(TESTPATH) yarn testCoverage
 
 .PHONY: update-snapshots
 # Update e2e playwright snapshots based on the latest completed CI run.

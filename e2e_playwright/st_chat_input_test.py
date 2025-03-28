@@ -381,6 +381,27 @@ def test_multi_file_upload_button_tooltip(
     expect(app.get_by_text("Upload or drag and drop files")).to_be_visible()
 
 
+def test_chat_input_adjusts_for_long_placeholder(
+    app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that chat input properly adjusts its height for long placeholder text."""
+    app.set_viewport_size({"width": 750, "height": 2000})
+
+    chat_input = app.get_by_test_id("stChatInput").nth(5)
+    chat_input_area = chat_input.locator("textarea")
+
+    # Take a snapshot of the initial state with the long placeholder
+    assert_snapshot(chat_input, name="st_chat_input-long_placeholder")
+
+    # Type some text to verify the input maintains proper height
+    chat_input_area.type("Some input text")
+    assert_snapshot(chat_input, name="st_chat_input-long_placeholder_with_text")
+
+    # Clear the text and verify it returns to placeholder height
+    chat_input_area.fill("")
+    assert_snapshot(chat_input, name="st_chat_input-long_placeholder_after_clear")
+
+
 def test_check_top_level_class(app: Page):
     """Check that the top level class is correctly set."""
     check_top_level_class(app, "stChatInput")

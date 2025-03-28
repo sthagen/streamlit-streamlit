@@ -439,7 +439,7 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
                 },
             )
 
-        # intercept all requests to the fake iframe server and fullfil the request in
+        # intercept all requests to the fake iframe server and fulfill the request in
         # playwright
         page.route(fake_iframe_server_route, fulfill_iframe_request)
 

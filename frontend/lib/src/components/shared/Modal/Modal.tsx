@@ -145,7 +145,7 @@ export type StreamlitModalProps = Omit<ModalProps, "size"> & {
  * @param size the StreamlitModal size to be mapped
  * @param width the width of the modal if 'full' size is selected
  * @param padding the padding added to the modal if 'full' size is selected
- * @returns the Baseweb Modal comaptible size
+ * @returns the Baseweb Modal compatible size
  */
 export function calculateModalSize(
   size: StreamlitModalProps["size"],

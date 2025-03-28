@@ -529,7 +529,7 @@ st.dataframe(
     hide_index=True,
 )
 
-st.subheader("Long colum header")
+st.subheader("Long column header")
 st.dataframe(
     pd.DataFrame(
         np.random.randn(100, 15),

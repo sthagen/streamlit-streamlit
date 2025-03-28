@@ -61,40 +61,44 @@ function useDataLoader(
           "This error should never happen. Please report this bug."
         )
       }
-      const column = columns[col]
-
-      const originalCol = column.indexNumber
-      const originalRow = editingState.current.getOriginalRowIndex(row)
-      const isAddedRow = editingState.current.isAddedRow(originalRow)
-      // Use editing state if editable or if it is an appended row
-      if (column.isEditable || isAddedRow) {
-        const editedCell = editingState.current.getCell(
-          originalCol,
-          originalRow
-        )
-        if (notNullOrUndefined(editedCell)) {
-          // Create a new representation of the edited cell to apply
-          // changes that might have been applied to the column (e.g. change of format from UI).
-          // TODO(lukasmasuch): We should refactor this at some point to avoid storing
-          // cells in the editing state. It would be enough to store the value and the
-          // last updated timestamp.
-          return {
-            ...column.getCell(column.getCellValue(editedCell), false),
-            // Apply the last updated timestamp stored in the edited cell:
-            lastUpdated: editedCell.lastUpdated,
-          }
-        } else if (isAddedRow) {
-          // This is not expected to happen. All cells to added rows should
-          // be defined. If not, we return a specific error cell.
-          return getErrorCell(
-            "Error during cell creation",
-            "This error should never happen. Please report this bug. " +
-              `No cell found for an added row: col=${originalCol}; row=${originalRow}`
-          )
-        }
-      }
 
       try {
+        const column = columns[col]
+
+        const originalCol = column.indexNumber
+        const originalRow = editingState.current.getOriginalRowIndex(row)
+        const isAddedRow = editingState.current.isAddedRow(originalRow)
+        // Use editing state if editable or if it is an appended row
+        if (column.isEditable || isAddedRow) {
+          // TODO(lukasmasuch): Investigate why this might throw an error when
+          // the input data of a read-only dataframe changes its dimensions.
+          // https://github.com/streamlit/streamlit/issues/10937
+          const editedCell = editingState.current.getCell(
+            originalCol,
+            originalRow
+          )
+          if (notNullOrUndefined(editedCell)) {
+            // Create a new representation of the edited cell to apply
+            // changes that might have been applied to the column (e.g. change of format from UI).
+            // TODO(lukasmasuch): We should refactor this at some point to avoid storing
+            // cells in the editing state. It would be enough to store the value and the
+            // last updated timestamp.
+            return {
+              ...column.getCell(column.getCellValue(editedCell), false),
+              // Apply the last updated timestamp stored in the edited cell:
+              lastUpdated: editedCell.lastUpdated,
+            }
+          } else if (isAddedRow) {
+            // This is not expected to happen. All cells to added rows should
+            // be defined. If not, we return a specific error cell.
+            return getErrorCell(
+              "Error during cell creation",
+              "This error should never happen. Please report this bug. " +
+                `No cell found for an added row: col=${originalCol}; row=${originalRow}`
+            )
+          }
+        }
+
         // We skip all header rows to get to to the actual data rows.
         // in th Arrow data.
         const arrowCell = data.getCell(originalRow, originalCol)

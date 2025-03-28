@@ -46,7 +46,7 @@ export const StyledResizableContainer =
       "& .gdg-seveqep": {
         // Make the search field more responsive to the grid width and use
         // rem units for everything.
-        // 19rem is the closest rem withou decimals to the original size:
+        // 19rem is the closest rem without decimals to the original size:
         maxWidth: "19rem",
         width: "80%",
         // 6rem was manually determined as the smallest size thats still somewhat usuable:
