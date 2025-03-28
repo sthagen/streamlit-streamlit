@@ -115,8 +115,16 @@ export const SettingsDialog: FC<Props> = memo(function SettingsDialog({
   )
 
   const handleThemeChange = useCallback(
-    (index: number | null): void => {
-      const newTheme = libContext.availableThemes[index ?? 0]
+    (themeName: string | null): void => {
+      let newTheme = undefined
+      if (themeName) {
+        newTheme = libContext.availableThemes.find(
+          (theme: ThemeConfig) => theme.name === themeName
+        )
+      }
+      if (newTheme === undefined) {
+        newTheme = libContext.availableThemes[0]
+      }
 
       metricsMgr.enqueue("menuClick", {
         label: "changeTheme",
@@ -125,10 +133,6 @@ export const SettingsDialog: FC<Props> = memo(function SettingsDialog({
       libContext.setTheme(newTheme)
     },
     [libContext, metricsMgr]
-  )
-
-  const themeIndex = libContext.availableThemes.findIndex(
-    (theme: ThemeConfig) => theme.name === libContext.activeTheme.name
   )
 
   return (
@@ -184,7 +188,7 @@ export const SettingsDialog: FC<Props> = memo(function SettingsDialog({
                 )}
                 disabled={false}
                 onChange={handleThemeChange}
-                value={themeIndex}
+                value={libContext.activeTheme.name}
               />
               {developerMode && (
                 <ThemeCreatorButton openThemeCreator={openThemeCreator} />

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run
@@ -69,7 +70,7 @@ def del_from_kth_multiselect(page: Page, option_text: str, k: int):
 def test_multiselect_on_load(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Should show widgets correctly when loaded."""
     multiselect_elements = themed_app.get_by_test_id("stMultiSelect")
-    expect(multiselect_elements).to_have_count(13)
+    expect(multiselect_elements).to_have_count(15)
 
     assert_snapshot(multiselect_elements.nth(0), name="st_multiselect-placeholder_help")
     assert_snapshot(multiselect_elements.nth(1), name="st_multiselect-format_func")
@@ -93,7 +94,7 @@ def test_help_tooltip_works(app: Page):
 def test_multiselect_initial_value(app: Page):
     """Should show the correct initial values."""
     text_elements = app.get_by_test_id("stText")
-    expect(text_elements).to_have_count(13)
+    expect(text_elements).to_have_count(15)
 
     expected = [
         "value 1: []",
@@ -109,6 +110,8 @@ def test_multiselect_initial_value(app: Page):
         "value 11: []",
         "multiselect changed: False",
         "value 12: ['A long option']",
+        "value 14: []",
+        "value 15: ['apple', 'orange']",
     ]
 
     for text_element, expected_text in zip(text_elements.all(), expected):
@@ -150,7 +153,9 @@ def test_multiselect_long_values_in_dropdown(
 def test_multiselect_long_values_in_narrow_column(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
-    """Should show long values correctly (with ellipses) when in narrow column widths."""
+    """Should show long values correctly (with ellipses) when in narrow column
+    widths.
+    """
     multiselect_elem = app.get_by_test_id("stMultiSelect").nth(11)
     wait_for_app_run(app)
     # Wait for list items to be loaded in
@@ -178,7 +183,9 @@ def test_multiselect_max_selections_form(app: Page):
 
 
 def test_multiselect_max_selections_1(app: Page):
-    """Should show the correct text when maxSelections is reached and closing after selecting."""
+    """Should show the correct text when maxSelections is reached and closing after
+    selecting.
+    """
     select_for_kth_multiselect(app, "male", 9, True)
     app.get_by_test_id("stMultiSelect").nth(9).click()
     expect(app.locator("li")).to_have_text(
@@ -188,7 +195,9 @@ def test_multiselect_max_selections_1(app: Page):
 
 
 def test_multiselect_max_selections_2(app: Page):
-    """Should show the correct text when maxSelections is reached and not closing after selecting."""
+    """Should show the correct text when maxSelections is reached and not closing after
+    selecting.
+    """
     select_for_kth_multiselect(app, "male", 9, False)
     expect(app.locator("li")).to_have_text(
         "You can only select up to 1 option. Remove an option first.",
@@ -257,3 +266,88 @@ def test_check_top_level_class(app: Page):
 def test_custom_css_class_via_key(app: Page):
     """Test that the element can have a custom css class via the key argument."""
     expect(get_element_by_key(app, "multiselect 9")).to_be_visible()
+
+
+def test_multiselect_accept_new_options(app: Page):
+    """Should allow adding new options when accept_new_options is True and respect
+    max_selections.
+    """
+    # Get the last multiselect (index 13)
+    multiselect_elem = app.get_by_test_id("stMultiSelect").nth(13)
+
+    # Click to open dropdown
+    multiselect_elem.locator("input").click()
+
+    # Type and add new option "mango"
+    input_elem = multiselect_elem.locator("input")
+    input_elem.fill("mango")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+
+    # Type and add another option "grape"
+    input_elem.fill("grape")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+
+    # Add a third option from original options
+    multiselect_elem.locator("input").click()
+    options_list = app.locator("li")
+    expect(options_list).to_have_count(4)
+    options_list.filter(has_text="apple").click()
+    wait_for_app_run(app)
+
+    # Verify three options were added successfully
+    expect(app.get_by_test_id("stText").nth(13)).to_have_text(
+        "value 14: ['mango', 'grape', 'apple']"
+    )
+    # Verify that format_func was applied to original option but not to the dynamically
+    # added option
+    expect(
+        multiselect_elem.get_by_role("button").get_by_text("APPLE", exact=True)
+    ).to_be_visible()
+    expect(
+        multiselect_elem.get_by_role("button").get_by_text("grape", exact=True)
+    ).to_be_visible()
+
+    # Try to add a fourth option - should be prevented by max_selections
+    multiselect_elem.locator("input").click()
+    expect(app.locator("li")).to_have_text(
+        "You can only select up to 3 options. Remove an option first.",
+        use_inner_text=True,
+    )
+    # Type and add another option "berries" - this should not be added
+    input_elem.fill("berries")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+    # Verify that this option was not added as it would have exceeded max_selections
+    expect(app.get_by_test_id("stText").nth(13)).to_have_text(
+        "value 14: ['mango', 'grape', 'apple']"
+    )
+
+    # Remove one option
+    del_from_kth_multiselect(app, "mango", 13)
+    wait_for_app_run(app)
+
+    # Verify we can add another option after removing one
+    multiselect_elem.locator("input").click()
+    input_elem.fill("kiwi")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+
+    # Verify final selections are correct
+    expect(app.get_by_test_id("stText").nth(13)).to_have_text(
+        "value 14: ['grape', 'apple', 'kiwi']"
+    )
+
+
+def test_multiselect_preset_session_state(app: Page):
+    """Should display values from session_state."""
+    # Check the initial values from session_state
+    expect(app.get_by_test_id("stText").nth(14)).to_have_text(
+        "value 15: ['apple', 'orange']"
+    )
+    multiselect_elem = app.get_by_test_id("stMultiSelect").nth(14)
+    selections_button = multiselect_elem.locator('[data-baseweb="tag"]')
+    expect(selections_button).to_have_count(2)
+    expect(selections_button.get_by_text("apple")).to_be_visible()
+    expect(selections_button.get_by_text("orange")).to_be_visible()

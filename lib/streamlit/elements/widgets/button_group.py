@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass, field
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -31,6 +32,7 @@ from typing_extensions import TypeAlias
 
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.options_selector_utils import (
+    check_and_convert_to_indices,
     convert_to_sequence_and_check_comparable,
     get_default_indices,
 )
@@ -46,7 +48,6 @@ from streamlit.elements.lib.utils import (
     save_for_app_testing,
     to_key,
 )
-from streamlit.elements.widgets.multiselect import MultiSelectSerde
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.ButtonGroup_pb2 import ButtonGroup as ButtonGroupProto
 from streamlit.runtime.metrics_util import gather_metrics
@@ -89,9 +90,39 @@ _SELECTED_STAR_ICON: Final = ":material/star_filled:"
 SelectionMode: TypeAlias = Literal["single", "multi"]
 
 
-class SingleSelectSerde(Generic[T]):
-    """Uses the MultiSelectSerde under-the-hood, but accepts a single index value
-    and deserializes to a single index value.
+@dataclass
+class _MultiSelectSerde(Generic[T]):
+    """Only meant to be used internally for the button_group element.
+
+    This serde is inspired by the MultiSelectSerde from multiselect.py. That serde has
+    been updated since then to support the accept_new_options parameter, which is not
+    required by the button_group element. If this changes again at some point,
+    the two elements can share the same serde again.
+    """
+
+    options: Sequence[T]
+    default_value: list[int] = field(default_factory=list)
+
+    def serialize(self, value: list[T]) -> list[int]:
+        indices = check_and_convert_to_indices(self.options, value)
+        return indices if indices is not None else []
+
+    def deserialize(
+        self,
+        ui_value: list[int] | None,
+        widget_id: str = "",
+    ) -> list[T]:
+        current_value: list[int] = (
+            ui_value if ui_value is not None else self.default_value
+        )
+        return [self.options[i] for i in current_value]
+
+
+class _SingleSelectSerde(Generic[T]):
+    """Only meant to be used internally for the button_group element.
+
+    Uses the ButtonGroup's _MultiSelectSerde under-the-hood, but accepts a single
+    index value and deserializes to a single index value.
     This is because button_group can be single and multi select, but we use the same
     proto for both and, thus, map single values to a list of values and a receiving
     value wrapped in a list to a single value.
@@ -106,7 +137,7 @@ class SingleSelectSerde(Generic[T]):
         default_value: list[int] | None = None,
     ) -> None:
         # see docstring about why we use MultiSelectSerde here
-        self.multiselect_serde: MultiSelectSerde[T] = MultiSelectSerde(
+        self.multiselect_serde: _MultiSelectSerde[T] = _MultiSelectSerde(
             option_indices, default_value if default_value is not None else []
         )
 
@@ -123,7 +154,7 @@ class SingleSelectSerde(Generic[T]):
         return deserialized[0]
 
 
-class SingleOrMultiSelectSerde(Generic[T]):
+class ButtonGroupSerde(Generic[T]):
     """A serde that can handle both single and multi select options.
 
     It uses the same proto to wire the data, so that we can send and receive
@@ -142,10 +173,10 @@ class SingleOrMultiSelectSerde(Generic[T]):
         self.options = options
         self.default_values = default_values
         self.type = type
-        self.serde: SingleSelectSerde[T] | MultiSelectSerde[T] = (
-            SingleSelectSerde(options, default_value=default_values)
+        self.serde: _SingleSelectSerde[T] | _MultiSelectSerde[T] = (
+            _SingleSelectSerde(options, default_value=default_values)
             if type == "single"
-            else MultiSelectSerde(options, default_values)
+            else _MultiSelectSerde(options, default_values)
         )
 
     def serialize(self, value: T | list[T] | None) -> list[int]:
@@ -362,7 +393,7 @@ class ButtonGroupMixin:
                 f"The argument passed was '{options}'."
             )
         transformed_options, options_indices = get_mapped_options(options)
-        serde = SingleSelectSerde[int](options_indices)
+        serde = _SingleSelectSerde[int](options_indices)
 
         selection_visualization = ButtonGroupProto.SelectionVisualization.ONLY_SELECTED
         if options == "stars":
@@ -857,7 +888,7 @@ class ButtonGroupMixin:
         indexable_options = convert_to_sequence_and_check_comparable(options)
         default_values = get_default_indices(indexable_options, default)
 
-        serde: SingleOrMultiSelectSerde[V] = SingleOrMultiSelectSerde[V](
+        serde: ButtonGroupSerde[V] = ButtonGroupSerde[V](
             indexable_options, default_values, selection_mode
         )
 

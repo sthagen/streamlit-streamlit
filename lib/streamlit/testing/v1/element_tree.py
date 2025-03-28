@@ -804,7 +804,7 @@ class Multiselect(Widget, Generic[T]):
         """
         ws = WidgetState()
         ws.id = self.id
-        ws.int_array_value.data[:] = self.indices
+        ws.string_array_value.data[:] = self.values
         return ws
 
     @property
@@ -821,6 +821,11 @@ class Multiselect(Widget, Generic[T]):
     def indices(self) -> Sequence[int]:
         """The indices of the currently selected values from the options. (list)"""  # noqa: D400
         return [self.options.index(self.format_func(v)) for v in self.value]
+
+    @property
+    def values(self) -> Sequence[str]:
+        """The currently selected values from the options. (list)"""  # noqa: D400
+        return [self.format_func(v) for v in self.value]
 
     @property
     def format_func(self) -> Callable[[Any], Any]:
@@ -1058,8 +1063,8 @@ class Selectbox(Widget, Generic[T]):
         """
         ws = WidgetState()
         ws.id = self.id
-        if self.index is not None:
-            ws.int_value = self.index
+        if self.index is not None and len(self.options) > 0:
+            ws.string_value = self.options[self.index]
         return ws
 
 

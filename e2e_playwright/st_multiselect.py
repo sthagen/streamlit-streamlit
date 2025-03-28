@@ -92,3 +92,25 @@ st.multiselect(
     "multiselect 13 -> :material/check: :rainbow[Fancy] _**markdown** `label` _support_",
     options=options,
 )
+
+# Add new multiselect with accept_new_options=True and verify that the format_func
+# is applied to the original options but not to the new options
+i14 = st.multiselect(
+    "multiselect 14 - accept new options",
+    options=["apple", "banana", "orange", "kiwi"],
+    accept_new_options=True,
+    max_selections=3,
+    format_func=lambda x: x.upper(),
+)
+st.text(f"value 14: {i14}")
+
+# Add a multiselect with session_state pre-set value
+if "multiselect15" not in st.session_state:
+    st.session_state.multiselect15 = ["apple", "orange"]
+
+i15 = st.multiselect(
+    "multiselect 15 - session_state values",
+    options=["apple", "banana", "orange", "kiwi"],
+    key="multiselect15",
+)
+st.text(f"value 15: {i15}")

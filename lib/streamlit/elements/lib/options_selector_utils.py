@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from enum import Enum, EnumMeta
-from typing import TYPE_CHECKING, Any, Final, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar, overload
 
 from streamlit import config, logger
 from streamlit.dataframe_util import OptionSequence, convert_anything_to_list
@@ -211,10 +211,10 @@ def maybe_coerce_enum(register_widget_result, options, opt_sequence):
 # (https://github.com/python/typing/issues/548)
 @overload
 def maybe_coerce_enum_sequence(
-    register_widget_result: RegisterWidgetResult[list[T]],
+    register_widget_result: RegisterWidgetResult[list[T] | list[T | str]],
     options: OptionSequence[T],
     opt_sequence: Sequence[T],
-) -> RegisterWidgetResult[list[T]]: ...
+) -> RegisterWidgetResult[list[T] | list[T | str]]: ...
 
 
 @overload
@@ -227,8 +227,8 @@ def maybe_coerce_enum_sequence(
 
 def maybe_coerce_enum_sequence(register_widget_result, options, opt_sequence):
     """Maybe Coerce a RegisterWidgetResult with a sequence of Enum members as value
-    to RegisterWidgetResult[Sequence[option]] if option is an EnumType, otherwise just return
-    the original RegisterWidgetResult.
+    to RegisterWidgetResult[Sequence[option]] if option is an EnumType, otherwise just
+    return the original RegisterWidgetResult.
     """
 
     # If not all widget values are Enums, return early
@@ -250,4 +250,25 @@ def maybe_coerce_enum_sequence(register_widget_result, options, opt_sequence):
             _coerce_enum(val, coerce_class) for val in register_widget_result.value
         ),
         register_widget_result.value_changed,
+    )
+
+
+def create_mappings(
+    options: Sequence[T], format_func: Callable[[T], str] = str
+) -> tuple[list[str], dict[str, int]]:
+    """Iterates through the options and formats them using the format_func.
+
+    Returns a tuple of the formatted options and a mapping of the formatted options to
+    the original options.
+    """
+    formatted_option_to_option_mapping: dict[str, int] = {}
+    formatted_options: list[str] = []
+    for index, option in enumerate(options):
+        formatted_option = format_func(option)
+        formatted_options.append(formatted_option)
+        formatted_option_to_option_mapping[formatted_option] = index
+
+    return (
+        formatted_options,
+        formatted_option_to_option_mapping,
     )

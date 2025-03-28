@@ -16,7 +16,7 @@
 
 import React from "react"
 
-import { fireEvent, screen } from "@testing-library/react"
+import { fireEvent, screen, within } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
 import { render } from "~lib/test_util"
@@ -29,7 +29,7 @@ import Selectbox, { fuzzyFilterSelectOptions, Props } from "./Selectbox"
 vi.mock("~lib/WidgetStateManager")
 
 const getProps = (props: Partial<Props> = {}): Props => ({
-  value: 0,
+  value: "a",
   label: "Label",
   options: ["a", "b", "c"],
   disabled: false,
@@ -137,7 +137,7 @@ describe("Selectbox widget", () => {
     // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(options[2])
 
-    expect(props.onChange).toHaveBeenCalledWith(2)
+    expect(props.onChange).toHaveBeenCalledWith("c")
     expect(screen.getByText(props.options[2])).toBeInTheDocument()
   })
 
@@ -205,7 +205,7 @@ describe("Selectbox widget", () => {
     // Original value passed is 0
     expect(screen.getByText(props.options[0])).toBeInTheDocument()
 
-    props = getProps({ value: 1 })
+    props = getProps({ value: "b" })
     rerender(<Selectbox {...props} />)
     expect(screen.getByText(props.options[1])).toBeInTheDocument()
   })
@@ -228,13 +228,18 @@ describe("Selectbox widget", () => {
 
   it("does not call onChange when the user deletes characters", async () => {
     render(<Selectbox {...props} />)
-    const selectbox = screen.getByRole("combobox")
+    const selectbox = screen.getByTestId("stSelectbox")
+    expect(
+      within(selectbox).getByText(props.options[0], { exact: true })
+    ).toBeInTheDocument()
+
+    const selectboxInput = screen.getByRole("combobox")
 
     // Simulate deleting a character
     // we are using fireEvent here instead of userEvent because userEvent
     // did not trigger the backspace event correctly.
     // eslint-disable-next-line testing-library/prefer-user-event
-    fireEvent.keyDown(selectbox, {
+    fireEvent.keyDown(selectboxInput, {
       key: "Backspace",
       keyCode: 8,
       code: "Backspace",
@@ -242,8 +247,37 @@ describe("Selectbox widget", () => {
 
     // ensure that onChange was not called for the remove
     expect(props.onChange).toHaveBeenCalledTimes(0)
-    // ensure that the input-internal value was updated
-    expect(selectbox).toHaveValue("")
+    // ensure that the input value was updated
+    expect(
+      within(selectbox).queryAllByText(props.options[0], { exact: true })
+    ).toHaveLength(0)
+  })
+
+  it("allows new options when acceptNewOptions is true", async () => {
+    const user = userEvent.setup()
+    props = getProps({
+      acceptNewOptions: true,
+    })
+    render(<Selectbox {...props} />)
+    const selectboxInput = screen.getByRole("combobox")
+    await user.type(selectboxInput, "hello world!")
+    await user.keyboard("{enter}")
+    expect(props.onChange).toHaveBeenCalledTimes(1)
+    expect(props.onChange).toHaveBeenCalledWith("hello world!")
+    const selectbox = screen.getByTestId("stSelectbox")
+    expect(within(selectbox).getByText("hello world!")).toBeInTheDocument()
+  })
+
+  it("does not allow new options when acceptNewOptions is false", async () => {
+    const user = userEvent.setup()
+    props = getProps({
+      acceptNewOptions: false,
+    })
+    render(<Selectbox {...props} />)
+    const selectboxInput = screen.getByRole("combobox")
+    await user.type(selectboxInput, "hello world!")
+    await user.keyboard("{enter}")
+    expect(props.onChange).toHaveBeenCalledTimes(0)
   })
 })
 

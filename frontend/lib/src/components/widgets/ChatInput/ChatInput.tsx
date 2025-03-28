@@ -469,6 +469,10 @@ function ChatInput({
                     borderRightWidth: "0",
                     borderTopWidth: "0",
                     borderBottomWidth: "0",
+                    borderTopLeftRadius: "0",
+                    borderTopRightRadius: "0",
+                    borderBottomRightRadius: "0",
+                    borderBottomLeftRadius: "0",
                   },
                 },
                 Input: {

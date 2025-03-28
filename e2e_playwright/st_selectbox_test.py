@@ -23,7 +23,7 @@ def test_selectbox_widget_rendering(
 ):
     """Test that the selectbox widgets are correctly rendered via screenshot matching."""
     selectbox_widgets = themed_app.get_by_test_id("stSelectbox")
-    expect(selectbox_widgets).to_have_count(14)
+    expect(selectbox_widgets).to_have_count(16)
 
     assert_snapshot(selectbox_widgets.nth(0), name="st_selectbox-default")
     assert_snapshot(selectbox_widgets.nth(1), name="st_selectbox-formatted_options")
@@ -45,7 +45,7 @@ def test_selectbox_widget_rendering(
 def test_selectbox_has_correct_initial_values(app: Page):
     """Test that st.selectbox returns the correct initial values."""
     markdown_elements = app.get_by_test_id("stMarkdown")
-    expect(markdown_elements).to_have_count(14)
+    expect(markdown_elements).to_have_count(17)
 
     expected = [
         "value 1: male",
@@ -62,6 +62,9 @@ def test_selectbox_has_correct_initial_values(app: Page):
         "value 11: male",
         "value 12: female",
         "value 14: male",
+        "value 15: male",
+        "value 15 (session_state): male",
+        "value 16: female",
     ]
 
     for markdown_element, expected_text in zip(markdown_elements.all(), expected):
@@ -236,3 +239,57 @@ def test_dismiss_change_by_clicking_away(app: Page):
     # We use contain_text because the selectbox_element's text also includes the label
     expect(selectbox_element).to_contain_text("male")
     expect(markdown_result_element).to_have_text("value 14: male", use_inner_text=True)
+
+
+def test_accept_new_options_feature(app: Page):
+    """Test that the accept_new_options feature works correctly.
+    When it's True, the user must be able to enter a new option that doesn't exist in
+    the original options.
+    """
+    # Get the selectbox with accept_new_options=True
+    selectbox_input = app.get_by_test_id("stSelectbox").nth(14).locator("input")
+
+    # Type a new option that doesn't exist in the original options
+    selectbox_input.click()
+    selectbox_input.fill("")  # Clear the input
+    selectbox_input.type("new_custom_option")
+    selectbox_input.press("Enter")
+
+    # Check that the new option was accepted and selected
+    expect(app.get_by_test_id("stMarkdown").nth(14)).to_have_text(
+        "value 15: new_custom_option", use_inner_text=True
+    )
+    # Check that the new option was accepted and selected
+    expect(app.get_by_test_id("stMarkdown").nth(15)).to_have_text(
+        "value 15 (session_state): new_custom_option", use_inner_text=True
+    )
+
+
+def test_does_not_accept_new_options_feature(app: Page):
+    """Test that the accept_new_options feature works correctly.
+    When it's False, the user must not be able to enter a new option that doesn't exist
+    in the original options.
+    """
+    # Get any selectbox with accept_new_options=False
+    selectbox_input = app.get_by_test_id("stSelectbox").nth(0).locator("input")
+    # Check that the new option was accepted and selected
+    expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text(
+        "value 1: male", use_inner_text=True
+    )
+
+    # Type a new option that doesn't exist in the original options
+    selectbox_input.click()
+    selectbox_input.fill("")  # Clear the input
+    selectbox_input.type("new_custom_option")
+    selectbox_input.press("Enter")
+
+    expect(app.get_by_test_id("stMarkdown").nth(0)).to_have_text(
+        "value 1: male", use_inner_text=True
+    )
+
+
+def test_selectbox_preset_session_state(app: Page):
+    """Should display values from session_state."""
+    expect(app.get_by_test_id("stMarkdown").nth(16)).to_have_text("value 16: female")
+    selectbox = app.get_by_test_id("stSelectbox").nth(15)
+    expect(selectbox.get_by_text("female")).to_be_visible()

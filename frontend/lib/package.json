@@ -53,6 +53,7 @@
     "@loaders.gl/core": "^4.3.3",
     "@loaders.gl/csv": "^4.3.3",
     "@loaders.gl/gltf": "^4.3.3",
+    "@sindresorhus/slugify": "^2.2.1",
     "@streamlit/protobuf": "workspace:^",
     "@streamlit/utils": "workspace:^",
     "apache-arrow": "^19.0.1",

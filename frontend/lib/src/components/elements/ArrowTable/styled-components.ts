@@ -77,6 +77,7 @@ export const StyledTableCellHeader = styled.th(({ theme }) => ({
   ...styleCellFunction(theme),
   textAlign: "inherit",
   color: theme.colors.fadedText60,
+  paddingLeft: theme.spacing.sm,
 }))
 
 export const StyledEmptyTableCell = styled(StyledTableCell)(({ theme }) => ({

@@ -246,7 +246,7 @@ function DateInput({
                   $pseudoSelected ||
                   $pseudoHighlighted ||
                   $isHovered
-                    ? `${colors.secondaryBg} !important`
+                    ? `${colors.darkenedBgMix15} !important`
                     : colors.transparent,
               },
 
@@ -326,7 +326,7 @@ function DateInput({
                   style: {
                     // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
                     paddingRight: spacing.sm,
-                    paddingLeft: spacing.sm,
+                    paddingLeft: spacing.md,
                     paddingBottom: spacing.sm,
                     paddingTop: spacing.sm,
                     lineHeight: lineHeights.inputWidget,

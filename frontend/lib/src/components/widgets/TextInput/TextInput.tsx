@@ -99,7 +99,7 @@ function TextInput({
 
   const theme = useTheme()
   const [id] = useState(() => uniqueId("text_input_"))
-  const { placeholder, formId } = element
+  const { placeholder, formId, icon, maxChars } = element
 
   const commitWidgetValue = useCallback((): void => {
     setDirty(false)
@@ -127,15 +127,15 @@ function TextInput({
   }, [])
 
   const onChange = useOnInputChange({
-    formId: element.formId,
-    maxChars: element.maxChars,
+    formId,
+    maxChars,
     setDirty,
     setUiValue,
     setValueWithSource,
   })
 
   const onKeyPress = useSubmitFormViaEnterKey(
-    element.formId,
+    formId,
     commitWidgetValue,
     dirty,
     widgetMgr,
@@ -144,7 +144,7 @@ function TextInput({
 
   // Material icons need to be larger to render similar size of emojis,
   // and we change their text color
-  const isMaterialIcon = element.icon?.startsWith(":material")
+  const isMaterialIcon = icon?.startsWith(":material")
   const dynamicIconSize = isMaterialIcon ? "lg" : "base"
 
   return (
@@ -183,10 +183,10 @@ function TextInput({
         type={getTypeString(element)}
         autoComplete={element.autocomplete}
         startEnhancer={
-          element.icon && (
+          icon && (
             <DynamicIcon
               data-testid="stTextInputIcon"
-              iconValue={element.icon}
+              iconValue={icon}
               size={dynamicIconSize}
             />
           )
@@ -205,7 +205,7 @@ function TextInput({
               lineHeight: theme.lineHeights.inputWidget,
               // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
               paddingRight: theme.spacing.sm,
-              paddingLeft: theme.spacing.sm,
+              paddingLeft: theme.spacing.md,
               paddingBottom: theme.spacing.sm,
               paddingTop: theme.spacing.sm,
             },
@@ -221,7 +221,7 @@ function TextInput({
               borderRightWidth: theme.sizes.borderWidth,
               borderTopWidth: theme.sizes.borderWidth,
               borderBottomWidth: theme.sizes.borderWidth,
-              paddingLeft: element.icon ? theme.spacing.sm : 0,
+              paddingLeft: icon ? theme.spacing.sm : 0,
             },
           },
           StartEnhancer: {
@@ -240,8 +240,8 @@ function TextInput({
         <InputInstructions
           dirty={dirty}
           value={uiValue ?? ""}
-          maxLength={element.maxChars}
-          inForm={isInForm({ formId: element.formId })}
+          maxLength={maxChars}
+          inForm={isInForm({ formId })}
           allowEnterToSubmit={allowEnterToSubmit}
         />
       )}

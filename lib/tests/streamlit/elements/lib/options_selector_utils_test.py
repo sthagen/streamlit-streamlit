@@ -24,6 +24,7 @@ from streamlit.elements.lib.options_selector_utils import (
     _coerce_enum,
     check_and_convert_to_indices,
     convert_to_sequence_and_check_comparable,
+    create_mappings,
     get_default_indices,
     index_,
     maybe_coerce_enum,
@@ -388,3 +389,63 @@ class TestEnumCoercion:
             )
             is tuple_result
         )
+
+
+class TestCreateMappings:
+    """Test class for create_mappings utility function."""
+
+    def test_create_mappings_with_default_format_func(self):
+        # Using default str format_func
+        options = ["apple", "banana", "cherry"]
+        formatted_options, mapping = create_mappings(options)
+
+        # Check formatted options
+        assert formatted_options == ["apple", "banana", "cherry"]
+
+        # Check mapping
+        assert mapping == {"apple": 0, "banana": 1, "cherry": 2}
+
+    def test_create_mappings_with_custom_format_func(self):
+        # Using a custom format function
+        options = ["apple", "banana", "cherry"]
+
+        formatted_options, mapping = create_mappings(
+            options, lambda x: f"fruit-{x.upper()}"
+        )
+
+        # Check formatted options
+        assert formatted_options == ["fruit-APPLE", "fruit-BANANA", "fruit-CHERRY"]
+
+        # Check mapping
+        assert mapping == {"fruit-APPLE": 0, "fruit-BANANA": 1, "fruit-CHERRY": 2}
+
+    def test_create_mappings_with_numeric_options(self):
+        # Test with numeric options
+        options = [1, 2, 3, 4]
+        formatted_options, mapping = create_mappings(options)
+
+        # Check formatted options
+        assert formatted_options == ["1", "2", "3", "4"]
+
+        # Check mapping
+        assert mapping == {"1": 0, "2": 1, "3": 2, "4": 3}
+
+    def test_create_mappings_with_mixed_types(self):
+        # Test with a mix of types
+        options = [1, "two", 3.0, None]
+        formatted_options, mapping = create_mappings(options)
+
+        # Check formatted options
+        assert formatted_options == ["1", "two", "3.0", "None"]
+
+        # Check mapping
+        assert mapping == {"1": 0, "two": 1, "3.0": 2, "None": 3}
+
+    def test_create_mappings_with_empty_list(self):
+        # Test with empty list
+        options = []
+        formatted_options, mapping = create_mappings(options)
+
+        # Check both results are empty
+        assert formatted_options == []
+        assert mapping == {}

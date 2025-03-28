@@ -70,12 +70,12 @@ describe("Multiselect widget", () => {
 
   it("sets widget value on mount", () => {
     const props = getProps()
-    vi.spyOn(props.widgetMgr, "setIntArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<Multiselect {...props} />)
-    expect(props.widgetMgr.setIntArrayValue).toHaveBeenCalledWith(
+    expect(props.widgetMgr.setStringArrayValue).toHaveBeenCalledWith(
       props.element,
-      props.element.default,
+      props.element.default.map(index => props.element.options[index]),
       {
         fromUi: false,
       },
@@ -83,14 +83,28 @@ describe("Multiselect widget", () => {
     )
   })
 
-  it("can pass fragmentId to setIntArrayValue", () => {
+  it("gets correct value from proto", () => {
+    const props = getProps({
+      rawValues: ["b", "c"],
+      setValue: true,
+    })
+    render(<Multiselect {...props} />)
+
+    const selections = screen.getAllByRole("button")
+    // one of the buttons is the dropdown button
+    expect(selections.length).toBe(3)
+    expect(selections[0]).toHaveTextContent("b")
+    expect(selections[1]).toHaveTextContent("c")
+  })
+
+  it("can pass fragmentId to setStringArrayValue", () => {
     const props = getProps(undefined, { fragmentId: "myFragmentId" })
-    vi.spyOn(props.widgetMgr, "setIntArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<Multiselect {...props} />)
-    expect(props.widgetMgr.setIntArrayValue).toHaveBeenCalledWith(
+    expect(props.widgetMgr.setStringArrayValue).toHaveBeenCalledWith(
       props.element,
-      props.element.default,
+      props.element.default.map(index => props.element.options[index]),
       {
         fromUi: false,
       },
@@ -137,7 +151,7 @@ describe("Multiselect widget", () => {
   })
 
   describe("placeholder", () => {
-    it("renders when it's empty", () => {
+    it("renders when default is empty", () => {
       const props = getProps({ default: [] })
       render(<Multiselect {...props} />)
 
@@ -255,7 +269,7 @@ describe("Multiselect widget", () => {
     const props = getProps({ formId: "form" })
     props.widgetMgr.setFormSubmitBehaviors("form", true)
 
-    vi.spyOn(props.widgetMgr, "setIntArrayValue")
+    vi.spyOn(props.widgetMgr, "setStringArrayValue")
 
     render(<Multiselect {...props} />)
 
@@ -273,9 +287,9 @@ describe("Multiselect widget", () => {
     expect(remainingOptions.length).toBe(1)
     expect(remainingOptions[0]).toHaveTextContent("c")
 
-    expect(props.widgetMgr.setIntArrayValue).toHaveBeenCalledWith(
+    expect(props.widgetMgr.setStringArrayValue).toHaveBeenCalledWith(
       props.element,
-      [0, 1],
+      [props.element.options[0], props.element.options[1]],
       {
         fromUi: true,
       },
@@ -296,9 +310,9 @@ describe("Multiselect widget", () => {
     expect(updatedOptions[0]).toHaveTextContent("b")
     expect(updatedOptions[1]).toHaveTextContent("c")
 
-    expect(props.widgetMgr.setIntArrayValue).toHaveBeenLastCalledWith(
+    expect(props.widgetMgr.setStringArrayValue).toHaveBeenLastCalledWith(
       props.element,
-      props.element.default,
+      props.element.default.map(index => props.element.options[index]),
       {
         fromUi: true,
       },

@@ -115,7 +115,7 @@ export const StyledCheckbox = styled.input(({ theme }) => ({
   },
 
   "&:disabled": {
-    backgroundColor: theme.colors.secondaryBg,
+    backgroundColor: theme.colors.darkenedBgMix15,
   },
 }))
 

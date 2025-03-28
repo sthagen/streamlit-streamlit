@@ -213,10 +213,10 @@ const TextArea: FC<Props> = ({ disabled, element, widgetMgr, fragmentId }) => {
                 opacity: "0.7",
               },
               // Baseweb requires long-hand props, short-hand leads to weird bugs & warnings.
-              paddingRight: theme.spacing.lg,
-              paddingLeft: theme.spacing.lg,
-              paddingBottom: theme.spacing.lg,
-              paddingTop: theme.spacing.lg,
+              paddingRight: theme.spacing.md,
+              paddingLeft: theme.spacing.md,
+              paddingBottom: theme.spacing.md,
+              paddingTop: theme.spacing.md,
             },
           },
           Root: {
