@@ -70,7 +70,7 @@ def del_from_kth_multiselect(page: Page, option_text: str, k: int):
 def test_multiselect_on_load(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Should show widgets correctly when loaded."""
     multiselect_elements = themed_app.get_by_test_id("stMultiSelect")
-    expect(multiselect_elements).to_have_count(15)
+    expect(multiselect_elements).to_have_count(16)
 
     assert_snapshot(multiselect_elements.nth(0), name="st_multiselect-placeholder_help")
     assert_snapshot(multiselect_elements.nth(1), name="st_multiselect-format_func")
@@ -94,7 +94,7 @@ def test_help_tooltip_works(app: Page):
 def test_multiselect_initial_value(app: Page):
     """Should show the correct initial values."""
     text_elements = app.get_by_test_id("stText")
-    expect(text_elements).to_have_count(15)
+    expect(text_elements).to_have_count(16)
 
     expected = [
         "value 1: []",
@@ -112,6 +112,7 @@ def test_multiselect_initial_value(app: Page):
         "value 12: ['A long option']",
         "value 14: []",
         "value 15: ['apple', 'orange']",
+        "value 16: []",
     ]
 
     for text_element, expected_text in zip(text_elements.all(), expected):
@@ -215,7 +216,7 @@ def test_multiselect_valid_options(app: Page):
 def test_multiselect_no_valid_options(app: Page):
     """Should show that their are no options."""
     expect(app.get_by_test_id("stMultiSelect").nth(2)).to_have_text(
-        "multiselect 3\n\nNo options to select.", use_inner_text=True
+        "multiselect 3\n\nNo options to select", use_inner_text=True
     )
 
 
@@ -351,3 +352,44 @@ def test_multiselect_preset_session_state(app: Page):
     expect(selections_button).to_have_count(2)
     expect(selections_button.get_by_text("apple")).to_be_visible()
     expect(selections_button.get_by_text("orange")).to_be_visible()
+
+
+def test_multiselect_empty_options_with_accept_new_options(app: Page):
+    """Should allow adding new options when options list is empty but accept_new_options is True."""
+    # Get the multiselect with empty options but accept_new_options=True (index 15)
+    multiselect_elem = app.get_by_test_id("stMultiSelect").nth(15)
+
+    # Verify the initial placeholder shows "Add options"
+    expect(multiselect_elem).to_contain_text("Add options")
+
+    # Click to open input field
+    multiselect_elem.locator("input").click()
+
+    # Type and add new option "strawberry"
+    input_elem = multiselect_elem.locator("input")
+    input_elem.fill("strawberry")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+
+    # Type and add another option "blueberry"
+    input_elem.fill("blueberry")
+    input_elem.press("Enter")
+    wait_for_app_run(app)
+
+    # Verify options were added successfully
+    expect(app.get_by_test_id("stText").nth(15)).to_have_text(
+        "value 16: ['strawberry', 'blueberry']"
+    )
+
+    # Verify the selections are visible in the UI
+    selections_button = multiselect_elem.locator('[data-baseweb="tag"]')
+    expect(selections_button).to_have_count(2)
+    expect(selections_button.get_by_text("strawberry")).to_be_visible()
+    expect(selections_button.get_by_text("blueberry")).to_be_visible()
+
+    # Remove one option
+    del_from_kth_multiselect(app, "strawberry", 15)
+    wait_for_app_run(app)
+
+    # Verify one option was removed
+    expect(app.get_by_test_id("stText").nth(15)).to_have_text("value 16: ['blueberry']")

@@ -17,6 +17,7 @@
 import React, { memo, ReactElement } from "react"
 
 import { Exception as ExceptionProto } from "@streamlit/protobuf"
+import { isLocalhost } from "@streamlit/utils"
 
 import { notNullOrUndefined } from "~lib/util/utils"
 import AlertContainer, { Kind } from "~lib/components/shared/AlertContainer"
@@ -133,14 +134,16 @@ function ExceptionElement({
           {element.stackTrace && element.stackTrace.length > 0 ? (
             <StackTrace stackTrace={element.stackTrace} />
           ) : null}
-          <StyledExceptionLinks>
-            <a href={searchUrl} target="_blank" rel="noopener noreferrer">
-              Ask Google
-            </a>
-            <a href={chatGptUrl} target="_blank" rel="noopener noreferrer">
-              Ask ChatGPT
-            </a>
-          </StyledExceptionLinks>
+          {isLocalhost() && (
+            <StyledExceptionLinks>
+              <a href={searchUrl} target="_blank" rel="noopener noreferrer">
+                Ask Google
+              </a>
+              <a href={chatGptUrl} target="_blank" rel="noopener noreferrer">
+                Ask ChatGPT
+              </a>
+            </StyledExceptionLinks>
+          )}
         </StyledExceptionWrapper>
       </AlertContainer>
     </div>

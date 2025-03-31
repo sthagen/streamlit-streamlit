@@ -33,8 +33,6 @@ import {
 } from "~lib/components/widgets/BaseWidget"
 import { EmotionTheme } from "~lib/theme"
 
-const NO_OPTIONS_MSG = "No options to select."
-
 export interface Props {
   value: string | null
   onChange: (value: string | null) => void
@@ -144,9 +142,15 @@ const Selectbox: React.FC<Props> = ({
     selectValue = [{ label: value, value }]
   }
 
+  let selectboxPlaceholder = placeholder
   if (opts.length === 0) {
-    selectValue = [{ label: NO_OPTIONS_MSG }]
-    selectDisabled = true
+    if (!acceptNewOptions) {
+      selectboxPlaceholder = "No options to select"
+      // When a user cannot add new options and there are no options to select from, we disable the selectbox
+      selectDisabled = true
+    } else {
+      selectboxPlaceholder = "Add an option"
+    }
   }
 
   const selectOptions: SelectOption[] = opts.map((option: string) => ({
@@ -184,7 +188,7 @@ const Selectbox: React.FC<Props> = ({
         escapeClearsValue={clearable || false}
         value={selectValue}
         valueKey="value"
-        placeholder={placeholder}
+        placeholder={selectboxPlaceholder}
         overrides={{
           Root: {
             style: () => ({
@@ -227,7 +231,9 @@ const Selectbox: React.FC<Props> = ({
           },
           Placeholder: {
             style: () => ({
-              color: theme.colors.fadedText60,
+              color: selectDisabled
+                ? theme.colors.fadedText40
+                : theme.colors.fadedText60,
             }),
           },
           ValueContainer: {

@@ -56,7 +56,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^1.38.3",
+    "@eslint-react/eslint-plugin": "^1.38.4",
     "@swc/plugin-emotion": "^3.0.9",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^14.1.2",
@@ -80,7 +80,7 @@
     "eslint": "^8.33.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-import-resolver-typescript": "^4.2.5",
+    "eslint-import-resolver-typescript": "^4.3.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-lodash": "^8.0.0",
@@ -105,7 +105,7 @@
     "vite": "^6.2.3",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.9",
+    "vitest": "^3.1.1",
     "vitest-canvas-mock": "^0.3.3",
     "vitest-websocket-mock": "^0.5.0"
   },

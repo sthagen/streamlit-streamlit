@@ -41,6 +41,8 @@ interface Props {
   ) => void
 }
 
+// These endpoints need to be kept in sync with the endpoints in
+// lib/streamlit/web/server/server.py
 const MEDIA_ENDPOINT = "/media"
 const UPLOAD_FILE_ENDPOINT = "/_stcore/upload_file"
 const COMPONENT_ENDPOINT_BASE = "/component"

@@ -114,3 +114,11 @@ i15 = st.multiselect(
     key="multiselect15",
 )
 st.text(f"value 15: {i15}")
+
+# Add a multiselect with empty options but accept_new_options=True
+i16 = st.multiselect(
+    "multiselect 16 - empty options with accept_new_options",
+    options=[],
+    accept_new_options=True,
+)
+st.text(f"value 16: {i16}")

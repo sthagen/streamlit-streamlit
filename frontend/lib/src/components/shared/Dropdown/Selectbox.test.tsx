@@ -98,11 +98,24 @@ describe("Selectbox widget", () => {
   it("renders a placeholder with empty options", () => {
     props = getProps({
       options: [],
+      value: undefined,
     })
     render(<Selectbox {...props} />)
 
-    expect(screen.getByText("No options to select.")).toBeInTheDocument()
+    expect(screen.getByText("No options to select")).toBeInTheDocument()
     expect(screen.getByRole("combobox")).toBeDisabled()
+  })
+
+  it("renders a placeholder with empty options when acceptNewOptions is true", () => {
+    props = getProps({
+      options: [],
+      acceptNewOptions: true,
+      value: undefined,
+    })
+    render(<Selectbox {...props} />)
+
+    expect(screen.getByText("Add an option")).toBeInTheDocument()
+    expect(screen.getByRole("combobox")).not.toBeDisabled()
   })
 
   it("renders options", async () => {

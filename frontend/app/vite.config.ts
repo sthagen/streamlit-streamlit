@@ -26,6 +26,10 @@ const HASH = process.env.OMIT_HASH_FROM_MAIN_FILES ? "" : ".[hash]"
 // This is a convenience for developers for debugging purposes
 const DEV_BUILD = Boolean(process.env.DEV_BUILD)
 const IS_PROFILER_BUILD = Boolean(process.env.IS_PROFILER_BUILD)
+// The URL of the backend server to proxy to:
+// Can be changed to run against a remote server or different port:
+const DEV_SERVER_BACKEND_URL =
+  process.env.DEV_SERVER_BACKEND_URL || `http://localhost:8501`
 
 /**
  * If this is a profiler build, we need to alias react-dom and scheduler to
@@ -84,6 +88,28 @@ export default defineConfig({
   server: {
     open: true,
     port: 3000,
+    host: true,
+    proxy: {
+      // These endpoints need to be kept in sync with the endpoints in
+      // lib/streamlit/web/server/server.py
+      "/_stcore": {
+        target: DEV_SERVER_BACKEND_URL,
+        changeOrigin: true,
+        ws: true,
+      },
+      "/media": {
+        target: DEV_SERVER_BACKEND_URL,
+        changeOrigin: true,
+      },
+      "/component": {
+        target: DEV_SERVER_BACKEND_URL,
+        changeOrigin: true,
+      },
+      "/app/static": {
+        target: DEV_SERVER_BACKEND_URL,
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "build",

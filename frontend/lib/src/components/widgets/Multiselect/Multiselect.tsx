@@ -198,9 +198,17 @@ const Multiselect: FC<Props> = props => {
   )
 
   const { options } = element
-  const disabled = options.length === 0 ? true : props.disabled
-  const placeholder =
-    options.length === 0 ? "No options to select." : element.placeholder
+  let disabled = props.disabled
+  let placeholder = element.placeholder
+  if (options.length === 0) {
+    if (!element.acceptNewOptions) {
+      placeholder = "No options to select"
+      // When a user cannot add new options and there are no options to select from, we disable the selectbox
+      disabled = true
+    } else {
+      placeholder = "Add options"
+    }
+  }
   const selectOptions: MultiselectOption[] = options.map((option: string) => {
     return {
       label: option,

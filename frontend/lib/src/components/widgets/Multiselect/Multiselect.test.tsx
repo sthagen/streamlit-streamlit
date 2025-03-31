@@ -163,8 +163,20 @@ describe("Multiselect widget", () => {
       const props = getProps({ default: [], options: [] })
       render(<Multiselect {...props} />)
 
-      const placeholder = screen.getByText("No options to select.")
+      const placeholder = screen.getByText("No options to select")
       expect(placeholder).toBeInTheDocument()
+    })
+
+    it("renders with empty options when acceptNewOptions is true", () => {
+      const props = getProps({
+        default: [],
+        options: [],
+        acceptNewOptions: true,
+      })
+      render(<Multiselect {...props} />)
+
+      expect(screen.getByText("Add options")).toBeInTheDocument()
+      expect(screen.getByRole("combobox")).not.toBeDisabled()
     })
   })
 

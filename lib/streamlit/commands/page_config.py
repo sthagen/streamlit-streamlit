@@ -102,7 +102,7 @@ def _get_favicon_string(page_icon: PageIcon) -> str:
 
     # If page_icon is an emoji, return it as is.
     if isinstance(page_icon, str) and is_emoji(page_icon):
-        return page_icon
+        return f"emoji:{page_icon}"
 
     if isinstance(page_icon, str) and page_icon.startswith(":material"):
         return validate_material_icon(page_icon)

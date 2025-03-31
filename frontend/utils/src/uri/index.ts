@@ -46,3 +46,10 @@ export function makePath(basePath: string, subPath: string): string {
 export function isHttps(): boolean {
   return window.location.href.startsWith("https://")
 }
+
+export const isLocalhost = (): boolean => {
+  return (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  )
+}

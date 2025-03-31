@@ -16,8 +16,6 @@
 
 import { isHttps, makePath } from "@streamlit/utils"
 
-import { IS_DEV_ENV, WEBSOCKET_PORT_DEV } from "./constants"
-
 const FINAL_SLASH_RE = /\/+$/
 const INITIAL_SLASH_RE = /^\/+/
 
@@ -26,13 +24,8 @@ const INITIAL_SLASH_RE = /^\/+/
  */
 export function getWindowBaseUriParts(): URL {
   const currentUrl = new URL(window.location.href)
-  // If dev, always connect to 8501, since window.location.port is the Node
-  // server's port 3000.
-  // If changed, also change config.py
 
-  if (IS_DEV_ENV) {
-    currentUrl.port = WEBSOCKET_PORT_DEV
-  } else if (!currentUrl.port) {
+  if (!currentUrl.port) {
     currentUrl.port = isHttps() ? "443" : "80"
   }
 

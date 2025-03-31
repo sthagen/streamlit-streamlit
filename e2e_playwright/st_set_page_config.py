@@ -86,7 +86,7 @@ st.button("Page Config With Emoji Shortcode", on_click=page_config_with_emoji_sh
 def page_config_with_emoji_symbol():
     st.set_page_config(
         page_title="With Emoji Symbol",
-        page_icon="🐙",
+        page_icon="🐦‍🔥",
     )
 
 

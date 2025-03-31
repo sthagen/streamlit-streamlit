@@ -23,7 +23,7 @@ def test_selectbox_widget_rendering(
 ):
     """Test that the selectbox widgets are correctly rendered via screenshot matching."""
     selectbox_widgets = themed_app.get_by_test_id("stSelectbox")
-    expect(selectbox_widgets).to_have_count(16)
+    expect(selectbox_widgets).to_have_count(17)
 
     assert_snapshot(selectbox_widgets.nth(0), name="st_selectbox-default")
     assert_snapshot(selectbox_widgets.nth(1), name="st_selectbox-formatted_options")
@@ -45,7 +45,7 @@ def test_selectbox_widget_rendering(
 def test_selectbox_has_correct_initial_values(app: Page):
     """Test that st.selectbox returns the correct initial values."""
     markdown_elements = app.get_by_test_id("stMarkdown")
-    expect(markdown_elements).to_have_count(17)
+    expect(markdown_elements).to_have_count(18)
 
     expected = [
         "value 1: male",
@@ -65,6 +65,7 @@ def test_selectbox_has_correct_initial_values(app: Page):
         "value 15: male",
         "value 15 (session_state): male",
         "value 16: female",
+        "value 17: None",
     ]
 
     for markdown_element, expected_text in zip(markdown_elements.all(), expected):
@@ -293,3 +294,41 @@ def test_selectbox_preset_session_state(app: Page):
     expect(app.get_by_test_id("stMarkdown").nth(16)).to_have_text("value 16: female")
     selectbox = app.get_by_test_id("stSelectbox").nth(15)
     expect(selectbox.get_by_text("female")).to_be_visible()
+
+
+def test_selectbox_empty_options_with_accept_new_options(app: Page):
+    """Should allow adding new options when options list is empty but
+    accept_new_options is True.
+    """
+    # Get the selectbox with empty options but accept_new_options=True (index 16)
+    selectbox_elem = app.get_by_test_id("stSelectbox").nth(16)
+    selectbox_input = selectbox_elem.locator("input")
+
+    # Verify the initial placeholder shows a message about adding an option
+    expect(selectbox_elem).to_contain_text("Add an option")
+
+    # Click to focus the input field
+    selectbox_input.click()
+
+    # Type and add a new option "new_option"
+    selectbox_input.fill("new_option")
+    selectbox_input.press("Enter")
+
+    # Verify new option was added and selected successfully
+    expect(app.get_by_test_id("stMarkdown").nth(17)).to_have_text(
+        "value 17: new_option"
+    )
+
+    # Verify the new option is visible in the input field
+    expect(selectbox_elem.get_by_text("new_option", exact=True)).to_be_visible()
+
+    # Add another option to replace the first one
+    selectbox_input.click()
+    selectbox_input.fill("another_option")
+    selectbox_input.press("Enter")
+
+    # Verify the new option replaced the previous one
+    expect(app.get_by_test_id("stMarkdown").nth(17)).to_have_text(
+        "value 17: another_option"
+    )
+    expect(selectbox_elem.get_by_text("another_option")).to_be_visible()

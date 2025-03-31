@@ -133,3 +133,11 @@ v16 = st.selectbox(
     key="selectbox16",
 )
 st.write("value 16:", v16)
+
+# Add a selectbox with empty options but accept_new_options=True
+v17 = st.selectbox(
+    "selectbox 17 - empty options with accept_new_options",
+    options=[],
+    accept_new_options=True,
+)
+st.write("value 17:", v17)

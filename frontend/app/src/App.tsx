@@ -101,9 +101,12 @@ import {
   SessionStatus,
   WidgetStates,
 } from "@streamlit/protobuf"
-import { isNullOrUndefined, notNullOrUndefined } from "@streamlit/utils"
+import {
+  isLocalhost,
+  isNullOrUndefined,
+  notNullOrUndefined,
+} from "@streamlit/utils"
 import getBrowserInfo from "@streamlit/app/src/util/getBrowserInfo"
-import { isLocalhost } from "@streamlit/app/src/util/deploymentInfo"
 import { AppContext } from "@streamlit/app/src/components/AppContext"
 import AppView from "@streamlit/app/src/components/AppView"
 import StatusWidget from "@streamlit/app/src/components/StatusWidget"
