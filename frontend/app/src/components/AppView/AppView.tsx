@@ -73,9 +73,6 @@ export interface AppViewProps {
 
   uploadClient: FileUploadClient
 
-  // Disable the widgets when not connected to the server.
-  widgetsDisabled: boolean
-
   componentRegistry: ComponentRegistry
 
   formsData: FormsData
@@ -104,7 +101,6 @@ function AppView(props: AppViewProps): ReactElement {
     scriptRunId,
     scriptRunState,
     widgetMgr,
-    widgetsDisabled,
     uploadClient,
     componentRegistry,
     formsData,
@@ -139,6 +135,7 @@ function AppView(props: AppViewProps): ReactElement {
     showToolbar,
     showColoredLine,
     sidebarChevronDownshift,
+    widgetsDisabled,
   } = React.useContext(AppContext)
 
   const { addScriptFinishedHandler, removeScriptFinishedHandler } =

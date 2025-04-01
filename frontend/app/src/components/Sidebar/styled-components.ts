@@ -26,8 +26,15 @@ import { hasLightBackgroundColor } from "@streamlit/lib"
  * @param isActive Whether the nav text should show as active.
  * @returns The color of the text in the sidebar nav.
  */
-const getNavTextColor = (theme: any, isActive: boolean): string => {
+const getNavTextColor = (
+  theme: any,
+  isActive: boolean,
+  disabled: boolean = false
+): string => {
   const isLightTheme = hasLightBackgroundColor(theme)
+  if (disabled) {
+    return theme.colors.fadedText40
+  }
   if (isActive) {
     return theme.colors.bodyText
   }
@@ -101,11 +108,16 @@ export const StyledSidebarNavItems = styled.ul(({ theme }) => {
     paddingLeft: theme.spacing.none,
   }
 })
+export interface StyledSidebarNavLinkContainerProps {
+  disabled: boolean
+}
 
-export const StyledSidebarNavLinkContainer = styled.div({
-  display: "flex",
-  flexDirection: "column",
-})
+export const StyledSidebarNavLinkContainer =
+  styled.div<StyledSidebarNavLinkContainerProps>(({ disabled }) => ({
+    display: "flex",
+    flexDirection: "column",
+    cursor: disabled ? "not-allowed" : "pointer",
+  }))
 
 export interface StyledSidebarNavIconProps {
   isActive: boolean
@@ -128,10 +140,11 @@ export const StyledSidebarNavIcon = styled.span<StyledSidebarNavIconProps>(
 
 export interface StyledSidebarNavLinkProps {
   isActive: boolean
+  disabled: boolean
 }
 
 export const StyledSidebarNavLink = styled.a<StyledSidebarNavLinkProps>(
-  ({ theme, isActive }) => {
+  ({ theme, isActive, disabled }) => {
     const defaultPageLinkStyles = {
       textDecoration: "none",
       fontWeight: isActive ? theme.fontWeights.bold : theme.fontWeights.normal,
@@ -154,6 +167,10 @@ export const StyledSidebarNavLink = styled.a<StyledSidebarNavLinkProps>(
 
       color: getNavTextColor(theme, isActive),
       backgroundColor: isActive ? theme.colors.darkenedBgMix25 : "transparent",
+
+      ...(disabled && {
+        pointerEvents: "none",
+      }),
 
       "&:hover": {
         backgroundColor: transparentize(theme.colors.darkenedBgMix25, 0.1),
@@ -179,9 +196,9 @@ export const StyledSidebarNavLink = styled.a<StyledSidebarNavLinkProps>(
 )
 
 export const StyledSidebarLinkText = styled.span<StyledSidebarNavLinkProps>(
-  ({ isActive, theme }) => {
+  ({ isActive, theme, disabled }) => {
     return {
-      color: getNavTextColor(theme, isActive),
+      color: getNavTextColor(theme, isActive, disabled),
       overflow: "hidden",
       whiteSpace: "nowrap",
       textOverflow: "ellipsis",

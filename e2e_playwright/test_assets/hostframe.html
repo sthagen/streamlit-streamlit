@@ -223,6 +223,13 @@ Usage:
       type: "TERMINATE_WEBSOCKET_CONNECTION",
     });
   }
+
+  function setInputsDisabled() {
+    sendMessage({
+      type: "SET_INPUTS_DISABLED",
+      disabled: true,
+    })
+  }
 </script>
 
 <style>
@@ -281,6 +288,7 @@ Usage:
   <button onclick="setFileUploadClientConfig()">Set file upload config</button>
   <button onclick="restartWebsocketConnection()">Restart Websocket</button>
   <button onclick="terminateWebsocketConnection()">Terminate Websocket</button>
+  <button onclick="setInputsDisabled()">Disable Inputs</button>
 </div>
 
 <!-- we replace $APP_URL during the playwright test with the correct one -->

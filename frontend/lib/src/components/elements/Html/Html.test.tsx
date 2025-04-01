@@ -46,7 +46,7 @@ describe("HTML element", () => {
     const html = screen.getByTestId("stHtml")
     expect(html).toBeInTheDocument()
     expect(html).toHaveTextContent("Test Html")
-    expect(html).toHaveStyle("width: 100px")
+    expect(html).toHaveStyle("width: 100%")
     expect(html).toHaveClass("stHtml")
   })
 

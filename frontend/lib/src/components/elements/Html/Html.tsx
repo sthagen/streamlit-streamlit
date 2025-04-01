@@ -22,6 +22,8 @@ import { Html as HtmlProto } from "@streamlit/protobuf"
 
 import { useCalculatedWidth } from "~lib/hooks/useCalculatedWidth"
 
+import { StyledHtml } from "./styled-components"
+
 export interface HtmlProps {
   element: HtmlProto
 }
@@ -88,11 +90,10 @@ function Html({ element }: Readonly<HtmlProps>): ReactElement {
   return (
     <>
       {sanitizedHtml && (
-        <div
+        <StyledHtml
           className="stHtml"
           data-testid="stHtml"
           ref={htmlRef}
-          style={{ width }}
           // TODO: Update to match React best practices
           // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
           dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
