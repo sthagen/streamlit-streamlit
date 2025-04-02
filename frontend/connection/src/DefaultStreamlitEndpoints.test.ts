@@ -17,7 +17,6 @@
 import axios from "axios"
 import MockAdapter from "axios-mock-adapter"
 
-import { ForwardMsg } from "@streamlit/protobuf"
 import { buildHttpUri } from "@streamlit/utils"
 
 import { DefaultStreamlitEndpoints } from "./DefaultStreamlitEndpoints"
@@ -27,13 +26,6 @@ const MOCK_SERVER_URI = {
   port: "80",
   pathname: "/mock/base/path",
 } as URL
-
-function createMockForwardMsg(hash: string, cacheable = true): ForwardMsg {
-  return ForwardMsg.fromObject({
-    hash,
-    metadata: { cacheable, deltaId: 0 },
-  })
-}
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -443,66 +435,6 @@ describe("DefaultStreamlitEndpoints", () => {
         "Error deleting file",
         "Request failed with status code 400",
         "http://streamlit.mock:80/mock/base/path/_stcore/upload_file/file_1"
-      )
-    })
-  })
-
-  describe("fetchCachedForwardMsg()", () => {
-    let axiosMock: MockAdapter
-    let endpoints: DefaultStreamlitEndpoints
-
-    beforeEach(() => {
-      axiosMock = new MockAdapter(axios)
-      endpoints = new DefaultStreamlitEndpoints({
-        getServerUri: () => MOCK_SERVER_URI,
-        csrfEnabled: false,
-        sendClientError: vi.fn(),
-      })
-    })
-
-    afterEach(() => {
-      axiosMock.restore()
-    })
-
-    it("calls the appropriate endpoint", async () => {
-      const mockForwardMsgBytes = ForwardMsg.encode(
-        createMockForwardMsg("mockHash")
-      ).finish()
-
-      axiosMock
-        .onGet(
-          "http://streamlit.mock:80/mock/base/path/_stcore/message?hash=mockHash"
-        )
-        .reply(() => {
-          return [200, mockForwardMsgBytes]
-        })
-
-      await expect(
-        endpoints.fetchCachedForwardMsg("mockHash")
-      ).resolves.toEqual(new Uint8Array(mockForwardMsgBytes))
-    })
-
-    it("errors on bad status", async () => {
-      axiosMock
-        .onGet(
-          "http://streamlit.mock:80/mock/base/path/_stcore/message?hash=mockHash"
-        )
-        .reply(() => [400])
-
-      const sendClientErrorToHostSpy = vi.spyOn(
-        endpoints,
-        "sendClientErrorToHost"
-      )
-
-      await expect(
-        endpoints.fetchCachedForwardMsg("mockHash")
-      ).rejects.toThrow("Request failed with status code 400")
-
-      expect(sendClientErrorToHostSpy).toHaveBeenCalledWith(
-        "Forward Message Cache",
-        "Error fetching cached forward message",
-        "Request failed with status code 400",
-        "http://streamlit.mock:80/mock/base/path/_stcore/message?hash=mockHash"
       )
     })
   })

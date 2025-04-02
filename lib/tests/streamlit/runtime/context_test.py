@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import unittest
 from http.cookies import Morsel
 from unittest.mock import MagicMock, patch
 
@@ -22,19 +23,16 @@ from tornado.httputil import HTTPHeaders
 
 import streamlit as st
 from streamlit.runtime.context import _normalize_header
-from tests.streamlit.web.server.server_test_case import ServerTestCase
 
 
-class StContextTest(ServerTestCase):
+class StContextTest(unittest.TestCase):
     mocked_cookie = Morsel()
     mocked_cookie.set("cookieName", "cookieValue", "cookieValue")
 
     @patch(
-        "streamlit.runtime.context._get_session_client",
+        "streamlit.runtime.context._get_request",
         MagicMock(
-            return_value=MagicMock(
-                request=MagicMock(headers=HTTPHeaders({"the-header": "header-value"}))
-            )
+            return_value=MagicMock(headers=HTTPHeaders({"the-header": "header-value"}))
         ),
     )
     def test_context_headers(self):
@@ -42,12 +40,8 @@ class StContextTest(ServerTestCase):
         assert st.context.headers.to_dict(), {"The-Header": "header-value"}
 
     @patch(
-        "streamlit.runtime.context._get_session_client",
-        MagicMock(
-            return_value=MagicMock(
-                request=MagicMock(cookies={"cookieName": mocked_cookie})
-            )
-        ),
+        "streamlit.runtime.context._get_request",
+        MagicMock(return_value=MagicMock(cookies={"cookieName": mocked_cookie})),
     )
     def test_context_cookies(self):
         """Test that `st.context.cookies` returns cookies from ScriptRunContext"""

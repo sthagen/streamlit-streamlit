@@ -106,6 +106,14 @@ export const StyledBaseButton = styled.button<RequiredBaseButtonProps>(
       width: containerWidth ? "100%" : "auto",
       cursor: "pointer",
       userSelect: "none",
+      "&:hover": {
+        // override text color on hover for colored text - note since text color applied
+        // as inline style (highest specificity) we need to use !important
+        // use inherit to handle all button types
+        "span.colored-text": {
+          color: "inherit !important",
+        },
+      },
       "&:focus": {
         outline: "none",
       },

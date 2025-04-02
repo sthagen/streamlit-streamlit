@@ -97,6 +97,7 @@ vi.mock("@streamlit/connection", async () => {
       disconnect: vi.fn(),
       sendMessage: vi.fn(),
       incrementMessageCacheRunCount: vi.fn(),
+      getCachedMessageHashes: vi.fn(),
       getBaseUriParts() {
         return {
           pathname: "/",
@@ -1582,6 +1583,28 @@ describe("App", () => {
         connectionManager.sendMessage.mock.calls[0][0].rerunScript
           .pageScriptHash
       ).toBe("some_other_page_hash")
+    })
+
+    it("sends cached messages if connection manager has cached messages", () => {
+      renderApp(getProps())
+
+      const widgetStateManager =
+        getStoredValue<WidgetStateManager>(WidgetStateManager)
+      const connectionManager = getMockConnectionManager()
+
+      // Mock the getCachedMessageHashes method to return some cached message hashes
+      connectionManager.getCachedMessageHashes = vi
+        .fn()
+        .mockReturnValue(["hash1", "hash2"])
+
+      widgetStateManager.sendUpdateWidgetsMessage(undefined)
+      expect(connectionManager.sendMessage).toBeCalledTimes(1)
+
+      expect(
+        // @ts-expect-error
+        connectionManager.sendMessage.mock.calls[0][0].rerunScript
+          .cachedMessageHashes
+      ).toEqual(["hash1", "hash2"])
     })
 
     it("sets fragmentId in BackMsg", () => {

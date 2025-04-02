@@ -22,13 +22,15 @@ from e2e_playwright.shared.app_utils import (
     get_element_by_key,
 )
 
+TOTAL_BUTTONS = 25
+
 
 def test_button_widget_rendering(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that the button widgets are correctly rendered via screenshot matching."""
     button_elements = themed_app.get_by_test_id("stButton")
-    expect(button_elements).to_have_count(22)
+    expect(button_elements).to_have_count(TOTAL_BUTTONS)
 
     assert_snapshot(button_elements.nth(0), name="st_button-default")
     assert_snapshot(button_elements.nth(1), name="st_button-disabled")
@@ -137,3 +139,42 @@ def test_shows_cursor_pointer(app: Page):
     """Test that the button shows cursor pointer when hovered."""
     button_element = app.get_by_test_id("stButton").first
     expect(button_element.locator("button")).to_have_css("cursor", "pointer")
+
+
+def test_colored_text_hover(app: Page):
+    """Test that the colored text is correctly rendered and changes color on hover."""
+    # Check hover behavior for colored text in primary button
+    primary_button_element = app.get_by_test_id("stButton").nth(22)
+    expect(primary_button_element.locator("span")).to_have_class("colored-text")
+    expect(primary_button_element.locator("span")).to_have_css(
+        "color", "rgb(0, 104, 201)"
+    )
+    primary_button_element.locator("button").hover()
+    # For primary buttons, the colored text should be white on hover to match the rest of the text
+    expect(primary_button_element.locator("span")).to_have_css(
+        "color", "rgb(255, 255, 255)"
+    )
+
+    # Check hover behavior for colored text in secondary button
+    secondary_button_element = app.get_by_test_id("stButton").nth(23)
+    expect(secondary_button_element.locator("span")).to_have_class("colored-text")
+    expect(secondary_button_element.locator("span")).to_have_css(
+        "color", "rgb(0, 104, 201)"
+    )
+    secondary_button_element.locator("button").hover()
+    # For secondary buttons, the colored text should be red on hover to match the rest of the text
+    expect(secondary_button_element.locator("span")).to_have_css(
+        "color", "rgb(255, 75, 75)"
+    )
+
+    # Check hover behavior for colored text in tertiary button
+    tertiary_button_element = app.get_by_test_id("stButton").nth(24)
+    expect(tertiary_button_element.locator("span")).to_have_class("colored-text")
+    expect(tertiary_button_element.locator("span")).to_have_css(
+        "color", "rgb(0, 104, 201)"
+    )
+    tertiary_button_element.locator("button").hover()
+    # For tertiary buttons, the colored text should be red on hover to match the rest of the text
+    expect(tertiary_button_element.locator("span")).to_have_css(
+        "color", "rgb(255, 75, 75)"
+    )

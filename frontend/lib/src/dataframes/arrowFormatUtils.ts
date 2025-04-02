@@ -21,9 +21,9 @@
 
 import { Field, Struct, StructRow, TimeUnit, util } from "apache-arrow"
 import trimEnd from "lodash/trimEnd"
+import { getLogger } from "loglevel"
 import moment from "moment-timezone"
 import numbro from "numbro"
-import { getLogger } from "loglevel"
 
 import { isNullOrUndefined, notNullOrUndefined } from "~lib/util/utils"
 
@@ -40,6 +40,7 @@ import {
   isListType,
   isObjectType,
   isPeriodType,
+  isStringType,
   isTimeType,
 } from "./arrowTypeUtils"
 
@@ -394,7 +395,12 @@ export function formatPeriodFromFreq(
     )
     return String(duration)
   }
-  return momentConverter(durationNumber, freqParam)
+  try {
+    return momentConverter(durationNumber, freqParam)
+  } catch (error) {
+    LOG.warn(`Error while formatting period value: ${error}`)
+    return String(duration)
+  }
 }
 
 function formatPeriod(duration: number | bigint, field?: Field): string {
@@ -536,45 +542,57 @@ function formatInterval(x: StructRow, field?: Field): string {
  * @returns The formatted cell value.
  */
 export function format(x: DataType, type: ArrowType): string {
-  if (isNullOrUndefined(x)) {
-    return ""
-  }
+  try {
+    if (isNullOrUndefined(x)) {
+      return ""
+    }
 
-  const isDate = x instanceof Date || Number.isFinite(x)
-  if (isDate && isDateType(type)) {
-    return formatDate(x as Date | number)
-  }
+    if (isStringType(type)) {
+      return String(x)
+    }
 
-  if (typeof x === "bigint" && isTimeType(type)) {
-    return formatTime(Number(x), type.arrowField)
-  }
+    const isDate = x instanceof Date || Number.isFinite(x)
+    if (isDate && isDateType(type)) {
+      return formatDate(x as Date | number)
+    }
 
-  if (isDate && isDatetimeType(type)) {
-    return formatDatetime(x as Date | number, type.arrowField)
-  }
+    if (typeof x === "bigint" && isTimeType(type)) {
+      return formatTime(Number(x), type.arrowField)
+    }
 
-  if (isPeriodType(type)) {
-    return formatPeriod(x as bigint, type.arrowField)
-  }
+    if (isDate && isDatetimeType(type)) {
+      return formatDatetime(x as Date | number, type.arrowField)
+    }
 
-  if (isIntervalType(type)) {
-    return formatInterval(x as StructRow, type.arrowField)
-  }
+    if (isPeriodType(type)) {
+      return formatPeriod(x as bigint, type.arrowField)
+    }
 
-  if (isDurationType(type)) {
-    return formatDuration(x as number | bigint, type.arrowField)
-  }
+    if (isIntervalType(type)) {
+      return formatInterval(x as StructRow, type.arrowField)
+    }
 
-  if (isDecimalType(type)) {
-    return formatDecimal(x as Uint32Array, type.arrowField)
-  }
+    if (isDurationType(type)) {
+      return formatDuration(x as number | bigint, type.arrowField)
+    }
 
-  if (isFloatType(type) && Number.isFinite(x)) {
-    return formatFloat(x as number)
-  }
+    if (isDecimalType(type)) {
+      return formatDecimal(x as Uint32Array, type.arrowField)
+    }
 
-  if (isObjectType(type) || isListType(type)) {
-    return formatObject(x, type.arrowField)
+    if (isFloatType(type) && Number.isFinite(x)) {
+      return formatFloat(x as number)
+    }
+
+    if (isObjectType(type) || isListType(type)) {
+      return formatObject(x, type.arrowField)
+    }
+  } catch (error) {
+    LOG.warn(`Unexpected error occurred while formatting value: ${error}`)
+    // Fallback to string conversion if any error occurs.
+    // It's not expected that this happens, but we want to guard against
+    // any unexpected errors.
+    return String(x)
   }
 
   return String(x)

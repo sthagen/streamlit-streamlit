@@ -18,30 +18,24 @@ import json
 import mimetypes
 import os
 import tempfile
-from unittest.mock import MagicMock
 
 import tornado.httpserver
 import tornado.testing
 import tornado.web
 import tornado.websocket
 
-from streamlit.runtime.forward_msg_cache import ForwardMsgCache, populate_hash_if_needed
-from streamlit.runtime.runtime_util import serialize_forward_msg
 from streamlit.web.server import Server
 from streamlit.web.server.routes import _DEFAULT_ALLOWED_MESSAGE_ORIGINS
 from streamlit.web.server.server import (
     HEALTH_ENDPOINT,
     HOST_CONFIG_ENDPOINT,
-    MESSAGE_ENDPOINT,
     NEW_HEALTH_ENDPOINT,
     AddSlashHandler,
     HealthHandler,
     HostConfigHandler,
-    MessageCacheHandler,
     RemoveSlashHandler,
     StaticFileHandler,
 )
-from tests.streamlit.message_mocks import create_dataframe_msg
 from tests.testutil import patch_config_options
 
 
@@ -103,29 +97,6 @@ class HealthHandlerTest(tornado.testing.AsyncHTTPTestCase):
         response = self.fetch("/_stcore/health")
         self.assertNotIn("link", response.headers)
         self.assertNotIn("deprecation", response.headers)
-
-
-class MessageCacheHandlerTest(tornado.testing.AsyncHTTPTestCase):
-    def get_app(self):
-        self._cache = ForwardMsgCache()
-        return tornado.web.Application(
-            [(rf"/{MESSAGE_ENDPOINT}", MessageCacheHandler, dict(cache=self._cache))]
-        )
-
-    def test_message_cache(self):
-        # Create a new ForwardMsg and cache it
-        msg = create_dataframe_msg([1, 2, 3])
-        msg_hash = populate_hash_if_needed(msg)
-        self._cache.add_message(msg, MagicMock(), 0)
-
-        # Cache hit
-        response = self.fetch("/_stcore/message?hash=%s" % msg_hash)
-        self.assertEqual(200, response.code)
-        self.assertEqual(serialize_forward_msg(msg), response.body)
-
-        # Cache misses
-        self.assertEqual(404, self.fetch("/_stcore/message").code)
-        self.assertEqual(404, self.fetch("/_stcore/message?id=non_existent").code)
 
 
 class StaticFileHandlerTest(tornado.testing.AsyncHTTPTestCase):

@@ -404,13 +404,14 @@ export function getCellFromArrow(
   styledCell: StyledCell | undefined,
   cssStyles: string | undefined = undefined
 ): GridCell {
+  // We use arrowCell.contentType instead of column.arrowType here because
+  // to allow a bit more flexibility when data is loaded in chunks or added with
+  // add data to still work somewhat correctly even if the column arrow type
+  // (from the initial chunk) and the actual arrow type from the cell are different.
   let cellTemplate
   if (column.kind === "object" || column.kind === "json") {
     // Always use display value from Quiver for object types
     // these are special types that the dataframe only support in read-only mode.
-
-    // TODO(lukasmasuch): Move this to object column once the
-    // field information is available in the arrowType.
     cellTemplate = column.getCell(
       notNullOrUndefined(arrowCell.content)
         ? removeLineBreaks(
@@ -428,12 +429,9 @@ export function getCellFromArrow(
     // to a date object based on the arrow field metadata.
     // Our implementation only supports unix timestamps in seconds, so we need to
     // do some custom conversion here.
-
-    // TODO(lukasmasuch): Move this to time/date/datetime column once the
-    // field information is available in the arrowType.
     let parsedDate
     if (
-      isTimeType(column.arrowType) &&
+      isTimeType(arrowCell.contentType) &&
       notNullOrUndefined(arrowCell.field?.type?.unit)
     ) {
       // Time values needs to be adjusted to seconds based on the unit
@@ -444,13 +442,10 @@ export function getCellFromArrow(
     }
 
     cellTemplate = column.getCell(parsedDate)
-  } else if (isDecimalType(column.arrowType)) {
+  } else if (isDecimalType(arrowCell.contentType)) {
     // This is a special case where we want to already prepare a decimal value
     // to a number string based on the arrow field metadata. This is required
     // because we don't have access to the required scale in the number column.
-
-    // TODO(lukasmasuch): Move this to number column once the
-    // field information is available in the arrowType.
     const decimalStr = isNullOrUndefined(arrowCell.content)
       ? null
       : formatArrowCell(arrowCell.content, arrowCell.contentType)

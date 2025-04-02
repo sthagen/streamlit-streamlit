@@ -1334,7 +1334,8 @@ export class App extends PureComponent<Props, State> {
         this.sessionInfo.isSet
       ) {
         this.connectionManager.incrementMessageCacheRunCount(
-          this.sessionInfo.current.maxCachedMessageAge
+          this.sessionInfo.current.maxCachedMessageAge,
+          this.state.fragmentIdsThisRun
         )
       }
     }
@@ -1619,6 +1620,9 @@ export class App extends PureComponent<Props, State> {
       pageScriptHash = ""
     }
 
+    const cachedMessageHashes =
+      this.connectionManager?.getCachedMessageHashes() ?? []
+
     this.sendBackMsg(
       new BackMsg({
         rerunScript: {
@@ -1628,6 +1632,7 @@ export class App extends PureComponent<Props, State> {
           pageName,
           fragmentId,
           isAutoRerun,
+          cachedMessageHashes,
           contextInfo,
         },
       })

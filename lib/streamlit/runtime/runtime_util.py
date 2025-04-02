@@ -16,14 +16,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from logging import getLogger
+from typing import TYPE_CHECKING, Any, Final
 
 from streamlit import config
 from streamlit.errors import MarkdownFormattedException, StreamlitAPIException
-from streamlit.runtime.forward_msg_cache import populate_hash_if_needed
 
 if TYPE_CHECKING:
     from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
+
+_LOGGER: Final = getLogger(__name__)
 
 
 class MessageSizeError(MarkdownFormattedException):
@@ -60,29 +62,28 @@ class BadDurationStringError(StreamlitAPIException):
         )
 
 
-def is_cacheable_msg(msg: ForwardMsg) -> bool:
-    """True if the given message qualifies for caching."""
-    if msg.WhichOneof("type") in {"ref_hash", "initialize"}:
-        # Some message types never get cached
-        return False
-    return msg.ByteSize() >= int(config.get_option("global.minCachedMessageSize"))
-
-
 def serialize_forward_msg(msg: ForwardMsg) -> bytes:
     """Serialize a ForwardMsg to send to a client.
 
     If the message is too large, it will be converted to an exception message
     instead.
     """
-    populate_hash_if_needed(msg)
+
     msg_str = msg.SerializeToString()
 
     if len(msg_str) > get_max_message_size_bytes():
-        import streamlit.elements.exception as exception
-
         # Overwrite the offending ForwardMsg.delta with an error to display.
         # This assumes that the size limit wasn't exceeded due to metadata.
-        exception.marshall(msg.delta.new_element.exception, MessageSizeError(msg_str))
+        import streamlit.elements.exception as exception
+
+        msg_size_error = MessageSizeError(msg_str)
+        _LOGGER.warning(
+            "Websocket message size limit exceeded. "
+            f"Showing error to the user: {msg_size_error}"
+        )
+        exception.marshall(msg.delta.new_element.exception, msg_size_error)
+        # Deactivate caching for this error message:
+        msg.metadata.cacheable = False
         msg_str = msg.SerializeToString()
 
     return msg_str

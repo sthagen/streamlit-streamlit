@@ -803,9 +803,26 @@ describe("WebsocketConnection", () => {
     )
 
     const TEST_MAX_MESSAGE_AGE = 10
-    client.incrementMessageCacheRunCount(TEST_MAX_MESSAGE_AGE)
+    client.incrementMessageCacheRunCount(TEST_MAX_MESSAGE_AGE, ["testId"])
 
-    expect(incrementRunCountSpy).toHaveBeenCalledWith(TEST_MAX_MESSAGE_AGE)
+    expect(incrementRunCountSpy).toHaveBeenCalledWith(TEST_MAX_MESSAGE_AGE, [
+      "testId",
+    ])
+  })
+
+  it("gets cached message hashes from cache", () => {
+    const getCachedMessageHashesSpy = vi
+      .spyOn(
+        // @ts-expect-error
+        client.cache,
+        "getCachedMessageHashes"
+      )
+      .mockReturnValue(["hash1", "hash2"])
+
+    const result = client.getCachedMessageHashes()
+
+    expect(getCachedMessageHashesSpy).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(["hash1", "hash2"])
   })
 
   it("sends message with correct arguments", async () => {

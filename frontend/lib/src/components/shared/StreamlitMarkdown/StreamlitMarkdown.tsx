@@ -464,6 +464,9 @@ export function RenderedMarkdown({
           data.hName = "span"
           data.hProperties = data.hProperties || {}
           data.hProperties.style = style
+          // Add class name specific to colored text used for button hover selector
+          // to override text color
+          data.hProperties.className = "colored-text"
           // Add class for background color for custom styling
           if (
             style &&

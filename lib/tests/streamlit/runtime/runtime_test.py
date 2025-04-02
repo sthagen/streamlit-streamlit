@@ -19,12 +19,12 @@ import os
 import shutil
 import tempfile
 import unittest
+from typing import TYPE_CHECKING
 from unittest.mock import ANY, MagicMock, call, patch
 
 import pytest
 
 from streamlit.components.lib.local_component_registry import LocalComponentRegistry
-from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.runtime import (
     Runtime,
     RuntimeConfig,
@@ -44,10 +44,11 @@ from streamlit.runtime.websocket_session_manager import WebsocketSessionManager
 from streamlit.watcher import event_based_path_watcher
 from tests.streamlit.message_mocks import (
     create_dataframe_msg,
-    create_script_finished_message,
 )
 from tests.streamlit.runtime.runtime_test_case import RuntimeTestCase
-from tests.testutil import patch_config_options
+
+if TYPE_CHECKING:
+    from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 
 
 class MockSessionClient(SessionClient):
@@ -230,7 +231,6 @@ class RuntimeTest(RuntimeTestCase):
         session_id = self.runtime.connect_session(
             client=MockSessionClient(), user_info=MagicMock()
         )
-        session = self.runtime._session_mgr.get_session_info(session_id).session
 
         with (
             patch.object(
@@ -239,14 +239,10 @@ class RuntimeTest(RuntimeTestCase):
             patch.object(
                 self.runtime, "_on_session_disconnected", new=MagicMock()
             ) as patched_on_session_disconnected,
-            patch.object(
-                self.runtime._message_cache, "remove_refs_for_session", new=MagicMock()
-            ) as patched_remove_refs_for_session,
         ):
             self.runtime.disconnect_session(session_id)
             patched_disconnect_session.assert_called_once_with(session_id)
             patched_on_session_disconnected.assert_called_once()
-            patched_remove_refs_for_session.assert_called_once_with(session)
 
     async def test_close_session_closes_appsession(self):
         await self.runtime.start()
@@ -254,7 +250,6 @@ class RuntimeTest(RuntimeTestCase):
         session_id = self.runtime.connect_session(
             client=MockSessionClient(), user_info=MagicMock()
         )
-        session = self.runtime._session_mgr.get_session_info(session_id).session
 
         with (
             patch.object(
@@ -263,14 +258,10 @@ class RuntimeTest(RuntimeTestCase):
             patch.object(
                 self.runtime, "_on_session_disconnected", new=MagicMock()
             ) as patched_on_session_disconnected,
-            patch.object(
-                self.runtime._message_cache, "remove_refs_for_session", new=MagicMock()
-            ) as patched_remove_refs_for_session,
         ):
             self.runtime.close_session(session_id)
             patched_close_session.assert_called_once_with(session_id)
             patched_on_session_disconnected.assert_called_once()
-            patched_remove_refs_for_session.assert_called_once_with(session)
 
     async def test_multiple_sessions(self):
         """Multiple sessions can be connected."""
@@ -347,9 +338,9 @@ class RuntimeTest(RuntimeTestCase):
         app_sessions = []
         for _ in range(3):
             session_id = self.runtime.connect_session(MockSessionClient(), MagicMock())
-            app_session = self.runtime._session_mgr.get_active_session_info(
-                session_id
-            ).session
+            session_info = self.runtime._session_mgr.get_active_session_info(session_id)
+            assert session_info is not None
+            app_session = session_info.session
             app_sessions.append(app_session)
 
         with patch.object(
@@ -375,9 +366,9 @@ class RuntimeTest(RuntimeTestCase):
         back_msg = MagicMock()
         self.runtime.handle_backmsg(session_id, back_msg)
 
-        app_session = self.runtime._session_mgr.get_active_session_info(
-            session_id
-        ).session
+        session_info = self.runtime._session_mgr.get_active_session_info(session_id)
+        assert session_info is not None
+        app_session = session_info.session
         app_session.handle_backmsg.assert_called_once_with(back_msg)
 
     async def test_handle_backmsg_invalid_session(self):
@@ -401,9 +392,9 @@ class RuntimeTest(RuntimeTestCase):
         exception = MagicMock()
         self.runtime.handle_backmsg_deserialization_exception(session_id, exception)
 
-        app_session = self.runtime._session_mgr.get_active_session_info(
-            session_id
-        ).session
+        session_info = self.runtime._session_mgr.get_active_session_info(session_id)
+        assert session_info is not None
+        app_session = session_info.session
         app_session.handle_backmsg_exception.assert_called_once_with(exception)
 
     async def test_handle_backmsg_exception_invalid_session(self):
@@ -491,199 +482,8 @@ class RuntimeTest(RuntimeTestCase):
         await self.tick_runtime_loop()
 
         received = client.forward_msgs.pop()
-        self.assertEqual(populate_hash_if_needed(msg), received.hash)
-
-    async def test_forwardmsg_cacheable_flag(self):
-        """Test that the metadata.cacheable flag is set properly on outgoing
-        ForwardMsgs."""
-        await self.runtime.start()
-
-        client = MockSessionClient()
-        session_id = self.runtime.connect_session(client=client, user_info=MagicMock())
-
-        with patch_config_options({"global.minCachedMessageSize": 0}):
-            cacheable_msg = create_dataframe_msg([1, 2, 3])
-            self.enqueue_forward_msg(session_id, cacheable_msg)
-            await self.tick_runtime_loop()
-
-            received = client.forward_msgs.pop()
-            self.assertTrue(cacheable_msg.metadata.cacheable)
-            self.assertTrue(received.metadata.cacheable)
-
-        with patch_config_options({"global.minCachedMessageSize": 1000}):
-            cacheable_msg = create_dataframe_msg([4, 5, 6])
-            self.enqueue_forward_msg(session_id, cacheable_msg)
-            await self.tick_runtime_loop()
-
-            received = client.forward_msgs.pop()
-            self.assertFalse(cacheable_msg.metadata.cacheable)
-            self.assertFalse(received.metadata.cacheable)
-
-    async def test_duplicate_forwardmsg_caching(self):
-        """Test that duplicate ForwardMsgs are sent only once."""
-        with patch_config_options({"global.minCachedMessageSize": 0}):
-            await self.runtime.start()
-
-            client = MockSessionClient()
-            session_id = self.runtime.connect_session(
-                client=client, user_info=MagicMock()
-            )
-
-            msg1 = create_dataframe_msg([1, 2, 3], 1)
-
-            # Send the message, and read it back. It will not have been cached.
-            self.enqueue_forward_msg(session_id, msg1)
-            await self.tick_runtime_loop()
-
-            uncached = client.forward_msgs.pop()
-            self.assertEqual("delta", uncached.WhichOneof("type"))
-
-            # Send an equivalent message. This time, it should be cached,
-            # and a "hash_reference" message should be received instead.
-            msg2 = create_dataframe_msg([1, 2, 3], 123)
-            self.enqueue_forward_msg(session_id, msg2)
-            await self.tick_runtime_loop()
-
-            cached = client.forward_msgs.pop()
-            self.assertEqual("ref_hash", cached.WhichOneof("type"))
-            # We should have the *hash* of msg1 and msg2:
-            self.assertEqual(msg1.hash, cached.ref_hash)
-            self.assertEqual(msg2.hash, cached.ref_hash)
-            # And the same *metadata* as msg2:
-            self.assertEqual(msg2.metadata, cached.metadata)
-
-    async def test_forwardmsg_cache_clearing(self):
-        """Test that the ForwardMsgCache gets properly cleared when scripts
-        finish running.
-        """
-        await self.runtime.start()
-
-        client = MockSessionClient()
-        session_id = self.runtime.connect_session(client=client, user_info=MagicMock())
-
-        async def finish_script(success: bool, fragment: bool = False) -> None:
-            status = ForwardMsg.FINISHED_SUCCESSFULLY
-            if fragment:
-                status = ForwardMsg.FINISHED_FRAGMENT_RUN_SUCCESSFULLY
-            if not success:
-                status = ForwardMsg.FINISHED_WITH_COMPILE_ERROR
-
-            finish_msg = create_script_finished_message(status)
-            self.enqueue_forward_msg(session_id, finish_msg)
-            await self.tick_runtime_loop()
-
-        def is_data_msg_cached(data_msg) -> bool:
-            return self.runtime._message_cache.get_message(data_msg.hash) is not None
-
-        async def send_data_msg(data_msg) -> None:
-            self.enqueue_forward_msg(session_id, data_msg)
-            await self.tick_runtime_loop()
-
-        async def test_standard_message_caching():
-            with patch_config_options(
-                {"global.minCachedMessageSize": 0, "global.maxCachedMessageAge": 1}
-            ):
-                data_msg = create_dataframe_msg([1, 2, 3])
-
-                await send_data_msg(data_msg=data_msg)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Send a cacheable message. It should be cached.",
-                )
-
-                # End the script with a compile error. Nothing should change;
-                # compile errors don't increase the age of items in the cache.
-                await finish_script(False)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Compile error should not increment count.",
-                )
-
-                # End the script successfully. Nothing should change, because
-                # the age of the cached message is now 1.
-                await finish_script(True)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Age of message is 1. Remains cached.",
-                )
-
-                # Send the message again. This should reset its age to 0 in the
-                # cache, so it won't be evicted when the script next finishes.
-                await send_data_msg(data_msg=data_msg)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Sending the message again resets the age.",
-                )
-
-                # Finish the script. The cached message age is now 1.
-                await finish_script(True)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg), "Message age is 1 again."
-                )
-
-                # Finish again. The cached message age will be 2, and so it
-                # should be evicted from the cache.
-                await finish_script(True)
-                self.assertFalse(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Message age is 2 and message is evicted from cache.",
-                )
-
-        async def test_fragment_run_message_caching():
-            with patch_config_options(
-                {"global.minCachedMessageSize": 0, "global.maxCachedMessageAge": 1}
-            ):
-                data_msg = create_dataframe_msg([4, 5, 6])
-
-                await send_data_msg(data_msg=data_msg)
-
-                # After a regular and fragment run the message is not
-                # evicted because the fragment run doesn't increment
-                # the count.
-                await finish_script(True, fragment=False)
-                await finish_script(True, fragment=True)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Fragment run does not evict message from the cache.",
-                )
-
-                await finish_script(True, fragment=False)
-                self.assertFalse(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Another full run clears the cache.",
-                )
-
-        async def test_fragment_run_message_caching_with_fragment_counting():
-            with patch_config_options(
-                {
-                    "global.minCachedMessageSize": 0,
-                    "global.maxCachedMessageAge": 1,
-                    "global.includeFragmentRunsInForwardMessageCacheCount": True,
-                }
-            ):
-                data_msg = create_dataframe_msg([7, 8, 9])
-
-                await send_data_msg(data_msg=data_msg)
-
-                await finish_script(True, fragment=True)
-                self.assertTrue(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "The message age is 1 with one fragment run.",
-                )
-
-                await finish_script(True, fragment=False)
-                self.assertFalse(
-                    is_data_msg_cached(data_msg=data_msg),
-                    "Another full run clears the cache.",
-                )
-
-        # TODO: As part of the forward message cache refactoring (Q1FY26) we may
-        # remove some of these tests. If we don't, we should move the
-        # caching tests into a separate test file and make these functions
-        # into separate test cases.
-        await test_standard_message_caching()
-        await test_fragment_run_message_caching()
-        await test_fragment_run_message_caching_with_fragment_counting()
+        populate_hash_if_needed(msg)
+        self.assertEqual(msg.hash, received.hash)
 
     async def test_get_async_objs(self):
         """Runtime._get_async_objs() will raise an error if called before the

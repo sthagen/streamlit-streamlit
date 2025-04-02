@@ -184,7 +184,7 @@ export class WebsocketConnection {
 
   constructor(props: Args) {
     this.args = props
-    this.cache = new ForwardMsgCache(props.endpoints)
+    this.cache = new ForwardMsgCache()
     this.stepFsm("INITIALIZED")
   }
 
@@ -402,7 +402,7 @@ export class WebsocketConnection {
     this.websocket.addEventListener("message", (event: MessageEvent) => {
       if (checkWebsocket()) {
         this.handleMessage(event.data).catch(reason => {
-          const err = `Failed to process a Websocket message (${reason})`
+          const err = `Failed to process a Websocket message. ${reason}`
           LOG.error(err)
           this.stepFsm("FATAL_ERROR", err)
         })
@@ -518,8 +518,18 @@ export class WebsocketConnection {
    * Called when our script has finished running. Calls through
    * to the ForwardMsgCache, to handle cached entry expiry.
    */
-  public incrementMessageCacheRunCount(maxMessageAge: number): void {
-    this.cache.incrementRunCount(maxMessageAge)
+  public incrementMessageCacheRunCount(
+    maxMessageAge: number,
+    fragmentIdsThisRun: string[]
+  ): void {
+    this.cache.incrementRunCount(maxMessageAge, fragmentIdsThisRun)
+  }
+
+  /**
+   * Return a list of all the hashes of messages currently in the cache.
+   */
+  public getCachedMessageHashes(): string[] {
+    return this.cache.getCachedMessageHashes()
   }
 
   private async handleMessage(data: ArrayBuffer): Promise<void> {

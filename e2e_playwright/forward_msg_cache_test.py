@@ -16,9 +16,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from playwright.sync_api import expect
 
-from e2e_playwright.conftest import rerun_app, wait_for_app_loaded
+from e2e_playwright.conftest import wait_for_app_loaded
 from e2e_playwright.shared.app_utils import (
     click_button,
     click_toggle,
@@ -27,14 +26,6 @@ from e2e_playwright.shared.app_utils import (
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
-
-
-def test_forward_msg_cache_receives_msg(app: Page):
-    app.evaluate("window.streamlitDebug.clearForwardMsgCache()")
-    rerun_app(app)
-    expect(app.get_by_role("dialog")).not_to_be_visible()
-
-    app.expect_request("**/_stcore/message/")
 
 
 def _rerun_app(app: Page, times: int):
@@ -96,9 +87,14 @@ def test_check_total_websocket_message_number_and_size(page: Page, app_port: int
 
     # ForwardMsg's
     TOTAL_WEBSOCKET_RECEIVED_SIZE_THRESHOLD_MB: Final = 55
-    # Max number of websocket messages received. There can be a bit of
-    # fluctuation because of some optimization logic (e.g. composable messages)
-    WEBSOCKET_MESSAGES_RECEIVED_THRESHOLD: Final = 3000
+    # Max number of websocket messages received.
+    EXPECTED_WEBSOCKET_MESSAGES_RECEIVED: Final = 2540
+    # There can be a bit of fluctuation because of optimization logic:
+    # See the composable messages logic in
+    # lib/streamlit/runtime/forward_msg_queue.py (-> `_maybe_compose_delta_msgs`)
+    # the queues can be flushed to the browser before
+    # the optimization is able to be applied.
+    ALLOWED_WEBSOCKET_MESSAGES_RECEIVED_DIFFERENCE: Final = 25
 
     total_websocket_sent_size_bytes = 0
     total_websocket_received_size_bytes = 0
@@ -165,10 +161,14 @@ def test_check_total_websocket_message_number_and_size(page: Page, app_port: int
     _rerun_app(page, 10)
 
     # Assert that the total number of websocket messages received and sent is equal
-    assert total_websocket_messages_received < WEBSOCKET_MESSAGES_RECEIVED_THRESHOLD, (
+    assert (
+        abs(total_websocket_messages_received - EXPECTED_WEBSOCKET_MESSAGES_RECEIVED)
+        < ALLOWED_WEBSOCKET_MESSAGES_RECEIVED_DIFFERENCE
+    ), (
         f"Total number of websocket messages received by the frontend "
-        f"{total_websocket_messages_received} but expected to receive less than "
-        f"{WEBSOCKET_MESSAGES_RECEIVED_THRESHOLD}. In case this is expected, "
+        f"{total_websocket_messages_received} but expected to receive"
+        f"{EXPECTED_WEBSOCKET_MESSAGES_RECEIVED} +/- "
+        f"{ALLOWED_WEBSOCKET_MESSAGES_RECEIVED_DIFFERENCE}. In case this is expected, "
         "you can change the number in the test."
     )
     assert total_websocket_messages_sent == EXPECTED_WEBSOCKET_MESSAGES_SENT, (

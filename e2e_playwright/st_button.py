@@ -94,3 +94,7 @@ conn_types = [
 ]
 for i in range(len(conn_types)):
     cols[i % 3].button(conn_types[i], use_container_width=True)
+
+st.button("Foo :blue[bar] baz", type="primary")
+st.button("Foo :blue[bar] baz")
+st.button("Foo :blue[bar] baz", type="tertiary")

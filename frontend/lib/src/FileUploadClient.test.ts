@@ -45,7 +45,6 @@ describe("FileUploadClient Upload", () => {
         buildAppPageURL: vi.fn(),
         uploadFileUploaderFile: uploadFileUploaderFile,
         deleteFileAtURL: vi.fn(),
-        fetchCachedForwardMsg: vi.fn(),
       },
       formsWithPendingRequestsChanged,
       requestFileURLs,

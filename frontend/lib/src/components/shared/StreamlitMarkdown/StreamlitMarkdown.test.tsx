@@ -411,6 +411,7 @@ describe("StreamlitMarkdown", () => {
       const tagName = markdown.nodeName.toLowerCase()
       expect(tagName).toBe("span")
       expect(markdown).toHaveStyle(`color: ${style}`)
+      expect(markdown).toHaveClass("colored-text")
 
       // Removes rendered StreamlitMarkdown component before next case run
       cleanup()

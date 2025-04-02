@@ -36,5 +36,8 @@ message ClientState {
   string page_name = 4;
   string fragment_id = 5;
   bool is_auto_rerun = 6;
+  // List of hashes of messages that are currently cached in
+  // the frontend forward message cache.
+  repeated string cached_message_hashes = 7;
   ContextInfo context_info = 8;
 }

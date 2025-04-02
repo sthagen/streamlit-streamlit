@@ -645,6 +645,50 @@ class HashTest(unittest.TestCase):
 
         self.assertNotEqual(get_hash(enum_a), get_hash(enum_b))
 
+    def test_reduce_not_hashable(self):
+        class A:
+            def __init__(self):
+                self.x = [1, 2, 3]
+
+        with self.assertRaises(UnhashableTypeError):
+            get_hash(A().__reduce__())
+
+    def test_reduce_fallback(self):
+        """Test that objects with __reduce__ method can be hashed using the fallback mechanism."""
+
+        class CustomClass:
+            def __init__(self, value):
+                self.value = value
+
+            def __reduce__(self):
+                return (CustomClass, (self.value,))
+
+        obj1 = CustomClass(42)
+        obj2 = CustomClass(42)
+        obj3 = CustomClass(43)
+
+        # Same objects should hash to the same value
+        self.assertEqual(get_hash(obj1), get_hash(obj2))
+
+        # Different objects should hash to different values
+        self.assertNotEqual(get_hash(obj1), get_hash(obj3))
+
+        # Test with a more complex object
+        class ComplexClass:
+            def __init__(self, name, items):
+                self.name = name
+                self.items = items
+
+            def __reduce__(self):
+                return (ComplexClass, (self.name, self.items))
+
+        complex_obj1 = ComplexClass("test", [1, 2, 3])
+        complex_obj2 = ComplexClass("test", [1, 2, 3])
+        complex_obj3 = ComplexClass("test", [1, 2, 4])
+
+        self.assertEqual(get_hash(complex_obj1), get_hash(complex_obj2))
+        self.assertNotEqual(get_hash(complex_obj1), get_hash(complex_obj3))
+
 
 class NotHashableTest(unittest.TestCase):
     """Tests for various unhashable types."""

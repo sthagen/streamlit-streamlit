@@ -31,7 +31,7 @@ kb_message_size = st.number_input(
 )
 
 
-# This string is ~1kb in size if rendered via markdown/write:
+# This string is ~1kb in size if rendered via markdown:
 message_1kb = "\n\n".join(
     2
     * [
@@ -47,9 +47,8 @@ message_1kb = "\n\n".join(
 
 with st.container(height=300):
     for i in range(num_small_messages):
-        st.write(
-            f"**Message {i + 1}:** \n\n",
-            "\n\n".join(kb_message_size * [message_1kb]),
+        st.markdown(
+            f"**Message {i + 1}:** \n\n" + "\n\n".join(kb_message_size * [message_1kb]),
         )
 
 
@@ -57,16 +56,16 @@ with st.container(height=300):
 def my_fragment():
     st.button("Rerun fragment")
     with st.expander("Message in Fragment", expanded=False):
-        st.write(
-            "**Message in Fragment:** \n\n",
-            "\n\n".join(kb_message_size * [message_1kb]),
+        st.markdown(
+            "**Message in Fragment:** \n\n"
+            + "\n\n".join(kb_message_size * [message_1kb]),
         )
 
 
 my_fragment()
 
 st.button("Re-run")
-st.write(f"Rerun count: {st.session_state['rerun_count']}")
+st.markdown(f"Rerun count: {st.session_state['rerun_count']}")
 
 if st.toggle("Show dataframes"):
     # With the default settings, the dataframe is ~50MB in size.

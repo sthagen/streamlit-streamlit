@@ -49,7 +49,6 @@ from streamlit.web.server.routes import (
     AddSlashHandler,
     HealthHandler,
     HostConfigHandler,
-    MessageCacheHandler,
     RemoveSlashHandler,
     StaticFileHandler,
 )
@@ -324,11 +323,6 @@ class Server:
                 make_url_path_regex(base, HEALTH_ENDPOINT),
                 HealthHandler,
                 {"callback": lambda: self._runtime.is_ready_for_browser_connection},
-            ),
-            (
-                make_url_path_regex(base, MESSAGE_ENDPOINT),
-                MessageCacheHandler,
-                {"cache": self._runtime.message_cache},
             ),
             (
                 make_url_path_regex(base, METRIC_ENDPOINT),

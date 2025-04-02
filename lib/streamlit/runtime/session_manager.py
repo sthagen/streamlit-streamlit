@@ -53,20 +53,19 @@ class ActiveSessionInfo:
 
     client: SessionClient
     session: AppSession
+    # The number of times the script has been run for this session.
+    # At the moment, this is only used for testing and debugging purposes.
     script_run_count: int = 0
 
 
 @dataclass
 class SessionInfo:
-    """Type containing data related to an AppSession.
-
-    For each AppSession, the Runtime tracks that session's
-    script_run_count. This is used to track the age of messages in
-    the ForwardMsgCache.
-    """
+    """Type containing data related to an AppSession."""
 
     client: SessionClient | None
     session: AppSession
+    # The number of times the script has been run for this session.
+    # At the moment, this is only used for testing and debugging purposes.
     script_run_count: int = 0
 
     def is_active(self) -> bool:
