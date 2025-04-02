@@ -407,6 +407,14 @@ class WriteMixin:
                 kwargs,
             )
 
+        if len(args) == 1 and isinstance(args[0], str):
+            # Optimization: If there is only one arg, and it's a string,
+            # we can just call markdown directly and skip the buffer logic.
+            # This also prevents unnecessary usage of `st.empty()`.
+            # This covers > 80% of all `st.write` uses.
+            self.dg.markdown(args[0], unsafe_allow_html=unsafe_allow_html)
+            return
+
         string_buffer: list[str] = []
 
         # This bans some valid cases like: e = st.empty(); e.write("a", "b").

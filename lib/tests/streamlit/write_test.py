@@ -458,6 +458,35 @@ class StreamlitWriteTest(unittest.TestCase):
 
                 placeholder.write("But", "multiple", "args", "should", "fail")
 
+    def test_single_string_optimization(self):
+        """Test the optimization in st.write() for single string arguments.
+
+        When st.write() is called with a single string argument, it should
+        directly call markdown() without using the buffer logic.
+        """
+        with (
+            patch("streamlit.delta_generator.DeltaGenerator.markdown") as markdown,
+            patch("streamlit.delta_generator.DeltaGenerator.empty") as empty,
+        ):
+            # Test single string - should use optimization
+            st.write("Hello world")
+            markdown.assert_called_once_with("Hello world", unsafe_allow_html=False)
+            empty.assert_not_called()  # Verify empty() is not called in optimized case
+            markdown.reset_mock()
+            empty.reset_mock()
+
+            # Test single string with unsafe_allow_html
+            st.write("Hello world", unsafe_allow_html=True)
+            markdown.assert_called_once_with("Hello world", unsafe_allow_html=True)
+            empty.assert_not_called()  # Verify empty() is not called in optimized case
+            markdown.reset_mock()
+            empty.reset_mock()
+
+            # Test multiple strings - should not use optimization
+            st.write("Hello", "world")
+            empty.assert_called_once()  # Verify empty() is called in non-optimized case
+            empty.reset_mock()
+
 
 class StreamlitStreamTest(unittest.TestCase):
     """Test st.write_stream."""

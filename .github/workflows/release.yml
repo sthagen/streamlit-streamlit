@@ -15,6 +15,9 @@ jobs:
     permissions:
       # Permission needed to upload constraints file
       contents: write
+      # Additional permissions for py-coverage-report
+      actions: read
+      pull-requests: write
 
   run-javascript-tests:
     uses: ./.github/workflows/js-tests.yml

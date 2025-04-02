@@ -74,6 +74,9 @@ jobs:
     permissions:
       # Pass additional permission needed to upload constraints
       contents: write
+      # Additional permissions for py-coverage-report
+      actions: read
+      pull-requests: write
     uses: ./.github/workflows/python-tests.yml
     with:
       ref: ${{needs.create-nightly-tag.outputs.tag}}
