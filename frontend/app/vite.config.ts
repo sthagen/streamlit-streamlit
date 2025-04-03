@@ -92,20 +92,20 @@ export default defineConfig({
     proxy: {
       // These endpoints need to be kept in sync with the endpoints in
       // lib/streamlit/web/server/server.py
-      "/_stcore": {
+      "^.*/_stcore/.*": {
         target: DEV_SERVER_BACKEND_URL,
         changeOrigin: true,
         ws: true,
       },
-      "/media": {
+      "^.*/media/.*": {
         target: DEV_SERVER_BACKEND_URL,
         changeOrigin: true,
       },
-      "/component": {
+      "^.*/component/.*": {
         target: DEV_SERVER_BACKEND_URL,
         changeOrigin: true,
       },
-      "/app/static": {
+      "^.*/app/static/.*": {
         target: DEV_SERVER_BACKEND_URL,
         changeOrigin: true,
       },

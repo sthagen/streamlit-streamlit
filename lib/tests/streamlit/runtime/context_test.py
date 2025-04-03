@@ -37,7 +37,7 @@ class StContextTest(unittest.TestCase):
     )
     def test_context_headers(self):
         """Test that `st.context.headers` returns headers from ScriptRunContext"""
-        assert st.context.headers.to_dict(), {"The-Header": "header-value"}
+        assert st.context.headers.to_dict() == {"The-Header": "header-value"}
 
     @patch(
         "streamlit.runtime.context._get_request",
@@ -46,6 +46,22 @@ class StContextTest(unittest.TestCase):
     def test_context_cookies(self):
         """Test that `st.context.cookies` returns cookies from ScriptRunContext"""
         assert st.context.cookies.to_dict() == {"cookieName": "cookieValue"}
+
+    @patch(
+        "streamlit.runtime.context._get_request",
+        MagicMock(return_value=MagicMock(remote_ip="8.8.8.8")),
+    )
+    def test_ip_address(self):
+        """Test that `st.context.ip_address` returns remote_ip from Tornado request"""
+        assert st.context.ip_address == "8.8.8.8"
+
+    @patch(
+        "streamlit.runtime.context._get_request",
+        MagicMock(return_value=MagicMock(remote_ip="127.0.0.1")),
+    )
+    def test_ip_address_localhost(self):
+        """Test that `st.context.ip_address` returns None if run on localhost"""
+        assert st.context.ip_address is None
 
     @parameterized.expand(
         [
