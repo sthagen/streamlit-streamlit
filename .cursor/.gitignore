@@ -4,3 +4,7 @@ rules/*
 # You can add more rules to this list as needed!
 !rules/typescript.mdc
 !rules/typescript_tests.mdc
+!rules/python.mdc
+!rules/python_lib.mdc
+!rules/python_tests.mdc
+!rules/protobuf.mdc

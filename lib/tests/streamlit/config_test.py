@@ -318,6 +318,38 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(config.get_option("_test.tomlTest"), DUMMY_VAL_2)
         self.assertEqual(config.get_where_defined("_test.tomlTest"), DUMMY_DEFINITION)
 
+    def test_parsing_invalid_toml(self):
+        """Test that exceptions during toml.loads are caught and logged."""
+        # Create a dummy default option
+        config._create_option(
+            "_test.invalidTomlTest",
+            description="This option tests invalid TOML handling.",
+            default_val="default_value",
+        )
+        config.get_config_options(force_reparse=True)
+
+        # Store initial value
+        initial_value = config.get_option("_test.invalidTomlTest")
+
+        # Try to parse invalid TOML
+        invalid_toml = """
+            [_test]
+            invalidTomlTest = "value"
+            [invalid_section
+            missing_bracket = "value"
+        """
+
+        with patch.object(config._LOGGER, "exception") as mock_logger:
+            config._update_config_with_toml(invalid_toml, "<test definition>")
+            mock_logger.assert_called_once()
+
+        # Verify the value remains unchanged
+        self.assertEqual(config.get_option("_test.invalidTomlTest"), initial_value)
+        self.assertEqual(
+            config.get_where_defined("_test.invalidTomlTest"),
+            ConfigOption.DEFAULT_DEFINITION,
+        )
+
     def test_parsing_env_vars_in_toml(self):
         """Test that environment variables get parsed in the TOML file."""
         # Some useful variables.
