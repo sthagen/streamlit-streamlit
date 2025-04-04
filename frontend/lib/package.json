@@ -156,7 +156,7 @@
     "prettier": "^2.8.3",
     "timezone-mock": "^1.3.6",
     "tsc-alias": "^1.8.13",
-    "vite": "^6.2.4",
+    "vite": "^6.2.5",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",

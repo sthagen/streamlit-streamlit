@@ -548,7 +548,7 @@ export function computeSpacingStyle(
     .join(" ")
 }
 
-function addCssUnit(n: number, unit: "px" | "rem"): string {
+export function addCssUnit(n: number, unit: "px" | "rem"): string {
   return `${n}${unit}`
 }
 

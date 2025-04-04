@@ -43,7 +43,7 @@ IGNORE_PATTERN = re.compile(
     # Exclude files, because they make it obvious which product they relate to.
     r"|(LICENSE|NOTICES|CODE_OF_CONDUCT\.md|README\.md|CONTRIBUTING\.md|SECURITY.md)$"
     # Exclude files, because they do not support comments
-    r"|\.(json|prettierrc|nvmrc)$"
+    r"|\.(json|prettierrc|nvmrc|mdc)$"
     # Exclude generated files, because they don't have any degree of creativity.
     r"|yarn\.lock$"
     # Exclude pytest config files, because they don't have any degree of creativity.
@@ -61,9 +61,8 @@ IGNORE_PATTERN = re.compile(
     r"|^.*-requirements\.txt$"
     r"|^lib/min-constraints-gen\.txt"
     r"|\.isort\.cfg$"
-    r"|\.credentials/\.gitignore$"
-    r"|^frontend/app/performance/lighthouse/\.gitignore$"
-    r"|^e2e_playwright/\.gitignore$"
+    # Exclude all .gitignore files
+    r"|\.gitignore$"
     # Excluding test files, because adding headers may cause tests to fail.
     r"|/(fixtures|__snapshots__|test_data|data|test)/"
     # Exclude vendored files.
