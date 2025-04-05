@@ -30,7 +30,7 @@ VERSION = "1.44.1"  # PEP-440
 # - And include an upper bound that's < NEXT_MAJOR_VERSION
 INSTALL_REQUIRES = [
     "altair>=4.0, <6",
-    "blinker>=1.0.0, <2",
+    "blinker>=1.5.0, <2",
     "cachetools>=4.0, <6",
     "click>=7.0, <9",
     "numpy>=1.23, <3",
@@ -40,7 +40,7 @@ INSTALL_REQUIRES = [
     "pandas>=1.4.0, <3",
     "pillow>=7.1.0, <12",
     # `protoc` < 3.20 is not able to generate protobuf code compatible with protobuf >= 3.20.
-    "protobuf>=3.20, <6",
+    "protobuf>=3.20, <7",
     # pyarrow is not semantically versioned, gets new major versions frequently, and
     # doesn't tend to break the API on major version upgrades, so we don't put an
     # upper bound on it.

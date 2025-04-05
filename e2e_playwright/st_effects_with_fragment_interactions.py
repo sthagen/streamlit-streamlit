@@ -11,3 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import streamlit as st
+
+
+@st.fragment
+def my_fragment() -> None:
+    st.selectbox("Choose a color", options=["red", "yellow", "green"])
+
+
+my_fragment()
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Balloons"):
+        st.balloons()
+
+with col2:
+    if st.button("Snow"):
+        st.snow()

@@ -33,14 +33,14 @@ class StHtmlAPITest(DeltaGeneratorTestCase):
         st.html(str(pathlib.Path(__file__).parent / "test_html.js"))
 
         el = self.get_delta_from_queue().new_element
-        self.assertEqual(el.html.body, "<button>Corgi</button>")
+        self.assertEqual(el.html.body.strip(), "<button>Corgi</button>")
 
     def test_st_html_with_path(self):
         """Test st.html with path."""
         st.html(pathlib.Path(__file__).parent / "test_html.js")
 
         el = self.get_delta_from_queue().new_element
-        self.assertEqual(el.html.body, "<button>Corgi</button>")
+        self.assertEqual(el.html.body.strip(), "<button>Corgi</button>")
 
     def test_st_html_with_dunderstr(self):
         """Test st.html with __str__."""

@@ -254,7 +254,7 @@ const RawElementNodeRenderer = (
     case "balloons":
       return hideIfStale(
         props.isStale,
-        <Balloons scriptRunId={props.scriptRunId} />
+        <Balloons scriptRunId={node.scriptRunId} />
       )
 
     case "bokehChart":
@@ -387,7 +387,7 @@ const RawElementNodeRenderer = (
     case "snow":
       return hideIfStale(
         props.isStale,
-        <Snow scriptRunId={props.scriptRunId} />
+        <Snow scriptRunId={node.scriptRunId} />
       )
 
     case "spinner":

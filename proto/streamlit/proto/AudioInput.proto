@@ -30,4 +30,3 @@ message AudioInput {
   bool disabled = 5;
   LabelVisibilityMessage label_visibility = 6;
 }
-

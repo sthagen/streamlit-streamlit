@@ -58,7 +58,6 @@ select = [
   "S324",   # Check usage of insecure hashlib functions.
   "T20",    # Check for Print statements in python files.
   "TC",     # Linting for type-checking imports & forward references.
-  "TCH",    # Move type only imports to type-checking condition.
   "TD",     # Checks correct usage of TODO comments.
   "TID",    # Helps you write tidier imports.
   "UP",     # pyupgrade
