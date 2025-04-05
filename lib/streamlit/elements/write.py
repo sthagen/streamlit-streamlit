@@ -483,7 +483,9 @@ class WriteMixin:
                 flush_buffer()
                 self.dg.image(arg)
             elif type_util.is_keras_model(arg):
-                from tensorflow.python.keras.utils import vis_utils
+                from tensorflow.python.keras.utils import (  # type: ignore
+                    vis_utils,
+                )
 
                 flush_buffer()
                 dot = vis_utils.model_to_dot(arg)

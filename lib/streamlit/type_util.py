@@ -49,7 +49,7 @@ from streamlit.errors import StreamlitAPIException
 
 if TYPE_CHECKING:
     import graphviz
-    import sympy
+    import sympy  # type: ignore
     from plotly.graph_objs import Figure
     from pydeck import Deck
 

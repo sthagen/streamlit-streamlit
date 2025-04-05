@@ -14,6 +14,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from playwright.sync_api import FrameLocator, Locator, Page, Route, expect
 
@@ -385,7 +387,7 @@ def _test_csv_download(
 
 
 def test_csv_download_button(
-    app: Page, browser_name: str, browser_type_launch_args: dict
+    app: Page, browser_name: str, browser_type_launch_args: dict[str, Any]
 ):
     """Test that the csv download button works.
 
