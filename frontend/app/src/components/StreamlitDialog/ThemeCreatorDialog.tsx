@@ -205,7 +205,7 @@ To save your changes, copy your custom theme into the clipboard and paste it int
                     <Icon
                       content={Check}
                       size="lg"
-                      color={activeTheme.emotion.colors.success}
+                      color={activeTheme.emotion.colors.green}
                     />
                   </React.Fragment>
                 ) : (

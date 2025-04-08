@@ -119,7 +119,7 @@ export const StyledFileIcon = styled.div(({ theme }) => ({
 }))
 
 export const StyledFileError = styled.small(({ theme }) => ({
-  color: theme.colors.danger,
+  color: theme.colors.red,
   fontSize: theme.fontSizes.sm,
   height: theme.fontSizes.sm,
   lineHeight: theme.fontSizes.sm,
