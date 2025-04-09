@@ -106,6 +106,7 @@ repos:
           |^component-lib/declarations/apache-arrow
           |^frontend/app/src/assets/css/variables\.scss
           |^lib/tests/streamlit/elements/test_html\.js
+          |^lib/tests/streamlit/elements/test_html\.css
           |^e2e_playwright/test_assets/
       - id: insert-license
         name: Add license for all Proto files

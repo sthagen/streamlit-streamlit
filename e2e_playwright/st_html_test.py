@@ -17,11 +17,17 @@ from playwright.sync_api import Page, expect
 from e2e_playwright.conftest import ImageCompareFunction
 from e2e_playwright.shared.app_utils import check_top_level_class
 
+# Each st.html call generates a stHtml frontend element.
+# If the html content is only style tags, it will generate the stHtml element
+# in the event container. If the html content is a mix of style tags and other tags,
+# it will generate the stHtml element with both style/other tags in the main container.
+ST_HTML_ELEMENTS = 7
+
 
 def test_html_in_line_styles(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Test that html renders correctly using snapshot testing."""
     html_elements = themed_app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
     first_html = html_elements.nth(0)
 
     expect(first_html).to_have_text("This is a div with some inline styles.")
@@ -34,7 +40,7 @@ def test_html_in_line_styles(themed_app: Page, assert_snapshot: ImageCompareFunc
 def test_html_sanitization(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Test that html sanitizes script tags correctly."""
     html_elements = themed_app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
     second_html = html_elements.nth(1)
 
     expect(second_html).to_contain_text("This is a i tag")
@@ -46,7 +52,7 @@ def test_html_sanitization(themed_app: Page, assert_snapshot: ImageCompareFuncti
 def test_html_style_tags(themed_app: Page, assert_snapshot: ImageCompareFunction):
     """Test that html style tags are applied correctly."""
     html_elements = themed_app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
     third_html = html_elements.nth(2)
 
     expect(third_html).to_have_text("This text should be blue")
@@ -59,11 +65,68 @@ def test_html_style_tag_spacing(
 ):
     """Test that non-rendered html doesn't cause unnecessary spacing."""
     html_elements = themed_app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
 
     assert_snapshot(
-        themed_app.get_by_test_id("stVerticalBlock"), name="st_html-style_tag_spacing"
+        themed_app.get_by_test_id("stMainBlockContainer").get_by_test_id(
+            "stVerticalBlock"
+        ),
+        name="st_html-style_tag_spacing",
     )
+
+
+def test_html_styles_only_in_event_container(app: Page):
+    """Test that event container renders html with style tags only."""
+    total_html_elements = app.get_by_test_id("stHtml")
+    expect(total_html_elements).to_have_count(ST_HTML_ELEMENTS)
+
+    # Check that the style tags are in the event container
+    # and are not visible
+    event_container = app.get_by_test_id("stEvent")
+    style_only_html_elements = event_container.get_by_test_id("stHtml")
+    # 4th & 7th elements style only ( <style> tag body in st.html & <style> tag body from css file)
+    expect(style_only_html_elements).to_have_count(2)
+    expect(style_only_html_elements.nth(0)).not_to_be_visible()
+    expect(style_only_html_elements.nth(1)).not_to_be_visible()
+
+    # The fourth st.html is only style tags, first in event container
+    fourth_html = style_only_html_elements.nth(0).locator("style")
+    expect(fourth_html).to_have_text(
+        """
+        #style-test {
+            color: purple;
+        }
+    """,
+        use_inner_text=True,
+    )
+
+    # Check that the styling is still applied correctly from style tag
+    # even though it's in the event container
+    styled_heading = app.get_by_text("Style test")
+    expect(styled_heading).to_have_css("color", "rgb(128, 0, 128)")
+
+
+def test_html_in_main_container(app: Page):
+    """Test that main container renders html that is not only style tags."""
+    total_html_elements = app.get_by_test_id("stHtml")
+    expect(total_html_elements).to_have_count(ST_HTML_ELEMENTS)
+
+    # Check that any html elements that are not only style tags are rendered
+    # in the main container and are visible
+    main_container = app.get_by_test_id("stMain")
+    other_html_elements = main_container.get_by_test_id("stHtml")
+    expect(other_html_elements).to_have_count(5)
+
+    # Check that the remaining stHtml elements are in the main container
+    # and are visible
+    main_container = app.get_by_test_id("stMain")
+    other_html_elements = main_container.get_by_test_id("stHtml")
+    expect(other_html_elements).to_have_count(5)
+    expect(other_html_elements.nth(0)).to_be_visible()
+    expect(other_html_elements.nth(1)).to_be_visible()
+    expect(other_html_elements.nth(2)).to_be_visible()
+    expect(other_html_elements.nth(3)).to_be_visible()
+    expect(other_html_elements.nth(4)).to_be_visible()
 
 
 def test_check_top_level_class(app: Page):
@@ -74,12 +137,42 @@ def test_check_top_level_class(app: Page):
 def test_html_from_file_str(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that we can load HTML files from str paths."""
     html_elements = app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
-    assert_snapshot(html_elements.nth(4), name="st_html-file_str")
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
+    assert_snapshot(html_elements.nth(3), name="st_html-file_str")
 
 
 def test_html_from_file_path(app: Page, assert_snapshot: ImageCompareFunction):
     """Test that we can load HTML files from Path objects."""
     html_elements = app.get_by_test_id("stHtml")
-    expect(html_elements).to_have_count(6)
-    assert_snapshot(html_elements.nth(5), name="st_html-file_path")
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
+    assert_snapshot(html_elements.nth(4), name="st_html-file_path")
+
+
+def test_html_with_css_file(app: Page):
+    """Test that we can load CSS files and they are wrapped in style tags."""
+    html_elements = app.get_by_test_id("stHtml")
+    expect(html_elements).to_have_count(ST_HTML_ELEMENTS)
+
+    seventh_html = html_elements.nth(6)
+    expect(seventh_html.locator("style")).to_have_text(
+        """
+        #hello-world {
+            color: red;
+        }
+        .stMarkdown h2 {
+            color: blue;
+        }
+        .stMarkdown h3 {
+            color: green;
+        }
+    """,
+        use_inner_text=True,
+    )
+
+    # Check that the styling is applied correctly from the CSS file
+    heading_1 = app.get_by_text("Hello, World!")
+    expect(heading_1).to_have_css("color", "rgb(255, 0, 0)")
+    heading_2 = app.get_by_text("Random")
+    expect(heading_2).to_have_css("color", "rgb(0, 0, 255)")
+    heading_3 = app.get_by_text("Corgis")
+    expect(heading_3).to_have_css("color", "rgb(0, 128, 0)")

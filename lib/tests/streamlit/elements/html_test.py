@@ -15,6 +15,7 @@
 import pathlib
 
 import streamlit as st
+from streamlit.errors import StreamlitAPIException
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
@@ -27,6 +28,106 @@ class StHtmlAPITest(DeltaGeneratorTestCase):
 
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.html.body, "<i> This is a i tag </i>")
+
+    def test_st_html_empty_body_throws_error(self):
+        """Test st.html with empty body throws error."""
+        with self.assertRaises(StreamlitAPIException) as ctx:
+            st.html("")
+
+        self.assertIn("`st.html` body cannot be empty", str(ctx.exception))
+
+    def test_st_html_with_style_tag_only(self):
+        """Test st.html with only a style tag."""
+        st.html("<style>.stHeading h3 { color: purple; }</style>")
+
+        # The style tag should be enqueued to the event delta generator
+        style_msg = self.get_message_from_queue()
+        self.assertEqual(
+            # The path indicates it's the first element in event container (starts with 2)
+            [2, 0],
+            style_msg.metadata.delta_path,
+        )
+
+        # Check that html body is the expected style tag
+        style_el = self.get_delta_from_queue().new_element
+        self.assertEqual(
+            style_el.html.body, "<style>.stHeading h3 { color: purple; }</style>"
+        )
+
+    def test_st_html_with_style_tag_only_case_insensitive(self):
+        """Test st.html with only a style tag (case insensitive)."""
+        st.html("<STYLE>.stHeading h3 { color: purple; }</STYLE>")
+
+        # The style tag should be enqueued to the event delta generator
+        style_msg = self.get_message_from_queue()
+        self.assertEqual(
+            # The path indicates it's the first element in event container (starts with 2)
+            [2, 0],
+            style_msg.metadata.delta_path,
+        )
+
+        # Check that html body is the expected STYLE tag
+        style_el = self.get_delta_from_queue().new_element
+        self.assertEqual(
+            style_el.html.body, "<STYLE>.stHeading h3 { color: purple; }</STYLE>"
+        )
+
+    def test_st_html_with_comments(self):
+        """Test st.html with comments."""
+        # Check comment at start of string
+        st.html("<!-- HTML Comment --> <style>.stMarkdown h4 { color: blue; }</style>")
+        # The style tag should be enqueued to the event delta generator (comment & its location don't matter)
+        style_msg = self.get_message_from_queue()
+        self.assertEqual(
+            [2, 0],
+            style_msg.metadata.delta_path,
+        )
+        style_el = self.get_delta_from_queue().new_element
+        self.assertEqual(
+            style_el.html.body,
+            "<!-- HTML Comment --> <style>.stMarkdown h4 { color: blue; }</style>",
+        )
+
+        # Check comment at end of string
+        st.html("<style>.stMarkdown h4 { color: blue; }</style> <!-- HTML Comment -->")
+        style_msg = self.get_message_from_queue()
+        self.assertEqual(
+            [2, 1],
+            style_msg.metadata.delta_path,
+        )
+        style_el = self.get_delta_from_queue().new_element
+        self.assertEqual(
+            style_el.html.body,
+            "<style>.stMarkdown h4 { color: blue; }</style> <!-- HTML Comment -->",
+        )
+
+    def test_st_html_with_style_and_other_tags(self):
+        """Test st.html with style and other tags."""
+        st.html("<style>.stHeading h3 { color: purple; }</style><h1>Hello, World!</h1>")
+
+        # Since there's a mix of style and other tags, html is enqueued to the main delta generator
+        msg = self.get_message_from_queue()
+        self.assertEqual(
+            # The path indicates it's the first element in main container (starts with 0)
+            [0, 0],
+            msg.metadata.delta_path,
+        )
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(
+            el.html.body,
+            "<style>.stHeading h3 { color: purple; }</style><h1>Hello, World!</h1>",
+        )
+
+    def test_st_html_with_css_file(self):
+        """Test st.html with CSS file."""
+        st.html(pathlib.Path(__file__).parent / "test_html.css")
+
+        el = self.get_delta_from_queue().new_element
+        # Check that the CSS file contents are wrapped in a style tag
+        self.assertEqual(
+            el.html.body,
+            "<style>h1 {\n  color: red;\n}\n\nh2 {\n  color: blue;\n}\n</style>",
+        )
 
     def test_st_html_with_file(self):
         """Test st.html with file."""
