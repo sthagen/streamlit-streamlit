@@ -111,8 +111,15 @@ function ImageList({
   if (height && isFullScreen) {
     imgStyle.maxHeight = height
     imgStyle.objectFit = "contain"
+    // @see issue https://github.com/streamlit/streamlit/issues/10904
+    // Ensure the image tries to fill the width to prevent sizeless SVGs from
+    // not rendering. Let object-fit handle aspect ratio.
+    imgStyle.width = "100%"
   } else {
-    imgStyle.width = imageWidth
+    // @see issue https://github.com/streamlit/streamlit/issues/10904
+    // Use imageWidth if defined, otherwise fallback to 100% to prevent sizeless
+    // SVGs from not rendering.
+    imgStyle.width = imageWidth ?? "100%"
     // Cap the image width, so it doesn't exceed its parent container width
     imgStyle.maxWidth = "100%"
   }

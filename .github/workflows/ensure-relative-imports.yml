@@ -46,10 +46,13 @@ jobs:
         run: |
           source venv/bin/activate
           make develop
-
       - name: Run make protobuf
         run: make protobuf
-      - name: Run make frontend-lib-prod
-        run: make frontend-lib-prod
-      - name: Ensure relative imports exist in the @streamlit/lib/dist folder
-        run: make ensure-relative-imports
+      - name: Build frontend lib for production
+        run: |
+          make frontend-dependencies
+          cd frontend/ ; yarn workspace @streamlit/lib build;
+      - name: Ensure relative imports exist in @streamlit/lib
+        # Ensure relative imports exist within the lib/dist folder
+        run: |
+          ./scripts/ensure_relative_imports.sh

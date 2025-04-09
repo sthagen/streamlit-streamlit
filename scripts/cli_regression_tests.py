@@ -40,9 +40,8 @@ class TestCLIRegressions:
         - The STREAMLIT_RELEASE_VERSION environment variable must be set, such as:
                 export STREAMLIT_RELEASE_VERSION=1.5.1
 
-    You can then run the tests from the root of the Streamlit repository using one of the following:
+    You can then run the tests from the root of the Streamlit repository using:
             pytest scripts/cli_regression_tests.py
-            make cli-regression-tests
 
     This test suite makes use of Python's built-in assert statement. Note that assertions in the
     form of `assert <expression>` use Pytest's assertion introspection. In some cases, a more clear

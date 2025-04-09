@@ -14,7 +14,8 @@
 
 import re
 
-from playwright.sync_api import Page, expect
+import pytest
+from playwright.sync_api import Locator, Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction, wait_until
 from e2e_playwright.shared.app_utils import (
@@ -197,6 +198,37 @@ def test_svg_images(app: Page, assert_snapshot: ImageCompareFunction):
     ).locator("img")
     expect(ygr_100_300).to_have_css("width", "300px")
     assert_snapshot(ygr_100_300, name="st_image-svg_yellow_green_rectangle_100_300")
+
+
+def set_fullscreen(app: Page, image_wrapper: Locator, open: bool):
+    fullscreen_button = image_wrapper.get_by_role(
+        "button", name="Fullscreen" if open else "Close fullscreen"
+    )
+    expect(fullscreen_button).to_be_visible()
+    fullscreen_button.click()
+    # Wait for the animation to finish
+    app.wait_for_timeout(1000)
+
+
+# SVGs without width or height are not rendered correctly in Firefox
+@pytest.mark.skip_browser("firefox")
+def test_svg_viewbox_only(app: Page, assert_snapshot: ImageCompareFunction):
+    """Test that SVGs with only viewBox are rendered correctly."""
+    all_images = app.locator("div[data-testid='stImage']")
+    start_index = 17
+    end_index = start_index + 2
+
+    for i in range(start_index, end_index):
+        image = all_images.nth(i).get_by_test_id("stImageContainer")
+        assert_snapshot(image, name=f"st_image-svg_viewbox_only_{i - start_index}")
+
+        set_fullscreen(app, all_images.nth(i).locator(".."), True)
+        image = all_images.nth(i).get_by_test_id("stImageContainer").locator("img")
+        assert_snapshot(
+            image, name=f"st_image-svg_viewbox_only_fullscreen_{i - start_index}"
+        )
+
+        set_fullscreen(app, all_images.nth(i).locator(".."), False)
 
 
 def test_channels_parameter(app: Page, assert_snapshot: ImageCompareFunction):

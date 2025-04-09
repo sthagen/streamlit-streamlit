@@ -78,4 +78,19 @@ describe("Tooltip element", () => {
     const tooltipContent = await screen.findByTestId("stTooltipContent")
     expect(tooltipContent).toHaveTextContent("Help Text")
   })
+
+  it("uses error testids/classes when error prop is true", async () => {
+    const user = userEvent.setup()
+    const content = <span>Error Text</span>
+    renderTooltip({ content, error: true })
+
+    const tooltipTarget = screen.getByTestId("stTooltipErrorHoverTarget")
+    expect(tooltipTarget).toBeVisible()
+
+    // Hover to see tooltip content
+    await user.hover(tooltipTarget)
+
+    const tooltipContent = await screen.findByTestId("stTooltipErrorContent")
+    expect(tooltipContent).toHaveTextContent("Error Text")
+  })
 })

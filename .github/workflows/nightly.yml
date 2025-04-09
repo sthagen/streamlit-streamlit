@@ -89,6 +89,10 @@ jobs:
     uses: ./.github/workflows/js-tests.yml
     with:
       ref: ${{needs.create-nightly-tag.outputs.tag}}
+    permissions:
+      # Additional permissions for coverage-comment
+      actions: read
+      pull-requests: write
 
   run-playwright-tests:
     uses: ./.github/workflows/playwright.yml

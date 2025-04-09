@@ -114,11 +114,12 @@ def test_empty_date_input_behaves_correctly(
     """Test that st.date_input behaves correctly when empty."""
     # Enter 10 in the first empty input:
     empty_number_input = app.get_by_test_id("stDateInput").nth(12).locator("input")
-    empty_number_input.type("1970/01/02", delay=50)
+    # Since no min value set, min selectable date 10 years before today
+    empty_number_input.type("2025/01/02", delay=50)
     empty_number_input.press("Enter")
     wait_for_app_run(app)
     expect(app.get_by_test_id("stMarkdown").nth(13)).to_have_text(
-        "Value 13: 1970-01-02", use_inner_text=True
+        "Value 13: 2025-01-02", use_inner_text=True
     )
 
     # Click outside to remove focus:
@@ -312,6 +313,115 @@ def test_range_is_empty_if_calendar_closed_empty(app: Page):
         "Value 5: ()",
         use_inner_text=True,
     )
+
+
+def test_single_date_input_error_state(
+    themed_app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that the single date input error state works correctly."""
+    # The first date input is set to 1970/01/01 by default, with min also set to 1970/01/01
+    first_date_input = themed_app.get_by_test_id("stDateInput").first
+    first_date_input_field = first_date_input.locator("input")
+
+    # Set date to 1960/01/01, which is outside of the allowed min date
+    first_date_input_field.fill("1960/01/01")
+    first_date_input_field.blur()
+
+    # Check that the value update is not committed
+    expect(themed_app.get_by_test_id("stMarkdown").first).to_have_text(
+        "Value 1: 1970-01-01", use_inner_text=True
+    )
+
+    # Click outside of the date input to exit calendar picker (reduce snapshot flakiness)
+    first_date_input_field.press("Escape")
+
+    # Check that the error icon is now shown in the date input
+    error_icon = first_date_input.get_by_test_id("stTooltipErrorHoverTarget")
+    expect(error_icon).to_be_visible()
+    # Hover over the error tooltip target
+    error_icon.hover()
+    # Check that the expected error tooltip message is shown
+    tooltip = themed_app.get_by_test_id("stTooltipErrorContent")
+    expect(tooltip).to_have_text(
+        "Error: Date set outside allowed range. Please select a date between 1970/01/01 and 1980/01/01.",
+        use_inner_text=True,
+    )
+
+    # Snapshot test of date input in error state
+    assert_snapshot(first_date_input, name="st_date_input-single_date_error")
+
+
+def test_range_date_input_start_error_state(
+    themed_app: Page, assert_snapshot: ImageCompareFunction
+):
+    """Test that the range date input error state works correctly."""
+    # The fifth date input is set to 2019/07/06 - 2019/07/08 by default, with no set min/max
+    # So we set the min to 2009/07/06 (10 years before start date) and max to 2029/07/08
+    # (10 years after end date)
+    fifth_date_input = themed_app.get_by_test_id("stDateInput").nth(4)
+    fifth_date_input_field = fifth_date_input.locator("input")
+
+    # Clear the input field and set date range to 2008/07/06 - 2019/07/08
+    # which is outside of the allowed min value of range
+    fifth_date_input_field.clear()
+    fifth_date_input_field.fill("2008/07/06 - 2019/07/08")
+    # Click outside of the date input to exit calendar picker (reduce snapshot flakiness)
+    fifth_date_input_field.press("Escape")
+
+    # Check that the value update is not committed
+    expect(themed_app.get_by_test_id("stMarkdown").nth(4)).to_have_text(
+        "Value 5: ()",
+        use_inner_text=True,
+    )
+
+    # Check that the error icon is now shown in the date input
+    error_icon = fifth_date_input.get_by_test_id("stTooltipErrorHoverTarget")
+    expect(error_icon).to_be_visible()
+    # Hover over the error tooltip target
+    error_icon.hover()
+    # Check that the expected error tooltip message for start date error is shown
+    tooltip = themed_app.get_by_test_id("stTooltipErrorContent")
+    expect(tooltip).to_have_text(
+        "Error: Start date set outside allowed range. Please select a date after 2009/07/06.",
+        use_inner_text=True,
+    )
+
+    # Snapshot test of date input in error state
+    assert_snapshot(fifth_date_input, name="st_date_input-range_date_input_error")
+
+
+def test_range_date_input_end_error_state(themed_app: Page):
+    """Test that the range date input error state works correctly."""
+    # The fifth date input is set to 2019/07/06 - 2019/07/08 by default, with no set min/max
+    # So we set the min to 2009/07/06 (10 years before start date) and max to 2029/07/08
+    # (10 years after end date)
+    fifth_date_input = themed_app.get_by_test_id("stDateInput").nth(4)
+    fifth_date_input_field = fifth_date_input.locator("input")
+
+    # Clear the input field and set date range to 2008/07/06 - 2019/07/08
+    fifth_date_input_field.clear()
+    fifth_date_input_field.fill("2019/07/06 - 2030/07/08")
+    # Click outside of the date input to exit calendar picker (reduce snapshot flakiness)
+    fifth_date_input_field.press("Escape")
+
+    # Check that the value update is not committed
+    expect(themed_app.get_by_test_id("stMarkdown").nth(4)).to_have_text(
+        "Value 5: ()",
+        use_inner_text=True,
+    )
+
+    # Check that the error icon is now shown in the date input
+    error_icon = fifth_date_input.get_by_test_id("stTooltipErrorHoverTarget")
+    expect(error_icon).to_be_visible()
+    # Hover over the error tooltip target
+    error_icon.hover()
+    # Check that the expected error tooltip message for end date error is shown
+    tooltip = themed_app.get_by_test_id("stTooltipErrorContent")
+    expect(tooltip).to_have_text(
+        "Error: End date set outside allowed range. Please select a date before 2029/07/08.",
+        use_inner_text=True,
+    )
+    # Skip snapshot test since similar enough to start date error snapshot
 
 
 def test_check_top_level_class(app: Page):
