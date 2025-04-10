@@ -241,6 +241,18 @@ describe("Sidebar Component", () => {
     expect(screen.queryByTestId("stSidebarNav")).not.toBeInTheDocument()
   })
 
+  it("applies scrollbarGutter style to sidebar content", () => {
+    // Asserts behavior to prevent layout shifts when the scrollbars
+    // appear and disappear.
+    // @see https://github.com/streamlit/streamlit/issues/10310
+    renderSidebar({})
+
+    const sidebarContent = screen.getByTestId("stSidebarContent")
+    const styles = window.getComputedStyle(sidebarContent)
+
+    expect(styles.scrollbarGutter).toBe("stable both-edges")
+  })
+
   describe("handles appLogo rendering", () => {
     const imageOnly = Logo.create({
       image:
@@ -362,9 +374,9 @@ describe("Sidebar Component", () => {
       const sidebarLogo = within(screen.getByTestId("stSidebar")).getByTestId(
         "stLogo"
       )
-      // L & R padding (twoXL) + R margin (sm) + collapse button (2.25rem)
+      // L & R sidebar padding + 8px margin for scrollbarGutter + R margin (sm) + collapse button (2.25rem)
       expect(sidebarLogo).toHaveStyle(
-        `max-width: calc(${sidebarWidth} - 2 * 1.5rem - 0.5rem - 2.25rem)`
+        `max-width: calc(${sidebarWidth} - 2 * calc(1rem + 2px) - (2 * 8px) - 0.5rem - 2.25rem)`
       )
     })
 

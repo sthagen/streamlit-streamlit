@@ -321,3 +321,12 @@ class ContextProxy:
                 return None
             return remote_ip
         return None
+
+    @property
+    @gather_metrics("context.is_embedded")
+    def is_embedded(self) -> bool | None:
+        """Whether the app is embedded."""
+        ctx = get_script_run_ctx()
+        if ctx is None or ctx.context_info is None:
+            return None
+        return ctx.context_info.is_embedded

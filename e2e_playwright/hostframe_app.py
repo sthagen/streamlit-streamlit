@@ -48,5 +48,7 @@ st.color_picker("Pick a color")
 with st.expander("Show URL"):
     st.write(f"Full url: {st.context.url}")
 
+st.write("Is app embedded: ", st.context.is_embedded)
+
 # Allows for testing of script re-run / stop behavior
 time.sleep(3)

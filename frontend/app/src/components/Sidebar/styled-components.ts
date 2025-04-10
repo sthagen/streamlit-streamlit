@@ -17,7 +17,7 @@
 import styled from "@emotion/styled"
 import { transparentize } from "color2k"
 
-import { hasLightBackgroundColor } from "@streamlit/lib"
+import { EmotionTheme, hasLightBackgroundColor } from "@streamlit/lib"
 
 /**
  * Returns the color of the text in the sidebar nav.
@@ -41,6 +41,22 @@ const getNavTextColor = (
   return isLightTheme
     ? transparentize(theme.colors.bodyText, 0.2)
     : transparentize(theme.colors.bodyText, 0.25)
+}
+
+/**
+ * Returns the horizontal spacing for the sidebar. Since scrollbarGutter is set
+ * to `stable both-edges`, we need to match the prior spacing from when we were
+ * reliant on overlay scrollbars. This doesn't directly map to a value in the
+ * theme.spacing object. We add 2px to achieve this as a close approximation for
+ * Chrome. The space reserved for the scrollbar is dependent upon browser and
+ * OS, so this will be an imperfect match to prior behavior due to the
+ * deprecated browser API of `overflow: overlay`.
+ *
+ * @param theme The theme to use.
+ * @returns The horizontal spacing for the sidebar.
+ */
+const getSidebarHorizontalSpacing = (theme: EmotionTheme): string => {
+  return `calc(${theme.spacing.lg} + 2px)`
 }
 
 export interface StyledSidebarProps {
@@ -159,8 +175,8 @@ export const StyledSidebarNavLink = styled.a<StyledSidebarNavLinkProps>(
       borderRadius: theme.radii.default,
       paddingLeft: theme.spacing.sm,
       paddingRight: theme.spacing.sm,
-      marginLeft: theme.spacing.twoXL,
-      marginRight: theme.spacing.twoXL,
+      marginLeft: getSidebarHorizontalSpacing(theme),
+      marginRight: getSidebarHorizontalSpacing(theme),
       marginTop: theme.spacing.threeXS,
       marginBottom: theme.spacing.threeXS,
       lineHeight: theme.lineHeights.menuItem,
@@ -215,15 +231,25 @@ export const StyledSidebarUserContent =
   styled.div<StyledSidebarUserContentProps>(({ hasPageNavAbove, theme }) => ({
     paddingTop: hasPageNavAbove ? theme.spacing.twoXL : 0,
     paddingBottom: theme.sizes.sidebarTopSpace,
-    paddingLeft: theme.spacing.twoXL,
-    paddingRight: theme.spacing.twoXL,
+    paddingLeft: getSidebarHorizontalSpacing(theme),
+    paddingRight: getSidebarHorizontalSpacing(theme),
   }))
 
 export const StyledSidebarContent = styled.div({
   position: "relative",
   height: "100%",
   width: "100%",
-  overflow: ["auto", "overlay"],
+  overflow: "auto",
+  /**
+   * Ensure that space is reserved for scrollbars, even when they are not
+   * visible. This is necessary to prevent layout shifts when the scrollbars
+   * appear and disappear.
+   *
+   * We utilize both-edges so that things look visually centered and aligned.
+   *
+   * @see https://github.com/streamlit/streamlit/issues/10310
+   */
+  scrollbarGutter: "stable both-edges",
 })
 
 export const RESIZE_HANDLE_WIDTH = "8px"
@@ -247,7 +273,9 @@ export const StyledSidebarHeaderContainer = styled.div(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "start",
-  padding: theme.spacing.twoXL,
+  paddingBottom: theme.spacing.twoXL,
+  paddingLeft: getSidebarHorizontalSpacing(theme),
+  paddingRight: getSidebarHorizontalSpacing(theme),
   // Adjust top padding based on the header decoration height
   paddingTop: `calc(${theme.spacing.twoXL} - ${theme.sizes.headerDecorationHeight})`,
 }))
@@ -273,6 +301,14 @@ function translateLogoHeight(theme: any, size: string): string {
   return theme.sizes.defaultLogoHeight
 }
 
+/**
+ * The width of the scrollbar gutter is estimated to be 8px.
+ *
+ * Note that the actual width of the scrollbar gutter is browser and OS
+ * dependent.
+ */
+const SCROLLBAR_GUTTER_WIDTH_ESTIMATE = "8px"
+
 export const StyledLogo = styled.img<StyledLogoProps>(
   ({ theme, size, sidebarWidth }) => ({
     height: translateLogoHeight(theme, size),
@@ -286,8 +322,12 @@ export const StyledLogo = styled.img<StyledLogoProps>(
     verticalAlign: "middle",
     ...(sidebarWidth && {
       // Control max width of logo so sidebar collapse button always shows (issue #8707)
-      // L & R padding (twoXL) + R margin (sm) + collapse button (2.25rem)
-      maxWidth: `calc(${sidebarWidth}px - 2 * ${theme.spacing.twoXL} - ${theme.spacing.sm} - 2.25rem)`,
+      // L & R padding (lg) + scrollbarGutter on both sides (2 * 8px) + R margin (sm) + collapse button (2.25rem)
+      maxWidth: `calc(${sidebarWidth}px - 2 * ${getSidebarHorizontalSpacing(
+        theme
+      )} - (2 * ${SCROLLBAR_GUTTER_WIDTH_ESTIMATE}) - ${
+        theme.spacing.sm
+      } - 2.25rem)`,
     }),
   })
 )
@@ -380,8 +420,8 @@ export const StyledSidebarNavSectionHeader = styled.header(({ theme }) => {
     color: getNavTextColor(theme, false),
     lineHeight: theme.lineHeights.small,
     paddingRight: theme.spacing.sm,
-    marginLeft: theme.spacing.twoXL,
-    marginRight: theme.spacing.twoXL,
+    marginLeft: getSidebarHorizontalSpacing(theme),
+    marginRight: getSidebarHorizontalSpacing(theme),
     marginTop: theme.spacing.sm,
     marginBottom: theme.spacing.twoXS,
   }
@@ -397,7 +437,7 @@ export const StyledViewButton = styled.button(({ theme }) => {
     border: "none",
     borderRadius: theme.radii.default,
     marginTop: theme.spacing.twoXS,
-    marginLeft: theme.spacing.xl,
+    marginLeft: theme.spacing.lg,
     marginBottom: theme.spacing.none,
     marginRight: theme.spacing.none,
     padding: `${theme.spacing.threeXS} ${theme.spacing.sm}`,

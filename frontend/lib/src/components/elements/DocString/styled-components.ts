@@ -51,12 +51,12 @@ export const StyledDocHeader = styled.div(({ theme }) => ({
   borderTopLeftRadius: theme.radii.default,
   borderTopRightRadius: theme.radii.default,
   fontSize: theme.fontSizes.sm,
-  overflow: ["auto", "overlay"],
+  overflow: "auto",
 }))
 
 export const StyledDocString = styled.div(({ theme }) => ({
   whiteSpace: "pre",
-  overflow: ["auto", "overlay"],
+  overflow: "auto",
   maxHeight: "30.5rem", // The extra 0.5rem is to show a little of the overflowing line.
   padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
   fontSize: theme.fontSizes.sm,
@@ -82,7 +82,7 @@ export const StyledMembersRow = styled.tr(({ theme }) => ({
 
 export const StyledMembersSummaryCell = styled.td(({ theme }) => ({
   width: "30%",
-  overflow: ["auto", "overlay"],
+  overflow: "auto",
   padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
 
   "& > *": {
@@ -92,6 +92,6 @@ export const StyledMembersSummaryCell = styled.td(({ theme }) => ({
 
 export const StyledMembersDetailsCell = styled.td(({ theme }) => ({
   width: "70%",
-  overflow: ["auto", "overlay"],
+  overflow: "auto",
   padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
 }))
