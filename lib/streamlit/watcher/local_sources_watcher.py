@@ -124,7 +124,7 @@ class LocalSourcesWatcher:
         self._is_closed = True
 
     def _register_watcher(self, filepath, module_name):
-        global PathWatcher
+        global PathWatcher  # noqa: PLW0603
         if PathWatcher is None:
             PathWatcher = get_default_path_watcher_class()
 

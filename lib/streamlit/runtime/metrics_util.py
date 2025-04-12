@@ -263,7 +263,7 @@ def _get_command_telemetry(
         pos = i
         if is_method:
             # If func is a method, ignore the first argument (self)
-            i = i + 1
+            i = i + 1  # noqa: PLW2901
 
         keyword = arg_keywords[i] if len(arg_keywords) > i else f"{i}"
         if keyword == "self":
@@ -460,9 +460,9 @@ def create_page_profile_message(
                 continue
 
             config_option = config._config_options[option_name]
-            if config_option.is_default:
-                option_name = f"{option_name}:default"
-            config_options.add(option_name)
+            config_options.add(
+                f"{option_name}:default" if config_option.is_default else option_name
+            )
 
     page_profile.config.extend(config_options)
 

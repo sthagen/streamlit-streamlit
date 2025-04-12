@@ -52,16 +52,16 @@ class TestCLIRegressions:
     @pytest.fixture(scope="module", autouse=True)
     def setup(self):
         # ---- Initialization
-        global CONFIG_FILE_PATH
+        global CONFIG_FILE_PATH  # noqa: PLW0603
         CONFIG_FILE_PATH = os.path.expanduser("~/.streamlit/config.toml")
 
-        global CREDENTIALS_FILE_PATH
+        global CREDENTIALS_FILE_PATH  # noqa: PLW0603
         CREDENTIALS_FILE_PATH = os.path.expanduser("~/.streamlit/credentials.toml")
 
-        global REPO_ROOT
+        global REPO_ROOT  # noqa: PLW0603
         REPO_ROOT = os.getcwd()
 
-        global STREAMLIT_RELEASE_VERSION
+        global STREAMLIT_RELEASE_VERSION  # noqa: PLW0603
         STREAMLIT_RELEASE_VERSION = os.environ.get("STREAMLIT_RELEASE_VERSION", None)
 
         # Ensure that there aren't any previously stored credentials
@@ -102,7 +102,7 @@ class TestCLIRegressions:
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            preexec_fn=os.setpgrp,
+            preexec_fn=os.setpgrp,  # noqa: PLW1509
         )
 
         output = self.read_process_output(proc, num_lines_to_read)
@@ -123,7 +123,7 @@ class TestCLIRegressions:
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            preexec_fn=os.setpgrp,
+            preexec_fn=os.setpgrp,  # noqa: PLW1509
         )
 
         # Getting the output from process one ensures the process started first
@@ -134,7 +134,7 @@ class TestCLIRegressions:
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            preexec_fn=os.setpgrp,
+            preexec_fn=os.setpgrp,  # noqa: PLW1509
         )
 
         output_two = self.read_process_output(proc_two, num_lines_to_read)
@@ -149,7 +149,7 @@ class TestCLIRegressions:
         return output_one, output_two
 
     @pytest.mark.skipif(
-        bool(os.environ.get("SKIP_VERSION_CHECK", False)) is True,
+        os.environ.get("SKIP_VERSION_CHECK", "false").lower() == "true",
         reason="Skip version verification when `SKIP_VERSION_CHECK` env var is set",
     )
     def test_streamlit_version(self):

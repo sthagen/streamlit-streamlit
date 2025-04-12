@@ -193,9 +193,9 @@ class WriteMixin:
                     if len(chunk.choices) == 0 or chunk.choices[0].delta is None:
                         # The choices list can be empty. E.g. when using the
                         # AzureOpenAI client, the first chunk will always be empty.
-                        chunk = ""
+                        chunk = ""  # noqa: PLW2901
                     else:
-                        chunk = chunk.choices[0].delta.content or ""
+                        chunk = chunk.choices[0].delta.content or ""  # noqa: PLW2901
                 except AttributeError as err:
                     raise StreamlitAPIException(
                         "Failed to parse the OpenAI ChatCompletionChunk. "
@@ -208,7 +208,7 @@ class WriteMixin:
             if type_util.is_type(chunk, "langchain_core.messages.ai.AIMessageChunk"):
                 # Try to convert LangChain message chunk to a string:
                 try:
-                    chunk = chunk.content or ""
+                    chunk = chunk.content or ""  # noqa: PLW2901
                 except AttributeError as err:
                     raise StreamlitAPIException(
                         "Failed to parse the LangChain AIMessageChunk. "

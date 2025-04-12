@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 from streamlit import config
 from streamlit.errors import MarkdownFormattedException, StreamlitAPIException
@@ -99,9 +99,9 @@ def get_max_message_size_bytes() -> int:
 
     This will lazyload the value from the config and store it in the global symbol table.
     """
-    global _max_message_size_bytes
+    global _max_message_size_bytes  # noqa: PLW0603
 
     if _max_message_size_bytes is None:
         _max_message_size_bytes = config.get_option("server.maxMessageSize") * int(1e6)
 
-    return _max_message_size_bytes
+    return cast("int", _max_message_size_bytes)

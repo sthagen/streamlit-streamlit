@@ -1409,8 +1409,7 @@ def _update_config_with_toml(raw_toml: str, where_defined: str) -> None:
                 process_section(option_name, value)
             else:
                 # It's a regular config option, set it
-                value = _maybe_read_env_variable(value)
-                _set_option(option_name, value, where_defined)
+                _set_option(option_name, _maybe_read_env_variable(value), where_defined)
 
     for section, options in parsed_config_file.items():
         process_section(section, options)
@@ -1502,7 +1501,7 @@ def get_config_options(
     dict[str, ConfigOption]
         An ordered dict that maps config option names to their values.
     """
-    global _config_options
+    global _config_options  # noqa: PLW0603
 
     if not options_from_flags:
         options_from_flags = {}

@@ -45,7 +45,9 @@ def get_token_from_credential_manager() -> str:
     """
     cmd = ["git", "credential", "fill"]
     input_data = "protocol=https\nhost=github.com\n\n"
-    result = subprocess.run(cmd, input=input_data, capture_output=True, text=True)
+    result = subprocess.run(
+        cmd, input=input_data, capture_output=True, text=True, check=False
+    )
     if result.returncode != 0:
         print(
             f"Error getting credentials from git credential manager: {result.stderr.strip()}"
@@ -62,7 +64,7 @@ def get_token_from_credential_manager() -> str:
 def get_last_commit_sha() -> str:
     """Get the last commit SHA of the local branch."""
     cmd = ["git", "rev-parse", "HEAD"]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if result.returncode != 0:
         raise Exception(f"Error getting last commit SHA: {result.stderr.strip()}")
     return result.stdout.strip()

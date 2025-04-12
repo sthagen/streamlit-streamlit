@@ -80,8 +80,8 @@ def reorder_early_fixtures(metafunc: pytest.Metafunc):
 
     Copied from: https://github.com/pytest-dev/pytest/issues/1216#issuecomment-456109892
     """
-    for fixturedef in metafunc._arg2fixturedefs.values():
-        fixturedef = fixturedef[0]
+    for fixture_definitions in metafunc._arg2fixturedefs.values():
+        fixturedef = fixture_definitions[0]
         for mark in getattr(fixturedef.func, "pytestmark", []):
             if mark.name == "early":
                 order = metafunc.fixturenames

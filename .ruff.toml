@@ -52,6 +52,7 @@ select = [
   "PIE",    # Rules to prevent unnecessary code logic.
   "PLC",    # pycodestyle conventions
   "PLE",    # Pylint error rules.
+  "PLW",    # Pylint warning rules
   "PYI",    # Linting rules for type annotations.
   "Q",      # Linting rules for quites
   "RUF100", # Unused noqa directive

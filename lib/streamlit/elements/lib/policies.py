@@ -70,7 +70,7 @@ def check_session_state_rules(
     StreamlitAPIException:
         Raised when the described rule is violated.
     """
-    global _shown_default_value_warning
+    global _shown_default_value_warning  # noqa: PLW0603
 
     if key is None or not runtime.exists():
         return
