@@ -8,3 +8,4 @@ rules/*
 !rules/python_lib.mdc
 !rules/python_tests.mdc
 !rules/protobuf.mdc
+!rules/e2e_playwright.mdc

@@ -260,7 +260,11 @@ protobuf:
 .PHONY: react-init
 # Install all frontend dependencies.
 react-init:
-	cd frontend/ ; yarn install --immutable
+	cd frontend/ ; \
+	if command -v "corepack" > /dev/null; then \
+		corepack install ; \
+	fi;\
+	yarn install --immutable
 
 .PHONY: frontend
 # Build frontend into static files.
