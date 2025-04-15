@@ -536,7 +536,7 @@ class HTTPServerIntegrationTest(unittest.TestCase):
             tmp_home = exit_stack.enter_context(tempfile.TemporaryDirectory())
             (Path(tmp_home) / ".streamlit").mkdir()
             (Path(tmp_home) / ".streamlit" / "credentials.toml").write_text(
-                '[general]\nemail = ""'
+                '[general]\nemail = ""', encoding="utf-8"
             )
             cert_file = Path(tmp_home) / "cert.cert"
             key_file = Path(tmp_home) / "key.key"

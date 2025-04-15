@@ -383,16 +383,19 @@ def main_init(directory: str | None = None):
         raise click.ClickException(f"Failed to create directory: {e}")
 
     # Create requirements.txt
-    (project_dir / "requirements.txt").write_text("streamlit\n")
+    (project_dir / "requirements.txt").write_text("streamlit\n", encoding="utf-8")
 
     # Create streamlit_app.py
-    (project_dir / "streamlit_app.py").write_text("""import streamlit as st
+    (project_dir / "streamlit_app.py").write_text(
+        """import streamlit as st
 
 st.title("🎈 My new app")
 st.write(
     "Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
 )
-""")
+""",
+        encoding="utf-8",
+    )
 
     rel_path_str = str(directory) if directory else "."
 

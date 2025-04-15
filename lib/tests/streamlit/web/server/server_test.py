@@ -384,7 +384,7 @@ class SslServerTest(unittest.TestCase):
             exit_stack.enter_context(patch_config_options(new_options))
 
             # Create only one file
-            Path(new_options[option_name]).write_text("TEST-CONTENT")
+            Path(new_options[option_name]).write_text("TEST-CONTENT", encoding="utf-8")
 
             exit_stack.enter_context(pytest.raises(SystemExit))
             logs = exit_stack.enter_context(
@@ -440,7 +440,9 @@ class SslServerTest(unittest.TestCase):
             exit_stack.enter_context(patch_config_options(new_options))
 
             # Overwrite file with invalid content
-            Path(new_options[option_name]).write_text("INVALID-CONTENT")
+            Path(new_options[option_name]).write_text(
+                "INVALID-CONTENT", encoding="utf-8"
+            )
 
             exit_stack.enter_context(pytest.raises(SystemExit))
             logs = exit_stack.enter_context(
