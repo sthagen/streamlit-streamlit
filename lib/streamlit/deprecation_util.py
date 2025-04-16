@@ -139,7 +139,7 @@ def deprecate_obj_name(
 
     include_st_prefix
         If False, does not prefix each of the object names in the deprecation
-        essage with `st.*`. Defaults to True.
+        message with `st.*`. Defaults to True.
     """
 
     return _create_deprecated_obj_wrapper(

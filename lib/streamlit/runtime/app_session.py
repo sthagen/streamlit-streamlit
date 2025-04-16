@@ -181,7 +181,7 @@ class AppSession:
 
         Files that we watch include:
           - source files that already exist (for edits)
-          - `.py` files in the the main script's `pages/` directory (for file additions
+          - `.py` files in the main script's `pages/` directory (for file additions
             and deletions)
           - project and user-level config.toml files
           - the project-level secrets.toml files

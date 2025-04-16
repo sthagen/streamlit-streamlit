@@ -278,7 +278,6 @@ login = _login
 logout = _logout
 
 # Experimental APIs
-experimental_audio_input = _main.experimental_audio_input
 experimental_dialog = _experimental_dialog_decorator
 experimental_fragment = _experimental_fragment
 experimental_user = _UserInfoProxy()

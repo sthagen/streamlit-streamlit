@@ -107,7 +107,7 @@ class CacheReplayClosureError(StreamlitAPIException):
             f"""
 While running {func_name}, a streamlit element is called on some layout block
 created outside the function. This is incompatible with replaying the cached
-effect of that element, because the the referenced block might not exist when
+effect of that element, because the referenced block might not exist when
 the replay happens.
 
 How to fix this:

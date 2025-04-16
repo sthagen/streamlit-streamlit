@@ -330,7 +330,7 @@ def is_pydantic_model(obj) -> bool:
 
 
 def _is_from_streamlit(obj: object) -> bool:
-    """True if the object is from the the streamlit package."""
+    """True if the object is from the streamlit package."""
     return obj.__class__.__module__.startswith("streamlit")
 
 

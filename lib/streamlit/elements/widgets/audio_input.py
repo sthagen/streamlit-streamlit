@@ -20,10 +20,6 @@ from typing import TYPE_CHECKING, Union, cast
 
 from typing_extensions import TypeAlias
 
-from streamlit.deprecation_util import (
-    make_deprecated_name_warning,
-    show_deprecation_warning,
-)
 from streamlit.elements.lib.file_uploader_utils import enforce_filename_restriction
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.policies import (
@@ -191,44 +187,6 @@ class AudioInputMixin:
            height: 260px
 
         """
-        ctx = get_script_run_ctx()
-        return self._audio_input(
-            label=label,
-            key=key,
-            help=help,
-            on_change=on_change,
-            args=args,
-            kwargs=kwargs,
-            disabled=disabled,
-            label_visibility=label_visibility,
-            ctx=ctx,
-        )
-
-    @gather_metrics("experimental_audio_input")
-    def experimental_audio_input(
-        self,
-        label: str,
-        *,
-        key: Key | None = None,
-        help: str | None = None,
-        on_change: WidgetCallback | None = None,
-        args: WidgetArgs | None = None,
-        kwargs: WidgetKwargs | None = None,
-        disabled: bool = False,
-        label_visibility: LabelVisibility = "visible",
-    ) -> UploadedFile | None:
-        """Deprecated alias for st.audio_input.
-        See the docstring for the widget's new name.
-        """
-
-        show_deprecation_warning(
-            make_deprecated_name_warning(
-                "experimental_audio_input",
-                "audio_input",
-                "2025-01-01",
-            )
-        )
-
         ctx = get_script_run_ctx()
         return self._audio_input(
             label=label,

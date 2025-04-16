@@ -1735,7 +1735,7 @@ class VegaChartsMixin:
               as a dictionary.
 
             To use selection events, the Vega-Lite spec defined in ``data`` or
-            ``spec`` must include selection parameters from the the charting
+            ``spec`` must include selection parameters from the charting
             library. To learn about defining interactions in Vega-Lite, see
             `Dynamic Behaviors with Parameters \
             <https://vega.github.io/vega-lite/docs/parameter.html>`_
