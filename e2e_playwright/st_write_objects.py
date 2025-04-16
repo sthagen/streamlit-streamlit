@@ -42,7 +42,7 @@ st.write(["foo", "bar"])
 st.write({"foo": "bar"})
 
 st.write(st.session_state)
-st.write(st.experimental_user)
+st.write(st.user)
 st.write(st.query_params)
 
 

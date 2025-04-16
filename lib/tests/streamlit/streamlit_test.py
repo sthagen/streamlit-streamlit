@@ -73,6 +73,7 @@ NON_ELEMENT_COMMANDS: set[str] = {
     "sidebar",
     "stop",
     "switch_page",
+    "user",
 }
 
 # Element commands that are exposed on the DeltaGenerator

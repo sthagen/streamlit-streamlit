@@ -29,6 +29,10 @@ from streamlit.auth_util import (
     is_authlib_installed,
     validate_auth_credentials,
 )
+from streamlit.deprecation_util import (
+    make_deprecated_name_warning,
+    show_deprecation_warning,
+)
 from streamlit.errors import StreamlitAPIException, StreamlitAuthError
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.runtime.metrics_util import gather_metrics
@@ -55,14 +59,14 @@ def login(provider: str | None = None) -> None:
     the user authenticates their identity, they are redirected back to the
     home page of your app. Streamlit stores a cookie with the user's identity
     information in the user's browser . You can access the identity information
-    through |st.experimental_user|_. Call ``st.logout()`` to remove the cookie
+    through |st.user|_. Call ``st.logout()`` to remove the cookie
     and start a new session.
 
     You can use any OIDC provider, including Google, Microsoft, Okta, and more.
     You must configure the provider through secrets management. Although OIDC
     is an extension of OAuth 2.0, you can't use generic OAuth providers.
     Streamlit parses the user's identity token and surfaces its attributes in
-    ``st.experimental_user``. If the provider returns an access token, that
+    ``st.user``. If the provider returns an access token, that
     token is ignored. Therefore, this command will not allow your app to act on
     behalf of a user in a secure system.
 
@@ -491,10 +495,10 @@ class UserInfoProxy(Mapping[str, Union[str, bool, None]]):
             raise AttributeError(f'st.experimental_user has no attribute "{key}".')
 
     def __setattr__(self, name: str, value: str | None) -> NoReturn:
-        raise StreamlitAPIException("st.experimental_user cannot be modified")
+        raise StreamlitAPIException("st.user cannot be modified")
 
     def __setitem__(self, name: str, value: str | None) -> NoReturn:
-        raise StreamlitAPIException("st.experimental_user cannot be modified")
+        raise StreamlitAPIException("st.user cannot be modified")
 
     def __iter__(self) -> Iterator[str]:
         return iter(_get_user_info())
@@ -507,7 +511,7 @@ class UserInfoProxy(Mapping[str, Union[str, bool, None]]):
         Get user info as a dictionary.
 
         This method primarily exists for internal use and is not needed for
-        most cases. ``st.experimental_user`` returns an object that inherits from
+        most cases. ``st.user`` returns an object that inherits from
         ``dict`` by default.
 
         Returns
@@ -516,3 +520,38 @@ class UserInfoProxy(Mapping[str, Union[str, bool, None]]):
             A dictionary of the current user's information.
         """
         return _get_user_info()
+
+
+has_shown_experimental_user_warning = False
+
+
+def maybe_show_deprecated_user_warning() -> None:
+    """Show a deprecation warning for the experimental_user alias."""
+    global has_shown_experimental_user_warning  # noqa: PLW0603
+
+    if not has_shown_experimental_user_warning:
+        has_shown_experimental_user_warning = True
+        show_deprecation_warning(
+            make_deprecated_name_warning(
+                "experimental_user",
+                "user",
+                "2025-11-06",
+            )
+        )
+
+
+class DeprecatedUserInfoProxy(UserInfoProxy):
+    """
+    A deprecated alias for UserInfoProxy.
+
+    This class is deprecated and will be removed in a future version of
+    Streamlit.
+    """
+
+    def __getattribute__(self, name: str):
+        maybe_show_deprecated_user_warning()
+        return super().__getattribute__(name)
+
+    def __getitem__(self, key: str):
+        maybe_show_deprecated_user_warning()
+        return super().__getitem__(key)

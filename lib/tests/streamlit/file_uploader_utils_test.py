@@ -18,7 +18,11 @@ from typing import TYPE_CHECKING
 
 from parameterized import parameterized
 
-from streamlit.elements.lib.file_uploader_utils import normalize_upload_file_type
+from streamlit.elements.lib.file_uploader_utils import (
+    enforce_filename_restriction,
+    normalize_upload_file_type,
+)
+from streamlit.errors import StreamlitAPIException
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -38,3 +42,46 @@ class FileUploaderUtilsTest(unittest.TestCase):
         """Test that it can be called using string(s) for type parameter."""
         normalized = normalize_upload_file_type(file_type=file_type)
         self.assertEqual(normalized, expected)
+
+
+def is_filename_valid(filename: str, allowed_types: Sequence[str]) -> bool:
+    """Return True if the filename passes validation, False otherwise."""
+    try:
+        enforce_filename_restriction(filename, allowed_types)
+        return True
+    except StreamlitAPIException:
+        return False
+
+
+class EnforceFilenameRestrictionTest(unittest.TestCase):
+    @parameterized.expand(
+        [
+            # Valid cases
+            ("valid_single_extension_pdf", "document.pdf", [".pdf", ".png"], True),
+            ("valid_single_extension_png", "image.png", [".pdf", ".png"], True),
+            ("valid_multi_part_tar_gz", "archive.tar.gz", [".tar.gz", ".zip"], True),
+            ("valid_multi_part_zip", "data.zip", [".tar.gz", ".zip"], True),
+            ("valid_tar_gz_allowed_gz", "archive.tar.gz", [".gz"], True),
+            (
+                "valid_multiple_periods",
+                "my.file.tar.gz",
+                [".tar.gz", ".pdf"],
+                True,
+            ),
+            # Invalid cases
+            ("invalid_single_extension", "document.docx", [".pdf", ".png"], False),
+            (
+                "invalid_multi_part_extension",
+                "archive.tar.bz2",
+                [".tar.gz", ".zip"],
+                False,
+            ),
+            ("no_extension", "file_without_extension", [".pdf", ".png"], False),
+            ("empty_filename", "", [".pdf", ".tar.gz"], False),
+            ("filename_is_period", ".", [".pdf", ".tar.gz"], False),
+        ]
+    )
+    def test_filename_valid(self, _, filename, allowed_types, expected_valid):
+        """Test whether filenames are valid against allowed extensions."""
+        actual_valid = is_filename_valid(filename, allowed_types)
+        self.assertEqual(actual_valid, expected_valid)

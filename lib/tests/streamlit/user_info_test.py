@@ -60,59 +60,59 @@ class UserInfoProxyTest(DeltaGeneratorTestCase):
 
     def test_user_email_attr(self):
         """Test that `st.user.email` returns user info from ScriptRunContext"""
-        self.assertEqual(st.experimental_user.email, "test@example.com")
+        self.assertEqual(st.user.email, "test@example.com")
 
     def test_user_email_key(self):
-        self.assertEqual(st.experimental_user["email"], "test@example.com")
+        self.assertEqual(st.user["email"], "test@example.com")
 
     def test_user_non_existing_attr(self):
         """Test that an error is raised when called non existed attr."""
         with self.assertRaises(AttributeError):
-            st.write(st.experimental_user.attribute)
+            st.write(st.user.attribute)
 
     def test_user_non_existing_key(self):
         """Test that an error is raised when called non existed key."""
         with self.assertRaises(KeyError):
-            st.write(st.experimental_user["key"])
+            st.write(st.user["key"])
 
     def test_user_cannot_be_modified_existing_key(self):
         """
         Test that an error is raised when try to assign new value to existing key.
         """
         with self.assertRaises(StreamlitAPIException) as e:
-            st.experimental_user["email"] = "NEW_VALUE"
+            st.user["email"] = "NEW_VALUE"
 
-        self.assertEqual(str(e.exception), "st.experimental_user cannot be modified")
+        self.assertEqual(str(e.exception), "st.user cannot be modified")
 
     def test_user_cannot_be_modified_new_key(self):
         """
         Test that an error is raised when try to assign new value to new key.
         """
         with self.assertRaises(StreamlitAPIException) as e:
-            st.experimental_user["foo"] = "bar"
+            st.user["foo"] = "bar"
 
-        self.assertEqual(str(e.exception), "st.experimental_user cannot be modified")
+        self.assertEqual(str(e.exception), "st.user cannot be modified")
 
     def test_user_cannot_be_modified_existing_attr(self):
         """
         Test that an error is raised when try to assign new value to existing attr.
         """
         with self.assertRaises(StreamlitAPIException) as e:
-            st.experimental_user.email = "bar"
+            st.user.email = "bar"
 
-        self.assertEqual(str(e.exception), "st.experimental_user cannot be modified")
+        self.assertEqual(str(e.exception), "st.user cannot be modified")
 
     def test_user_cannot_be_modified_new_attr(self):
         """
         Test that an error is raised when try to assign new value to new attr.
         """
         with self.assertRaises(StreamlitAPIException) as e:
-            st.experimental_user.foo = "bar"
+            st.user.foo = "bar"
 
-        self.assertEqual(str(e.exception), "st.experimental_user cannot be modified")
+        self.assertEqual(str(e.exception), "st.user cannot be modified")
 
     def test_user_len(self):
-        self.assertEqual(len(st.experimental_user), 1)
+        self.assertEqual(len(st.user), 1)
 
     def test_st_user_reads_from_context_(self):
         """Test that st.user reads information from current ScriptRunContext
@@ -138,11 +138,29 @@ class UserInfoProxyTest(DeltaGeneratorTestCase):
                 ),
             )
 
-            self.assertEqual(st.experimental_user.email, "something@else.com")
+            self.assertEqual(st.user.email, "something@else.com")
         except Exception as e:
             raise e
         finally:
             add_script_run_ctx(threading.current_thread(), orig_report_ctx)
+
+    @patch("streamlit.user_info.show_deprecation_warning")
+    @patch("streamlit.user_info.has_shown_experimental_user_warning", False)
+    def test_deprecate_st_experimental_user(self, mock_show_warning: MagicMock):
+        """Test that we show deprecation warning only once."""
+        st.write(st.experimental_user)
+
+        expected_warning = (
+            "Please replace `st.experimental_user` with `st.user`.\n\n"
+            "`st.experimental_user` will be removed after 2025-11-06."
+        )
+
+        # We only show the warning a single time for a given object.
+        mock_show_warning.assert_called_once_with(expected_warning)
+        mock_show_warning.reset_mock()
+
+        st.write(st.experimental_user)
+        mock_show_warning.assert_not_called()
 
 
 @patch(

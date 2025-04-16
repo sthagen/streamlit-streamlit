@@ -336,7 +336,6 @@ def _is_from_streamlit(obj: object) -> bool:
 
 def is_custom_dict(obj: object) -> TypeGuard[CustomDict]:
     """True if input looks like one of the Streamlit custom dictionaries."""
-
     return (
         isinstance(obj, Mapping)
         and _is_from_streamlit(obj)

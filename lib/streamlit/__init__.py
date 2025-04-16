@@ -117,6 +117,7 @@ from streamlit.runtime.state import (
 )
 from streamlit.user_info import (
     UserInfoProxy as _UserInfoProxy,
+    DeprecatedUserInfoProxy as _DeprecatedUserInfoProxy,
     login as _login,
     logout as _logout,
 )
@@ -277,10 +278,13 @@ fragment = _fragment
 login = _login
 logout = _logout
 
+# User
+user = _UserInfoProxy()
+
 # Experimental APIs
 experimental_dialog = _experimental_dialog_decorator
 experimental_fragment = _experimental_fragment
-experimental_user = _UserInfoProxy()
+experimental_user = _DeprecatedUserInfoProxy()
 
 _EXPERIMENTAL_QUERY_PARAMS_DEPRECATE_MSG = "Refer to our [docs page](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.query_params) for more information."
 
