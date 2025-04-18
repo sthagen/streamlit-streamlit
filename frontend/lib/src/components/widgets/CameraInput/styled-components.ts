@@ -155,6 +155,9 @@ export const StyledCameraInputBaseButton =
     },
     "&:disabled, &:disabled:hover, &:disabled:active": {
       color: theme.colors.fadedText40,
+      borderColor: theme.colors.borderColor,
+      backgroundColor: theme.colors.lightenedBg05,
+      cursor: "not-allowed",
     },
     fontWeight: theme.fontWeights.normal,
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,

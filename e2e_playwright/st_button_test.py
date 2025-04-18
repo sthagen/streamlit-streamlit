@@ -60,6 +60,7 @@ def test_buttons_in_columns(themed_app: Page, assert_snapshot: ImageCompareFunct
     """Test that the button widgets are correctly rendered in columns via screenshot matching."""
     columns_container = themed_app.get_by_test_id("stHorizontalBlock")
     expect(columns_container).to_have_count(1)
+    expect(columns_container.get_by_test_id("stButton")).to_have_count(8)
 
     assert_snapshot(columns_container, name="st_button-in_columns")
 

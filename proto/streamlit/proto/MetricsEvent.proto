@@ -28,6 +28,7 @@ message MetricsEvent {
   string event = 1;
   string anonymous_id = 2;
   string machine_id_v3 = 3;
+  string stable_random_machine_id = 41;
   string report_hash = 4;
   bool dev = 5;
   string source = 6;
@@ -79,7 +80,7 @@ message MetricsEvent {
   int64 total_load_time = 39;
   BrowserInfo browser_info = 40;
 
-  // Next ID: 41
+  // Next ID: 42
 }
 
 message BrowserInfo {

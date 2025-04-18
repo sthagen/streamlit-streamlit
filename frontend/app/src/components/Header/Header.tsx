@@ -16,7 +16,7 @@
 
 import React, { ReactElement, ReactNode } from "react"
 
-import { AppContext } from "@streamlit/app/src/components/AppContext"
+import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import {
   StyledHeader,
@@ -30,8 +30,7 @@ export interface HeaderProps {
 }
 
 function Header({ isStale, children }: Readonly<HeaderProps>): ReactElement {
-  const { wideMode, embedded, showToolbar, showColoredLine } =
-    React.useContext(AppContext)
+  const { wideMode, embedded, showToolbar, showColoredLine } = useAppContext()
 
   let showHeader = true
   if (embedded) {

@@ -237,6 +237,7 @@ const NEW_SESSION_JSON: INewSession = {
     userInfo: {
       installationId: "installationId",
       installationIdV3: "installationIdV3",
+      stableRandomMachineId: "mockStableRandomMachineId",
     },
     environmentInfo: {
       streamlitVersion: "streamlitVersion",
@@ -1305,6 +1306,7 @@ describe("App", () => {
         userInfo: {
           installationId: "installationId",
           installationIdV3: "installationIdV3",
+          stableRandomMachineId: "mockStableRandomMachineId",
         },
         environmentInfo: {
           streamlitVersion: "streamlitVersion",

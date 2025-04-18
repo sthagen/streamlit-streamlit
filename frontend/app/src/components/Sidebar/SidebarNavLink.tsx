@@ -19,7 +19,7 @@ import React, { MouseEvent, ReactElement } from "react"
 import { useTheme } from "@emotion/react"
 import { transparentize } from "color2k"
 
-import { AppContext } from "@streamlit/app/src/components/AppContext"
+import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 import { DynamicIcon, EmotionTheme, isMaterialIcon } from "@streamlit/lib"
 
 import {
@@ -47,8 +47,7 @@ const SidebarNavLink = ({
   const theme: EmotionTheme = useTheme()
   // If connection state not connected, or host has disabled inputs,
   // disable sidebar nav links
-  const { widgetsDisabled: disableSidebarNavLinks } =
-    React.useContext(AppContext)
+  const { widgetsDisabled: disableSidebarNavLinks } = useAppContext()
 
   return (
     <StyledSidebarNavLinkContainer

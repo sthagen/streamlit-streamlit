@@ -146,6 +146,7 @@ FD = FieldDescriptor
             {
                 ("installation_id", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
                 ("installation_id_v3", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                ("stable_random_machine_id", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
             },
         ),
         (

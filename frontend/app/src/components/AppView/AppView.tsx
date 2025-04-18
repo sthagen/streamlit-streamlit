@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, {
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 
 import { getLogger } from "loglevel"
 
@@ -40,7 +46,7 @@ import {
   StyledLogoLink,
   StyledSidebarOpenContainer,
 } from "@streamlit/app/src/components/Sidebar/styled-components"
-import { AppContext } from "@streamlit/app/src/components/AppContext"
+import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import {
   StyledAppViewBlockContainer,
@@ -136,38 +142,38 @@ function AppView(props: AppViewProps): ReactElement {
     showColoredLine,
     sidebarChevronDownshift,
     widgetsDisabled,
-  } = React.useContext(AppContext)
+  } = useAppContext()
 
   const { addScriptFinishedHandler, removeScriptFinishedHandler } =
-    React.useContext(LibContext)
+    useContext(LibContext)
 
   const layout = wideMode ? "wide" : "narrow"
   const hasSidebarElements = !elements.sidebar.isEmpty
   const hasEventElements = !elements.event.isEmpty
   const hasBottomElements = !elements.bottom.isEmpty
 
-  const [showSidebarOverride, setShowSidebarOverride] = React.useState(false)
+  const [showSidebarOverride, setShowSidebarOverride] = useState(false)
 
   const showSidebar =
     hasSidebarElements ||
     (!hideSidebarNav && appPages.length > 1) ||
     showSidebarOverride
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Handle sidebar flicker/unmount with MPA & hideSidebarNav
     if (showSidebar && hideSidebarNav && !showSidebarOverride) {
       setShowSidebarOverride(true)
     }
   }, [showSidebar, hideSidebarNav, showSidebarOverride])
 
-  const scriptFinishedHandler = React.useCallback(() => {
+  const scriptFinishedHandler = useCallback(() => {
     // Check at end of script run if no sidebar elements
     if (!hasSidebarElements && showSidebarOverride) {
       setShowSidebarOverride(false)
     }
   }, [hasSidebarElements, showSidebarOverride])
 
-  React.useEffect(() => {
+  useEffect(() => {
     addScriptFinishedHandler(scriptFinishedHandler)
     return () => {
       removeScriptFinishedHandler(scriptFinishedHandler)

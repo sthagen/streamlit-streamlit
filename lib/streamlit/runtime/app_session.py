@@ -608,11 +608,11 @@ class AppSession:
 
             self._clear_queue(fragment_ids_this_run)
 
-            self._enqueue_forward_msg(
-                self._create_new_session_message(
-                    page_script_hash, fragment_ids_this_run, pages
-                )
+            msg = self._create_new_session_message(
+                page_script_hash, fragment_ids_this_run, pages
             )
+
+            self._enqueue_forward_msg(msg)
 
         elif (
             event == ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS
@@ -982,5 +982,7 @@ def _populate_theme_msg(msg: CustomThemeConfig, section: str = "theme") -> None:
 
 
 def _populate_user_info_msg(msg: UserInfo) -> None:
-    msg.installation_id = Installation.instance().installation_id
-    msg.installation_id_v3 = Installation.instance().installation_id_v3
+    inst = Installation.instance()
+    msg.installation_id = inst.installation_id
+    msg.installation_id_v3 = inst.installation_id_v3
+    msg.stable_random_machine_id = inst.stable_random_machine_id

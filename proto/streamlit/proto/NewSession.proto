@@ -204,10 +204,13 @@ message FontSizes {
 message UserInfo {
   string installation_id = 1;
   string installation_id_v3 = 5;
+  string stable_random_machine_id = 6;
 
   // DEPRECATED:
   // string email = 2;
   reserved 2;
+
+  // Next 7
 }
 
 // Data that identifies the Streamlit app's environment.

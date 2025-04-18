@@ -59,7 +59,6 @@ import {
   isScrollingHidden,
   isToolbarDisplayed,
   IToolbarItem,
-  LibContext,
   mark,
   measure,
   notUndefined,
@@ -107,7 +106,6 @@ import {
   notNullOrUndefined,
 } from "@streamlit/utils"
 import getBrowserInfo from "@streamlit/app/src/util/getBrowserInfo"
-import { AppContext } from "@streamlit/app/src/components/AppContext"
 import AppView from "@streamlit/app/src/components/AppView"
 import StatusWidget from "@streamlit/app/src/components/StatusWidget"
 import MainMenu from "@streamlit/app/src/components/MainMenu"
@@ -131,6 +129,7 @@ import {
   StreamlitEndpoints,
 } from "@streamlit/connection"
 import { SessionEventDispatcher } from "@streamlit/app/src/SessionEventDispatcher"
+import StreamlitContextProvider from "@streamlit/app/src/components/StreamlitContextProvider"
 import { UserSettings } from "@streamlit/app/src/components/StreamlitDialog/UserSettings"
 import { MetricsManager } from "@streamlit/app/src/MetricsManager"
 import { StyledApp } from "@streamlit/app/src/styled-components"
@@ -1996,125 +1995,114 @@ export class App extends PureComponent<Props, State> {
       : null
 
     return (
-      <AppContext.Provider
-        value={{
-          initialSidebarState,
-          wideMode: userSettings.wideMode,
-          embedded: isEmbed(),
-          showPadding: !isEmbed() || isPaddingDisplayed(),
-          disableScrolling: isScrollingHidden(),
-          showToolbar: !isEmbed() || isToolbarDisplayed(),
-          showColoredLine:
-            (!hideColoredLine && !isEmbed()) || isColoredLineDisplayed(),
-          pageLinkBaseUrl,
-          sidebarChevronDownshift,
-          widgetsDisabled:
-            inputsDisabled || connectionState !== ConnectionState.CONNECTED,
-          gitInfo: this.state.gitInfo,
-          appConfig,
-        }}
+      <StreamlitContextProvider
+        initialSidebarState={initialSidebarState}
+        wideMode={userSettings.wideMode}
+        embedded={isEmbed()}
+        showPadding={!isEmbed() || isPaddingDisplayed()}
+        disableScrolling={isScrollingHidden()}
+        showToolbar={!isEmbed() || isToolbarDisplayed()}
+        showColoredLine={
+          (!hideColoredLine && !isEmbed()) || isColoredLineDisplayed()
+        }
+        pageLinkBaseUrl={pageLinkBaseUrl}
+        sidebarChevronDownshift={sidebarChevronDownshift}
+        widgetsDisabled={
+          inputsDisabled || connectionState !== ConnectionState.CONNECTED
+        }
+        gitInfo={this.state.gitInfo}
+        appConfig={appConfig}
+        isFullScreen={isFullScreen}
+        setFullScreen={this.handleFullScreen}
+        addScriptFinishedHandler={this.addScriptFinishedHandler}
+        removeScriptFinishedHandler={this.removeScriptFinishedHandler}
+        activeTheme={this.props.theme.activeTheme}
+        setTheme={this.setAndSendTheme}
+        availableThemes={this.props.theme.availableThemes}
+        addThemes={this.props.theme.addThemes}
+        onPageChange={this.onPageChange}
+        currentPageScriptHash={currentPageScriptHash}
+        libConfig={libConfig}
+        fragmentIdsThisRun={this.state.fragmentIdsThisRun}
+        locale={window.navigator.language}
       >
-        <LibContext.Provider
-          value={{
-            isFullScreen,
-            setFullScreen: this.handleFullScreen,
-            addScriptFinishedHandler: this.addScriptFinishedHandler,
-            removeScriptFinishedHandler: this.removeScriptFinishedHandler,
-            activeTheme: this.props.theme.activeTheme,
-            setTheme: this.setAndSendTheme,
-            availableThemes: this.props.theme.availableThemes,
-            addThemes: this.props.theme.addThemes,
-            onPageChange: this.onPageChange,
-            currentPageScriptHash,
-            libConfig,
-            fragmentIdsThisRun: this.state.fragmentIdsThisRun,
-            locale: window.navigator.language,
-          }}
+        <Hotkeys
+          keyName="r,c,esc"
+          onKeyDown={this.handleKeyDown}
+          onKeyUp={this.handleKeyUp}
         >
-          <Hotkeys
-            keyName="r,c,esc"
-            onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
+          <StyledApp
+            className={outerDivClass}
+            data-testid="stApp"
+            data-test-script-state={
+              scriptRunId == INITIAL_SCRIPT_RUN_ID ? "initial" : scriptRunState
+            }
+            data-test-connection-state={connectionState}
           >
-            <StyledApp
-              className={outerDivClass}
-              data-testid="stApp"
-              data-test-script-state={
-                scriptRunId == INITIAL_SCRIPT_RUN_ID
-                  ? "initial"
-                  : scriptRunState
-              }
-              data-test-connection-state={connectionState}
-            >
-              {/* The tabindex below is required for testing. */}
-              <Header>
-                {!hideTopBar && (
-                  <>
-                    <StatusWidget
-                      connectionState={connectionState}
-                      sessionEventDispatcher={this.sessionEventDispatcher}
-                      scriptRunState={scriptRunState}
-                      rerunScript={this.rerunScript}
-                      stopScript={this.stopScript}
-                      allowRunOnSave={allowRunOnSave}
-                    />
-                    <ToolbarActions
-                      hostToolbarItems={hostToolbarItems}
-                      sendMessageToHost={
-                        this.hostCommunicationMgr.sendMessageToHost
-                      }
-                      metricsMgr={this.metricsMgr}
-                    />
-                  </>
-                )}
-                {this.showDeployButton() && (
-                  <DeployButton
-                    onClick={this.deployButtonClicked.bind(this)}
+            {/* The tabindex below is required for testing. */}
+            <Header>
+              {!hideTopBar && (
+                <>
+                  <StatusWidget
+                    connectionState={connectionState}
+                    sessionEventDispatcher={this.sessionEventDispatcher}
+                    scriptRunState={scriptRunState}
+                    rerunScript={this.rerunScript}
+                    stopScript={this.stopScript}
+                    allowRunOnSave={allowRunOnSave}
                   />
-                )}
-                <MainMenu
-                  isServerConnected={this.isServerConnected()}
-                  quickRerunCallback={this.rerunScript}
-                  clearCacheCallback={this.openClearCacheDialog}
-                  settingsCallback={this.settingsCallback}
-                  aboutCallback={this.aboutCallback}
-                  printCallback={this.printCallback}
-                  screencastCallback={this.screencastCallback}
-                  screenCastState={this.props.screenCast.currentState}
-                  hostMenuItems={hostMenuItems}
-                  developmentMode={developmentMode}
-                  sendMessageToHost={
-                    this.hostCommunicationMgr.sendMessageToHost
-                  }
-                  menuItems={menuItems}
-                  metricsMgr={this.metricsMgr}
-                  toolbarMode={this.state.toolbarMode}
-                />
-              </Header>
-
-              <AppView
-                endpoints={this.endpoints}
+                  <ToolbarActions
+                    hostToolbarItems={hostToolbarItems}
+                    sendMessageToHost={
+                      this.hostCommunicationMgr.sendMessageToHost
+                    }
+                    metricsMgr={this.metricsMgr}
+                  />
+                </>
+              )}
+              {this.showDeployButton() && (
+                <DeployButton onClick={this.deployButtonClicked.bind(this)} />
+              )}
+              <MainMenu
+                isServerConnected={this.isServerConnected()}
+                quickRerunCallback={this.rerunScript}
+                clearCacheCallback={this.openClearCacheDialog}
+                settingsCallback={this.settingsCallback}
+                aboutCallback={this.aboutCallback}
+                printCallback={this.printCallback}
+                screencastCallback={this.screencastCallback}
+                screenCastState={this.props.screenCast.currentState}
+                hostMenuItems={hostMenuItems}
+                developmentMode={developmentMode}
                 sendMessageToHost={this.hostCommunicationMgr.sendMessageToHost}
-                elements={elements}
-                scriptRunId={scriptRunId}
-                scriptRunState={scriptRunState}
-                widgetMgr={this.widgetMgr}
-                uploadClient={this.uploadClient}
-                componentRegistry={this.componentRegistry}
-                formsData={this.state.formsData}
-                appLogo={elements.logo}
-                appPages={appPages}
-                navSections={navSections}
-                onPageChange={this.onPageChange}
-                currentPageScriptHash={currentPageScriptHash}
-                hideSidebarNav={hideSidebarNav || hostHideSidebarNav}
-                expandSidebarNav={expandSidebarNav}
+                menuItems={menuItems}
+                metricsMgr={this.metricsMgr}
+                toolbarMode={this.state.toolbarMode}
               />
-              {renderedDialog}
-            </StyledApp>
-          </Hotkeys>
-        </LibContext.Provider>
-      </AppContext.Provider>
+            </Header>
+
+            <AppView
+              endpoints={this.endpoints}
+              sendMessageToHost={this.hostCommunicationMgr.sendMessageToHost}
+              elements={elements}
+              scriptRunId={scriptRunId}
+              scriptRunState={scriptRunState}
+              widgetMgr={this.widgetMgr}
+              uploadClient={this.uploadClient}
+              componentRegistry={this.componentRegistry}
+              formsData={this.state.formsData}
+              appLogo={elements.logo}
+              appPages={appPages}
+              navSections={navSections}
+              onPageChange={this.onPageChange}
+              currentPageScriptHash={currentPageScriptHash}
+              hideSidebarNav={hideSidebarNav || hostHideSidebarNav}
+              expandSidebarNav={expandSidebarNav}
+            />
+            {renderedDialog}
+          </StyledApp>
+        </Hotkeys>
+      </StreamlitContextProvider>
     )
   }
 }

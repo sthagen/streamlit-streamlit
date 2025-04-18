@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useContext } from "react"
 
 import { getLuminance } from "color2k"
 
@@ -24,7 +24,7 @@ import {
   ThemeConfig,
   ThemeProvider,
 } from "@streamlit/lib"
-import { AppContext } from "@streamlit/app/src/components/AppContext"
+import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 import { notNullOrUndefined } from "@streamlit/utils"
 import { CustomThemeConfig } from "@streamlit/protobuf"
 
@@ -74,9 +74,8 @@ const ThemedSidebar = ({
   children,
   ...sidebarProps
 }: Omit<SidebarProps, "chevronDownshift">): ReactElement => {
-  const { sidebarChevronDownshift: chevronDownshift } =
-    React.useContext(AppContext)
-  const { activeTheme } = React.useContext(LibContext)
+  const { sidebarChevronDownshift: chevronDownshift } = useAppContext()
+  const { activeTheme } = useContext(LibContext)
   const sidebarTheme = createSidebarTheme(activeTheme)
 
   return (

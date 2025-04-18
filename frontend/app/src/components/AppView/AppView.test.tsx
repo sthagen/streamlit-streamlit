@@ -39,10 +39,8 @@ import {
   Logo as LogoProto,
   PageConfig,
 } from "@streamlit/protobuf"
-import {
-  AppContext,
-  Props as AppContextProps,
-} from "@streamlit/app/src/components/AppContext"
+import { AppContextProps } from "@streamlit/app/src/components/AppContext"
+import * as StreamlitContextProviderModule from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import AppView, { AppViewProps } from "./AppView"
 
@@ -118,6 +116,14 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
 }
 
 describe("AppView element", () => {
+  beforeEach(() => {
+    // Mock the useAppContext hook to return default values
+    vi.spyOn(
+      StreamlitContextProviderModule,
+      "useAppContext"
+    ).mockImplementation(() => getContextOutput({}))
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -264,14 +270,9 @@ describe("AppView element", () => {
   })
 
   it("does not render the wide class", () => {
-    const realUseContext = React.useContext
-    vi.spyOn(React, "useContext").mockImplementation(input => {
-      if (input === AppContext) {
-        return getContextOutput({ wideMode: false, embedded: false })
-      }
-
-      return realUseContext(input)
-    })
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ wideMode: false, embedded: false })
+    )
 
     const main = new BlockNode(
       FAKE_SCRIPT_HASH,
@@ -309,14 +310,10 @@ describe("AppView element", () => {
   })
 
   it("does render the wide class when specified", () => {
-    const realUseContext = React.useContext
-    vi.spyOn(React, "useContext").mockImplementation(input => {
-      if (input === AppContext) {
-        return getContextOutput({ wideMode: true, embedded: false })
-      }
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ wideMode: true, embedded: false })
+    )
 
-      return realUseContext(input)
-    })
     render(<AppView {...getProps()} />)
     const style = window.getComputedStyle(
       screen.getByTestId("stMainBlockContainer")
@@ -326,14 +323,11 @@ describe("AppView element", () => {
 
   describe("handles padding an embedded app", () => {
     it("embedded triggers default padding", () => {
-      const realUseContext = React.useContext
-      vi.spyOn(React, "useContext").mockImplementation(input => {
-        if (input === AppContext) {
-          return getContextOutput({ embedded: true })
-        }
+      vi.spyOn(
+        StreamlitContextProviderModule,
+        "useAppContext"
+      ).mockReturnValue(getContextOutput({ embedded: true }))
 
-        return realUseContext(input)
-      })
       render(<AppView {...getProps()} />)
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
@@ -343,14 +337,11 @@ describe("AppView element", () => {
     })
 
     it("showPadding triggers expected padding", () => {
-      const realUseContext = React.useContext
-      vi.spyOn(React, "useContext").mockImplementation(input => {
-        if (input === AppContext) {
-          return getContextOutput({ showPadding: true })
-        }
+      vi.spyOn(
+        StreamlitContextProviderModule,
+        "useAppContext"
+      ).mockReturnValue(getContextOutput({ showPadding: true }))
 
-        return realUseContext(input)
-      })
       render(<AppView {...getProps()} />)
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
@@ -360,14 +351,11 @@ describe("AppView element", () => {
     })
 
     it("showToolbar triggers expected top padding", () => {
-      const realUseContext = React.useContext
-      vi.spyOn(React, "useContext").mockImplementation(input => {
-        if (input === AppContext) {
-          return getContextOutput({ showToolbar: true })
-        }
+      vi.spyOn(
+        StreamlitContextProviderModule,
+        "useAppContext"
+      ).mockReturnValue(getContextOutput({ showToolbar: true }))
 
-        return realUseContext(input)
-      })
       render(<AppView {...getProps()} />)
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
@@ -377,14 +365,10 @@ describe("AppView element", () => {
     })
 
     it("hasSidebar triggers expected top padding", () => {
-      const realUseContext = React.useContext
-      vi.spyOn(React, "useContext").mockImplementation(input => {
-        if (input === AppContext) {
-          return getContextOutput({ embedded: true })
-        }
-
-        return realUseContext(input)
-      })
+      vi.spyOn(
+        StreamlitContextProviderModule,
+        "useAppContext"
+      ).mockReturnValue(getContextOutput({ embedded: true }))
 
       const sidebarElement = new ElementNode(
         makeElementWithInfoText("sidebar!"),

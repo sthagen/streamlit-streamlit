@@ -72,6 +72,42 @@ def test_shows_disabled_widget_correctly(
     assert_snapshot(disabled_camera_input, name="st_camera_input-disabled")
 
 
+# Webkit CI camera permission issue
+@pytest.mark.skip_browser("webkit")
+def test_take_photo_button_styling(app: Page):
+    """Test that the Take Photo button is rendered properly when active/disabled."""
+    camera_input_widgets = app.get_by_test_id("stCameraInput")
+    expect(camera_input_widgets).to_have_count(2)
+
+    # Active button styling
+    active_camera_input = camera_input_widgets.nth(0)
+    take_photo_button = active_camera_input.get_by_test_id("stCameraInputButton")
+
+    # Check that the button is enabled and has the correct cursor
+    expect(take_photo_button).to_be_enabled()
+    expect(take_photo_button).to_have_css("cursor", "pointer")
+
+    # Check that the button is styled correctly when hovered over
+    take_photo_button.hover()
+    expect(take_photo_button).to_have_css("color", "rgb(255, 75, 75)")
+    expect(take_photo_button).to_have_css("border-color", "rgb(255, 75, 75)")
+    expect(take_photo_button).to_have_css("background-color", "rgb(255, 255, 255)")
+
+    # Disabled button styling
+    disabled_camera_input = camera_input_widgets.nth(1)
+    take_photo_button = disabled_camera_input.get_by_test_id("stCameraInputButton")
+
+    # Check that the button is disabled and has the correct cursor
+    expect(take_photo_button).to_be_disabled()
+    expect(take_photo_button).to_have_css("cursor", "not-allowed")
+
+    # Check that the button is styled correctly when hovered over
+    take_photo_button.hover()
+    expect(take_photo_button).to_have_css("color", "rgba(49, 51, 63, 0.4)")
+    expect(take_photo_button).to_have_css("border-color", "rgba(49, 51, 63, 0.2)")
+    expect(take_photo_button).to_have_css("background-color", "rgb(255, 255, 255)")
+
+
 def test_check_top_level_class(app: Page):
     """Check that the top level class is correctly set."""
     check_top_level_class(app, "stCameraInput")

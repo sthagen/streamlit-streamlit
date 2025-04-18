@@ -66,6 +66,7 @@ const DEFAULT_EVENT_DATA = {
   streamlitVersion: "mockStreamlitVersion",
   isHello: false,
   machineIdV3: "mockInstallationIdV3",
+  stableRandomMachineId: "mockStableRandomMachineId",
   contextPageUrl: window.location.href,
   contextPageTitle: document.title,
   contextPagePath: window.location.pathname,
@@ -98,6 +99,9 @@ const checkDefaultEventData = (
   )
   expect(generatedProto.isHello).toEqual(expectedData.isHello)
   expect(generatedProto.machineIdV3).toEqual(expectedData.machineIdV3)
+  expect(generatedProto.stableRandomMachineId).toEqual(
+    expectedData.stableRandomMachineId
+  )
   // Context Data Fields
   expect(generatedProto.contextPageUrl).toEqual(expectedData.contextPageUrl)
   expect(generatedProto.contextPageTitle).toEqual(
@@ -408,4 +412,7 @@ test("tracks installation data", () => {
 
   const trackCall = mm.track.mock.calls[0][0]
   expect(trackCall.machineIdV3).toEqual(sessionInfo.current.installationIdV3)
+  expect(trackCall.stableRandomMachineId).toEqual(
+    sessionInfo.current.stableRandomMachineId
+  )
 })

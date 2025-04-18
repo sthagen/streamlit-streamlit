@@ -106,10 +106,10 @@ export const StyledActionButtonStartRecordingDiv = styled.span(
   ({ theme }) => ({
     "& > button": {
       padding: theme.spacing.threeXS,
-      color: theme.colors.fadedText40,
+      color: theme.colors.fadedText60,
     },
     "& > button:hover, & > button:focus": {
-      color: theme.colors.primary,
+      color: theme.colors.bodyText,
     },
   })
 )

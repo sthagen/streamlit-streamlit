@@ -97,6 +97,36 @@ def test_audio_input_disabled_snapshot(
     assert_snapshot(disabled_audio_input_element, name="st_audio_input-disabled")
 
 
+# Webkit CI audio permission issue
+@pytest.mark.skip_browser("webkit")
+def test_audio_input_action_buttons_styling(app: Page):
+    """Test that the audio input action buttons are styled correctly."""
+    # Enabled audio input
+    audio_input_element = app.get_by_test_id("stAudioInput").first
+
+    # Check record button default & hover styling
+    record_button = audio_input_element.get_by_role("button", name="Record")
+    expect(record_button).to_have_css("color", "rgba(49, 51, 63, 0.6)")
+    record_button.hover()
+    expect(record_button).to_have_css("color", "rgb(49, 51, 63)")
+
+    # Click the record button to get to the play button
+    record_button.click()
+    app.wait_for_timeout(1000)
+    stop_recording(audio_input_element, app)
+
+    # Check play button default & hover styling consistent with record button
+    play_button = audio_input_element.get_by_role("button", name="Play")
+    expect(play_button).to_have_css("color", "rgba(49, 51, 63, 0.6)")
+    play_button.hover()
+    expect(play_button).to_have_css("color", "rgb(49, 51, 63)")
+
+    # Disabled audio input
+    disabled_audio_input_element = app.get_by_test_id("stAudioInput").nth(3)
+    record_button = disabled_audio_input_element.get_by_role("button", name="Record")
+    expect(record_button).to_have_css("color", "rgba(49, 51, 63, 0.2)")
+
+
 @pytest.mark.only_browser("webkit")
 def test_no_permission_audio_input_snapshot(
     themed_app: Page, assert_snapshot: ImageCompareFunction

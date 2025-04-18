@@ -19,10 +19,8 @@ import React from "react"
 import { screen } from "@testing-library/react"
 
 import { render } from "@streamlit/lib"
-import {
-  AppContext,
-  Props as AppContextProps,
-} from "@streamlit/app/src/components/AppContext"
+import { AppContextProps } from "@streamlit/app/src/components/AppContext"
+import * as StreamlitContextProviderModule from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import SidebarNavLink, { SidebarNavLinkProps } from "./SidebarNavLink"
 
@@ -56,6 +54,17 @@ function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
 }
 
 describe("SidebarNavLink", () => {
+  beforeEach(() => {
+    // Default mock implementation
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({})
+    )
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it("renders without crashing", () => {
     render(<SidebarNavLink {...getProps()} />)
 
@@ -117,14 +126,11 @@ describe("SidebarNavLink", () => {
   })
 
   it("renders a disabled page properly", () => {
-    const realUseContext = React.useContext
-    vi.spyOn(React, "useContext").mockImplementation(input => {
-      if (input === AppContext) {
-        return getContextOutput({ widgetsDisabled: true })
-      }
+    // Update the mock to return a context with widgetsDisabled set to true
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ widgetsDisabled: true })
+    )
 
-      return realUseContext(input)
-    })
     render(<SidebarNavLink {...getProps()} />)
 
     expect(screen.getByTestId("stSidebarNavLinkContainer")).toHaveStyle(
