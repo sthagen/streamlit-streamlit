@@ -114,6 +114,7 @@ describe("withMapboxToken", () => {
     })
 
     it("should throw an error if fetched token is not present", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       let wrappedComponentInstance: any
       axios.get = vi
         .fn()

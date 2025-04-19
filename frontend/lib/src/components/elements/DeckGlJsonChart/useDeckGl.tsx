@@ -346,6 +346,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     // If the ViewState on the server has changed, apply the diff to the current state
     if (!isEqual(deck.initialViewState, initialViewState)) {
       const diff = Object.keys(deck.initialViewState).reduce(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
         (diff, key): any => {
           // @ts-expect-error
           if (deck.initialViewState[key] === initialViewState?.[key]) {

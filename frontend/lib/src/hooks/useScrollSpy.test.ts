@@ -70,6 +70,7 @@ describe("debounce function", () => {
 
 describe("useScrollSpy hook", () => {
   let target: HTMLElement
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   let eventHandler: ({ timeStampLow }: any) => void
 
   beforeEach(() => {

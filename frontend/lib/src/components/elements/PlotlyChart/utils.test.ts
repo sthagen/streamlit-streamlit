@@ -152,6 +152,7 @@ describe("PlotlyChart utils", () => {
     })
 
     it("should handle an event with no points or selections", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const event = { points: undefined, selections: undefined } as any
       const widgetMgr = getWidgetMgr()
 
@@ -170,6 +171,7 @@ describe("PlotlyChart utils", () => {
             pointIndices: [1],
           },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -197,6 +199,7 @@ describe("PlotlyChart utils", () => {
             y1: "1",
           },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -216,6 +219,7 @@ describe("PlotlyChart utils", () => {
         selections: [
           { type: "path", xref: "x", yref: "y", path: "M4.0,8.0L4.0,7.8Z" },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -235,6 +239,7 @@ describe("PlotlyChart utils", () => {
         selections: [
           { type: "path", xref: "x", yref: "y", path: "M4.0,8.0L4.0,7.8Z" },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -263,6 +268,7 @@ describe("PlotlyChart utils", () => {
             y1: "1",
           },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -282,6 +288,7 @@ describe("PlotlyChart utils", () => {
       const event = {
         points: [],
         selections: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
       const widgetMgr = getWidgetMgr()
 
@@ -320,6 +327,7 @@ describe("PlotlyChart utils", () => {
             y1: "1",
           },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
 
       const widgetMgr = getWidgetMgr()
@@ -362,6 +370,7 @@ describe("PlotlyChart utils", () => {
             y1: "1",
           },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       } as any
 
       handleSelection(

@@ -28,6 +28,7 @@ import {
   getSequentialColorsArray,
 } from "~lib/theme"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 export function applyStreamlitTheme(config: any, theme: EmotionTheme): any {
   // This theming config contains multiple hard coded spacing values.
   // The reason is that we currently only have rem values in our spacing
@@ -152,6 +153,7 @@ export function applyStreamlitTheme(config: any, theme: EmotionTheme): any {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 export function applyThemeDefaults(config: any, theme: EmotionTheme): any {
   const { colors, fontSizes, genericFonts } = theme
   const themeFonts = {

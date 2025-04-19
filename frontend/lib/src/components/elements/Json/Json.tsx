@@ -61,6 +61,7 @@ function Json({ element }: Readonly<JsonProps>): ReactElement {
   // theme's background is light or dark.
   const jsonTheme = hasLightBackgroundColor(theme) ? "rjv-default" : "monokai"
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const handleCopy = (copy: any): void => {
     // we use ClipboardJS to do the copying, because it allows
     // us to specify a container element. This is necessary because

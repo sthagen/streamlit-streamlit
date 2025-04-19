@@ -105,6 +105,7 @@ export const customRenderLibContext = (
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 export function arrayFromVector(vector: any): any {
   if (Array.isArray(vector)) {
     return vector.map(arrayFromVector)

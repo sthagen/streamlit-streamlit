@@ -227,6 +227,7 @@ export class DefaultStreamlitEndpoints implements StreamlitEndpoints {
     fileUploadUrl: string,
     file: File,
     sessionId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     onUploadProgress?: (progressEvent: any) => void,
     cancelToken?: CancelToken
   ): Promise<void> {
@@ -329,6 +330,7 @@ export class DefaultStreamlitEndpoints implements StreamlitEndpoints {
    * Wrapper around axios.request to update the request config with
    * CSRF headers if client has CSRF protection enabled.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   private csrfRequest<T = any, R = AxiosResponse<T>>(
     url: string,
     params: AxiosRequestConfig

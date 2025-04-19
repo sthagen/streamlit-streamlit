@@ -16,7 +16,6 @@
 
 import React, { memo, PropsWithChildren, useMemo } from "react"
 
-import { AppConfig } from "@streamlit/connection"
 import {
   LibConfig,
   LibContext,
@@ -32,18 +31,11 @@ import {
 
 // Type for AppContext props
 type AppContextValues = {
-  wideMode: boolean
   initialSidebarState: PageConfig.SidebarState
-  embedded: boolean
-  showPadding: boolean
-  disableScrolling: boolean
-  showToolbar: boolean
-  showColoredLine: boolean
   pageLinkBaseUrl: string
   sidebarChevronDownshift: number
   widgetsDisabled: boolean
   gitInfo: IGitInfo | null
-  appConfig: AppConfig
 }
 
 // Type for LibContext props
@@ -73,18 +65,11 @@ export type StreamlitContextProviderProps = PropsWithChildren<
  */
 const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   // AppContext
-  wideMode,
   initialSidebarState,
-  embedded,
-  showPadding,
-  disableScrolling,
-  showToolbar,
-  showColoredLine,
   pageLinkBaseUrl,
   sidebarChevronDownshift,
   widgetsDisabled,
   gitInfo,
-  appConfig,
   // LibContext
   isFullScreen,
   setFullScreen,
@@ -104,32 +89,18 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   // Memoized object for AppContext values
   const appContextProps = useMemo<AppContextProps>(
     () => ({
-      wideMode,
       initialSidebarState,
-      embedded,
-      showPadding,
-      disableScrolling,
-      showToolbar,
-      showColoredLine,
       pageLinkBaseUrl,
       sidebarChevronDownshift,
       widgetsDisabled,
       gitInfo,
-      appConfig,
     }),
     [
-      wideMode,
       initialSidebarState,
-      embedded,
-      showPadding,
-      disableScrolling,
-      showToolbar,
-      showColoredLine,
       pageLinkBaseUrl,
       sidebarChevronDownshift,
       widgetsDisabled,
       gitInfo,
-      appConfig,
     ]
   )
 

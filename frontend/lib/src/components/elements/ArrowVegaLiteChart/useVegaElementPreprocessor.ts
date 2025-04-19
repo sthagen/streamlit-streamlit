@@ -40,8 +40,10 @@ const BOTTOM_PADDING = 20
  *
  * @param spec The Vega-Lite specification of the chart.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 export function prepareSpecForSelections(spec: any): void {
   if ("params" in spec && "encoding" in spec) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     spec.params.forEach((param: any) => {
       if (!("select" in param)) {
         // We are only interested in transforming select parameters.
@@ -90,6 +92,7 @@ const generateSpec = (
   isFullScreen: boolean,
   width: number,
   height?: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 ): any => {
   const spec = JSON.parse(inputSpec)
   if (vegaLiteTheme === "streamlit") {
@@ -108,6 +111,7 @@ const generateSpec = (
     spec.height = height
 
     if ("vconcat" in spec) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       spec.vconcat.forEach((child: any) => {
         child.width = width
       })
@@ -116,6 +120,7 @@ const generateSpec = (
     spec.width = width
 
     if ("vconcat" in spec) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       spec.vconcat.forEach((child: any) => {
         child.width = width
       })

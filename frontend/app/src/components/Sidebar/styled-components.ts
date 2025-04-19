@@ -27,6 +27,7 @@ import { EmotionTheme, hasLightBackgroundColor } from "@streamlit/lib"
  * @returns The color of the text in the sidebar nav.
  */
 const getNavTextColor = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   theme: any,
   isActive: boolean,
   disabled: boolean = false
@@ -291,6 +292,7 @@ export interface StyledLogoProps {
   sidebarWidth?: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 function translateLogoHeight(theme: any, size: string): string {
   if (size === "small") {
     return theme.sizes.smallLogoHeight

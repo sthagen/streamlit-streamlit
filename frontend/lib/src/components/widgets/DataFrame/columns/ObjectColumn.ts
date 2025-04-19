@@ -47,6 +47,7 @@ function ObjectColumn(props: BaseColumnProps): BaseColumn {
     kind: "object",
     sortMode: "default",
     isEditable: false, // Object columns are read-only.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any): GridCell {
       try {
         const cellData = notNullOrUndefined(data) ? toSafeString(data) : null

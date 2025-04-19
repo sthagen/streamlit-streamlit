@@ -52,6 +52,7 @@ export function BokehChart({
   }, [element])
 
   const getChartDimensions = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     (plot: any): Dimensions => {
       // Default values
       let chartWidth: number = plot.attributes.plot_width
@@ -76,6 +77,7 @@ export function BokehChart({
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const updateChart = (data: any): void => {
     const chart = document.getElementById(chartId)
 
@@ -88,7 +90,8 @@ export function BokehChart({
      */
     const plot =
       data && data.doc && data.doc.roots && data.doc.roots.references
-        ? data.doc.roots.references.find((e: any) => e.type === "Plot")
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
+          data.doc.roots.references.find((e: any) => e.type === "Plot")
         : undefined
 
     if (plot) {

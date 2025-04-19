@@ -183,6 +183,7 @@ function getButtonKindAndSize(
 function getButtonGroupOverridesStyle(
   style: ButtonGroupProto.Style,
   spacing: EmotionTheme["spacing"]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 ): Record<string, any> {
   const baseStyle = { flexWrap: "wrap", maxWidth: "fit-content" }
 
@@ -241,6 +242,7 @@ function createOptionChild(
   // we have to use forwardRef here because BasewebButtonGroup passes the ref down to its children
   // and we see a console.error otherwise
   return forwardRef(function BaseButtonGroup(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     props: any,
     _: Ref<BasewebButtonGroup>
   ): ReactElement {

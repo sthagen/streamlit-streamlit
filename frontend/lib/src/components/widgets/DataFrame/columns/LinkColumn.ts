@@ -113,10 +113,12 @@ function LinkColumn(props: BaseColumnProps): BaseColumn {
     kind: "link",
     sortMode: "default",
     validateInput,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any, validate?: boolean): GridCell {
       if (isNullOrUndefined(data)) {
         return {
           ...cellTemplate,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
           data: null as any,
           isMissingValue: true,
           onClickUri: () => {},

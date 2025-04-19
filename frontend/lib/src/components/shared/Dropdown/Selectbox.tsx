@@ -37,6 +37,7 @@ export interface Props {
   value: string | null
   onChange: (value: string | null) => void
   disabled: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   options: any[]
   label?: string | null
   labelVisibility?: LabelVisibilityOptions

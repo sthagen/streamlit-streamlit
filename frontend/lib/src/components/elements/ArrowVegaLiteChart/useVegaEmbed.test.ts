@@ -74,6 +74,7 @@ describe("useVegaEmbed hook", () => {
   let mockWidgetMgr: Mocked<WidgetStateManager>
   let mockVegaView: Mocked<VegaView>
   let mockEmbedReturn: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     vgSpec: any
     view: Mocked<VegaView>
     finalize: () => void
@@ -106,6 +107,7 @@ describe("useVegaEmbed hook", () => {
     ;(useVegaLiteSelections as Mock).mockReturnValue({
       maybeConfigureSelections: vi
         .fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
         .mockImplementation((view: any) => view),
       onFormCleared: vi.fn(),
     })
@@ -126,6 +128,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
 
     // mount hook
@@ -185,6 +188,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
 
     // mount hook
@@ -224,6 +228,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
 
     const { result } = renderHook(() =>
@@ -242,6 +247,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
     const { result } = renderHook(() =>
       useVegaEmbed(chartElement, mockWidgetMgr)
@@ -276,6 +282,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
     const { result } = renderHook(() =>
       useVegaEmbed(chartElement, mockWidgetMgr)
@@ -293,6 +300,7 @@ describe("useVegaEmbed hook", () => {
       id: "chartId",
       data: null,
       datasets: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
 
     const { result } = renderHook(() =>
@@ -313,6 +321,7 @@ describe("useVegaEmbed hook", () => {
       dimensions: { dataRows: 5, dataCols: 2 },
       isEmpty: () => false,
       columnTypes: { index: ["int"], data: ["int"] },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     } as any
 
     await act(async () => {

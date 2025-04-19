@@ -57,6 +57,7 @@ function FixedSizeListItem(props: FixedSizeListItemProps): ReactElement {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
   const theme = useTheme()
   // TODO: Update to match React best practices

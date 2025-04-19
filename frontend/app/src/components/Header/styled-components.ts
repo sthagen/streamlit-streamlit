@@ -17,27 +17,23 @@
 import styled from "@emotion/styled"
 
 export interface StyledHeaderProps {
-  showHeader: boolean
-  isWideMode: boolean
   isStale?: boolean
 }
 
-export const StyledHeader = styled.header<StyledHeaderProps>(
-  ({ showHeader, theme }) => ({
-    position: "fixed",
-    top: theme.spacing.none,
-    left: theme.spacing.none,
-    right: theme.spacing.none,
-    height: theme.sizes.headerHeight,
-    background: theme.colors.bgColor,
-    outline: "none",
-    zIndex: theme.zIndices.header,
-    display: showHeader ? "block" : "none",
-    "@media print": {
-      display: "none",
-    },
-  })
-)
+export const StyledHeader = styled.header<StyledHeaderProps>(({ theme }) => ({
+  display: "block",
+  position: "fixed",
+  top: theme.spacing.none,
+  left: theme.spacing.none,
+  right: theme.spacing.none,
+  height: theme.sizes.headerHeight,
+  background: theme.colors.bgColor,
+  outline: "none",
+  zIndex: theme.zIndices.header,
+  "@media print": {
+    display: "none",
+  },
+}))
 
 export const StyledHeaderDecoration = styled.div(({ theme }) => ({
   position: "absolute",

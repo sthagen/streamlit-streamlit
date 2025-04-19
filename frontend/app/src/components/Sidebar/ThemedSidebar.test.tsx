@@ -87,6 +87,7 @@ describe("ThemedSidebar Component", () => {
 })
 
 describe("createSidebarTheme", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const createMockTheme = (overrides: any = {}): ThemeConfig => ({
     name: "mockTheme",
     basewebTheme: {},

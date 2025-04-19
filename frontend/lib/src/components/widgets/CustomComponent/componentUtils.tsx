@@ -42,6 +42,7 @@ type ReadyMessage = {
 }
 type ComponentValueMessage = {
   /* the value sent from the custom component can be anything */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   value: any
   dataType: ValueType
 }
@@ -64,10 +65,12 @@ export interface IframeMessageHandlerProps {
 }
 
 export interface Args {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   [name: string]: any
 }
 export interface DataframeArg {
   key: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   value: any
 }
 
@@ -283,6 +286,7 @@ export function sendRenderMessage(
  * @returns undefined
  */
 function handleSetComponentValue(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   value: any, // we do not know what data the custom component is sending us, so we use 'any' here
   dataType: ValueType,
   source: Source,
@@ -309,9 +313,12 @@ function handleSetComponentValue(
 
 /** Return the property with the given name, if it exists. */
 function tryGetValue(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   obj: any,
   name: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   defaultValue: any = undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 ): any {
   return obj.hasOwnProperty(name) ? obj[name] : defaultValue
 }

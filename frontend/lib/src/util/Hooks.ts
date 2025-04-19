@@ -22,6 +22,7 @@ import {
   useState,
 } from "react"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 export const usePrevious = (value: any): any => {
   const ref = useRef()
 

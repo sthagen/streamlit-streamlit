@@ -651,6 +651,7 @@ describe("ComponentInstance", () => {
           source: iframe.contentWindow,
         })
       )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const widgetMgr = (WidgetStateManager as any).mock.instances[0]
       expect(widgetMgr.setJsonValue).toHaveBeenCalledWith(
         element,
@@ -714,6 +715,7 @@ describe("ComponentInstance", () => {
           source: iframe.contentWindow,
         })
       )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const widgetMgr = (WidgetStateManager as any).mock.instances[0]
       expect(widgetMgr.setBytesValue).toHaveBeenCalledWith(
         element,
@@ -763,6 +765,7 @@ describe("ComponentInstance", () => {
           source: iframe.contentWindow,
         })
       )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const widgetMgr = (WidgetStateManager as any).mock.instances[0]
       expect(widgetMgr.setJsonValue).not.toHaveBeenCalled()
 
@@ -861,6 +864,7 @@ describe("ComponentInstance", () => {
             source: iframe.contentWindow,
           })
         )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
         const widgetMgr = (WidgetStateManager as any).mock.instances[0]
         expect(widgetMgr.setJsonValue).not.toHaveBeenCalled()
 
@@ -872,7 +876,9 @@ describe("ComponentInstance", () => {
   })
 
   function renderMsg(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     args: { [name: string]: any },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     dataframes: any[],
     disabled = false,
     theme = {
@@ -881,6 +887,7 @@ describe("ComponentInstance", () => {
       font: mockTheme.emotion.genericFonts.bodyFont,
       base: bgColorToBaseString(mockTheme.emotion.colors.bgColor),
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   ): any {
     return forwardMsg(StreamlitMessageType.RENDER, {
       args,
@@ -890,12 +897,14 @@ describe("ComponentInstance", () => {
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   function forwardMsg(type: StreamlitMessageType, data: any): any {
     return { type, ...data }
   }
 
   /** Create a ComponentInstance.props.element prop with the given args. */
   function createElementProp(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     jsonArgs: { [name: string]: any } = {},
     specialArgs: SpecialArg[] = []
   ): ComponentInstanceProto {

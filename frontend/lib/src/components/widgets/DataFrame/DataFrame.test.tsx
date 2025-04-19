@@ -54,6 +54,7 @@ const getProps = (
   disabled: false,
   widgetMgr: {
     getStringValue: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   } as any,
 })
 

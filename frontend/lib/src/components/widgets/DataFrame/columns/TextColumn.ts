@@ -65,6 +65,7 @@ function TextColumn(props: BaseColumnProps): BaseColumn {
     style: props.isPinned ? "faded" : "normal",
   } as TextCell
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | string => {
     if (isNullOrUndefined(data)) {
       if (props.isRequired) {
@@ -99,6 +100,7 @@ function TextColumn(props: BaseColumnProps): BaseColumn {
     kind: "text",
     sortMode: "default",
     validateInput,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any, validate?: boolean): GridCell {
       if (typeof validateRegex === "string") {
         // The regex is invalid, we return an error to indicate this

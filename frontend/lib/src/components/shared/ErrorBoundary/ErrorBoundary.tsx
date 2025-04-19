@@ -39,7 +39,7 @@ class ErrorBoundary extends React.PureComponent<
   React.PropsWithChildren<Props>,
   State
 > {
-  public state: State = {
+  public override state: State = {
     error: null,
   }
 
@@ -50,11 +50,11 @@ class ErrorBoundary extends React.PureComponent<
     }
   }
 
-  public componentDidCatch = (error: Error): void => {
+  public override componentDidCatch = (error: Error): void => {
     LOG.error(`${error.name}: ${error.message}\n${error.stack}`)
   }
 
-  public render(): React.ReactNode {
+  public override render(): React.ReactNode {
     const { error } = this.state
 
     if (error) {

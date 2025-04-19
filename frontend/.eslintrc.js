@@ -111,8 +111,6 @@ module.exports = {
     "@typescript-eslint/no-empty-interface": "off",
     // Empty functions are ok
     "@typescript-eslint/no-empty-function": "off",
-    // We prefer not using `any`, but don't disallow it
-    "@typescript-eslint/no-explicit-any": "off",
     // We prefer not using `any`, but don't disallow it (this rule
     // differs from the previous one in that it requires explicit types
     // for public module APIs)

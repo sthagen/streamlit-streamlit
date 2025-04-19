@@ -205,6 +205,7 @@ export const createEmotionTheme = (
   // by default for all custom themes.
   newGenericColors.secondary = newGenericColors.primary
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const conditionalOverrides: any = {}
 
   conditionalOverrides.colors = createEmotionColors(newGenericColors)
@@ -295,6 +296,7 @@ export const createEmotionTheme = (
     conditionalOverrides.showSidebarBorder = showSidebarBorder
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const fontOverrides: any = {}
   if (headingFont) {
     fontOverrides.headingFont = parseFont(headingFont)

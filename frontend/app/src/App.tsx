@@ -210,7 +210,9 @@ export const LOG = getLogger("App")
 // eslint-disable-next-line
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     streamlitDebug: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     iFrameResizer: any
     __streamlit_profiles__?: Record<
       string,
@@ -490,7 +492,7 @@ export class App extends PureComponent<Props, State> {
     this.isInitializingConnectionManager = false
   }
 
-  componentDidMount(): void {
+  override componentDidMount(): void {
     // Initialize connection manager here, to avoid
     // "Can't call setState on a component that is not yet mounted." error.
     this.initializeConnectionManager()
@@ -537,7 +539,7 @@ export class App extends PureComponent<Props, State> {
     window.addEventListener("popstate", this.onHistoryChange, false)
   }
 
-  componentDidUpdate(
+  override componentDidUpdate(
     prevProps: Readonly<Props>,
     prevState: Readonly<State>
   ): void {
@@ -568,7 +570,7 @@ export class App extends PureComponent<Props, State> {
     }
   }
 
-  componentWillUnmount(): void {
+  override componentWillUnmount(): void {
     // Needing to disconnect our connection manager + websocket connection is
     // only needed here to handle the case in dev mode where react hot-reloads
     // the client as a result of a source code change. In this scenario, the
@@ -781,6 +783,7 @@ export class App extends PureComponent<Props, State> {
   handleMessage = (msgProto: ForwardMsg): void => {
     // We don't have an immutableProto here, so we can't use
     // the dispatchOneOf helper
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     const dispatchProto = (obj: any, name: string, funcs: any): any => {
       const whichOne = obj[name]
       if (whichOne in funcs) {
@@ -1945,7 +1948,7 @@ export class App extends PureComponent<Props, State> {
     }
   }
 
-  render(): JSX.Element {
+  override render(): JSX.Element {
     const {
       allowRunOnSave,
       connectionState,
@@ -1968,7 +1971,6 @@ export class App extends PureComponent<Props, State> {
       hostMenuItems,
       hostToolbarItems,
       libConfig,
-      appConfig,
       inputsDisabled,
       appPages,
       navSections,
@@ -1994,24 +1996,22 @@ export class App extends PureComponent<Props, State> {
         })
       : null
 
+    const showToolbar = !isEmbed() || isToolbarDisplayed()
+    const showColoredLine =
+      (!hideColoredLine && !isEmbed()) || isColoredLineDisplayed()
+    const showHeader = isEmbed() ? showToolbar || showColoredLine : true
+    const showPadding = !isEmbed() || isPaddingDisplayed()
+    const disableScrolling = isScrollingHidden()
+
     return (
       <StreamlitContextProvider
         initialSidebarState={initialSidebarState}
-        wideMode={userSettings.wideMode}
-        embedded={isEmbed()}
-        showPadding={!isEmbed() || isPaddingDisplayed()}
-        disableScrolling={isScrollingHidden()}
-        showToolbar={!isEmbed() || isToolbarDisplayed()}
-        showColoredLine={
-          (!hideColoredLine && !isEmbed()) || isColoredLineDisplayed()
-        }
         pageLinkBaseUrl={pageLinkBaseUrl}
         sidebarChevronDownshift={sidebarChevronDownshift}
         widgetsDisabled={
           inputsDisabled || connectionState !== ConnectionState.CONNECTED
         }
         gitInfo={this.state.gitInfo}
-        appConfig={appConfig}
         isFullScreen={isFullScreen}
         setFullScreen={this.handleFullScreen}
         addScriptFinishedHandler={this.addScriptFinishedHandler}
@@ -2039,47 +2039,55 @@ export class App extends PureComponent<Props, State> {
             }
             data-test-connection-state={connectionState}
           >
-            {/* The tabindex below is required for testing. */}
-            <Header>
-              {!hideTopBar && (
-                <>
-                  <StatusWidget
-                    connectionState={connectionState}
-                    sessionEventDispatcher={this.sessionEventDispatcher}
-                    scriptRunState={scriptRunState}
-                    rerunScript={this.rerunScript}
-                    stopScript={this.stopScript}
-                    allowRunOnSave={allowRunOnSave}
+            {showHeader && (
+              <Header
+                showToolbar={showToolbar}
+                showColoredLine={showColoredLine}
+              >
+                {!hideTopBar && (
+                  <>
+                    <StatusWidget
+                      connectionState={connectionState}
+                      sessionEventDispatcher={this.sessionEventDispatcher}
+                      scriptRunState={scriptRunState}
+                      rerunScript={this.rerunScript}
+                      stopScript={this.stopScript}
+                      allowRunOnSave={allowRunOnSave}
+                    />
+                    <ToolbarActions
+                      hostToolbarItems={hostToolbarItems}
+                      sendMessageToHost={
+                        this.hostCommunicationMgr.sendMessageToHost
+                      }
+                      metricsMgr={this.metricsMgr}
+                    />
+                  </>
+                )}
+                {this.showDeployButton() && (
+                  <DeployButton
+                    onClick={this.deployButtonClicked.bind(this)}
                   />
-                  <ToolbarActions
-                    hostToolbarItems={hostToolbarItems}
-                    sendMessageToHost={
-                      this.hostCommunicationMgr.sendMessageToHost
-                    }
-                    metricsMgr={this.metricsMgr}
-                  />
-                </>
-              )}
-              {this.showDeployButton() && (
-                <DeployButton onClick={this.deployButtonClicked.bind(this)} />
-              )}
-              <MainMenu
-                isServerConnected={this.isServerConnected()}
-                quickRerunCallback={this.rerunScript}
-                clearCacheCallback={this.openClearCacheDialog}
-                settingsCallback={this.settingsCallback}
-                aboutCallback={this.aboutCallback}
-                printCallback={this.printCallback}
-                screencastCallback={this.screencastCallback}
-                screenCastState={this.props.screenCast.currentState}
-                hostMenuItems={hostMenuItems}
-                developmentMode={developmentMode}
-                sendMessageToHost={this.hostCommunicationMgr.sendMessageToHost}
-                menuItems={menuItems}
-                metricsMgr={this.metricsMgr}
-                toolbarMode={this.state.toolbarMode}
-              />
-            </Header>
+                )}
+                <MainMenu
+                  isServerConnected={this.isServerConnected()}
+                  quickRerunCallback={this.rerunScript}
+                  clearCacheCallback={this.openClearCacheDialog}
+                  settingsCallback={this.settingsCallback}
+                  aboutCallback={this.aboutCallback}
+                  printCallback={this.printCallback}
+                  screencastCallback={this.screencastCallback}
+                  screenCastState={this.props.screenCast.currentState}
+                  hostMenuItems={hostMenuItems}
+                  developmentMode={developmentMode}
+                  sendMessageToHost={
+                    this.hostCommunicationMgr.sendMessageToHost
+                  }
+                  menuItems={menuItems}
+                  metricsMgr={this.metricsMgr}
+                  toolbarMode={this.state.toolbarMode}
+                />
+              </Header>
+            )}
 
             <AppView
               endpoints={this.endpoints}
@@ -2096,6 +2104,11 @@ export class App extends PureComponent<Props, State> {
               navSections={navSections}
               onPageChange={this.onPageChange}
               currentPageScriptHash={currentPageScriptHash}
+              wideMode={userSettings.wideMode}
+              embedded={isEmbed()}
+              addPaddingForHeader={showToolbar || showColoredLine}
+              showPadding={showPadding}
+              disableScrolling={disableScrolling}
               hideSidebarNav={hideSidebarNav || hostHideSidebarNav}
               expandSidebarNav={expandSidebarNav}
             />

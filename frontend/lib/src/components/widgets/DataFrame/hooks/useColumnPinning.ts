@@ -51,6 +51,7 @@ function useColumnPinning(
   minColumnWidth: number,
   clearSelection: (keepRows?: boolean, keepColumns?: boolean) => void,
   setColumnConfigMapping: React.Dispatch<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     React.SetStateAction<Map<string, any>>
   >
 ): ColumnPinningReturn {

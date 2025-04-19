@@ -241,7 +241,7 @@ class CameraInput extends React.PureComponent<Props, State> {
     }
   }
 
-  public componentWillUnmount(): void {
+  public override componentWillUnmount(): void {
     this.formClearHelper.disconnect()
   }
 
@@ -262,7 +262,7 @@ class CameraInput extends React.PureComponent<Props, State> {
     return "ready"
   }
 
-  public componentDidUpdate = (): void => {
+  public override componentDidUpdate = (): void => {
     // If our status is not "ready", then we have uploads in progress.
     // We won't submit a new widgetValue until all uploads have resolved.
     if (this.status !== "ready") {
@@ -289,7 +289,7 @@ class CameraInput extends React.PureComponent<Props, State> {
     }
   }
 
-  public componentDidMount(): void {
+  public override componentDidMount(): void {
     const newWidgetValue = this.createWidgetValue()
     const { element, widgetMgr, fragmentId } = this.props
 
@@ -351,7 +351,7 @@ class CameraInput extends React.PureComponent<Props, State> {
     })
   }
 
-  public render(): React.ReactNode {
+  public override render(): React.ReactNode {
     const { element, widgetMgr, disabled, width } = this.props
 
     // Manage our form-clear event handler.

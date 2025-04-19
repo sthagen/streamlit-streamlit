@@ -41,6 +41,7 @@ const LOG = getLogger("useVegaEmbed")
 interface UseVegaEmbedOutput {
   createView: (
     containerRef: RefObject<HTMLDivElement>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     spec: any
   ) => Promise<VegaView | null>
   updateView: (
@@ -102,6 +103,7 @@ export function useVegaEmbed(
   const createView = useCallback(
     async (
       containerRef: RefObject<HTMLDivElement>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       spec: any
     ): Promise<VegaView | null> => {
       if (containerRef.current === null) {

@@ -48,6 +48,7 @@ function CheckboxColumn(props: BaseColumnProps): BaseColumn {
     ...props,
     kind: "checkbox",
     sortMode: "default",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any): GridCell {
       let cellData = null
 

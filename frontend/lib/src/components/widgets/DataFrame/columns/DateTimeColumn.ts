@@ -142,6 +142,7 @@ function BaseDateTimeColumn(
     },
   } as DatePickerType
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | Date => {
     const cellData: Date | null | undefined = toSafeDate(data)
     if (cellData === null) {
@@ -183,6 +184,7 @@ function BaseDateTimeColumn(
     kind,
     sortMode: "default",
     validateInput,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any, validate?: boolean): GridCell {
       if (validate === true) {
         const validationResult = validateInput(data)

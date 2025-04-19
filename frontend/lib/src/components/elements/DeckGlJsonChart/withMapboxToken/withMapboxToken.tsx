@@ -83,9 +83,9 @@ const withMapboxToken =
         WrappedComponent.displayName || WrappedComponent.name
       })`
 
-      static contextType = LibContext
+      static override contextType = LibContext
 
-      context!: React.ContextType<typeof LibContext>
+      override context!: React.ContextType<typeof LibContext>
 
       public constructor(props: WrappedMapboxProps<P>) {
         super(props)
@@ -127,7 +127,7 @@ const withMapboxToken =
         }
       }
 
-      public componentDidMount(): void {
+      public override componentDidMount(): void {
         const mapboxToken =
           this.props.element.mapboxToken || this.context.libConfig.mapboxToken
 
@@ -141,7 +141,7 @@ const withMapboxToken =
         }
       }
 
-      public render = (): ReactNode => {
+      public override render = (): ReactNode => {
         const { mapboxToken, mapboxTokenError, isFetching } = this.state
 
         // We got an error when fetching our mapbox token: show the error.

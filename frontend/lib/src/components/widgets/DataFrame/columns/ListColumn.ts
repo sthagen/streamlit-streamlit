@@ -43,6 +43,7 @@ function ListColumn(props: BaseColumnProps): BaseColumn {
     kind: "list",
     sortMode: "default",
     isEditable: false, // List column is always readonly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any): GridCell {
       const cellData = isNullOrUndefined(data) ? [] : toSafeArray(data)
 
@@ -53,6 +54,7 @@ function ListColumn(props: BaseColumnProps): BaseColumn {
         copyData: isNullOrUndefined(data)
           ? ""
           : toSafeString(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
               cellData.map((x: any) =>
                 // Replace commas with spaces since commas are used to
                 // separate the list items.

@@ -92,6 +92,7 @@ function SelectboxColumn(props: BaseColumnProps): BaseColumn {
     ...props,
     kind: "selectbox",
     sortMode: "default",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any, validate?: boolean): GridCell {
       // Empty string refers to a missing value
       let cellData = null

@@ -112,10 +112,12 @@ class ScreenCastRecorder {
       return false
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     const logRecorderError = (e: any): void => {
       LOG.warn(`mediaRecorder.start threw an error: ${e}`)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     this.mediaRecorder.onerror = (e: any): void => {
       logRecorderError(e)
       this.onErrorOrStopCallback()

@@ -214,6 +214,7 @@ describe("DefaultStreamlitEndpoints", () => {
         )
         .reply(() => [200, 1])
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const mockOnUploadProgress = (_: any): void => {}
       const mockCancelToken = axios.CancelToken.source().token
 
@@ -246,6 +247,7 @@ describe("DefaultStreamlitEndpoints", () => {
         .onPut("http://example.com/upload_file/file_2")
         .reply(() => [200, 1])
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const mockOnUploadProgress = (_: any): void => {}
       const mockCancelToken = axios.CancelToken.source().token
 
@@ -278,6 +280,7 @@ describe("DefaultStreamlitEndpoints", () => {
         .onPut("http://example.com/someprefix/upload_file/file_2")
         .reply(() => [200, 1])
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
       const mockOnUploadProgress = (_: any): void => {}
       const mockCancelToken = axios.CancelToken.source().token
 

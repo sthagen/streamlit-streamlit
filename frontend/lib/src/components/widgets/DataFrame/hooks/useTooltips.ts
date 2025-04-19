@@ -63,6 +63,7 @@ function useTooltips(
   const [tooltip, setTooltip] = React.useState<
     { content: string; left: number; top: number } | undefined
   >()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const timeoutRef = React.useRef<any>(null)
 
   const onItemHovered = React.useCallback(

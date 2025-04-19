@@ -84,6 +84,7 @@ function BaseChartColumn(
     kind,
     sortMode: "default",
     isEditable: false, // Chart column is always read-only
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any): GridCell {
       if (
         isNullOrUndefined(parameters.y_min) ||

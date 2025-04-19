@@ -102,6 +102,7 @@ export interface Args {
 }
 
 interface MessageQueue {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   [index: number]: any
 }
 

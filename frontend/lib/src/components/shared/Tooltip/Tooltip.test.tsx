@@ -34,6 +34,7 @@ const getProps = (
 })
 
 // Wrap in BaseProvider to avoid warnings
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 const renderTooltip = (props: Partial<TooltipProps> = {}): any => {
   return render(
     <BaseProvider theme={LightTheme}>

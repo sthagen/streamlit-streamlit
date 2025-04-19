@@ -155,6 +155,7 @@ export const StyledColumn = styled.div<StyledColumnProps>(
 )
 
 export interface StyledVerticalBlockProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   ref?: React.RefObject<any>
   width?: React.CSSProperties["width"]
   maxWidth?: React.CSSProperties["maxWidth"]

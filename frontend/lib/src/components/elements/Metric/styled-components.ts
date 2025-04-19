@@ -81,6 +81,7 @@ export interface StyledMetricDeltaTextProps {
 }
 
 const getMetricColor = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   theme: any,
   color: MetricProto.MetricColor
 ): string => {

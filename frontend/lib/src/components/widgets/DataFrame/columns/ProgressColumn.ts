@@ -107,6 +107,7 @@ function ProgressColumn(props: BaseColumnProps): BaseColumn {
     kind: "progress",
     sortMode: "smart",
     isEditable: false, // Progress column is always readonly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any): GridCell {
       if (isNullOrUndefined(data)) {
         // TODO(lukasmasuch): Use a missing cell?

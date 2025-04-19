@@ -33,7 +33,7 @@ interface TestProps {
 }
 
 class TestComponent extends PureComponent<TestProps> {
-  public render = (): ReactNode => (
+  public override render = (): ReactNode => (
     <>
       <div>{this.props.label}</div>
       <div>

@@ -103,6 +103,7 @@ export class FileUploadClient {
     widget: WidgetInfo,
     fileUploadUrl: string,
     file: File,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     onUploadProgress?: (progressEvent: any) => void,
     cancelToken?: CancelToken
   ): Promise<void> {

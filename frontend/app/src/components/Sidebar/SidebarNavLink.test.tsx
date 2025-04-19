@@ -37,18 +37,11 @@ const getProps = (
 
 function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
   return {
-    wideMode: false,
     initialSidebarState: 0,
-    embedded: false,
-    showPadding: false,
-    disableScrolling: false,
-    showToolbar: false,
-    showColoredLine: false,
     pageLinkBaseUrl: "",
     sidebarChevronDownshift: 0,
     widgetsDisabled: false,
     gitInfo: null,
-    appConfig: {},
     ...context,
   }
 }

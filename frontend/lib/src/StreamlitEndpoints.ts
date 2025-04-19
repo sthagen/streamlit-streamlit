@@ -107,6 +107,7 @@ export interface StreamlitEndpoints {
     fileUploadUrl: string,
     file: File,
     sessionId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     onUploadProgress?: (progressEvent: any) => void,
     cancelToken?: CancelToken
   ): Promise<void>

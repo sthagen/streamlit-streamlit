@@ -58,18 +58,11 @@ const FAKE_SCRIPT_HASH = "fake_script_hash"
 
 function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
   return {
-    wideMode: false,
     initialSidebarState: PageConfig.SidebarState.AUTO,
-    embedded: false,
-    showPadding: false,
-    disableScrolling: false,
-    showToolbar: false,
-    showColoredLine: false,
     pageLinkBaseUrl: "",
     sidebarChevronDownshift: 0,
     widgetsDisabled: false,
     gitInfo: null,
-    appConfig: {},
     ...context,
   }
 }
@@ -109,6 +102,11 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
     navSections: [],
     onPageChange: vi.fn(),
     currentPageScriptHash: "main_page_script_hash",
+    wideMode: false,
+    embedded: false,
+    addPaddingForHeader: false,
+    showPadding: false,
+    disableScrolling: false,
     hideSidebarNav: false,
     expandSidebarNav: false,
     ...props,
@@ -270,10 +268,6 @@ describe("AppView element", () => {
   })
 
   it("does not render the wide class", () => {
-    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
-      getContextOutput({ wideMode: false, embedded: false })
-    )
-
     const main = new BlockNode(
       FAKE_SCRIPT_HASH,
       [],
@@ -310,25 +304,28 @@ describe("AppView element", () => {
   })
 
   it("does render the wide class when specified", () => {
-    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
-      getContextOutput({ wideMode: true, embedded: false })
-    )
-
-    render(<AppView {...getProps()} />)
+    render(<AppView {...getProps({ wideMode: true })} />)
     const style = window.getComputedStyle(
       screen.getByTestId("stMainBlockContainer")
     )
     expect(style.maxWidth).toEqual("initial")
   })
 
+  it("disables scrolling when disableScrolling is true", () => {
+    render(<AppView {...getProps({ disableScrolling: true })} />)
+    const style = window.getComputedStyle(screen.getByTestId("stMain"))
+    expect(style.overflow).toEqual("hidden")
+  })
+
+  it("allows scrolling when disableScrolling is false", () => {
+    render(<AppView {...getProps({ disableScrolling: false })} />)
+    const style = window.getComputedStyle(screen.getByTestId("stMain"))
+    expect(style.overflow).toEqual("auto")
+  })
+
   describe("handles padding an embedded app", () => {
     it("embedded triggers default padding", () => {
-      vi.spyOn(
-        StreamlitContextProviderModule,
-        "useAppContext"
-      ).mockReturnValue(getContextOutput({ embedded: true }))
-
-      render(<AppView {...getProps()} />)
+      render(<AppView {...getProps({ embedded: true })} />)
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
       )
@@ -337,12 +334,7 @@ describe("AppView element", () => {
     })
 
     it("showPadding triggers expected padding", () => {
-      vi.spyOn(
-        StreamlitContextProviderModule,
-        "useAppContext"
-      ).mockReturnValue(getContextOutput({ showPadding: true }))
-
-      render(<AppView {...getProps()} />)
+      render(<AppView {...getProps({ embedded: true, showPadding: true })} />)
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
       )
@@ -350,13 +342,12 @@ describe("AppView element", () => {
       expect(style.paddingBottom).toEqual("10rem")
     })
 
-    it("showToolbar triggers expected top padding", () => {
-      vi.spyOn(
-        StreamlitContextProviderModule,
-        "useAppContext"
-      ).mockReturnValue(getContextOutput({ showToolbar: true }))
-
-      render(<AppView {...getProps()} />)
+    it("addPaddingForHeader triggers expected top padding", () => {
+      render(
+        <AppView
+          {...getProps({ embedded: true, addPaddingForHeader: true })}
+        />
+      )
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
       )
@@ -365,11 +356,6 @@ describe("AppView element", () => {
     })
 
     it("hasSidebar triggers expected top padding", () => {
-      vi.spyOn(
-        StreamlitContextProviderModule,
-        "useAppContext"
-      ).mockReturnValue(getContextOutput({ embedded: true }))
-
       const sidebarElement = new ElementNode(
         makeElementWithInfoText("sidebar!"),
         ForwardMsgMetadata.create({}),
@@ -394,6 +380,7 @@ describe("AppView element", () => {
           FAKE_SCRIPT_HASH,
           new BlockNode(FAKE_SCRIPT_HASH, [empty, sidebar, empty, empty])
         ),
+        embedded: true,
       })
 
       render(<AppView {...props} />)

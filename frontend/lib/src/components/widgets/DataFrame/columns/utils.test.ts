@@ -755,12 +755,14 @@ describe("toJsonString", () => {
     // Circular reference (should use toSafeString fallback)
     [
       (() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
         const circular: any = { a: 1 }
         circular.self = circular
         return circular
       })(),
       "[object Object]",
     ],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   ])("converts %o to JSON string %s", (input: any, expected: string) => {
     expect(toJsonString(input)).toBe(expected)
   })

@@ -36,6 +36,7 @@ const DEBOUNCE_TIME_MS = 150
  * in the Python code.
  */
 export interface VegaLiteState {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   selection: Record<string, any>
 }
 
@@ -77,6 +78,7 @@ export const useVegaLiteSelections = (
             const viewState = vegaView.getState({
               // There are also `signals` data, but I believe its
               // not relevant for restoring the selection state.
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
               data: (name?: string, _operator?: any) => {
                 // Vega lite stores the selection state in a <param name>_store parameter
                 // under `data` that can be retrieved via the getState method.

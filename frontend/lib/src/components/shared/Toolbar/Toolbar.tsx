@@ -90,6 +90,7 @@ export interface ToolbarProps {
   onCollapse?: () => void
   isFullScreen?: boolean
   locked?: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   target?: StyledComponent<any, any, any>
   disableFullscreenMode?: boolean
 }
@@ -103,6 +104,14 @@ const Toolbar: React.FC<React.PropsWithChildren<ToolbarProps>> = ({
   target,
   disableFullscreenMode,
 }): ReactElement => {
+  const showFullscreenButton =
+    onExpand && !disableFullscreenMode && !isFullScreen
+  const showCloseFullscreenButton =
+    onCollapse && !disableFullscreenMode && isFullScreen
+  // Need to check if there are any actions to show, otherwise padding visible with no actions
+  const hasActions =
+    !!children || !!showFullscreenButton || !!showCloseFullscreenButton
+
   return (
     <StyledToolbarWrapper
       className="stElementToolbar"
@@ -110,16 +119,19 @@ const Toolbar: React.FC<React.PropsWithChildren<ToolbarProps>> = ({
       locked={locked || isFullScreen}
       target={target}
     >
-      <StyledToolbar>
+      <StyledToolbar
+        hasActions={hasActions}
+        data-testid="stElementToolbarButtonContainer"
+      >
         {children}
-        {onExpand && !disableFullscreenMode && !isFullScreen && (
+        {showFullscreenButton && (
           <ToolbarAction
             label="Fullscreen"
             icon={Fullscreen}
             onClick={() => onExpand()}
           />
         )}
-        {onCollapse && !disableFullscreenMode && isFullScreen && (
+        {showCloseFullscreenButton && (
           <ToolbarAction
             label="Close fullscreen"
             icon={FullscreenExit}

@@ -1183,11 +1183,13 @@ interface CustomMatchers<R = unknown> {
 }
 
 declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   interface Assertion<T = any> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 
 expect.extend({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   toBeTextNode(received, text): any {
     const elementNode = received as ElementNode
     if (isNullOrUndefined(elementNode)) {

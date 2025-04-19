@@ -22,6 +22,7 @@ import { transparentize } from "color2k"
 import { EmotionTheme } from "~lib/theme"
 
 export interface CameraInputButtonProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   onClick?: (event: MouseEvent<HTMLButtonElement>) => any
   disabled?: boolean
   children: ReactNode

@@ -51,6 +51,8 @@ jobs:
         run: make frontend-lib
       - name: Audit frontend licenses
         run: ./scripts/audit_frontend_licenses.py
+      - name: Run frontend-typesync
+        run: make frontend-typesync
       - name: Run type checks
         run: make tstypecheck
       - name: Run linters

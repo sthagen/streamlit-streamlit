@@ -71,6 +71,7 @@ export interface BaseColorPickerProps {
   showValue?: boolean
   label: string
   labelVisibility?: LabelVisibilityOptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   onChange: (value: string) => any
   help?: string
 }

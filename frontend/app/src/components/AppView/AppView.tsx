@@ -93,6 +93,16 @@ export interface AppViewProps {
 
   currentPageScriptHash: string
 
+  wideMode: boolean
+
+  embedded: boolean
+
+  addPaddingForHeader: boolean
+
+  showPadding: boolean
+
+  disableScrolling: boolean
+
   hideSidebarNav: boolean
 
   expandSidebarNav: boolean
@@ -115,6 +125,11 @@ function AppView(props: AppViewProps): ReactElement {
     navSections,
     onPageChange,
     currentPageScriptHash,
+    wideMode,
+    embedded,
+    addPaddingForHeader,
+    showPadding,
+    disableScrolling,
     expandSidebarNav,
     hideSidebarNav,
     sendMessageToHost,
@@ -132,17 +147,8 @@ function AppView(props: AppViewProps): ReactElement {
     return () => window.removeEventListener("hashchange", listener, false)
   }, [sendMessageToHost])
 
-  const {
-    wideMode,
-    initialSidebarState,
-    embedded,
-    showPadding,
-    disableScrolling,
-    showToolbar,
-    showColoredLine,
-    sidebarChevronDownshift,
-    widgetsDisabled,
-  } = useAppContext()
+  const { initialSidebarState, sidebarChevronDownshift, widgetsDisabled } =
+    useAppContext()
 
   const { addScriptFinishedHandler, removeScriptFinishedHandler } =
     useContext(LibContext)
@@ -294,7 +300,7 @@ function AppView(props: AppViewProps): ReactElement {
             data-testid="stMainBlockContainer"
             isWideMode={wideMode}
             showPadding={showPadding}
-            addPaddingForHeader={showToolbar || showColoredLine}
+            addPaddingForHeader={addPaddingForHeader}
             hasBottom={hasBottomElements}
             isEmbedded={embedded}
             hasSidebar={showSidebar}

@@ -135,7 +135,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
     }
   }
 
-  public componentWillUnmount(): void {
+  public override componentWillUnmount(): void {
     this.formClearHelper.disconnect()
   }
 
@@ -164,7 +164,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
     return "ready"
   }
 
-  public componentDidUpdate = (): void => {
+  public override componentDidUpdate = (): void => {
     // If our status is not "ready", then we have uploads in progress.
     // We won't submit a new widgetValue until all uploads have resolved.
     if (this.status !== "ready") {
@@ -188,7 +188,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
     }
   }
 
-  public componentDidMount(): void {
+  public override componentDidMount(): void {
     const newWidgetValue = this.createWidgetValue()
     const { element, widgetMgr, fragmentId } = this.props
 
@@ -508,7 +508,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
     })
   }
 
-  public render(): React.ReactNode {
+  public override render(): React.ReactNode {
     const { files } = this.state
     const { element, disabled, widgetMgr, width } = this.props
     const acceptedExtensions = element.type

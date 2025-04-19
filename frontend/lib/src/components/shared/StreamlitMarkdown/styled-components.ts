@@ -30,6 +30,7 @@ function convertRemToEm(s: string): string {
   return s.replace(/rem$/, "em")
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 function sharedMarkdownStyle(theme: Theme): any {
   return {
     a: {
@@ -63,6 +64,7 @@ function getMarkdownHeadingDefinitions(
   theme: Theme,
   useSmallerHeadings: boolean,
   isCaption: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 ): any {
   return {
     "h1, h2, h3, h4, h5, h6": {
@@ -301,12 +303,14 @@ export const StyledHeadingWithActionElements = styled.div(({ theme }) => ({
   textWrap: "pretty",
 
   // show link-icon when hovering somewhere over the heading
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   [StyledLinkIcon as any]: {
     visibility: "hidden",
   },
 
   // we have to set the hover here so that the link icon becomes visible when hovering anywhere over the heading
   "&:hover": {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     [StyledLinkIcon as any]: {
       visibility: "visible",
     },

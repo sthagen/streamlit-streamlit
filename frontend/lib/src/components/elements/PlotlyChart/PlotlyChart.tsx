@@ -361,6 +361,7 @@ export function PlotlyChart({
           setPlotlyFigure((prevFigure: PlotlyFigureType) => {
             return {
               ...prevFigure,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
               data: prevFigure.data.map((trace: any) => {
                 return {
                   ...trace,

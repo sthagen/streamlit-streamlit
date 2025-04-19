@@ -16,12 +16,14 @@
 
 import React, { memo, ReactElement, useEffect, useState } from "react"
 
+import { useTheme } from "@emotion/react"
+
 import { Block as BlockProto } from "@streamlit/protobuf"
 
 import Modal, { ModalBody, ModalHeader } from "~lib/components/shared/Modal"
 import IsDialogContext from "~lib/components/core/IsDialogContext"
 import { notNullOrUndefined } from "~lib/util/utils"
-
+import { EmotionTheme } from "~lib/theme"
 export interface Props {
   element: BlockProto.Dialog
   deltaMsgReceivedAt?: number
@@ -34,6 +36,7 @@ const Dialog: React.FC<React.PropsWithChildren<Props>> = ({
 }): ReactElement => {
   const { title, dismissible, width, isOpen: initialIsOpen } = element
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const theme: EmotionTheme = useTheme()
 
   useEffect(() => {
     // Only apply the open state if it was actually set in the proto.
@@ -58,7 +61,15 @@ const Dialog: React.FC<React.PropsWithChildren<Props>> = ({
       onClose={() => setIsOpen(false)}
       size={width === BlockProto.Dialog.DialogWidth.LARGE ? "full" : "default"}
     >
-      <ModalHeader>{title}</ModalHeader>
+      <ModalHeader
+        overrides={{
+          // Extra padding necessary so elements with toolbars (ex: dataframe)
+          // don't cover up the close button with their toolbar.
+          paddingBottom: theme.spacing.xl,
+        }}
+      >
+        {title}
+      </ModalHeader>
       <ModalBody>{children}</ModalBody>
     </Modal>
   )

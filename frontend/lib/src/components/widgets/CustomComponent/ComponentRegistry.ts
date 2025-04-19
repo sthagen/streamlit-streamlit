@@ -22,6 +22,7 @@ import { ComponentMessageType } from "./enums"
 
 export type ComponentMessageListener = (
   type: ComponentMessageType,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   data: any
 ) => void
 

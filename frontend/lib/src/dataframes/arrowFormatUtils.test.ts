@@ -347,6 +347,7 @@ describe("formatPeriodFromFreq", () => {
     [1, "W", "1"],
     [1, "W-INVALID", "1"],
   ])("formats %s with frequency %s to %s", (value, freq, expected) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     expect(formatPeriodFromFreq(value, freq as any)).toEqual(expected)
   })
 })

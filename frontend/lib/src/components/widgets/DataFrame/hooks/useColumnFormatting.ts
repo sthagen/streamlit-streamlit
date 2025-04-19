@@ -33,6 +33,7 @@ type ColumnFormattingReturn = {
  */
 function useColumnFormatting(
   setColumnConfigMapping: React.Dispatch<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     React.SetStateAction<Map<string, any>>
   >
 ): ColumnFormattingReturn {

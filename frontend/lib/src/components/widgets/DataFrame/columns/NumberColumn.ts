@@ -100,6 +100,7 @@ function NumberColumn(props: BaseColumnProps): BaseColumn {
     thousandSeparator: "",
   } as NumberCell
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | number => {
     let cellData: number | null = toSafeNumber(data)
 
@@ -149,6 +150,7 @@ function NumberColumn(props: BaseColumnProps): BaseColumn {
     kind: "number",
     sortMode: "smart",
     validateInput,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     getCell(data?: any, validate?: boolean): GridCell {
       if (validate === true) {
         const validationResult = validateInput(data)

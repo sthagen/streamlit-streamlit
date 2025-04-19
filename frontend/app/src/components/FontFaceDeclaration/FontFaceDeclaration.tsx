@@ -25,6 +25,7 @@ export interface FontFaceDeclarationProps {
 const FontFaceDeclaration = ({
   fontFaces,
 }: FontFaceDeclarationProps): ReactElement => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const fontMarkup = fontFaces.map((font: any) => {
     const { family, weight, url, style = "normal" } = font
 

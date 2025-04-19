@@ -23,11 +23,15 @@
     "lint": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx --max-warnings 0 src",
     "typecheck": "yarn run typecheck:all",
     "format": "prettier --write --config ../.prettierrc --ignore-path ../.prettierignore './src/**/*.{js,ts,jsx,tsx}'",
-    "formatCheck": "prettier --check --config ../.prettierrc --ignore-path ../.prettierignore './src/**/*.{js,ts,jsx,tsx}'"
+    "formatCheck": "prettier --check --config ../.prettierrc --ignore-path ../.prettierignore './src/**/*.{js,ts,jsx,tsx}'",
+    "typesync": "typesync",
+    "typesync:ci": "typesync --dry=fail"
   },
   "devDependencies": {
+    "@types/eslint": "~8.56.12",
     "eslint": "^8.33.0",
     "prettier": "^2.8.3",
+    "typesync": "^0.14.3",
     "vite": "^6.2.6",
     "vite-plugin-dts": "^4.5.3",
     "vite-tsconfig-paths": "^5.1.4",
