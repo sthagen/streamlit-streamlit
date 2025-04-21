@@ -15,7 +15,10 @@
 import pytest
 from playwright.sync_api import Page
 
-from e2e_playwright.shared.app_utils import expect_prefixed_markdown
+from e2e_playwright.shared.app_utils import (
+    click_button,
+    expect_prefixed_markdown,
+)
 
 
 @pytest.mark.browser_context_args(timezone_id="Europe/Berlin")
@@ -40,3 +43,16 @@ def test_url(app: Page, app_port):
     """Test that the URL is correctly set."""
     expected_url = f"http://localhost:{app_port}/"
     expect_prefixed_markdown(app, "Full url:", expected_url)
+
+
+@pytest.mark.browser_context_args(timezone_id="Europe/Paris")
+def test_rerun_preserves_context(app: Page):
+    """Test that the timezone is preserved after rerun."""
+    # Check the initial timezone
+    expect_prefixed_markdown(app, "Timezone name:", "Europe/Paris")
+
+    # Click the rerun button
+    click_button(app, "Trigger rerun")
+
+    # Check that the timezone is still correct after rerun
+    expect_prefixed_markdown(app, "Timezone name:", "Europe/Paris")

@@ -74,6 +74,7 @@ def test_st_rerun_is_fragment_scoped_rerun_flag_false(patched_get_script_run_ctx
             fragment_id_queue=[],
             is_fragment_scoped_rerun=False,
             cached_message_hashes=ctx.cached_message_hashes,
+            context_info=ctx.context_info,
         )
     )
 
@@ -96,6 +97,7 @@ def test_st_rerun_is_fragment_scoped_rerun_flag_true(patched_get_script_run_ctx)
             fragment_id_queue=["some_fragment_ids"],
             is_fragment_scoped_rerun=True,
             cached_message_hashes=ctx.cached_message_hashes,
+            context_info=ctx.context_info,
         )
     )
 

@@ -63,6 +63,7 @@ const GLOBAL_ELEMENTS = ["balloons", "snow"]
 export const StyledElementContainer = styled.div<StyledElementContainerProps>(
   ({ theme, isStale, width, elementType }) => ({
     width,
+    maxWidth: "100%",
     // Allows to have absolutely-positioned nodes inside app elements, like
     // floating buttons.
     position: "relative",
@@ -162,23 +163,15 @@ export interface StyledVerticalBlockProps {
 }
 
 export const StyledVerticalBlock = styled.div<StyledVerticalBlockProps>(
-  ({ width, maxWidth, theme }) => ({
-    width,
-    maxWidth,
+  ({ theme }) => ({
+    width: "100%",
+    maxWidth: "100%",
     position: "relative", // Required for the automatic width computation.
     display: "flex",
     flex: 1,
     flexDirection: "column",
     gap: theme.spacing.lg,
   })
-)
-
-export const StyledVerticalBlockWrapper = styled.div<StyledVerticalBlockProps>(
-  {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-  }
 )
 
 export interface StyledVerticalBlockBorderWrapperProps {
@@ -189,6 +182,7 @@ export interface StyledVerticalBlockBorderWrapperProps {
 export const StyledVerticalBlockBorderWrapper =
   styled.div<StyledVerticalBlockBorderWrapperProps>(
     ({ theme, border, height }) => ({
+      display: "block",
       ...(border && {
         border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
         borderRadius: theme.radii.default,

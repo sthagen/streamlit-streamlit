@@ -149,6 +149,7 @@ def rerun(  # type: ignore[misc]
                 fragment_id_queue=_new_fragment_id_queue(ctx, scope),
                 is_fragment_scoped_rerun=scope == "fragment",
                 cached_message_hashes=cached_message_hashes,
+                context_info=ctx.context_info,
             )
         )
         # Force a yield point so the runner can do the rerun

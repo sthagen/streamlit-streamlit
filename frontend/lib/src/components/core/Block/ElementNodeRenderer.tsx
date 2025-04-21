@@ -191,7 +191,6 @@ const StreamlitSyntaxHighlighter = React.lazy(
 
 export interface ElementNodeRendererProps extends BaseBlockProps {
   node: ElementNode
-  width: React.CSSProperties["width"]
 }
 
 interface RawElementNodeRendererProps extends ElementNodeRendererProps {
@@ -721,7 +720,7 @@ const ElementNodeRenderer = (
   props: ElementNodeRendererProps
 ): ReactElement => {
   const { isFullScreen, fragmentIdsThisRun } = React.useContext(LibContext)
-  const { node, width: propsWidth } = props
+  const { node } = props
 
   const elementType = node.element.type || ""
 
@@ -755,7 +754,6 @@ const ElementNodeRenderer = (
         // Applying stale opacity in fullscreen mode
         // causes the fullscreen overlay to be transparent.
         isStale={isStale && !isFullScreen}
-        width={propsWidth}
         elementType={elementType}
         node={node}
       >

@@ -204,7 +204,7 @@ message FontSizes {
 message UserInfo {
   string installation_id = 1;
   string installation_id_v3 = 5;
-  string stable_random_machine_id = 6;
+  string installation_id_v4 = 6;
 
   // DEPRECATED:
   // string email = 2;

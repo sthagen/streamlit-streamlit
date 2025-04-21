@@ -86,7 +86,6 @@ function getProps(
     }),
     componentRegistry: new ComponentRegistry(endpoints),
     formsData: createFormsData(),
-    width: 1000,
     ...props,
   }
 }

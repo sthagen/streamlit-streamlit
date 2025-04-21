@@ -14,7 +14,10 @@
 
 from playwright.sync_api import Page, expect
 
-from e2e_playwright.conftest import ImageCompareFunction, wait_for_app_run
+from e2e_playwright.conftest import (
+    ImageCompareFunction,
+    wait_for_app_run,
+)
 from e2e_playwright.shared.app_utils import (
     check_top_level_class,
     expect_help_tooltip,
@@ -78,11 +81,12 @@ def test_radio_has_correct_default_values(app: Page):
 
 def test_set_value_correctly_when_click(app: Page):
     """Test that st.radio returns the correct values when the selection is changed."""
+    wait_for_app_run(app)
     for index, element in enumerate(app.get_by_test_id("stRadio").all()):
         if index not in [2, 3]:  # skip disabled and no-options widget
-            second_radio_option = element.locator('label[data-baseweb="radio"]').nth(1)
-            expect(second_radio_option).to_be_visible()
-            second_radio_option.click(force=True)
+            element.scroll_into_view_if_needed()
+            radio_option = element.locator('label[data-baseweb="radio"]').nth(1)
+            radio_option.click(delay=50)
             wait_for_app_run(app)
 
     expected = [

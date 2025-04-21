@@ -28,7 +28,7 @@ message MetricsEvent {
   string event = 1;
   string anonymous_id = 2;
   string machine_id_v3 = 3;
-  string stable_random_machine_id = 41;
+  string machine_id_v4 = 41;
   string report_hash = 4;
   bool dev = 5;
   string source = 6;

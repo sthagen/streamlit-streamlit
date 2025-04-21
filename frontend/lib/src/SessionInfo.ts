@@ -34,7 +34,7 @@ export interface Props {
   readonly pythonVersion: string
   readonly installationId: string
   readonly installationIdV3: string
-  readonly stableRandomMachineId: string
+  readonly installationIdV4: string
   readonly maxCachedMessageAge: number
   readonly commandLine?: string // Unused, but kept around for compatibility
   readonly isHello: boolean
@@ -108,7 +108,7 @@ export class SessionInfo {
       pythonVersion: environmentInfo.pythonVersion,
       installationId: userInfo.installationId,
       installationIdV3: userInfo.installationIdV3,
-      stableRandomMachineId: userInfo.stableRandomMachineId,
+      installationIdV4: userInfo.installationIdV4,
       maxCachedMessageAge: config.maxCachedMessageAge,
       isHello: initialize.isHello,
       // We assume we are always connected because the message came directly from the server.

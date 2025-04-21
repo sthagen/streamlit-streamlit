@@ -17,7 +17,6 @@
 import { useMemo } from "react"
 
 export type UseLayoutStylesArgs<T> = {
-  width: React.CSSProperties["width"] | undefined
   element:
     | (T & { width?: number; useContainerWidth?: boolean | null })
     | undefined
@@ -34,7 +33,6 @@ export type UseLayoutStylesShape = {
  * Returns the contextually-aware style values for an element container
  */
 export const useLayoutStyles = <T>({
-  width: containerWidth,
   element,
 }: UseLayoutStylesArgs<T>): UseLayoutStylesShape => {
   /**
@@ -47,67 +45,24 @@ export const useLayoutStyles = <T>({
   // subpixel widths, which leads to blurriness on screen
 
   const layoutStyles = useMemo((): UseLayoutStylesShape => {
-    // If we don't have an element, we are rendering a root-level node, likely a
-    // `StyledAppViewBlockContainer`
-    if (!element) {
+    // The st.image element is potentially a list of images, so we always want
+    // the enclosing container to be full width. The size of individual
+    // images is managed in the ImageList component.
+    const isImgList = element && "imgs" in element
+
+    if (useContainerWidth || isImgList) {
       return {
-        width: containerWidth,
+        width: "100%",
+      }
+    } else if (isNonZeroPositiveNumber(commandWidth)) {
+      return {
+        width: commandWidth,
       }
     }
-
-    if ("imgs" in element) {
-      /**
-       * ImageList overrides its `width` param and handles its own width in the
-       * component. There should not be any element-specific carve-outs in this
-       * file, but given the long-standing behavior of ImageList, we have to
-       * make an exception here.
-       *
-       * @see WidthBehavior on the Backend
-       * @see the Image.proto file
-       */
-      return {
-        width: containerWidth,
-      }
-    }
-
-    let width =
-      useContainerWidth && isNonZeroPositiveNumber(containerWidth)
-        ? containerWidth
-        : commandWidth
-
-    if (width === 0) {
-      // An element with no width should be treated as if it has no width set
-      // This is likely from the proto, where the default value is 0
-      width = undefined
-    }
-
-    if (width && width < 0) {
-      // If we have an invalid width, we should treat it as if it has no width set
-      width = undefined
-    }
-
-    if (width !== undefined && isNaN(width)) {
-      // If we have an invalid width, we should treat it as if it has no width set
-      width = undefined
-    }
-
-    if (
-      width !== undefined &&
-      containerWidth !== undefined &&
-      typeof containerWidth === "number" &&
-      width > containerWidth
-    ) {
-      // If the width is greater than the container width, we should use the
-      // container width to prevent overflows
-      width = containerWidth
-    }
-
-    const widthWithFallback = width ?? "auto"
-
     return {
-      width: widthWithFallback,
+      width: "auto",
     }
-  }, [useContainerWidth, commandWidth, containerWidth, element])
+  }, [useContainerWidth, commandWidth, element])
 
   return layoutStyles
 }

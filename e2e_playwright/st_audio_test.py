@@ -193,6 +193,5 @@ def test_audio_source_error_with_path(app: Page, app_port: int):
     # Wait until the expected errors are logged, indicating CLIENT_ERROR was sent
     # Should be 3 instances of the error, one for each audio element with path
     wait_until(
-        app,
-        lambda: check_audio_source_error_count(messages, AUDIO_ELEMENTS_WITH_PATH),
+        app, lambda: check_audio_source_error_count(messages, AUDIO_ELEMENTS_WITH_PATH)
     )

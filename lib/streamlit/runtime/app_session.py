@@ -985,4 +985,4 @@ def _populate_user_info_msg(msg: UserInfo) -> None:
     inst = Installation.instance()
     msg.installation_id = inst.installation_id
     msg.installation_id_v3 = inst.installation_id_v3
-    msg.stable_random_machine_id = inst.stable_random_machine_id
+    msg.installation_id_v4 = inst.installation_id_v4

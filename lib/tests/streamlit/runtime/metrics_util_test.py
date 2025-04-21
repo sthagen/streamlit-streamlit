@@ -110,7 +110,7 @@ class MetricsUtilTest(unittest.TestCase):
             patch("streamlit.file_util.os.makedirs"),
             patch_config_options({"browser.gatherUsageStats": True}),
         ):
-            machine_id = metrics_util._get_stable_random_machine_id()
+            machine_id = metrics_util._get_machine_id_v4()
             open().write.assert_called_once_with(UUID)
         self.assertEqual(machine_id, UUID)
 
@@ -126,7 +126,7 @@ class MetricsUtilTest(unittest.TestCase):
             patch("streamlit.file_util.open", mock_open(read_data=UUID)) as open,
             patch_config_options({"browser.gatherUsageStats": True}),
         ):
-            machine_id = metrics_util._get_stable_random_machine_id()
+            machine_id = metrics_util._get_machine_id_v4()
             open().read.assert_called_once()
         self.assertEqual(machine_id, UUID)
 
@@ -144,7 +144,7 @@ class MetricsUtilTest(unittest.TestCase):
             patch("streamlit.file_util.os.makedirs"),
             patch_config_options({"browser.gatherUsageStats": True}),
         ):
-            machine_id = metrics_util._get_stable_random_machine_id()
+            machine_id = metrics_util._get_machine_id_v4()
             open().read.assert_called_once()
             open().write.assert_called_once_with(UUID)
         self.assertEqual(machine_id, UUID)

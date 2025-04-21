@@ -39,7 +39,6 @@ describe("useCalculatedWidth", () => {
         () => ({
           values: [width],
           elementRef: { current: null },
-          forceRecalculate: vi.fn(),
         })
       )
 

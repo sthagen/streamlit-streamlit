@@ -83,7 +83,6 @@ describe("ComponentInstance", () => {
 
     vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
       elementRef: { current: null },
-      forceRecalculate: vitest.fn(),
       values: [250],
     })
   })
@@ -397,7 +396,6 @@ describe("ComponentInstance", () => {
       let width = 100
       vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
         elementRef: { current: null },
-        forceRecalculate: vitest.fn(),
         values: [width],
       })
 
@@ -437,7 +435,6 @@ describe("ComponentInstance", () => {
       // Update the spy to return the new width
       vi.spyOn(UseResizeObserver, "useResizeObserver").mockReturnValue({
         elementRef: { current: null },
-        forceRecalculate: vitest.fn(),
         values: [width],
       })
 
