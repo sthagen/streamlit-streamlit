@@ -23,7 +23,7 @@ import {
   ThemeConfig,
   useRequiredContext,
 } from "@streamlit/lib"
-import { IGitInfo, PageConfig } from "@streamlit/protobuf"
+import { IAppPage, IGitInfo, Logo, PageConfig } from "@streamlit/protobuf"
 import {
   AppContext,
   AppContextProps,
@@ -33,7 +33,14 @@ import {
 type AppContextValues = {
   initialSidebarState: PageConfig.SidebarState
   pageLinkBaseUrl: string
+  currentPageScriptHash: string
+  onPageChange: (pageScriptHash: string) => void
+  navSections: string[]
+  appPages: IAppPage[]
+  appLogo: Logo | null
   sidebarChevronDownshift: number
+  expandSidebarNav: boolean
+  hideSidebarNav: boolean
   widgetsDisabled: boolean
   gitInfo: IGitInfo | null
 }
@@ -67,7 +74,12 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   // AppContext
   initialSidebarState,
   pageLinkBaseUrl,
+  navSections,
+  appPages,
+  appLogo,
   sidebarChevronDownshift,
+  expandSidebarNav,
+  hideSidebarNav,
   widgetsDisabled,
   gitInfo,
   // LibContext
@@ -79,11 +91,12 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   setTheme,
   availableThemes,
   addThemes,
-  onPageChange,
-  currentPageScriptHash,
   libConfig,
   fragmentIdsThisRun,
   locale,
+  // Used in both contexts
+  currentPageScriptHash,
+  onPageChange,
   children,
 }: StreamlitContextProviderProps) => {
   // Memoized object for AppContext values
@@ -91,14 +104,28 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
     () => ({
       initialSidebarState,
       pageLinkBaseUrl,
+      currentPageScriptHash,
+      onPageChange,
+      navSections,
+      appPages,
+      appLogo,
       sidebarChevronDownshift,
+      expandSidebarNav,
+      hideSidebarNav,
       widgetsDisabled,
       gitInfo,
     }),
     [
       initialSidebarState,
       pageLinkBaseUrl,
+      currentPageScriptHash,
+      onPageChange,
+      navSections,
+      appPages,
+      appLogo,
       sidebarChevronDownshift,
+      expandSidebarNav,
+      hideSidebarNav,
       widgetsDisabled,
       gitInfo,
     ]

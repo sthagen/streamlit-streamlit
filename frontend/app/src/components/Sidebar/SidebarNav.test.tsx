@@ -21,7 +21,9 @@ import { screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 
 import { mockEndpoints, render } from "@streamlit/lib"
-import { IAppPage } from "@streamlit/protobuf"
+import { IAppPage, PageConfig } from "@streamlit/protobuf"
+import { AppContextProps } from "@streamlit/app/src/components/AppContext"
+import * as StreamlitContextProviderModule from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import SidebarNav, { Props } from "./SidebarNav"
 
@@ -45,17 +47,37 @@ const getProps = (props: Partial<Props> = {}): Props => ({
       urlPathname: "my_other_page",
     },
   ],
-  navSections: [],
   collapseSidebar: vi.fn(),
-  currentPageScriptHash: "",
   hasSidebarElements: false,
-  expandSidebarNav: false,
-  onPageChange: vi.fn(),
   endpoints: mockEndpoints(),
   ...props,
 })
 
+function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
+  return {
+    initialSidebarState: PageConfig.SidebarState.AUTO,
+    pageLinkBaseUrl: "",
+    currentPageScriptHash: "",
+    onPageChange: vi.fn(),
+    navSections: [],
+    appPages: [],
+    appLogo: null,
+    sidebarChevronDownshift: 0,
+    expandSidebarNav: false,
+    hideSidebarNav: false,
+    widgetsDisabled: false,
+    gitInfo: null,
+    ...context,
+  }
+}
+
 describe("SidebarNav", () => {
+  beforeEach(() => {
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({})
+    )
+  })
+
   afterEach(() => {
     // @ts-expect-error
     reactDeviceDetect.isMobile = false
@@ -151,10 +173,13 @@ describe("SidebarNav", () => {
   })
 
   it("does not render View less button when explicitly asked to expand", () => {
+    // Update the mock to return a context with widgetsDisabled set to true
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ expandSidebarNav: true })
+    )
     render(
       <SidebarNav
         {...getProps({
-          expandSidebarNav: true,
           hasSidebarElements: true,
           appPages: [
             {
@@ -370,12 +395,15 @@ describe("SidebarNav", () => {
   })
 
   it("displays partial sections", async () => {
+    // Update the mock to return a context with navSections
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ navSections: ["section 1", "section 2"] })
+    )
     const user = userEvent.setup()
     render(
       <SidebarNav
         {...getProps({
           hasSidebarElements: true,
-          navSections: ["section 1", "section 2"],
           appPages: [
             {
               pageScriptHash: "main_page_hash",
@@ -413,6 +441,12 @@ describe("SidebarNav", () => {
   })
 
   it("will not display a section if no pages in it are visible", async () => {
+    // Update the mock to return a context with navSections
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({
+        navSections: ["section 1", "section 2", "section 3"],
+      })
+    )
     const user = userEvent.setup()
     // First section has 6 pages, second section has 4 pages, third section has 4 pages
     // Since 6+4 = 10, only the first two sections should be visible
@@ -420,7 +454,6 @@ describe("SidebarNav", () => {
       <SidebarNav
         {...getProps({
           hasSidebarElements: true,
-          navSections: ["section 1", "section 2", "section 3"],
           appPages: [
             {
               pageScriptHash: "main_page_hash",
@@ -458,6 +491,10 @@ describe("SidebarNav", () => {
   })
 
   it("passes the pageScriptHash to onPageChange if a link is clicked", async () => {
+    const onPageChange = vi.fn()
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ onPageChange })
+    )
     const user = userEvent.setup()
     const props = getProps()
     render(<SidebarNav {...props} />)
@@ -465,11 +502,16 @@ describe("SidebarNav", () => {
     const links = screen.getAllByTestId("stSidebarNavLink")
     await user.click(links[1])
 
-    expect(props.onPageChange).toHaveBeenCalledWith("other_page_hash")
+    // Check the onPageChange func from context is called with the correct pageScriptHash
+    expect(onPageChange).toHaveBeenCalledWith("other_page_hash")
     expect(props.collapseSidebar).not.toHaveBeenCalled()
   })
 
   it("collapses sidebar on page change when on mobile", async () => {
+    const onPageChange = vi.fn()
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ onPageChange })
+    )
     const user = userEvent.setup()
     // @ts-expect-error
     reactDeviceDetect.isMobile = true
@@ -480,7 +522,8 @@ describe("SidebarNav", () => {
     const links = screen.getAllByTestId("stSidebarNavLink")
     await user.click(links[1])
 
-    expect(props.onPageChange).toHaveBeenCalledWith("other_page_hash")
+    // Check the onPageChange func from context is called with the correct pageScriptHash
+    expect(onPageChange).toHaveBeenCalledWith("other_page_hash")
     expect(props.collapseSidebar).toHaveBeenCalled()
   })
 
@@ -500,7 +543,11 @@ describe("SidebarNav", () => {
   })
 
   it("indicates the current page as active", () => {
-    const props = getProps({ currentPageScriptHash: "other_page_hash" })
+    // Update the mock to return a context with widgetsDisabled set to true
+    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+      getContextOutput({ currentPageScriptHash: "other_page_hash" })
+    )
+    const props = getProps()
     render(<SidebarNav {...props} />)
 
     const links = screen.getAllByTestId("stSidebarNavLink")

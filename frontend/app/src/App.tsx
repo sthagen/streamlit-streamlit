@@ -2007,7 +2007,14 @@ export class App extends PureComponent<Props, State> {
       <StreamlitContextProvider
         initialSidebarState={initialSidebarState}
         pageLinkBaseUrl={pageLinkBaseUrl}
+        currentPageScriptHash={currentPageScriptHash}
+        onPageChange={this.onPageChange}
+        navSections={navSections}
+        appPages={appPages}
+        appLogo={elements.logo}
         sidebarChevronDownshift={sidebarChevronDownshift}
+        expandSidebarNav={expandSidebarNav}
+        hideSidebarNav={hideSidebarNav || hostHideSidebarNav}
         widgetsDisabled={
           inputsDisabled || connectionState !== ConnectionState.CONNECTED
         }
@@ -2020,8 +2027,6 @@ export class App extends PureComponent<Props, State> {
         setTheme={this.setAndSendTheme}
         availableThemes={this.props.theme.availableThemes}
         addThemes={this.props.theme.addThemes}
-        onPageChange={this.onPageChange}
-        currentPageScriptHash={currentPageScriptHash}
         libConfig={libConfig}
         fragmentIdsThisRun={this.state.fragmentIdsThisRun}
         locale={window.navigator.language}
@@ -2100,17 +2105,13 @@ export class App extends PureComponent<Props, State> {
               componentRegistry={this.componentRegistry}
               formsData={this.state.formsData}
               appLogo={elements.logo}
-              appPages={appPages}
-              navSections={navSections}
-              onPageChange={this.onPageChange}
-              currentPageScriptHash={currentPageScriptHash}
+              multiplePages={appPages.length > 1}
               wideMode={userSettings.wideMode}
               embedded={isEmbed()}
               addPaddingForHeader={showToolbar || showColoredLine}
               showPadding={showPadding}
               disableScrolling={disableScrolling}
               hideSidebarNav={hideSidebarNav || hostHideSidebarNav}
-              expandSidebarNav={expandSidebarNav}
             />
             {renderedDialog}
           </StyledApp>

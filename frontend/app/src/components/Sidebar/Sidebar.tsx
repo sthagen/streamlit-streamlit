@@ -43,9 +43,10 @@ import {
   IsSidebarContext,
   LibContext,
 } from "@streamlit/lib"
-import { IAppPage, Logo, PageConfig } from "@streamlit/protobuf"
+import { PageConfig } from "@streamlit/protobuf"
 import { localStorageAvailable } from "@streamlit/utils"
 import { shouldCollapse } from "@streamlit/app/src/components/Sidebar/utils"
+import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 
 import {
   RESIZE_HANDLE_WIDTH,
@@ -69,13 +70,6 @@ export interface SidebarProps {
   children?: ReactElement
   initialSidebarState?: PageConfig.SidebarState
   hasElements: boolean
-  appLogo: Logo | null
-  appPages: IAppPage[]
-  navSections: string[]
-  onPageChange: (pageName: string) => void
-  currentPageScriptHash: string
-  hideSidebarNav: boolean
-  expandSidebarNav: boolean
 }
 
 const MIN_WIDTH = "336"
@@ -102,18 +96,11 @@ function headerDecorationVisible(): boolean {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  appLogo,
   endpoints,
-  appPages,
   chevronDownshift,
   children,
   initialSidebarState,
   hasElements,
-  onPageChange,
-  currentPageScriptHash,
-  hideSidebarNav,
-  expandSidebarNav,
-  navSections,
 }) => {
   const theme: EmotionTheme = useTheme()
   const mediumBreakpointPx = calculateMaxBreakpoint(theme.breakpoints.md)
@@ -140,6 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   )
 
   const { activeTheme } = React.useContext(LibContext)
+  const { hideSidebarNav, appPages, appLogo } = useAppContext()
 
   useEffect(() => {
     setCollapsedSidebar(
@@ -376,11 +364,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               endpoints={endpoints}
               appPages={appPages}
               collapseSidebar={toggleCollapse}
-              currentPageScriptHash={currentPageScriptHash}
-              navSections={navSections}
               hasSidebarElements={hasElements}
-              expandSidebarNav={expandSidebarNav}
-              onPageChange={onPageChange}
             />
           )}
           <StyledSidebarUserContent
