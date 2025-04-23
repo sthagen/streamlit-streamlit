@@ -44,8 +44,9 @@ export interface TabProps extends BlockPropsWithoutWidth {
 }
 
 function Tabs(props: Readonly<TabProps>): ReactElement {
-  const { widgetsDisabled, node, isStale, scriptRunState, scriptRunId } = props
-  const { fragmentIdsThisRun } = useContext(LibContext)
+  const { widgetsDisabled, node, isStale } = props
+  const { fragmentIdsThisRun, scriptRunState, scriptRunId } =
+    useContext(LibContext)
 
   let allTabLabels: string[] = []
   const [activeTabKey, setActiveTabKey] = useState<React.Key>(0)

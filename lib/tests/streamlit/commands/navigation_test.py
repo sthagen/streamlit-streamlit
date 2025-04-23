@@ -336,6 +336,21 @@ class NavigationTest(DeltaGeneratorTestCase):
         assert c.app_pages[1].section_header == "Section 1"
         assert c.app_pages[2].section_header == "Section 2"
 
+    def test_navigation_sends_prefixed_emoji_icons(self):
+        """Test navigation with pages with emoji icons prefix them correctly"""
+
+        page = st.navigation(
+            [
+                st.Page("page1.py", icon="🚀"),
+                st.Page("page2.py", icon=":material/settings:"),
+            ]
+        )
+        assert isinstance(page, StreamlitPage)
+        c = self.get_message_from_queue().navigation
+        assert len(c.app_pages) == 2
+        assert c.app_pages[0].icon == "emoji:🚀"
+        assert c.app_pages[1].icon == ":material/settings:"
+
     def test_navigation_duplicate_paths_with_mixed_types_including_pathlib_path(
         self,
     ):

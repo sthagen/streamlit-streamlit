@@ -45,6 +45,8 @@ const getMetricsManager = (
   return mm
 }
 
+const originalWebdriver = window.navigator.webdriver
+
 // Mock fetch for our metrics config request
 global.fetch = vi.fn(() =>
   Promise.resolve({
@@ -120,6 +122,7 @@ const checkDefaultEventData = (
 
 afterEach(() => {
   window.analytics = undefined
+  window.navigator.webdriver = originalWebdriver
   window.localStorage.clear()
   setCookie("ajs_anonymous_id")
 })
@@ -411,4 +414,33 @@ test("tracks installation data", () => {
   const trackCall = mm.track.mock.calls[0][0]
   expect(trackCall.machineIdV3).toEqual(sessionInfo.current.installationIdV3)
   expect(trackCall.machineIdV4).toEqual(sessionInfo.current.installationIdV4)
+})
+
+test("tracks server/local debug data", () => {
+  const sessionInfo = mockSessionInfo()
+  const mm = getMetricsManager(sessionInfo)
+  mm.initialize({ gatherUsageStats: true })
+  mm.enqueue("ev1", { data1: 11 })
+
+  const trackCall = mm.track.mock.calls[0][0]
+  expect(trackCall.serverOs).toEqual(sessionInfo.current.serverOS)
+  expect(trackCall.hasDisplay).toEqual(sessionInfo.current.hasDisplay)
+
+  // This test runs outside a browser so isWebdriver should be false.
+  expect(trackCall.isWebdriver).toEqual(false)
+})
+
+test("tracks server/local debug data with mocked webdriver", () => {
+  window.navigator.webdriver = true
+  const sessionInfo = mockSessionInfo()
+  const mm = getMetricsManager(sessionInfo)
+  mm.initialize({ gatherUsageStats: true })
+  mm.enqueue("ev1", { data1: 11 })
+
+  const trackCall = mm.track.mock.calls[0][0]
+  expect(trackCall.serverOs).toEqual(sessionInfo.current.serverOS)
+  expect(trackCall.hasDisplay).toEqual(sessionInfo.current.hasDisplay)
+
+  // This test runs outside a browser so isWebdriver should be false.
+  expect(trackCall.isWebdriver).toEqual(true)
 })

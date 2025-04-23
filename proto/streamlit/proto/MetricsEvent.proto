@@ -39,6 +39,7 @@ message MetricsEvent {
   string python_version = 36;
   string server_os = 42;
   bool has_display = 43;
+  bool is_webdriver = 44;
 
   // Host tracking fields:
   string hosted_at = 9;
@@ -82,7 +83,7 @@ message MetricsEvent {
   int64 total_load_time = 39;
   BrowserInfo browser_info = 40;
 
-  // Next ID: 44
+  // Next ID: 45
 }
 
 message BrowserInfo {

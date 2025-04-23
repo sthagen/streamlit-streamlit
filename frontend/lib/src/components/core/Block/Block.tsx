@@ -31,6 +31,7 @@ import ChatMessage from "~lib/components/elements/ChatMessage"
 import Dialog from "~lib/components/elements/Dialog"
 import Expander from "~lib/components/elements/Expander"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
+import { ScriptRunState } from "~lib/ScriptRunState"
 
 import {
   assignDividerColor,
@@ -56,18 +57,19 @@ export interface BlockPropsWithoutWidth extends BaseBlockProps {
 // Render BlockNodes (i.e. container nodes).
 const BlockNodeRenderer = (props: BlockPropsWithoutWidth): ReactElement => {
   const { node } = props
-  const { fragmentIdsThisRun } = useContext(LibContext)
+  const { formsData, fragmentIdsThisRun, scriptRunState, scriptRunId } =
+    useContext(LibContext)
 
   if (node.isEmpty && !node.deltaBlock.allowEmpty) {
     return <></>
   }
 
-  const enable = shouldComponentBeEnabled("", props.scriptRunState)
+  const enable = shouldComponentBeEnabled("", scriptRunState)
   const isStale = isComponentStale(
     enable,
     node,
-    props.scriptRunState,
-    props.scriptRunId,
+    scriptRunState,
+    scriptRunId,
     fragmentIdsThisRun
   )
 
@@ -122,16 +124,17 @@ const BlockNodeRenderer = (props: BlockPropsWithoutWidth): ReactElement => {
   if (node.deltaBlock.type === "form") {
     const { formId, clearOnSubmit, enterToSubmit, border } = node.deltaBlock
       .form as BlockProto.Form
-    const submitButtons = props.formsData.submitButtons.get(formId)
+    const submitButtons = formsData.submitButtons.get(formId)
     const hasSubmitButton =
       submitButtons !== undefined && submitButtons.length > 0
+    const scriptNotRunning = scriptRunState === ScriptRunState.NOT_RUNNING
     return (
       <Form
         formId={formId}
         clearOnSubmit={clearOnSubmit}
         enterToSubmit={enterToSubmit}
         hasSubmitButton={hasSubmitButton}
-        scriptRunState={props.scriptRunState}
+        scriptNotRunning={scriptNotRunning}
         widgetMgr={props.widgetMgr}
         border={border}
       >

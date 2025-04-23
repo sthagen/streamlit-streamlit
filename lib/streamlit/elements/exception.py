@@ -19,17 +19,20 @@ import traceback
 from typing import TYPE_CHECKING, Callable, Final, TypeVar, cast
 
 from streamlit import config
+from streamlit.elements.lib.layout_utils import validate_width
 from streamlit.errors import (
     MarkdownFormattedException,
     StreamlitAPIWarning,
 )
 from streamlit.logger import get_logger
 from streamlit.proto.Exception_pb2 import Exception as ExceptionProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner_utils.script_run_context import get_script_run_ctx
 
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
+    from streamlit.elements.lib.layout_utils import WidthWithoutContent
 
 _LOGGER: Final = get_logger(__name__)
 
@@ -40,7 +43,9 @@ _GENERIC_UNCAUGHT_EXCEPTION_TEXT: Final = "This app has encountered an error. Th
 
 class ExceptionMixin:
     @gather_metrics("exception")
-    def exception(self, exception: BaseException) -> DeltaGenerator:
+    def exception(
+        self, exception: BaseException, width: WidthWithoutContent = "stretch"
+    ) -> DeltaGenerator:
         """Display an exception.
 
         In the lower-right corner of the exception, Streamlit displays links to
@@ -51,6 +56,9 @@ class ExceptionMixin:
         ----------
         exception : Exception
             The exception to display.
+        width : int or "stretch"
+            The width of the exception display. Can be either an integer (pixels) or "stretch".
+            Defaults to "stretch".
 
         Example
         -------
@@ -64,7 +72,7 @@ class ExceptionMixin:
             height: 220px
 
         """
-        return _exception(self.dg, exception)
+        return _exception(self.dg, exception, width=width)
 
     @property
     def dg(self) -> DeltaGenerator:
@@ -77,16 +85,18 @@ class ExceptionMixin:
 def _exception(
     dg: DeltaGenerator,
     exception: BaseException,
+    width: WidthWithoutContent = "stretch",
     is_uncaught_app_exception: bool = False,
 ) -> DeltaGenerator:
     exception_proto = ExceptionProto()
-    marshall(exception_proto, exception, is_uncaught_app_exception)
+    marshall(exception_proto, exception, width, is_uncaught_app_exception)
     return dg._enqueue("exception", exception_proto)
 
 
 def marshall(
     exception_proto: ExceptionProto,
     exception: BaseException,
+    width: WidthWithoutContent = "stretch",
     is_uncaught_app_exception: bool = False,
 ) -> None:
     """Marshalls an Exception.proto message.
@@ -99,9 +109,15 @@ def marshall(
     exception : BaseException
         The exception whose data we're extracting.
 
+    width : int or "stretch"
+        The width of the exception display. Can be either an integer (pixels) or "stretch".
+        Defaults to "stretch".
+
     is_uncaught_app_exception: bool
         The exception originates from an uncaught error during script execution.
     """
+    validate_width(width)
+
     is_markdown_exception = isinstance(exception, MarkdownFormattedException)
 
     # Some exceptions (like UserHashError) have an alternate_name attribute so
@@ -115,6 +131,15 @@ def marshall(
 
     exception_proto.stack_trace.extend(stack_trace)
     exception_proto.is_warning = isinstance(exception, Warning)
+
+    width_config = WidthConfig()
+
+    if isinstance(width, int):
+        width_config.pixel_width = width
+    else:
+        width_config.use_stretch = True
+
+    exception_proto.width_config.CopyFrom(width_config)
 
     try:
         if isinstance(exception, SyntaxError):

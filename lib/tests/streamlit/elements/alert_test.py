@@ -15,9 +15,10 @@
 from parameterized import parameterized
 
 import streamlit as st
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitInvalidWidthError
 from streamlit.proto.Alert_pb2 import Alert
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class AlertAPITest(DeltaGeneratorTestCase):
@@ -28,6 +29,26 @@ class AlertAPITest(DeltaGeneratorTestCase):
         """Test that alert functions throw an exception when a non-emoji is given as an icon."""
         with self.assertRaises(StreamlitAPIException):
             alert_func("some alert", icon="hello world")
+
+    @parameterized.expand([(st.error,), (st.warning,), (st.info,), (st.success,)])
+    def test_st_alert_width_validation(self, alert_func):
+        """Test that alert functions throw an exception when an invalid width is provided."""
+        with self.assertRaises(StreamlitInvalidWidthError) as e:
+            alert_func("some alert", width="invalid")
+        self.assertIn("Invalid width value", str(e.exception))
+        self.assertIn(
+            "Width must be either an integer (pixels) or 'stretch'", str(e.exception)
+        )
+
+    @parameterized.expand([(st.error,), (st.warning,), (st.info,), (st.success,)])
+    def test_st_alert_negative_width(self, alert_func):
+        """Test that alert functions throw an exception when a negative width is provided."""
+        with self.assertRaises(StreamlitInvalidWidthError) as e:
+            alert_func("some alert", width=-100)
+        self.assertIn("Invalid width value", str(e.exception))
+        self.assertIn(
+            "Width must be either an integer (pixels) or 'stretch'", str(e.exception)
+        )
 
 
 class StErrorAPITest(DeltaGeneratorTestCase):
@@ -40,6 +61,11 @@ class StErrorAPITest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.alert.body, "some error")
         self.assertEqual(el.alert.format, Alert.ERROR)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
     def test_st_error_with_icon(self):
         """Test st.error with icon."""
@@ -49,6 +75,37 @@ class StErrorAPITest(DeltaGeneratorTestCase):
         self.assertEqual(el.alert.body, "some error")
         self.assertEqual(el.alert.icon, "😱")
         self.assertEqual(el.alert.format, Alert.ERROR)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
+
+    def test_st_error_with_width_pixels(self):
+        """Test st.error with width in pixels."""
+        st.error("some error", width=500)
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some error")
+        self.assertEqual(el.alert.format, Alert.ERROR)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(el.alert.width_config.pixel_width, 500)
+
+    def test_st_error_with_width_stretch(self):
+        """Test st.error with width set to stretch."""
+        st.error("some error", width="stretch")
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some error")
+        self.assertEqual(el.alert.format, Alert.ERROR)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
 
 class StInfoAPITest(DeltaGeneratorTestCase):
@@ -61,15 +118,51 @@ class StInfoAPITest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.alert.body, "some info")
         self.assertEqual(el.alert.format, Alert.INFO)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
     def test_st_info_with_icon(self):
         """Test st.info with icon."""
-        st.info("some info", icon="👉🏻")
+        st.info("some info", icon="ℹ️")
 
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.alert.body, "some info")
-        self.assertEqual(el.alert.icon, "👉🏻")
+        self.assertEqual(el.alert.icon, "ℹ️")
         self.assertEqual(el.alert.format, Alert.INFO)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
+
+    def test_st_info_with_width_pixels(self):
+        """Test st.info with width in pixels."""
+        st.info("some info", width=500)
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some info")
+        self.assertEqual(el.alert.format, Alert.INFO)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(el.alert.width_config.pixel_width, 500)
+
+    def test_st_info_with_width_stretch(self):
+        """Test st.info with width set to stretch."""
+        st.info("some info", width="stretch")
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some info")
+        self.assertEqual(el.alert.format, Alert.INFO)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
 
 class StSuccessAPITest(DeltaGeneratorTestCase):
@@ -82,6 +175,11 @@ class StSuccessAPITest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.alert.body, "some success")
         self.assertEqual(el.alert.format, Alert.SUCCESS)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
     def test_st_success_with_icon(self):
         """Test st.success with icon."""
@@ -91,6 +189,37 @@ class StSuccessAPITest(DeltaGeneratorTestCase):
         self.assertEqual(el.alert.body, "some success")
         self.assertEqual(el.alert.icon, "✅")
         self.assertEqual(el.alert.format, Alert.SUCCESS)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
+
+    def test_st_success_with_width_pixels(self):
+        """Test st.success with width in pixels."""
+        st.success("some success", width=500)
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some success")
+        self.assertEqual(el.alert.format, Alert.SUCCESS)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(el.alert.width_config.pixel_width, 500)
+
+    def test_st_success_with_width_stretch(self):
+        """Test st.success with width set to stretch."""
+        st.success("some success", width="stretch")
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some success")
+        self.assertEqual(el.alert.format, Alert.SUCCESS)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
 
 class StWarningAPITest(DeltaGeneratorTestCase):
@@ -103,6 +232,11 @@ class StWarningAPITest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue().new_element
         self.assertEqual(el.alert.body, "some warning")
         self.assertEqual(el.alert.format, Alert.WARNING)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
 
     def test_st_warning_with_icon(self):
         """Test st.warning with icon."""
@@ -112,3 +246,34 @@ class StWarningAPITest(DeltaGeneratorTestCase):
         self.assertEqual(el.alert.body, "some warning")
         self.assertEqual(el.alert.icon, "⚠️")
         self.assertEqual(el.alert.format, Alert.WARNING)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)
+
+    def test_st_warning_with_width_pixels(self):
+        """Test st.warning with width in pixels."""
+        st.warning("some warning", width=500)
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some warning")
+        self.assertEqual(el.alert.format, Alert.WARNING)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(el.alert.width_config.pixel_width, 500)
+
+    def test_st_warning_with_width_stretch(self):
+        """Test st.warning with width set to stretch."""
+        st.warning("some warning", width="stretch")
+
+        el = self.get_delta_from_queue().new_element
+        self.assertEqual(el.alert.body, "some warning")
+        self.assertEqual(el.alert.format, Alert.WARNING)
+        self.assertTrue(
+            el.alert.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(el.alert.width_config.use_stretch)

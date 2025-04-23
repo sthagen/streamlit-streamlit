@@ -28,13 +28,10 @@ import { StreamlitEndpoints } from "@streamlit/connection"
 import {
   AppRoot,
   BlockNode,
-  ComponentRegistry,
   FileUploadClient,
-  FormsData,
   IGuestToHostMessage,
   LibContext,
   Profiler,
-  ScriptRunState,
   VerticalBlock,
   WidgetStateManager,
 } from "@streamlit/lib"
@@ -70,18 +67,9 @@ export interface AppViewProps {
 
   sendMessageToHost: (message: IGuestToHostMessage) => void
 
-  // The unique ID for the most recent script run.
-  scriptRunId: string
-
-  scriptRunState: ScriptRunState
-
   widgetMgr: WidgetStateManager
 
   uploadClient: FileUploadClient
-
-  componentRegistry: ComponentRegistry
-
-  formsData: FormsData
 
   appLogo: Logo | null
 
@@ -106,12 +94,8 @@ export interface AppViewProps {
 function AppView(props: AppViewProps): ReactElement {
   const {
     elements,
-    scriptRunId,
-    scriptRunState,
     widgetMgr,
     uploadClient,
-    componentRegistry,
-    formsData,
     appLogo,
     multiplePages,
     wideMode,
@@ -230,13 +214,9 @@ function AppView(props: AppViewProps): ReactElement {
     <VerticalBlock
       node={node}
       endpoints={endpoints}
-      scriptRunId={scriptRunId}
-      scriptRunState={scriptRunState}
       widgetMgr={widgetMgr}
       widgetsDisabled={widgetsDisabled}
       uploadClient={uploadClient}
-      componentRegistry={componentRegistry}
-      formsData={formsData}
     />
   )
 

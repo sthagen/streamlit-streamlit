@@ -29,7 +29,11 @@ import ThemeProvider from "./components/core/ThemeProvider"
 import { baseTheme } from "./theme"
 import { mockTheme } from "./mocks/mockTheme"
 import { LibContext, LibContextProps } from "./components/core/LibContext"
+import { ScriptRunState } from "./ScriptRunState"
 import { WindowDimensionsProvider } from "./components/shared/WindowDimensions/Provider"
+import { createFormsData } from "./WidgetStateManager"
+import { ComponentRegistry } from "./components/widgets/CustomComponent/ComponentRegistry"
+import { mockEndpoints } from "./mocks/mocks"
 
 export const TestAppWrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -88,6 +92,10 @@ export const customRenderLibContext = (
     libConfig: {},
     fragmentIdsThisRun: [],
     locale: "en-US",
+    formsData: createFormsData(),
+    scriptRunState: ScriptRunState.NOT_RUNNING,
+    scriptRunId: "script run 123",
+    componentRegistry: new ComponentRegistry(mockEndpoints()),
   }
 
   return reactTestingLibraryRender(component, {

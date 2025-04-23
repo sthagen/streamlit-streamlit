@@ -21,15 +21,12 @@ import { fireEvent, screen, within } from "@testing-library/react"
 import {
   AppRoot,
   BlockNode,
-  ComponentRegistry,
-  createFormsData,
   ElementNode,
   FileUploadClient,
   makeElementWithInfoText,
   mockEndpoints,
   mockSessionInfo,
   render,
-  ScriptRunState,
   WidgetStateManager,
 } from "@streamlit/lib"
 import {
@@ -82,16 +79,12 @@ const mockEndpointProp = mockEndpoints({
 })
 
 function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
-  const formsData = createFormsData()
-
   const sessionInfo = mockSessionInfo()
 
   return {
     endpoints: mockEndpointProp,
     elements: AppRoot.empty(FAKE_SCRIPT_HASH, true),
     sendMessageToHost: vi.fn(),
-    scriptRunId: "script run 123",
-    scriptRunState: ScriptRunState.NOT_RUNNING,
     widgetMgr: new WidgetStateManager({
       sendRerunBackMsg: vi.fn(),
       formsDataChanged: vi.fn(),
@@ -102,8 +95,6 @@ function getProps(props: Partial<AppViewProps> = {}): AppViewProps {
       formsWithPendingRequestsChanged: () => {},
       requestFileURLs: vi.fn(),
     }),
-    componentRegistry: new ComponentRegistry(mockEndpointProp),
-    formsData,
     appLogo: null,
     multiplePages: false,
     wideMode: false,

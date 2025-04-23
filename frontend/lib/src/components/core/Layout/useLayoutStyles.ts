@@ -16,14 +16,69 @@
 
 import { useMemo } from "react"
 
+import { streamlit } from "@streamlit/protobuf"
+
+type LayoutElement = {
+  width?: number
+  widthConfig?: streamlit.WidthConfig
+  useContainerWidth?: boolean | null
+}
+
 export type UseLayoutStylesArgs<T> = {
-  element:
-    | (T & { width?: number; useContainerWidth?: boolean | null })
-    | undefined
+  element: (T & LayoutElement) | undefined
 }
 
 const isNonZeroPositiveNumber = (value: unknown): value is number =>
   typeof value === "number" && value > 0 && !isNaN(value)
+
+enum WidthType {
+  PIXEL = "pixel",
+  STRETCH = "stretch",
+  CONTENT = "content",
+}
+
+type LayoutWidthConfig = {
+  widthType: WidthType
+  pixels?: number | undefined
+}
+
+const getWidth = (element: LayoutElement): LayoutWidthConfig => {
+  // This can be simplified once all elements have been updated to use the
+  // new width_config message and useContainerWidth is deprecated.
+  let pixels: number | undefined
+  let type: WidthType = WidthType.CONTENT
+
+  const isStretch =
+    element.widthConfig && element.widthConfig.widthSpec === "useStretch"
+  const isContent =
+    element.widthConfig && element.widthConfig.widthSpec === "useContent"
+  const isPixel =
+    element.widthConfig && element.widthConfig.widthSpec === "pixelWidth"
+
+  if (isStretch) {
+    type = WidthType.STRETCH
+  } else if (isContent) {
+    type = WidthType.CONTENT
+  } else if (
+    isPixel &&
+    isNonZeroPositiveNumber(element.widthConfig?.pixelWidth)
+  ) {
+    type = WidthType.PIXEL
+    pixels = element.widthConfig?.pixelWidth
+  } else if (
+    isNonZeroPositiveNumber(element.width) &&
+    element.widthConfig === undefined
+  ) {
+    pixels = element.width
+    type = WidthType.PIXEL
+  }
+  // The current behaviour is for useContainerWidth to take precedence over
+  // width, see arrow.py for reference.
+  if (element.useContainerWidth) {
+    type = WidthType.STRETCH
+  }
+  return { pixels, widthType: type }
+}
 
 export type UseLayoutStylesShape = {
   width: React.CSSProperties["width"]
@@ -35,26 +90,26 @@ export type UseLayoutStylesShape = {
 export const useLayoutStyles = <T>({
   element,
 }: UseLayoutStylesArgs<T>): UseLayoutStylesShape => {
-  /**
-   * The width set from the `st.<command>`
-   */
-  const commandWidth = element?.width
-  const useContainerWidth = element?.useContainerWidth
-
   // Note: Consider rounding the width to the nearest pixel so we don't have
   // subpixel widths, which leads to blurriness on screen
-
   const layoutStyles = useMemo((): UseLayoutStylesShape => {
+    if (!element) {
+      return {
+        width: "auto",
+      }
+    }
+
+    const { pixels: commandWidth, widthType } = getWidth(element)
     // The st.image element is potentially a list of images, so we always want
     // the enclosing container to be full width. The size of individual
     // images is managed in the ImageList component.
     const isImgList = element && "imgs" in element
 
-    if (useContainerWidth || isImgList) {
+    if (widthType === WidthType.STRETCH || isImgList) {
       return {
         width: "100%",
       }
-    } else if (isNonZeroPositiveNumber(commandWidth)) {
+    } else if (widthType === WidthType.PIXEL) {
       return {
         width: commandWidth,
       }
@@ -62,7 +117,7 @@ export const useLayoutStyles = <T>({
     return {
       width: "auto",
     }
-  }, [useContainerWidth, commandWidth, element])
+  }, [element])
 
   return layoutStyles
 }

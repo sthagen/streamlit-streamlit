@@ -17,9 +17,12 @@
 import React, { memo, PropsWithChildren, useMemo } from "react"
 
 import {
+  ComponentRegistry,
+  FormsData,
   LibConfig,
   LibContext,
   LibContextProps,
+  ScriptRunState,
   ThemeConfig,
   useRequiredContext,
 } from "@streamlit/lib"
@@ -60,6 +63,10 @@ type LibContextValues = {
   libConfig: LibConfig
   fragmentIdsThisRun: Array<string>
   locale: typeof window.navigator.language
+  formsData: FormsData
+  scriptRunState: ScriptRunState
+  scriptRunId: string
+  componentRegistry: ComponentRegistry
 }
 
 export type StreamlitContextProviderProps = PropsWithChildren<
@@ -94,6 +101,10 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   libConfig,
   fragmentIdsThisRun,
   locale,
+  formsData,
+  scriptRunState,
+  scriptRunId,
+  componentRegistry,
   // Used in both contexts
   currentPageScriptHash,
   onPageChange,
@@ -147,6 +158,10 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
       libConfig,
       fragmentIdsThisRun,
       locale,
+      formsData,
+      scriptRunState,
+      scriptRunId,
+      componentRegistry,
     }),
     [
       isFullScreen,
@@ -162,6 +177,10 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
       libConfig,
       fragmentIdsThisRun,
       locale,
+      formsData,
+      scriptRunState,
+      scriptRunId,
+      componentRegistry,
     ]
   )
 

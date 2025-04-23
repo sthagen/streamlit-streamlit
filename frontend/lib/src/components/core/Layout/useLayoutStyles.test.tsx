@@ -17,6 +17,8 @@
 import { describe, expect, it } from "vitest"
 import { renderHook } from "@testing-library/react"
 
+import { streamlit } from "@streamlit/protobuf"
+
 import { useLayoutStyles } from "./useLayoutStyles"
 
 describe("#useLayoutStyles", () => {
@@ -64,6 +66,151 @@ describe("#useLayoutStyles", () => {
         [100, { width: "100%" }],
       ])("and with a width value of %s, returns %o", (width, expected) => {
         const element = { width, useContainerWidth, imgs: [] }
+        const { result } = renderHook(() => useLayoutStyles({ element }))
+        expect(result.current).toEqual(expected)
+      })
+    })
+
+    describe("that has widthConfig set", () => {
+      it.each([
+        [
+          new streamlit.WidthConfig({ useStretch: true }),
+          false,
+          { width: "100%" },
+        ],
+        [
+          new streamlit.WidthConfig({ useStretch: true }),
+          true,
+          { width: "100%" },
+        ],
+        [
+          new streamlit.WidthConfig({ useContent: true }),
+          false,
+          { width: "auto" },
+        ],
+        [
+          new streamlit.WidthConfig({ useContent: true }),
+          true,
+          { width: "100%" },
+        ],
+        [
+          new streamlit.WidthConfig({ pixelWidth: 100 }),
+          false,
+          { width: 100 },
+        ],
+        [
+          new streamlit.WidthConfig({ pixelWidth: 100 }),
+          true,
+          { width: "100%" },
+        ],
+      ])(
+        "and with a widthConfig value of %o and useContainerWidth %s, returns %o",
+        (widthConfig, useContainerWidth, expected) => {
+          const element = { widthConfig, useContainerWidth }
+          const { result } = renderHook(() => useLayoutStyles({ element }))
+          expect(result.current).toEqual(expected)
+        }
+      )
+    })
+
+    describe("that has widthConfig set to invalid pixelWidth values", () => {
+      it.each([
+        [0, false, { width: "auto" }],
+        [-100, false, { width: "auto" }],
+        [NaN, false, { width: "auto" }],
+        [100, false, { width: 100 }],
+        [0, true, { width: "100%" }],
+        [-100, true, { width: "100%" }],
+        [NaN, true, { width: "100%" }],
+        [100, true, { width: "100%" }],
+      ])(
+        "and with a pixelWidth value of %s and useContainerWidth %s, returns %o",
+        (pixelWidth, useContainerWidth, expected) => {
+          const element = {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth }),
+            useContainerWidth,
+          }
+          const { result } = renderHook(() => useLayoutStyles({ element }))
+          expect(result.current).toEqual(expected)
+        }
+      )
+    })
+
+    describe("with variations on element", () => {
+      it.each([
+        [
+          { widthConfig: undefined, useContainerWidth: false },
+          { width: "auto" },
+        ],
+        [
+          { widthConfig: undefined, useContainerWidth: true },
+          { width: "100%" },
+        ],
+      ])("and with element %o, returns %o", (element, expected) => {
+        const { result } = renderHook(() => useLayoutStyles({ element }))
+        expect(result.current).toEqual(expected)
+      })
+    })
+
+    describe("with width included along with widthConfig", () => {
+      it.each([
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ useStretch: true }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: "100%" },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ useContent: true }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: "auto" },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth: 200 }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: 200 },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth: 200 }),
+            width: 100,
+            useContainerWidth: true,
+          },
+          { width: "100%" },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth: 0 }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: "auto" },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth: -100 }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: "auto" },
+        ],
+        [
+          {
+            widthConfig: new streamlit.WidthConfig({ pixelWidth: NaN }),
+            width: 100,
+            useContainerWidth: false,
+          },
+          { width: "auto" },
+        ],
+      ])("and with element %o, returns %o", (element, expected) => {
         const { result } = renderHook(() => useLayoutStyles({ element }))
         expect(result.current).toEqual(expected)
       })

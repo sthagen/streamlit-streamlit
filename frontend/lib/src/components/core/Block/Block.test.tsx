@@ -75,10 +75,6 @@ function makeVerticalBlockComponent(node: BlockNode): ReactElement {
       widgetMgr={undefined}
       // @ts-expect-error
       uploadClient={undefined}
-      // @ts-expect-error
-      componentRegistry={undefined}
-      // @ts-expect-error
-      formsData={undefined}
     />
   )
 }

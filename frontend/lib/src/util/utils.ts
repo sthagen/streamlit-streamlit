@@ -233,9 +233,10 @@ export function getUrl(): string {
     url = document.location.href
   }
 
-  // Remove query parameters from the URL
+  // Remove query parameters and anchor from the URL
   const urlObj = new URL(url)
   urlObj.search = ""
+  urlObj.hash = ""
   return urlObj.toString()
 }
 

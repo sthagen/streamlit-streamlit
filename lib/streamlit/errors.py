@@ -459,3 +459,18 @@ class StreamlitSecretNotFoundError(LocalizableStreamlitException, FileNotFoundEr
 
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class StreamlitInvalidWidthError(LocalizableStreamlitException):
+    """Exception raised when an invalid width value is provided."""
+
+    def __init__(self, width: Any, allow_content: bool = False):
+        valid_values = "an integer (pixels) or 'stretch'"
+        if allow_content:
+            valid_values = "an integer (pixels), 'stretch', or 'content'"
+
+        super().__init__(
+            "Invalid width value: {width}. Width must be either {valid_values}.",
+            width=repr(width),
+            valid_values=valid_values,
+        )

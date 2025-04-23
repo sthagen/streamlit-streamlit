@@ -28,10 +28,10 @@ const DummyParticle: FC<React.PropsWithChildren<ParticleProps>> = () => (
 
 const getProps = (): Props => ({
   className: "particles",
+  scriptRunId: "51522269",
   numParticles: 10,
   numParticleTypes: 5,
   ParticleComponent: DummyParticle,
-  scriptRunId: "51522269",
 })
 
 describe("Particles element", () => {

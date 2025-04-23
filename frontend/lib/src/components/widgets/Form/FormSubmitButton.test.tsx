@@ -21,7 +21,7 @@ import { enableAllPlugins } from "immer"
 
 import { Button as ButtonProto } from "@streamlit/protobuf"
 
-import { render } from "~lib/test_util"
+import { customRenderLibContext, render } from "~lib/test_util"
 import {
   createFormsData,
   FormsData,
@@ -61,7 +61,6 @@ describe("FormSubmitButton", () => {
         ...elementProps,
       }),
       disabled: false,
-      hasInProgressUpload: false,
       widgetMgr,
       ...props,
     }
@@ -140,8 +139,15 @@ describe("FormSubmitButton", () => {
   })
 
   it("is disabled when form has pending upload", () => {
-    const props = getProps({ hasInProgressUpload: true })
-    render(<FormSubmitButton {...props} />)
+    // Override the formsData to include the form in the formsWithUploads set
+    const formsDataOverride = {
+      ...createFormsData(),
+      formsWithUploads: new Set(["mockFormId"]),
+    }
+
+    customRenderLibContext(<FormSubmitButton {...getProps()} />, {
+      formsData: formsDataOverride,
+    })
 
     const formSubmitButton = screen.getByRole("button")
     expect(formSubmitButton).toBeDisabled()

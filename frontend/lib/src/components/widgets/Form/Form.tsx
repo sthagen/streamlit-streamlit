@@ -24,7 +24,6 @@ import React, {
 
 import AlertElement from "~lib/components/elements/AlertElement"
 import { Kind } from "~lib/components/shared/AlertContainer"
-import { ScriptRunState } from "~lib/ScriptRunState"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 
 import { StyledErrorContainer, StyledForm } from "./styled-components"
@@ -34,7 +33,7 @@ export interface Props {
   clearOnSubmit: boolean
   enterToSubmit: boolean
   hasSubmitButton: boolean
-  scriptRunState: ScriptRunState
+  scriptNotRunning: boolean
   children?: ReactNode
   widgetMgr: WidgetStateManager
   border: boolean
@@ -54,7 +53,7 @@ function Form(props: Props): ReactElement {
     widgetMgr,
     hasSubmitButton,
     children,
-    scriptRunState,
+    scriptNotRunning,
     clearOnSubmit,
     enterToSubmit,
     border,
@@ -75,11 +74,7 @@ function Form(props: Props): ReactElement {
 
   if (hasSubmitButton && showWarning) {
     setShowWarning(false)
-  } else if (
-    !hasSubmitButton &&
-    !showWarning &&
-    scriptRunState === ScriptRunState.NOT_RUNNING
-  ) {
+  } else if (!hasSubmitButton && !showWarning && scriptNotRunning) {
     setShowWarning(true)
   }
 

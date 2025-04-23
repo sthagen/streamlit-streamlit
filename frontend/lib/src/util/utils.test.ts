@@ -574,4 +574,66 @@ describe("getUrl", () => {
 
     expect(getUrl()).toBe("http://localhost:3000/main")
   })
+
+  it("should return document.location.href without query params or anchors when not in an iframe", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main?param=value#section",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
+  })
+
+  it("should return document.location.href without query params or anchors when in an iframe but window.top access throws error", () => {
+    mockIsInChildFrame.mockReturnValue(true)
+
+    // Simulate error when accessing top getter
+    topSpy.mockImplementation(() => {
+      throw new Error("CSP error simulation")
+    })
+
+    // Mock document location for the fallback
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://iframe.com/page?iframeparam=1#top",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://iframe.com/page")
+  })
+
+  it("should handle URLs with only an anchor correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main#section",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
+  })
+
+  it("should handle URLs ending with / and an anchor correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main/#section?query=1",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main/")
+  })
+
+  it("should handle complex query parameters and an anchor correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main?foo=bar&baz=qux&embed=true#section",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
+  })
 })
