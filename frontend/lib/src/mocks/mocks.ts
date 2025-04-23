@@ -28,6 +28,8 @@ export function mockSessionInfoProps(
     sessionId: "mockSessionId",
     streamlitVersion: "mockStreamlitVersion",
     pythonVersion: "mockPythonVersion",
+    serverOS: "mockServerOS",
+    hasDisplay: true,
     installationId: "mockInstallationId",
     installationIdV3: "mockInstallationIdV3",
     installationIdV4: "mockInstallationIdV4",

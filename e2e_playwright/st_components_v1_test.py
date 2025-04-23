@@ -30,7 +30,7 @@ def test_components_iframe_rendering(
     """Test that our components v1 API correctly renders elements via screenshot matching."""
 
     elements = themed_app.locator("iframe")
-    expect(elements).to_have_count(3)
+    expect(elements).to_have_count(7)
 
     # Only doing a snapshot of the html component, since the iframe one
     # does not use a valid URL.
@@ -75,10 +75,32 @@ def test_iframe_correctly_sets_attr(app: Page):
     assert math.floor(box["height"]) == 500
 
 
+def test_iframe_tab_index_attributes(app: Page):
+    """Test that iframe correctly handles tab_index attributes."""
+
+    # Default iframe (no tab_index specified) - should not have tabindex attribute
+    default_iframe = app.locator("iframe").nth(2)
+    assert not default_iframe.evaluate("node => node.hasAttribute('tabindex')"), (
+        "Iframe should not have tabindex attribute when not specified"
+    )
+
+    # Positive tab_index
+    positive_iframe = app.locator("iframe").nth(3)
+    expect(positive_iframe).to_have_attribute("tabindex", "5")
+
+    # Negative tab_index
+    negative_iframe = app.locator("iframe").nth(4)
+    expect(negative_iframe).to_have_attribute("tabindex", "-1")
+
+    # Zero tab_index
+    zero_iframe = app.locator("iframe").nth(5)
+    expect(zero_iframe).to_have_attribute("tabindex", "0")
+
+
 def test_declare_component_correctly_sets_attr(app: Page):
     """Test that components.declare_component correctly sets attributes and rendered size."""
 
-    declare_component = app.locator("iframe").nth(2)
+    declare_component = app.locator("iframe").nth(6)
 
     expect(declare_component).to_have_attribute(
         "title", "st_components_v1.test_component"

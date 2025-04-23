@@ -539,19 +539,26 @@ function DataFrame({
       clearSelection
     )
 
-  const {
-    tooltip,
-    clearTooltip,
-    onItemHovered: handleTooltips,
-  } = useTooltips(
-    columns,
-    getCellContent,
+  const ignoredRowIndices = React.useMemo(() => {
+    // If empty table, ignore row index 0 which is just a visual gimmick
     // If dynamic editing is enabled, we need to ignore the last row (trailing row)
     // because it would result in some undesired errors in the tooltips.
     // The index are 0-based -> therefore, numRows will point to the trailing row
     // (which is not part of the actual data).
-    isDynamicAndEditable ? [numRows] : []
-  )
+    if (isEmptyTable) {
+      return [0]
+    }
+    if (isDynamicAndEditable) {
+      return [numRows]
+    }
+    return []
+  }, [isEmptyTable, isDynamicAndEditable, numRows])
+
+  const {
+    tooltip,
+    clearTooltip,
+    onItemHovered: handleTooltips,
+  } = useTooltips(columns, getCellContent, ignoredRowIndices)
 
   const { drawCell, customRenderers } = useCustomRenderer(columns)
   const { provideEditor } = useCustomEditors()

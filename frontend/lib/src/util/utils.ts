@@ -215,21 +215,28 @@ export function isInChildFrame(): boolean {
 }
 
 /**
- * Returns the URL of the app, handling both embedded and non-embedded cases.
+ * Returns the URL of the app without query parameters, handling both embedded and non-embedded cases.
  * If the app is embedded in an iframe, it attempts to get the parent frame's URL.
  */
 export function getUrl(): string {
+  let url: string
+
   try {
     // Try to access top location if we're in an iframe
     if (isInChildFrame() && window.top) {
-      return window.top.location.href
+      url = window.top.location.href
+    } else {
+      url = document.location.href
     }
   } catch (e) {
     // CSP error might occur when trying to access parent frame
-    // Just fall through to default case
+    url = document.location.href
   }
-  // Default to current document location
-  return document.location.href
+
+  // Remove query parameters from the URL
+  const urlObj = new URL(url)
+  urlObj.search = ""
+  return urlObj.toString()
 }
 
 /**

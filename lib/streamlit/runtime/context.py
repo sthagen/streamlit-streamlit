@@ -20,6 +20,7 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, cast
 
 from streamlit import runtime
+from streamlit.runtime.context_util import maybe_add_page_path, maybe_trim_page_path
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner_utils.script_run_context import get_script_run_ctx
 
@@ -306,7 +307,16 @@ class ContextProxy:
         ctx = get_script_run_ctx()
         if ctx is None or ctx.context_info is None:
             return None
-        return ctx.context_info.url
+
+        url_from_frontend = ctx.context_info.url
+        url_without_page_prefix = maybe_trim_page_path(
+            url_from_frontend, ctx.pages_manager
+        )
+        url_with_page_prefix = maybe_add_page_path(
+            url_without_page_prefix, ctx.pages_manager
+        )
+
+        return url_with_page_prefix
 
     @property
     @gather_metrics("context.ip_address")

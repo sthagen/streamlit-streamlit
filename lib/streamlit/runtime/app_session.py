@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 import uuid
 from enum import Enum
@@ -24,7 +25,7 @@ from typing import TYPE_CHECKING, Callable, Final
 from google.protobuf.json_format import ParseDict
 
 import streamlit.elements.exception as exception_utils
-from streamlit import config, runtime
+from streamlit import config, env_util, runtime
 from streamlit.logger import get_logger
 from streamlit.proto.ClientState_pb2 import ClientState
 from streamlit.proto.Common_pb2 import FileURLs, FileURLsRequest
@@ -742,6 +743,10 @@ class AppSession:
 
         imsg.environment_info.streamlit_version = STREAMLIT_VERSION_STRING
         imsg.environment_info.python_version = ".".join(map(str, sys.version_info))
+        imsg.environment_info.server_os = env_util.SYSTEM
+        imsg.environment_info.has_display = (
+            "DISPLAY" in os.environ or "WAYLAND_DISPLAY" in os.environ
+        )
 
         imsg.session_status.run_on_save = self._run_on_save
         imsg.session_status.script_is_running = (

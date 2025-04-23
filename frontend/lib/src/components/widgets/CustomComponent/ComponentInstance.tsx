@@ -453,6 +453,7 @@ function ComponentInstance(props: Props): ReactElement {
         // TODO: Update to match React best practices
         // eslint-disable-next-line react-compiler/react-compiler
         componentReady={isReadyRef.current}
+        tabIndex={element.tabIndex ?? undefined}
       />
     </>
   )

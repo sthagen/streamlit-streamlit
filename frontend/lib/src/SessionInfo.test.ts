@@ -76,6 +76,8 @@ test("Props can be initialized from a protobuf", () => {
       environmentInfo: {
         streamlitVersion: "streamlitVersion",
         pythonVersion: "pythonVersion",
+        serverOs: "mockServerOS",
+        hasDisplay: true,
       },
       sessionStatus: {
         runOnSave: false,
@@ -90,6 +92,8 @@ test("Props can be initialized from a protobuf", () => {
   expect(props.sessionId).toEqual("sessionId")
   expect(props.streamlitVersion).toEqual("streamlitVersion")
   expect(props.pythonVersion).toEqual("pythonVersion")
+  expect(props.serverOS).toEqual("mockServerOS")
+  expect(props.hasDisplay).toBeTruthy()
   expect(props.installationId).toEqual("installationId")
   expect(props.installationIdV3).toEqual("installationIdV3")
   expect(props.installationIdV4).toEqual("mockInstallationIdV4")

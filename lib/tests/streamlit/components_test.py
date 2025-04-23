@@ -576,6 +576,37 @@ class InvokeComponentTest(DeltaGeneratorTestCase):
         ).new_element.component_instance
         self.assertEqual(component_instance_proto.form_id, form_proto.form.form_id)
 
+    def test_tab_index(self):
+        """Test that tab_index parameter is marshalled correctly."""
+        self.test_component(tab_index=-1, key="tab_index_neg1")
+        proto = self.get_delta_from_queue().new_element.component_instance
+        self.assertEqual(proto.tab_index, -1)
+
+        self.test_component(tab_index=0, key="tab_index_0")
+        proto = self.get_delta_from_queue().new_element.component_instance
+        self.assertEqual(proto.tab_index, 0)
+
+        self.test_component(tab_index=10, key="tab_index_10")
+        proto = self.get_delta_from_queue().new_element.component_instance
+        self.assertEqual(proto.tab_index, 10)
+
+        # Test with tab_index = None (default)
+        # The tab_index field should not be set in the proto
+        self.test_component(key="tab_index_none")
+        proto = self.get_delta_from_queue().new_element.component_instance
+        self.assertFalse(proto.HasField("tab_index"))
+
+    def test_invalid_tab_index(self):
+        """Test that invalid tab_index values raise StreamlitAPIException."""
+        with self.assertRaises(StreamlitAPIException):
+            self.test_component(tab_index=-2, key="invalid_tab_index_1")
+
+        with self.assertRaises(StreamlitAPIException):
+            self.test_component(tab_index="not_an_int", key="invalid_tab_index_2")
+
+        with self.assertRaises(StreamlitAPIException):
+            self.test_component(tab_index=True, key="invalid_tab_index_3")
+
 
 class IFrameTest(DeltaGeneratorTestCase):
     def test_iframe(self):

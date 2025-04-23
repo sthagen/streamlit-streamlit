@@ -52,6 +52,7 @@ class CustomComponent(BaseCustomComponent):
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
+        tab_index: int | None = None,
         **kwargs,
     ) -> Any:
         """An alias for create_instance."""
@@ -60,6 +61,7 @@ class CustomComponent(BaseCustomComponent):
             default=default,
             key=key,
             on_change=on_change,
+            tab_index=tab_index,
             **kwargs,
         )
 
@@ -70,6 +72,7 @@ class CustomComponent(BaseCustomComponent):
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
+        tab_index: int | None = None,
         **kwargs,
     ) -> Any:
         """Create a new instance of the component.
@@ -88,6 +91,12 @@ class CustomComponent(BaseCustomComponent):
             component's "widget ID".
         on_change: WidgetCallback or None
             An optional callback invoked when the widget's value changes. No arguments are passed to it.
+        tab_index : int, optional
+            Specifies the tab order of the iframe containing the component.
+            Possible values are:
+            - ``None`` (default): Browser default behavior.
+            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
+            - ``0`` or positive integer: Includes the iframe in the natural tab order.
         **kwargs
             Keyword args to pass to the component.
 
@@ -99,6 +108,16 @@ class CustomComponent(BaseCustomComponent):
         """
         if len(args) > 0:
             raise MarshallComponentException(f"Argument '{args[0]}' needs a label")
+
+        # Validate tab_index according to web specifications
+        if tab_index is not None and not (
+            isinstance(tab_index, int)
+            and not isinstance(tab_index, bool)
+            and tab_index >= -1
+        ):
+            raise StreamlitAPIException(
+                "tab_index must be None, -1, or a non-negative integer."
+            )
 
         try:
             import pyarrow  # noqa: F401, ICN001
@@ -148,6 +167,8 @@ And if you're using Streamlit Cloud, add "pyarrow" to your requirements.txt."""
             element.component_instance.form_id = current_form_id(dg)
             if self.url is not None:
                 element.component_instance.url = self.url
+            if tab_index is not None:
+                element.component_instance.tab_index = tab_index
 
             # Normally, a widget's element_hash (which determines
             # its identity across multiple runs of an app) is computed

@@ -534,7 +534,7 @@ export const StyledElementToolbarButton = styled(
   return {
     backgroundColor: theme.colors.transparent,
     border: "none",
-    padding: theme.spacing.xs,
+    padding: theme.spacing.twoXS,
     fontSize: theme.fontSizes.twoSm,
     marginLeft: theme.spacing.none,
     marginRight: theme.spacing.none,

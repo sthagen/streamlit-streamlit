@@ -37,6 +37,8 @@ message MetricsEvent {
   string app_id = 33;
   string session_id = 35;
   string python_version = 36;
+  string server_os = 42;
+  bool has_display = 43;
 
   // Host tracking fields:
   string hosted_at = 9;
@@ -80,7 +82,7 @@ message MetricsEvent {
   int64 total_load_time = 39;
   BrowserInfo browser_info = 40;
 
-  // Next ID: 42
+  // Next ID: 44
 }
 
 message BrowserInfo {

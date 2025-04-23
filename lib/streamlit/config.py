@@ -711,7 +711,11 @@ def _server_headless() -> bool:
     Default: false unless (1) we are on a Linux box where DISPLAY is unset, or
     (2) we are running in the Streamlit Atom plugin.
     """
-    if env_util.IS_LINUX_OR_BSD and not os.getenv("DISPLAY"):
+    if (
+        env_util.IS_LINUX_OR_BSD
+        and not os.getenv("DISPLAY")
+        and not os.getenv("WAYLAND_DISPLAY")
+    ):
         # We're running in Linux and DISPLAY is unset
         return True
 

@@ -136,7 +136,7 @@ export const StyledAppViewBlockContainer =
       addPaddingForHeader,
       theme,
     }) => {
-      const littlePadding = "2.1rem"
+      const littlePadding = "2.25rem"
       let topEmbedPadding: string = showPadding ? "6rem" : littlePadding
       if (
         (addPaddingForHeader && !showPadding) ||

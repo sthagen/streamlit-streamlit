@@ -89,15 +89,6 @@ describe("Toolbar element", () => {
     expect(toolbarButtonContainer).toHaveStyle("color: rgba(49, 51, 63, 0.6)")
   })
 
-  it("does not apply padding if there are no actions", () => {
-    render(<Toolbar {...getToolbarProps({ disableFullscreenMode: true })} />)
-
-    const toolbarButtonContainer = screen.getByTestId(
-      "stElementToolbarButtonContainer"
-    )
-    expect(toolbarButtonContainer).toHaveStyle("padding: 0px")
-  })
-
   it("doesn't show toolbar if not locked", async () => {
     render(
       <Toolbar {...getToolbarProps({ locked: false })}>

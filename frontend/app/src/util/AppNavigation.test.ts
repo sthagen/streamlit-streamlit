@@ -56,6 +56,8 @@ function generateNewSession(changes = {}): NewSession {
       environmentInfo: {
         streamlitVersion: "streamlitVersion",
         pythonVersion: "pythonVersion",
+        serverOs: "mockServerOS",
+        hasDisplay: true,
       },
       sessionStatus: {
         runOnSave: false,

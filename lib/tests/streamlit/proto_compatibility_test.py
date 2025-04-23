@@ -154,6 +154,8 @@ FD = FieldDescriptor
             {
                 ("streamlit_version", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
                 ("python_version", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                ("server_os", FD.LABEL_OPTIONAL, FD.TYPE_STRING),
+                ("has_display", FD.LABEL_OPTIONAL, FD.TYPE_BOOL),
             },
         ),
         (

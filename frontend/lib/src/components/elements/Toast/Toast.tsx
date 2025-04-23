@@ -172,7 +172,7 @@ function Toast({ body, icon }: Readonly<ToastProps>): ReactElement {
     return () => {
       // Disable transition so toast doesn't flicker on removal
       toaster.update(newKey, {
-        overrides: { Body: { style: { transitionDuration: 0 } } },
+        overrides: { Body: { style: { display: "none" } } },
       })
       // Remove toast on unmount
       toaster.clear(newKey)

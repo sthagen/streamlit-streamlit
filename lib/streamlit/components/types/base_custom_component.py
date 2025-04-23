@@ -60,6 +60,7 @@ class BaseCustomComponent(ABC):
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
+        tab_index: int | None = None,
         **kwargs,
     ) -> Any:
         """An alias for create_instance."""
@@ -68,6 +69,7 @@ class BaseCustomComponent(ABC):
             default=default,
             key=key,
             on_change=on_change,
+            tab_index=tab_index,
             **kwargs,
         )
 
@@ -113,6 +115,7 @@ class BaseCustomComponent(ABC):
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
+        tab_index: int | None = None,
         **kwargs,
     ) -> Any:
         """Create a new instance of the component.
@@ -131,6 +134,12 @@ class BaseCustomComponent(ABC):
             component's "widget ID".
         on_change: WidgetCallback or None
             An optional callback invoked when the widget's value changes. No arguments are passed to it.
+        tab_index: int or None
+            Specifies the tab order of the iframe containing the component.
+            Possible values are:
+            - ``None`` (default): Browser default behavior.
+            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
+            - ``0`` or positive integer: Includes the iframe in the natural tab order.
         **kwargs
             Keyword args to pass to the component.
 

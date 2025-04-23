@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
+from streamlit.errors import StreamlitAPIException
 from streamlit.proto.IFrame_pb2 import IFrame as IFrameProto
 from streamlit.runtime.metrics_util import gather_metrics
 
@@ -31,6 +32,8 @@ class IframeMixin:
         width: int | None = None,
         height: int | None = None,
         scrolling: bool = False,
+        *,
+        tab_index: int | None = None,
     ) -> DeltaGenerator:
         """Load a remote URL in an iframe.
 
@@ -59,6 +62,12 @@ class IframeMixin:
             does not show a scrollbar. If this is ``True``, Streamlit shows a
             scrollbar when the content is larger than the iframe.
 
+        tab_index : int, optional
+            Specifies the tab order of the iframe. Possible values are:
+            - ``None`` (default): Browser default behavior.
+            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
+            - ``0`` or positive integer: Includes the iframe in the natural tab order.
+
         Example
         -------
 
@@ -74,6 +83,7 @@ class IframeMixin:
             width=width,
             height=height,
             scrolling=scrolling,
+            tab_index=tab_index,
         )
         return self.dg._enqueue("iframe", iframe_proto)
 
@@ -84,6 +94,8 @@ class IframeMixin:
         width: int | None = None,
         height: int | None = None,
         scrolling: bool = False,
+        *,
+        tab_index: int | None = None,
     ) -> DeltaGenerator:
         """Display an HTML string in an iframe.
 
@@ -115,6 +127,12 @@ class IframeMixin:
             does not show a scrollbar. If this is ``True``, Streamlit shows a
             scrollbar when the content is larger than the iframe.
 
+        tab_index : int, optional
+            Specifies the tab order of the iframe. Possible values are:
+            - ``None`` (default): Browser default behavior.
+            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
+            - ``0`` or positive integer: Includes the iframe in the natural tab order.
+
         Example
         -------
 
@@ -132,6 +150,7 @@ class IframeMixin:
             width=width,
             height=height,
             scrolling=scrolling,
+            tab_index=tab_index,
         )
         return self.dg._enqueue("iframe", iframe_proto)
 
@@ -148,6 +167,7 @@ def marshall(
     width: int | None = None,
     height: int | None = None,
     scrolling: bool = False,
+    tab_index: int | None = None,
 ) -> None:
     """Marshalls data into an IFrame proto.
 
@@ -171,6 +191,8 @@ def marshall(
     scrolling : bool
         If true, show a scrollbar when the content is larger than the iframe.
         Otherwise, never show a scrollbar.
+    tab_index : int, optional
+        Specifies the tab order of the iframe.
 
     """
     if src is not None:
@@ -189,3 +211,16 @@ def marshall(
         proto.height = 150
 
     proto.scrolling = scrolling
+
+    if tab_index is not None:
+        # Validate tab_index according to web specifications
+        if not (
+            isinstance(tab_index, int)
+            and not isinstance(tab_index, bool)
+            and tab_index >= -1
+        ):
+            raise StreamlitAPIException(
+                "tab_index must be None, -1, or a non-negative integer."
+            )
+
+        proto.tab_index = tab_index

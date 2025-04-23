@@ -245,6 +245,8 @@ export class MetricsManager {
       appId: this.sessionInfo.current.appId,
       sessionId: this.sessionInfo.current.sessionId,
       pythonVersion: this.sessionInfo.current.pythonVersion,
+      serverOs: this.sessionInfo.current.serverOS,
+      hasDisplay: this.sessionInfo.current.hasDisplay,
       ...this.getContextData(),
     })
 

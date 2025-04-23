@@ -32,6 +32,8 @@ export interface Props {
   readonly sessionId: string
   readonly streamlitVersion: string
   readonly pythonVersion: string
+  readonly serverOS: string
+  readonly hasDisplay: boolean
   readonly installationId: string
   readonly installationIdV3: string
   readonly installationIdV4: string
@@ -106,6 +108,8 @@ export class SessionInfo {
       sessionId: initialize.sessionId,
       streamlitVersion: environmentInfo.streamlitVersion,
       pythonVersion: environmentInfo.pythonVersion,
+      serverOS: environmentInfo.serverOs,
+      hasDisplay: environmentInfo.hasDisplay,
       installationId: userInfo.installationId,
       installationIdV3: userInfo.installationIdV3,
       installationIdV4: userInfo.installationIdV4,

@@ -235,9 +235,7 @@ def test_context_url_is_correct_when_hosted_in_iframe(
     frame_locator.get_by_test_id("stExpander").locator(
         EXPANDER_HEADER_IDENTIFIER
     ).click()
-    expect_prefixed_markdown(
-        frame_locator, "Full url:", f"http://localhost:{app_port}/"
-    )
+    expect_prefixed_markdown(frame_locator, "Full url:", f"http://localhost:{app_port}")
 
 
 def test_handles_host_stop_script_message(iframed_app: IframedPage):

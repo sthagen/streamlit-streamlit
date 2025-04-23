@@ -19,10 +19,10 @@ import platform
 import re
 import sys
 
-_system = platform.system()
-IS_WINDOWS = _system == "Windows"
-IS_DARWIN = _system == "Darwin"
-IS_LINUX_OR_BSD = (_system == "Linux") or ("BSD" in _system)
+SYSTEM = platform.system().lower()
+IS_WINDOWS = SYSTEM == "windows"
+IS_DARWIN = SYSTEM == "darwin"
+IS_LINUX_OR_BSD = (SYSTEM == "linux") or ("bsd" in SYSTEM)
 
 
 def is_pex() -> bool:

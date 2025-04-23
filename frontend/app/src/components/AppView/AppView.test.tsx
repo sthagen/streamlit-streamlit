@@ -318,7 +318,7 @@ describe("AppView element", () => {
       const style = window.getComputedStyle(
         screen.getByTestId("stMainBlockContainer")
       )
-      expect(style.paddingTop).toEqual("2.1rem")
+      expect(style.paddingTop).toEqual("2.25rem")
       expect(style.paddingBottom).toEqual("1rem")
     })
 

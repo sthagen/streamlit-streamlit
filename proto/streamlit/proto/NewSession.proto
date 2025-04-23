@@ -224,4 +224,15 @@ message UserInfo {
 message EnvironmentInfo {
   string streamlit_version = 1;
   string python_version = 2;
+
+  // The name of the OS. Typically "windows", "mac", "linux",
+  // but can take other values like "ios", "android", "freebsd8".
+  // See https://docs.python.org/3/library/sys.html#sys.platform
+  string server_os = 3;
+
+  // True if Linux/BSD and DISPLAY or WAYLAND_DISPLAY environment variables are
+  // set. This is used so we can tell when Streamlit is being executed in order
+  // to develop the app (has_display = true) or to serve the app (has_display =
+  // false).
+  bool has_display = 4;
 }

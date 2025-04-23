@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-import { MockInstance } from "vitest"
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  MockInstance,
+  vi,
+} from "vitest"
 
 import {
   EMBED_QUERY_PARAM_KEY,
   EMBED_QUERY_PARAM_VALUES,
   getEmbedUrlParams,
   getLoadingScreenType,
+  getUrl,
   isColoredLineDisplayed,
   isDarkThemeInQueryParams,
   isEmbed,
+  isInChildFrame,
   isLightThemeInQueryParams,
   isPaddingDisplayed,
   isScrollingHidden,
@@ -471,5 +481,97 @@ describe("keysToSnakeCase", () => {
 
   it("should return an empty dictionary when passed an empty dictionary", () => {
     expect(keysToSnakeCase({})).toEqual({})
+  })
+})
+
+// Mock isInChildFrame since getUrl depends on it
+vi.mock("./utils", async importOriginal => {
+  const actual = await importOriginal<typeof import("./utils")>()
+  return {
+    ...actual,
+    isInChildFrame: vi.fn(),
+  }
+})
+
+describe("getUrl", () => {
+  const mockIsInChildFrame = vi.mocked(isInChildFrame)
+  let topSpy: MockInstance<() => unknown>
+  let documentSpy: MockInstance<() => unknown>
+
+  beforeEach(() => {
+    documentSpy = vi.spyOn(global, "document", "get")
+    topSpy = vi.spyOn(global, "top", "get")
+
+    // Reset mocks
+    mockIsInChildFrame.mockReset()
+    documentSpy.mockReset()
+    topSpy.mockReset()
+  })
+
+  afterEach(() => {
+    // Restore original implementations
+    vi.restoreAllMocks()
+  })
+
+  it("should return document.location.href without query params when not in an iframe", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main?param=value",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
+  })
+
+  it("should return document.location.href without query params when in an iframe but window.top access throws error", () => {
+    mockIsInChildFrame.mockReturnValue(true)
+
+    // Simulate error when accessing top getter
+    topSpy.mockImplementation(() => {
+      throw new Error("CSP error simulation")
+    })
+
+    // Mock document location for the fallback
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://iframe.com/page?iframeparam=1",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://iframe.com/page")
+  })
+
+  it("should handle URLs with no query parameters correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
+  })
+
+  it("should handle URLs ending with / correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main/?query=1",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main/")
+  })
+
+  it("should handle complex query parameters correctly", () => {
+    mockIsInChildFrame.mockReturnValue(false)
+    documentSpy.mockImplementation(() => ({
+      location: {
+        href: "http://localhost:3000/main?foo=bar&baz=qux&embed=true",
+      },
+    }))
+
+    expect(getUrl()).toBe("http://localhost:3000/main")
   })
 })
