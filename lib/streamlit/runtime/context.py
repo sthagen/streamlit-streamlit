@@ -303,7 +303,23 @@ class ContextProxy:
     @property
     @gather_metrics("context.url")
     def url(self) -> str | None:
-        """The URL of the user browser, read-only."""
+        """The read-only URL of the app in the user's browser.
+
+        ``st.context.url`` returns the URL through which the user is accessing
+        the app. This includes the scheme, domain name, port, and path. If
+        query parameters or anchors are present in the URL, they are removed
+        and not included in this value.
+
+        Example
+        -------
+        Conditionally show content when you access your app through
+        ``localhost``:
+
+        >>> import streamlit as st
+        >>>
+        >>> if st.context.url.startswith("http://localhost"):
+        >>>     st.write("You are running the app locally.")
+        """
         ctx = get_script_run_ctx()
         if ctx is None or ctx.context_info is None:
             return None
@@ -322,7 +338,31 @@ class ContextProxy:
     @gather_metrics("context.ip_address")
     def ip_address(self) -> str | None:
         """The read-only IP address of the user's connection.
-        This should not be used for security measures as it can be easily spoofed.
+
+        This should not be used for security measures because it can easily be
+        spoofed. When a user accesses the app through ``localhost``, the IP
+        address is ``None``. Otherwise, the IP address is determined from the
+        |remote_ip|_ attribute of the Tornado request object and may be an
+        IPv4 or IPv6 address.
+
+        .. |remote_ip| replace:: ``remote_ip``
+        .. _remote_ip: https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest.remote_ip
+
+        Example
+        -------
+        Check if the user has an IPv4 or IPv6 address:
+
+        >>> import streamlit as st
+        >>>
+        >>> ip = st.context.ip_address
+        >>> if ip is None:
+        >>>     st.write("No IP address. This is expected in local development.")
+        >>> elif ip.contains(":"):
+        >>>     st.write("You have an IPv6 address.")
+        >>> elif ip.contains("."):
+        >>>     st.write("You have an IPv4 address.")
+        >>> else:
+        >>>     st.error("This should not happen.")
         """
         session_client_request = _get_request()
         if session_client_request is not None:
@@ -335,7 +375,25 @@ class ContextProxy:
     @property
     @gather_metrics("context.is_embedded")
     def is_embedded(self) -> bool | None:
-        """Whether the app is embedded."""
+        """Whether the app is embedded.
+
+        This property returns a boolean value indicating whether the app is
+        running in an embedded context. This is determined by the presence of
+        ``embed=true`` as a query parameter in the URL. This is the only way to
+        determine if the app is currently configured for embedding because
+        embedding settings are not accessible through ``st.query_params`` or
+        ``st.context.url``.
+
+        Example
+        -------
+        Conditionally show content when the app is running in an embedded
+        context:
+
+        >>> import streamlit as st
+        >>>
+        >>> if st.context.is_embedded:
+        >>>     st.write("You are running the app in an embedded context.")
+        """
         ctx = get_script_run_ctx()
         if ctx is None or ctx.context_info is None:
             return None
