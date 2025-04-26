@@ -31,17 +31,17 @@ import {
  * for data types that are currently not supported for editing.
  */
 function ObjectColumn(props: BaseColumnProps): BaseColumn {
-  const cellTemplate = {
+  const cellTemplate: TextCell = {
     kind: GridCellKind.Text,
     data: "",
     displayData: "",
     allowOverlay: true,
-    contentAlignment: props.contentAlignment,
+    contentAlign: props.contentAlignment,
     allowWrapping: props.isWrappingAllowed,
     readonly: true,
     // The text in pinned columns should be faded.
     style: props.isPinned ? "faded" : "normal",
-  } as TextCell
+  }
   return {
     ...props,
     kind: "object",

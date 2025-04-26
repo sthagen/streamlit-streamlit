@@ -648,8 +648,9 @@ class TimeWidgetsMixin:
     ) -> DateWidgetReturn:
         r"""Display a date input widget.
 
-        The first day of the week is determined from the user's locale in their
-        browser.
+        The date input widget can be configured to accept a single date or a
+        date range. The first day of the week is determined from the user's
+        locale in their browser.
 
         Parameters
         ----------

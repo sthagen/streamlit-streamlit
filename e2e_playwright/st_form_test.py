@@ -149,6 +149,8 @@ def test_form_submit_with_emoji_icon(app: Page, assert_snapshot: ImageCompareFun
     """Tests if the form submit button with emoji icon renders correctly."""
     form_4 = app.get_by_test_id("stForm").nth(3)
 
+    expect(form_4.get_by_test_id("stFormSubmitButton").first).to_be_visible()
+
     assert_snapshot(form_4, name="st_form_submit-emoji_icon")
 
 
@@ -157,6 +159,8 @@ def test_form_submit_with_material_icon(
 ):
     """Tests if the form submit button with material icon renders correctly."""
     form_5 = app.get_by_test_id("stForm").nth(4)
+
+    expect(form_5.get_by_test_id("stFormSubmitButton").first).to_be_visible()
 
     assert_snapshot(form_5, name="st_form_submit-material_icon")
 
@@ -247,6 +251,10 @@ def test_borderless_form(app: Page, assert_snapshot: ImageCompareFunction):
     """Tests if the borderless form (border=False) renders correctly."""
     form_3 = app.get_by_test_id("stForm").nth(2)
 
+    # Add an except before snapshot assert to ensure that there is time for painting
+    # to complete.
+    expect(form_3.get_by_test_id("stFormSubmitButton").first).to_be_visible()
+
     assert_snapshot(form_3, name="st_form-borderless")
 
 
@@ -260,10 +268,13 @@ def test_check_form_submit_button_types(
 ):
     """Check that the form submit button types are correctly set."""
     form_9 = app.get_by_test_id("stForm").nth(8)
+    expect(form_9.get_by_test_id("stFormSubmitButton").first).to_be_visible()
     assert_snapshot(form_9, name="st_form-primary_submit_button")
 
     form_10 = app.get_by_test_id("stForm").nth(9)
+    expect(form_10.get_by_test_id("stFormSubmitButton").first).to_be_visible()
     assert_snapshot(form_10, name="st_form-tertiary_submit_button")
 
     form_11 = app.get_by_test_id("stForm").nth(10)
+    expect(form_11.get_by_test_id("stFormSubmitButton").first).to_be_visible()
     assert_snapshot(form_11, name="st_form-submit_button_just_help")

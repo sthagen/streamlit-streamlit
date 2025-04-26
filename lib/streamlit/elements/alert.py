@@ -67,8 +67,12 @@ class AlertMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
         width : int or "stretch"
-            The width of the alert. Can be either an integer (pixels) or "stretch".
-            Defaults to "stretch".
+            The desired width of the alert expressed in pixels. If this is
+            ``"stretch"`` (default), Streamlit sets the width of the alert to
+            match the width of the parent container. Otherwise, this must be an
+            integer. If the specified width is greater than the width of the
+            parent container, Streamlit sets the width of the alert to match
+            the width of the parent container.
 
         Example
         -------
@@ -134,8 +138,12 @@ class AlertMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
         width : int or "stretch"
-            The width of the alert. Can be either an integer (pixels) or "stretch".
-            Defaults to "stretch".
+            The desired width of the alert expressed in pixels. If this is
+            ``"stretch"`` (default), Streamlit sets the width of the alert to
+            match the width of the parent container. Otherwise, this must be an
+            integer. If the specified width is greater than the width of the
+            parent container, Streamlit sets the width of the alert to match
+            the width of the parent container.
 
         Example
         -------
@@ -200,8 +208,12 @@ class AlertMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
         width : int or "stretch"
-            The width of the alert. Can be either an integer (pixels) or "stretch".
-            Defaults to "stretch".
+            The desired width of the alert expressed in pixels. If this is
+            ``"stretch"`` (default), Streamlit sets the width of the alert to
+            match the width of the parent container. Otherwise, this must be an
+            integer. If the specified width is greater than the width of the
+            parent container, Streamlit sets the width of the alert to match
+            the width of the parent container.
 
         Example
         -------
@@ -267,8 +279,12 @@ class AlertMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
         width : int or "stretch"
-            The width of the alert. Can be either an integer (pixels) or "stretch".
-            Defaults to "stretch".
+            The desired width of the alert expressed in pixels. If this is
+            ``"stretch"`` (default), Streamlit sets the width of the alert to
+            match the width of the parent container. Otherwise, this must be an
+            integer. If the specified width is greater than the width of the
+            parent container, Streamlit sets the width of the alert to match
+            the width of the parent container.
 
         Example
         -------

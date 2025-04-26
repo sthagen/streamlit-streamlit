@@ -48,17 +48,21 @@ class ExceptionMixin:
     ) -> DeltaGenerator:
         """Display an exception.
 
-        In the lower-right corner of the exception, Streamlit displays links to
-        Google and ChatGPT that are prefilled with the contents of the
-        exception message.
+        When accessing the app through ``localhost``, in the lower-right corner
+        of the exception, Streamlit displays links to Google and ChatGPT that
+        are prefilled with the contents of the exception message.
 
         Parameters
         ----------
         exception : Exception
             The exception to display.
         width : int or "stretch"
-            The width of the exception display. Can be either an integer (pixels) or "stretch".
-            Defaults to "stretch".
+            The desired width of the exception expressed in pixels. If this is
+            ``"stretch"`` (default), Streamlit sets the width of the exception
+            to match the width of the parent container. Otherwise, this must be
+            an integer. If the specified width is greater than the width of the
+            parent container, Streamlit sets the width of the exception to
+            match the width of the parent container.
 
         Example
         -------

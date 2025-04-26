@@ -208,9 +208,9 @@ def _pandas_style_to_css(
     else:
         cell_selectors = style["selectors"]
 
-    selectors = []
-    for cell_selector in cell_selectors:
-        selectors.append(table_selector + separator + cell_selector)
+    selectors = [
+        table_selector + separator + cell_selector for cell_selector in cell_selectors
+    ]
     selector = ", ".join(selectors)
 
     declaration_block = "; ".join(declarations)

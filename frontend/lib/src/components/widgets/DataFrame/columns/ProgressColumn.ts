@@ -85,22 +85,22 @@ function ProgressColumn(props: BaseColumnProps): BaseColumn {
       ? undefined
       : countDecimals(parameters.step)
 
-  const cellTemplate = {
+  const cellTemplate: RangeCellType = {
     kind: GridCellKind.Custom,
     allowOverlay: false,
     copyData: "",
     contentAlign: props.contentAlignment,
+    readonly: true,
     data: {
       kind: "range-cell",
-      min: parameters.min_value,
-      max: parameters.max_value,
-      step: parameters.step,
-      value: parameters.min_value,
+      min: parameters.min_value!,
+      max: parameters.max_value!,
+      step: parameters.step!,
+      value: parameters.min_value!,
       label: String(parameters.min_value),
       measureLabel,
-      readonly: true,
     },
-  } as RangeCellType
+  }
 
   return {
     ...props,

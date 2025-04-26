@@ -610,7 +610,7 @@ class ScriptRunner:
                                 )
                                 wrapped_fragment()
 
-                            except FragmentStorageKeyError:
+                            except FragmentStorageKeyError:  # noqa: PERF203
                                 # This can happen if the fragment_id is removed from the
                                 # storage before the script runner gets to it. In this
                                 # case, the fragment is simply skipped.

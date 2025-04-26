@@ -27,7 +27,7 @@ import { BaseColumn, BaseColumnProps, toSafeString } from "./utils"
  * This column type is currently read-only.
  */
 function ImageColumn(props: BaseColumnProps): BaseColumn {
-  const cellTemplate = {
+  const cellTemplate: ImageCell = {
     kind: GridCellKind.Image,
     data: [],
     displayData: [],
@@ -35,7 +35,7 @@ function ImageColumn(props: BaseColumnProps): BaseColumn {
     allowOverlay: true,
     contentAlign: props.contentAlignment || "center",
     style: "normal",
-  } as ImageCell
+  }
 
   return {
     ...props,

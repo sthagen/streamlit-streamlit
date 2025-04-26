@@ -304,6 +304,152 @@ class DataEditorUtilTest(unittest.TestCase):
             },
         )
 
+    def test_apply_row_additions_range_index(self):
+        """Test adding rows to a DataFrame with a RangeIndex."""
+        df = pd.DataFrame({"col1": [1, 2]}, index=pd.RangeIndex(0, 2, 1))
+        added_rows: list[dict[str, Any]] = [
+            {"col1": 10},
+            {"col1": 11},
+        ]
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        expected_df = pd.DataFrame(
+            {"col1": [1, 2, 10, 11]}, index=pd.RangeIndex(0, 4, 1)
+        )
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+    def test_apply_row_additions_int_index_non_contiguous(self):
+        """Test adding rows to a DataFrame with a non-contiguous integer index."""
+        df = pd.DataFrame({"col1": [1, 3]}, index=pd.Index([0, 2], dtype="int64"))
+        added_rows: list[dict[str, Any]] = [
+            {"col1": 10},
+            {"col1": 11},
+        ]
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        expected_df = pd.DataFrame(
+            {"col1": [1, 3, 10, 11]}, index=pd.Index([0, 2, 3, 4], dtype="int64")
+        )
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+    def test_apply_row_additions_empty_df(self):
+        """Test adding rows to an empty DataFrame."""
+        df = pd.DataFrame(
+            {"col1": pd.Series(dtype="int")}, index=pd.RangeIndex(0, 0, 1)
+        )
+        self.assertTrue(df.empty)
+        added_rows: list[dict[str, Any]] = [
+            {"col1": 10},
+            {"col1": 11},
+        ]
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        expected_df = pd.DataFrame({"col1": [10, 11]}, index=pd.RangeIndex(0, 2, 1))
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+    @patch("streamlit.elements.widgets.data_editor._LOGGER")
+    def test_apply_row_additions_other_index_no_value_logs_warning(self, mock_logger):
+        """Test adding to non-auto-increment index without value logs warning."""
+        df = pd.DataFrame(
+            {"col1": [1, 2]},
+            index=pd.to_datetime(["2023-01-01", "2023-01-02"]),
+        )
+        added_rows: list[dict[str, Any]] = [
+            {"col1": 10},  # No _index provided
+        ]
+        original_len = len(df)
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        # Verify row was NOT added
+        self.assertEqual(len(df), original_len)
+        # Verify warning was logged
+        mock_logger.warning.assert_called_once()
+        self.assertIn(
+            "Cannot automatically add row", mock_logger.warning.call_args[0][0]
+        )
+
+    def test_apply_row_additions_other_index_with_value(self):
+        """Test adding to non-auto-increment index with provided value."""
+        index = pd.to_datetime(["2023-01-01", "2023-01-02"])
+        df = pd.DataFrame({"col1": [1, 2]}, index=index)
+        added_rows: list[dict[str, Any]] = [
+            {"_index": "2023-01-03", "col1": 10},
+        ]
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        expected_index = pd.to_datetime(["2023-01-01", "2023-01-02", "2023-01-03"])
+        expected_df = pd.DataFrame({"col1": [1, 2, 10]}, index=expected_index)
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+    def test_apply_row_additions_range_index_with_value(self):
+        r"""Test adding row to RangeIndex with explicit _index provided
+        (should still auto-increment)."""
+        # This tests the `index_type != \"range\"` condition in the first branch.
+        df = pd.DataFrame({"col1": [1, 2]}, index=pd.RangeIndex(0, 2, 1))
+        added_rows: list[dict[str, Any]] = [
+            {"_index": 99, "col1": 10},  # Provide an index value
+        ]
+
+        _apply_row_additions(
+            df, added_rows, determine_dataframe_schema(df, _get_arrow_schema(df))
+        )
+
+        # Even though _index=99 was provided, it should auto-increment the RangeIndex.
+        expected_df = pd.DataFrame({"col1": [1, 2, 10]}, index=pd.RangeIndex(0, 3, 1))
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
+    def test_apply_dataframe_edits_delete_and_add_range_index(self):
+        """Test applying edits involving deletion and addition on a RangeIndex."""
+        # Initial DF with RangeIndex
+        df = pd.DataFrame({"col1": [1, 2, 3, 4]}, index=pd.RangeIndex(0, 4, 1))
+
+        # Delete row at index 1 (value 2)
+        deleted_rows: list[int] = [1]
+        # Add a new row
+        added_rows: list[dict[str, Any]] = [
+            {"col1": 10},
+        ]
+        # No cell edits for this test
+        edited_rows: dict[int, Any] = {}
+
+        # Expected state after edits:
+        # - Row 1 (value 2) deleted.
+        # - Index becomes integer index [0, 2, 3].
+        # - New row added with index max+1 = 4.
+        # - Final index: integer index [0, 2, 3, 4]
+        # - Final values: [1, 3, 4, 10]
+        expected_df = pd.DataFrame(
+            {"col1": [1, 3, 4, 10]}, index=pd.Index([0, 2, 3, 4], dtype="int64")
+        )
+
+        _apply_dataframe_edits(
+            df,
+            {
+                "deleted_rows": deleted_rows,
+                "added_rows": added_rows,
+                "edited_rows": edited_rows,
+            },
+            determine_dataframe_schema(df, _get_arrow_schema(df)),
+        )
+
+        # Check dtypes=False because deletion/addition might change column dtypes
+        pd.testing.assert_frame_equal(df, expected_df, check_dtype=False)
+
 
 class DataEditorTest(DeltaGeneratorTestCase):
     def test_default_params(self):

@@ -170,7 +170,7 @@ def _do_with_retries(
     for i in _retry_dance():
         try:
             return orig_fn()
-        except exceptions:
+        except exceptions:  # noqa: PERF203
             if i >= _MAX_RETRIES - 1:
                 raise
             else:

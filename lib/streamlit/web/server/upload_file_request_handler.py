@@ -108,16 +108,16 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
 
         uploaded_files: list[UploadedFileRec] = []
 
-        for _, flist in files.items():
-            for file in flist:
-                uploaded_files.append(
-                    UploadedFileRec(
-                        file_id=file_id,
-                        name=file["filename"],
-                        type=file["content_type"],
-                        data=file["body"],
-                    )
+        for flist in files.values():
+            uploaded_files.extend(
+                UploadedFileRec(
+                    file_id=file_id,
+                    name=file["filename"],
+                    type=file["content_type"],
+                    data=file["body"],
                 )
+                for file in flist
+            )
 
         if len(uploaded_files) != 1:
             self.send_error(

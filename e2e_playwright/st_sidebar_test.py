@@ -24,6 +24,9 @@ def test_sidebar_displays_correctly(
     themed_app: Page, assert_snapshot: ImageCompareFunction
 ):
     sidebar = themed_app.get_by_test_id("stSidebar")
+    # Add an except before snapshot assert to ensure that there is time for painting
+    # to complete.
+    expect(sidebar.get_by_test_id("stVegaLiteChart")).to_be_visible()
     assert_snapshot(sidebar, name="st_sidebar-display")
 
 

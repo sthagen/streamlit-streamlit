@@ -110,7 +110,7 @@ class MultiSelectSerde(Generic[T]):
             try:
                 option_index = self.options.index(v)
                 values.append(self.formatted_options[option_index])
-            except ValueError:
+            except ValueError:  # noqa: PERF203
                 # at this point we know that v is a string, otherwise
                 # it would have been found in the options
                 values.append(cast("str", v))
@@ -129,7 +129,7 @@ class MultiSelectSerde(Generic[T]):
             try:
                 option_index = self.formatted_options.index(v)
                 values.append(self.options[option_index])
-            except ValueError:
+            except ValueError:  # noqa: PERF203
                 values.append(v)
         return values
 
@@ -303,10 +303,15 @@ class MultiSelectMixin:
         max_selections: int
             The max selections that can be selected at a time.
 
-        placeholder: str | None
+        placeholder: str or  None
             A string to display when no options are selected.
-            Defaults to "Choose an option." or, if
-            ``accept_new_options`` is set to ``True``, to "Choose or add an option".
+            If this is ``None`` (default), the widget displays one of the two
+            following placeholder strings:
+
+            - "Choose an option" is displayed if you set
+              ``accept_new_options=False``.
+            - "Choose or add an option" is displayed if you set
+              ``accept_new_options=True``.
 
         disabled: bool
             An optional boolean that disables the multiselect widget if set
@@ -319,30 +324,65 @@ class MultiSelectMixin:
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
         accept_new_options: bool
-            If ``True``, the user can enter new options that don't exist in the
-            original options. The ``max_options`` argument is still enforced.
-            The default is ``False``.
+            Whether the user can add selections that aren't included in ``options``.
+            If this is ``False`` (default), the user can only select from the
+            items in ``options``. If this is ``True``, the user can enter new
+            items that don't exist in ``options``.
+
+            When a user enters and selects a new item, it is included in the
+            widget's returned list as a string. The new item is not added to
+            the widget's drop-down menu. Streamlit will use a case-insensitive
+            match from ``options`` before adding a new item, and a new item
+            can't be added if a case-insensitive match is already selected. The
+            ``max_selections`` argument is still enforced.
 
         Returns
         -------
         list
             A list with the selected options
 
-        Example
-        -------
+        Examples
+        --------
+        **Example 1: Use a basic multiselect widget**
+
+        You can declare one or more initial selections with the ``default``
+        parameter.
+
         >>> import streamlit as st
         >>>
         >>> options = st.multiselect(
-        ...     "What are your favorite colors",
+        ...     "What are your favorite colors?",
         ...     ["Green", "Yellow", "Red", "Blue"],
-        ...     ["Yellow", "Red"],
+        ...     default=["Yellow", "Red"],
         ... )
         >>>
         >>> st.write("You selected:", options)
 
         .. output::
            https://doc-multiselect.streamlit.app/
-           height: 420px
+           height: 350px
+
+        **Example 2: Let users to add new options**
+
+        To allow users to enter and select new options that aren't included in
+        the ``options`` list, use the ``accept_new_options`` parameter. To
+        prevent users from adding an unbounded number of new options, use the
+        ``max_selections`` parameter.
+
+        >>> import streamlit as st
+        >>>
+        >>> options = st.multiselect(
+        ...     "What are your favorite cat names?",
+        ...     ["Jellybeans", "Fish Biscuit", "Madam President"],
+        ...     max_selections=5,
+        ...     accept_new_options=True,
+        ... )
+        >>>
+        >>> st.write("You selected:", options)
+
+        .. output::
+           https://doc-multiselect-accept-new-options.streamlit.app/
+           height: 350px
 
         """
         ctx = get_script_run_ctx()

@@ -53,17 +53,17 @@ function TextColumn(props: BaseColumnProps): BaseColumn {
     }
   }
 
-  const cellTemplate = {
+  const cellTemplate: TextCell = {
     kind: GridCellKind.Text,
     data: "",
     displayData: "",
     allowOverlay: true,
-    contentAlignment: props.contentAlignment,
+    contentAlign: props.contentAlignment,
     allowWrapping: props.isWrappingAllowed,
     readonly: !props.isEditable,
     // The text in pinned columns should be faded.
     style: props.isPinned ? "faded" : "normal",
-  } as TextCell
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | string => {

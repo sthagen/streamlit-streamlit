@@ -68,8 +68,7 @@ def pages_from_nav_sections(
 ) -> list[StreamlitPage]:
     page_list = []
     for pages in nav_sections.values():
-        for page in pages:
-            page_list.append(page)
+        page_list.extend(pages.copy())
 
     return page_list
 

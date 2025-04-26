@@ -979,7 +979,7 @@ def _populate_theme_msg(msg: CustomThemeConfig, section: str = "theme") -> None:
         for font_face in font_faces:
             try:
                 msg.font_faces.append(ParseDict(font_face, FontFace()))
-            except Exception as e:
+            except Exception as e:  # noqa: PERF203
                 _LOGGER.warning(
                     f"Failed to parse the theme.fontFaces config option: {font_face}.",
                     exc_info=e,

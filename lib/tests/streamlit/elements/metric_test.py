@@ -211,6 +211,8 @@ class MetricTest(DeltaGeneratorTestCase):
             "`label` got an empty value. This is discouraged for accessibility reasons",
             logs.records[0].msg,
         )
+        # Check that the stack trace is included in the warning message:
+        assert logs.records[0].stack_info is not None
 
     def test_invalid_value(self):
         with self.assertRaises(TypeError) as exc:

@@ -280,6 +280,26 @@ def _apply_cell_edits(
                 )
 
 
+def _parse_added_row(
+    df: pd.DataFrame,
+    added_row: dict[str, Any],
+    dataframe_schema: DataframeSchema,
+) -> tuple[Any, list[Any]]:
+    """Parse the added row into an optional index value and a list of row values."""
+    index_value = None
+    new_row: list[Any] = [None for _ in range(df.shape[1])]
+    for col_name, value in added_row.items():
+        if col_name == INDEX_IDENTIFIER:
+            # TODO(lukasmasuch): To support multi-index in the future:
+            # use a tuple of values here instead of a single value
+            index_value = _parse_value(value, dataframe_schema[INDEX_IDENTIFIER])
+        else:
+            col_pos = cast("int", df.columns.get_loc(col_name))
+            new_row[col_pos] = _parse_value(value, dataframe_schema[col_name])
+
+    return index_value, new_row
+
+
 def _apply_row_additions(
     df: pd.DataFrame,
     added_rows: list[dict[str, Any]],
@@ -305,39 +325,54 @@ def _apply_row_additions(
 
     import pandas as pd
 
-    # This is only used if the dataframe has a range index:
-    # There seems to be a bug in older pandas versions with RangeIndex in
-    # combination with loc. As a workaround, we manually track the values here:
-    range_index_stop = None
-    range_index_step = None
+    index_type: Literal["range", "integer", "other"] = "other"
+    # This is only used if the dataframe has a range or integer index that can be
+    # auto incremented:
+    index_stop: int | None = None
+    index_step: int | None = None
+
     if isinstance(df.index, pd.RangeIndex):
-        range_index_stop = df.index.stop
-        range_index_step = df.index.step
+        # Extract metadata from the range index:
+        index_type = "range"
+        index_stop = cast("int", df.index.stop)
+        index_step = cast("int", df.index.step)
+    elif isinstance(df.index, pd.Index) and pd.api.types.is_integer_dtype(
+        df.index.dtype
+    ):
+        # Get highest integer value and increment it by 1 to get unique index value.
+        index_type = "integer"
+        index_stop = 0 if df.index.empty else df.index.max() + 1
+        index_step = 1
 
     for added_row in added_rows:
-        index_value = None
-        new_row: list[Any] = [None for _ in range(df.shape[1])]
-        for col_name in added_row.keys():
-            value = added_row[col_name]
-            if col_name == INDEX_IDENTIFIER:
-                # TODO(lukasmasuch): To support multi-index in the future:
-                # use a tuple of values here instead of a single value
-                index_value = _parse_value(value, dataframe_schema[INDEX_IDENTIFIER])
-            else:
-                col_pos = df.columns.get_loc(col_name)
-                new_row[col_pos] = _parse_value(value, dataframe_schema[col_name])
-        # Append the new row to the dataframe
-        if range_index_stop is not None:
-            df.loc[range_index_stop, :] = new_row
-            # Increment to the next range index value
-            range_index_stop += range_index_step
-        elif index_value is not None:
-            # TODO(lukasmasuch): we are only adding rows that have a non-None index
-            # value to prevent issues in the frontend component. Also, it just overwrites
-            # the row in case the index value already exists in the dataframe.
-            # In the future, it would be better to require users to provide unique
-            # non-None values for the index with some kind of visual indications.
+        index_value, new_row = _parse_added_row(df, added_row, dataframe_schema)
+
+        if index_value is not None and index_type != "range":
+            # Case 1: Non-range index with an explicitly provided index value
+            # Add row using the user-provided index value.
+            # This handles any type of index that cannot be auto incremented.
+
+            # Note: this just overwrites the row in case the index value
+            # already exists. In the future, it would be better to
+            # require users to provide unique non-None values for the index with
+            # some kind of visual indications.
             df.loc[index_value, :] = new_row
+            continue
+
+        if index_stop is not None and index_step is not None:
+            # Case 2: Range or integer index that can be auto incremented.
+            # Add row using the next value in the sequence
+            df.loc[index_stop, :] = new_row
+            # Increment to the next range index value
+            index_stop += index_step
+            continue
+
+        # Row cannot be added -> skip it and log a warning.
+        _LOGGER.warning(
+            "Cannot automatically add row for the index "
+            f"of type {type(df.index).__name__} without an explicit index value. "
+            "Row addition skipped."
+        )
 
 
 def _apply_row_deletions(df: pd.DataFrame, deleted_rows: list[int]) -> None:

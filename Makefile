@@ -369,7 +369,7 @@ headers:
 # Write the minimum versions of our dependencies to a constraints file.
 gen-min-dep-constraints:
 	make develop >/dev/null
-	python scripts/get_min_versions.py >lib/min-constraints-gen.txt
+	python scripts/get_min_versions.py >scripts/assets/min-constraints-gen.txt
 
 .PHONY: pre-commit-install
 # Pre-commit install.

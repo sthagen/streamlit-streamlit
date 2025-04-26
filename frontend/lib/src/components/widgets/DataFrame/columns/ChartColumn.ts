@@ -65,7 +65,7 @@ function BaseChartColumn(
     props.columnTypeOptions
   ) as ChartColumnParams
 
-  const cellTemplate = {
+  const cellTemplate: SparklineCellType = {
     kind: GridCellKind.Custom,
     allowOverlay: false,
     copyData: "",
@@ -75,9 +75,9 @@ function BaseChartColumn(
       values: [],
       displayValues: [],
       graphKind: chart_type,
-      yAxis: [parameters.y_min, parameters.y_max],
+      yAxis: [parameters.y_min ?? 0, parameters.y_max ?? 1],
     },
-  } as SparklineCellType
+  }
 
   return {
     ...props,

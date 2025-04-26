@@ -61,6 +61,15 @@ class HtmlMixin:
               convert the object to a string. ``body._repr_html_()`` takes
               precedence over ``str(body)`` when available.
 
+            If the resulting HTML content is empty, Streamlit will raise an
+            error.
+
+            If ``body`` is a path to a CSS file, Streamlit will wrap the CSS
+            content in ``<style>`` tags automatically. When the resulting HTML
+            content only contains style tags, Streamlit will send the content
+            to the event container instead of the main container to avoid
+            taking up space in the app.
+
         Example
         -------
         >>> import streamlit as st

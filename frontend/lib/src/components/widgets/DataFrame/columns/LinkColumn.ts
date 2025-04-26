@@ -71,7 +71,7 @@ function LinkColumn(props: BaseColumnProps): BaseColumn {
     }
   }
 
-  const cellTemplate = {
+  const cellTemplate: UriCell = {
     kind: GridCellKind.Uri,
     readonly: !props.isEditable,
     allowOverlay: true,
@@ -81,7 +81,7 @@ function LinkColumn(props: BaseColumnProps): BaseColumn {
     data: "",
     displayData: "",
     copyData: "",
-  } as UriCell
+  }
 
   const validateInput = (href?: string): boolean => {
     if (isNullOrUndefined(href)) {

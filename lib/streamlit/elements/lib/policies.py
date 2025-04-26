@@ -185,7 +185,8 @@ def maybe_raise_label_warnings(label: str | None, label_visibility: str | None):
             "`label` got an empty value. This is discouraged for accessibility "
             "reasons and may be disallowed in the future by raising an exception. "
             "Please provide a non-empty label and hide it with label_visibility "
-            "if needed."
+            "if needed.",
+            stack_info=True,
         )
     if label_visibility not in ("visible", "hidden", "collapsed"):
         raise errors.StreamlitAPIException(

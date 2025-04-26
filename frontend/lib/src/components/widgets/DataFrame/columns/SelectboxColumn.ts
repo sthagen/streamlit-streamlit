@@ -67,7 +67,7 @@ function SelectboxColumn(props: BaseColumnProps): BaseColumn {
     }
   }
 
-  const cellTemplate = {
+  const cellTemplate: DropdownCellType = {
     kind: GridCellKind.Custom,
     allowOverlay: true,
     copyData: "",
@@ -86,7 +86,7 @@ function SelectboxColumn(props: BaseColumnProps): BaseColumn {
       ],
       value: "",
     },
-  } as DropdownCellType
+  }
 
   return {
     ...props,

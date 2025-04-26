@@ -83,7 +83,7 @@ function NumberColumn(props: BaseColumnProps): BaseColumn {
       ? countDecimals(parameters.step)
       : undefined
 
-  const cellTemplate = {
+  const cellTemplate: NumberCell = {
     kind: GridCellKind.Number,
     data: undefined,
     displayData: "",
@@ -98,7 +98,7 @@ function NumberColumn(props: BaseColumnProps): BaseColumn {
     // We don't want to show any thousand separators
     // in the cell overlay/editor:
     thousandSeparator: "",
-  } as NumberCell
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | number => {

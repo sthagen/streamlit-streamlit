@@ -313,10 +313,15 @@ class SelectboxMixin:
         kwargs : dict
             An optional dict of kwargs to pass to the callback.
 
-        placeholder : str
+        placeholder : str or None
             A string to display when no options are selected.
-            Defaults to "Choose an option." or, if
-            ``accept_new_options`` is set to ``True``, to "Choose or add an option".
+            If this is ``None`` (default), the widget displays one of the two
+            following placeholder strings:
+
+            - "Choose an option" is displayed if you set
+              ``accept_new_options=False``.
+            - "Choose or add an option" is displayed if you set
+              ``accept_new_options=True``.
 
         disabled : bool
             An optional boolean that disables the selectbox if set to ``True``.
@@ -329,17 +334,27 @@ class SelectboxMixin:
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
         accept_new_options : bool
-            If ``True``, the user can enter a new option in the UI that is not part of
-            passed the options. The newly entered option gets selected.
-            The default is ``False``.
+            Whether the user can add a selection that isn't included in ``options``.
+            If this is ``False`` (default), the user can only select from the
+            items in ``options``. If this is ``True``, the user can enter a new
+            item that doesn't exist in ``options``.
+
+            When a user enters a new item, it is returned by the widget as a
+            string. The new item is not added to the widget's drop-down menu.
+            Streamlit will use a case-insensitive match from ``options`` before
+            adding a new item.
 
         Returns
         -------
         any
             The selected option or ``None`` if no option is selected.
 
-        Example
-        -------
+        Examples
+        --------
+        **Example 1: Use a basic selectbox widget**
+
+        If no index is provided, the first option is selected by default.
+
         >>> import streamlit as st
         >>>
         >>> option = st.selectbox(
@@ -353,7 +368,9 @@ class SelectboxMixin:
            https://doc-selectbox.streamlit.app/
            height: 320px
 
-        To initialize an empty selectbox, use ``None`` as the index value:
+        **Example 2: Use a selectbox widget with no initial selection**
+
+        To initialize an empty selectbox, use ``None`` as the index value.
 
         >>> import streamlit as st
         >>>
@@ -368,6 +385,28 @@ class SelectboxMixin:
 
         .. output::
            https://doc-selectbox-empty.streamlit.app/
+           height: 320px
+
+        **Example 3: Let users add a new option**
+
+        To allow users to add a new option that isn't included in the
+        ``options`` list, use the ``accept_new_options=True`` parameter. You
+        can also customize the placeholder text.
+
+        >>> import streamlit as st
+        >>>
+        >>> option = st.selectbox(
+        ...     "Default email",
+        ...     ["foo@example.com", "bar@example.com", "baz@example.com"],
+        ...     index=None,
+        ...     placeholder="Select a saved email or enter a new one",
+        ...     accept_new_options=True,
+        ... )
+        >>>
+        >>> st.write("You selected:", option)
+
+        .. output::
+           https://doc-selectbox-accept-new-options.streamlit.app/
            height: 320px
 
         """

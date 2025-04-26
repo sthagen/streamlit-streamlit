@@ -376,7 +376,7 @@ class SessionState:
         for key_or_wid in self:
             try:
                 self._old_state[key_or_wid] = self[key_or_wid]
-            except KeyError:
+            except KeyError:  # noqa: PERF203
                 # handle key errors from widget state not having metadata gracefully
                 # https://github.com/streamlit/streamlit/issues/7206
                 pass
@@ -569,7 +569,7 @@ class SessionState:
         for wid in changed_widget_ids:
             try:
                 self._new_widget_state.call_callback(wid)
-            except RerunException:
+            except RerunException:  # noqa: PERF203
                 st.warning("Calling st.rerun() within a callback is a no-op.")
 
     def _widget_changed(self, widget_id: str) -> bool:
@@ -720,15 +720,19 @@ class SessionState:
         We use pickleability as the metric for serializability, and test for
         pickleability by just trying it.
         """
-        for k in self:
-            try:
+        try:
+            for k in self:
                 pickle.dumps(self[k])
-            except Exception as e:
-                err_msg = f"""Cannot serialize the value (of type `{type(self[k])}`) of '{k}' in st.session_state.
-                Streamlit has been configured to use [pickle](https://docs.python.org/3/library/pickle.html) to
-                serialize session_state values. Please convert the value to a pickle-serializable type. To learn
-                more about this behavior, see [our docs](https://docs.streamlit.io/knowledge-base/using-streamlit/serializable-session-state). """
-                raise UnserializableSessionStateError(err_msg) from e
+        except Exception as e:
+            err_msg = (
+                f"Cannot serialize the value (of type `{type(self[k])}`) of '{k}' in "
+                "st.session_state. Streamlit has been configured to use "
+                "[pickle](https://docs.python.org/3/library/pickle.html) to "
+                "serialize session_state values. Please convert the value to a "
+                "pickle-serializable type. To learn more about this behavior, "
+                "see [our docs](https://docs.streamlit.io/knowledge-base/using-streamlit/serializable-session-state)."
+            )
+            raise UnserializableSessionStateError(err_msg) from e
 
     def maybe_check_serializable(self) -> None:
         """Verify that session state can be serialized, if the relevant config

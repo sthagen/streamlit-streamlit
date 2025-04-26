@@ -108,18 +108,15 @@ class InMemoryCacheStorageWrapper(CacheStorage):
 
     def get_stats(self) -> list[CacheStat]:
         """Returns a list of stats in bytes for the cache memory storage per item."""
-        stats = []
-
         with self._mem_cache_lock:
-            for item in self._mem_cache.values():
-                stats.append(
-                    CacheStat(
-                        category_name="st_cache_data",
-                        cache_name=self.function_display_name,
-                        byte_length=len(item),
-                    )
+            return [
+                CacheStat(
+                    category_name="st_cache_data",
+                    cache_name=self.function_display_name,
+                    byte_length=len(item),
                 )
-        return stats
+                for item in self._mem_cache.values()
+            ]
 
     def close(self) -> None:
         """Closes the cache storage."""

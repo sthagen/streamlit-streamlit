@@ -32,10 +32,10 @@ import {
  * A column type for read-only cells that contain JSON strings or JSON-compatible objects.
  */
 function JsonColumn(props: BaseColumnProps): BaseColumn {
-  const cellTemplate = {
+  const cellTemplate: JsonCell = {
     kind: GridCellKind.Custom,
     allowOverlay: true,
-    contentAlignment: props.contentAlignment,
+    contentAlign: props.contentAlignment,
     readonly: true,
     // The text in pinned columns should be faded.
     style: props.isPinned ? "faded" : "normal",
@@ -44,7 +44,7 @@ function JsonColumn(props: BaseColumnProps): BaseColumn {
       kind: "json-cell",
       value: "",
     },
-  } as JsonCell
+  }
 
   return {
     ...props,

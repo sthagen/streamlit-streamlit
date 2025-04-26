@@ -30,13 +30,13 @@ import {
  * A column type that supports optimized rendering values of array/list types.
  */
 function ListColumn(props: BaseColumnProps): BaseColumn {
-  const cellTemplate = {
+  const cellTemplate: BubbleCell = {
     kind: GridCellKind.Bubble,
     data: [],
     allowOverlay: true,
     contentAlign: props.contentAlignment,
     style: "normal",
-  } as BubbleCell
+  }
 
   return {
     ...props,

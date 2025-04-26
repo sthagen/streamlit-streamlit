@@ -123,7 +123,7 @@ function BaseDateTimeColumn(
     maxDate = toSafeDate(parameters.max_value) || undefined
   }
 
-  const cellTemplate = {
+  const cellTemplate: DatePickerType = {
     kind: GridCellKind.Custom,
     allowOverlay: true,
     copyData: "",
@@ -140,7 +140,7 @@ function BaseDateTimeColumn(
       min: minDate,
       max: maxDate,
     },
-  } as DatePickerType
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   const validateInput = (data?: any): boolean | Date => {

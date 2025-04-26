@@ -62,11 +62,26 @@ class IframeMixin:
             does not show a scrollbar. If this is ``True``, Streamlit shows a
             scrollbar when the content is larger than the iframe.
 
-        tab_index : int, optional
-            Specifies the tab order of the iframe. Possible values are:
-            - ``None`` (default): Browser default behavior.
-            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
-            - ``0`` or positive integer: Includes the iframe in the natural tab order.
+        tab_index : int or None
+            Specifies how and if the iframe is sequentially focusable.
+            Users typically use the ``Tab`` key for sequential focus
+            navigation.
+
+            This can be one of the following values:
+
+            - ``None`` (default): Uses the browser's default behavior.
+            - ``-1``: Removes the iframe from sequential navigation, but still
+              allows it to be focused programmatically.
+            - ``0``: Includes the iframe in sequential navigation in the order
+              it appears in the document but after all elements with a positive
+              ``tab_index``.
+            - Positive integer: Includes the iframe in sequential navigation.
+              Elements are navigated in ascending order of their positive
+              ``tab_index``.
+
+            For more information, see the `tabindex
+            <https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex>`_
+            documentation on MDN.
 
         Example
         -------
@@ -127,11 +142,26 @@ class IframeMixin:
             does not show a scrollbar. If this is ``True``, Streamlit shows a
             scrollbar when the content is larger than the iframe.
 
-        tab_index : int, optional
-            Specifies the tab order of the iframe. Possible values are:
-            - ``None`` (default): Browser default behavior.
-            - ``-1``: Removes the iframe from the natural tab order, but it can still be focused programmatically.
-            - ``0`` or positive integer: Includes the iframe in the natural tab order.
+        tab_index : int or None
+            Specifies how and if the iframe is sequentially focusable.
+            Users typically use the ``Tab`` key for sequential focus
+            navigation.
+
+            This can be one of the following values:
+
+            - ``None`` (default): Uses the browser's default behavior.
+            - ``-1``: Removes the iframe from sequential navigation, but still
+              allows it to be focused programmatically.
+            - ``0``: Includes the iframe in sequential navigation in the order
+              it appears in the document but after all elements with a positive
+              ``tab_index``.
+            - Positive integer: Includes the iframe in sequential navigation.
+              Elements are navigated in ascending order of their positive
+              ``tab_index``.
+
+            For more information, see the `tabindex
+            <https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex>`_
+            documentation on MDN.
 
         Example
         -------
