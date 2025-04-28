@@ -51,7 +51,7 @@ class CheckboxSerde:
     def serialize(self, v: bool) -> bool:
         return bool(v)
 
-    def deserialize(self, ui_value: bool | None, widget_id: str = "") -> bool:
+    def deserialize(self, ui_value: bool | None) -> bool:
         return bool(ui_value if ui_value is not None else self.value)
 
 

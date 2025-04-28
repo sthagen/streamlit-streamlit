@@ -65,8 +65,6 @@ def unhashable_type_func(_lock, ...):
         self.assertEqual(
             testutil.normalize_md(expected_message), testutil.normalize_md(ep.message)
         )
-        # Stack trace doesn't show in test :(
-        # self.assertNotEqual(len(ep.stack_trace), 0)
         self.assertEqual(ep.message_is_markdown, True)
         self.assertEqual(ep.is_warning, False)
 

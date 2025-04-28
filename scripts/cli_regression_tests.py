@@ -115,9 +115,7 @@ class TestCLIRegressions:
 
         return output
 
-    def run_double_proc(
-        self, command_one, command_two, wait_in_seconds=2, num_lines_to_read=4
-    ):
+    def run_double_proc(self, command_one, command_two, num_lines_to_read=4):
         proc_one = subprocess.Popen(
             command_one,
             shell=True,

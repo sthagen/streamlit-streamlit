@@ -196,13 +196,13 @@ def _pandas_style_to_css(
 
     # In pandas >= 1.1.0
     # translated_style["cellstyle"] has the following shape:
-    # [
-    #   {
-    #       "props": [("color", " black"), ("background-color", "orange"), ("", "")],
-    #       "selectors": ["row0_col0"]
-    #   }
-    #   ...
-    # ]
+    # > [
+    # >   {
+    # >       "props": [("color", " black"), ("background-color", "orange"), ("", "")],
+    # >       "selectors": ["row0_col0"]
+    # >   }
+    # >   ...
+    # > ]
     if style_type == "table_styles":
         cell_selectors = [style["selector"]]
     else:

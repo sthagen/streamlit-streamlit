@@ -41,7 +41,7 @@ def open_dialog_with_images(app: Page):
     click_button(app, "Open Dialog with Images")
 
 
-def open_dialog_without_images(app: Page, *, delay: int = 0):
+def open_dialog_without_images(app: Page):
     click_button(app, "Open Dialog without Images")
 
 

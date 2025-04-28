@@ -230,7 +230,7 @@ class MapMixin:
         #
         # For reference, this was the docstring for map_style:
         #
-        #   map_style : str or None
+        #   map_style : str, None
         #       One of Mapbox's map style URLs. A full list can be found here:
         #       https://docs.mapbox.com/api/maps/styles/#mapbox-styles
         #

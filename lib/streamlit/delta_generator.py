@@ -423,7 +423,6 @@ class DeltaGenerator(
         delta_type: str,
         element_proto: Message,
         add_rows_metadata: AddRowsMetadata | None = None,
-        user_key: str | None = None,
     ) -> DeltaGenerator:
         """Create NewElement delta, fill it, and enqueue it.
 
@@ -435,8 +434,6 @@ class DeltaGenerator(
             The actual proto in the NewElement type e.g. Alert/Button/Slider
         add_rows_metadata : AddRowsMetadata or None
             Metadata for the add_rows method
-        user_key : str or None
-            A custom key for the element provided by the user.
 
         Returns
         -------

@@ -233,7 +233,7 @@ class PydeckState(TypedDict, total=False):
 class PydeckSelectionSerde:
     """PydeckSelectionSerde is used to serialize and deserialize the Pydeck selection state."""
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> PydeckState:
+    def deserialize(self, ui_value: str | None) -> PydeckState:
         empty_selection_state: PydeckState = {
             "selection": {
                 "indices": {},

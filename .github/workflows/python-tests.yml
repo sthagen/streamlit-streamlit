@@ -12,12 +12,6 @@ on:
       ref:
         required: true
         type: string
-      force-canary:
-        description: |
-          Forces the current build to be canary.
-          Canary builds test all Python versions and do not use constraints.
-        default: false
-        type: boolean
       constraints-branch:
         description: "The name of the branch from which the constraints files will be downloaded or compared with."
         default: "constraints-develop"
@@ -59,8 +53,6 @@ jobs:
       - name: Set Python version vars
         id: build_info
         uses: ./.github/actions/build_info
-        with:
-          force-canary: ${{ inputs.force-canary || false }}
 
     outputs:
       PYTHON_VERSIONS: ${{ steps.build_info.outputs.PYTHON_VERSIONS }}

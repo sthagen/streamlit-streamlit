@@ -32,21 +32,6 @@ DUMMY_CONFIG_OPTIONS = OrderedDict()
 class LoggerTest(unittest.TestCase):
     """Logger Unittest class."""
 
-    # Need to fix this test:
-    # https://trello.com/c/ZwNR7fWI
-    # def test_set_log_level_by_name(self):
-    #     """Test streamlit.logger.set_log_level."""
-    #     data = {
-    #         'critical': logging.CRITICAL,
-    #         'error': logging.ERROR,
-    #         'warning': logging.WARNING,
-    #         'info': logging.INFO,
-    #         'debug': logging.DEBUG,
-    #     }
-    #     for k, v in data.items():
-    #         streamlit.logger.set_log_level(k)
-    #         self.assertEqual(v, logging.getLogger().getEffectiveLevel())
-
     def test_set_log_level_by_constant(self):
         """Test streamlit.logger.set_log_level."""
         data = [
@@ -66,21 +51,6 @@ class LoggerTest(unittest.TestCase):
             logger.set_log_level(90)
         self.assertEqual(e.type, SystemExit)
         self.assertEqual(e.value.code, 1)
-
-    # Need to fix this test:
-    # https://trello.com/c/ZwNR7fWI
-    # def test_set_log_level_resets(self):
-    #     """Test streamlit.logger.set_log_level."""
-    #     streamlit.logger.set_log_level('debug')
-    #     test1 = streamlit.logger.get_logger('test1')
-    #     self.assertEqual(logging.DEBUG, test1.getEffectiveLevel())
-    #
-    #     streamlit.logger.set_log_level('warning')
-    #     self.assertEqual(logging.WARNING, test1.getEffectiveLevel())
-    #
-    #     streamlit.logger.set_log_level('critical')
-    #     test2 = streamlit.logger.get_logger('test2')
-    #     self.assertEqual(logging.CRITICAL, test2.getEffectiveLevel())
 
     @parameterized.expand(
         [
@@ -116,11 +86,3 @@ class LoggerTest(unittest.TestCase):
         loggers = [x for x in logger._loggers.keys() if "tornado." in x]
         truth = ["tornado.access", "tornado.application", "tornado.general"]
         self.assertEqual(sorted(truth), sorted(loggers))
-
-    # Need to fix this test:
-    # https://trello.com/c/ZwNR7fWI
-    # def test_get_logger(self):
-    #     """Test streamlit.logger.get_logger."""
-    #     # Test that get_logger with no args, figures out its caller
-    #     logger = streamlit.logger.get_logger()
-    #     self.assertTrue('.logger_test' in streamlit.logger.LOGGERS.keys())

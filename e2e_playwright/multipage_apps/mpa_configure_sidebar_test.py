@@ -57,8 +57,9 @@ def test_page_links_in_main(themed_app: Page, assert_snapshot: ImageCompareFunct
     assert_snapshot(page_links.nth(2), name="page-link-disabled")
 
 
+@pytest.mark.usefixtures("configure_show_sidebar_nav")
 def test_page_links_use_correct_margin(
-    app: Page, configure_show_sidebar_nav, assert_snapshot: ImageCompareFunction
+    app: Page, assert_snapshot: ImageCompareFunction
 ):
     """Test that page links use the correct margin."""
     page_link_container = get_element_by_key(app, "page_link_container")

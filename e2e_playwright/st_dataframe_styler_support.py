@@ -137,7 +137,7 @@ st.dataframe(
                 pd.Timestamp("2024-01-03"),
             ],
         }
-    ).style.format(lambda v: "pd styler"),
+    ).style.format(lambda _: "pd styler"),
     column_config={
         "number (formatted)": st.column_config.NumberColumn(format="$%.2f"),
         "url (formatted)": st.column_config.LinkColumn(display_text="Open"),

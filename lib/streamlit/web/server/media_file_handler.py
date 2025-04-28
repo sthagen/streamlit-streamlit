@@ -83,7 +83,7 @@ class MediaFileHandler(tornado.web.StaticFileHandler):
     # static content from a database), override `get_content`,
     # `get_content_size`, `get_modified_time`, `get_absolute_path`, and
     # `validate_absolute_path`.
-    def validate_absolute_path(self, root: str, absolute_path: str) -> str:
+    def validate_absolute_path(self, root: str, absolute_path: str) -> str:  # noqa: ARG002
         try:
             self._storage.get_file(absolute_path)
         except MediaFileStorageError:
@@ -106,7 +106,7 @@ class MediaFileHandler(tornado.web.StaticFileHandler):
         return None
 
     @classmethod
-    def get_absolute_path(cls, root: str, path: str) -> str:
+    def get_absolute_path(cls, root: str, path: str) -> str:  # noqa: ARG003
         # All files are stored in memory, so the absolute path is just the
         # path itself. In the MediaFileHandler, it's just the filename
         return path

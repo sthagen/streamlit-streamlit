@@ -94,7 +94,7 @@ def test_typing_new_hex_color_on_color_picker_works_with_callback(
     assert_snapshot(color_pickers.nth(0), name="st_color_picker-typed_new_hex_color")
 
 
-def test_typing_new_RGB_color_on_color_picker_works(
+def test_typing_new_rgb_color_on_color_picker_works(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
     color_pickers = app.get_by_test_id("stColorPicker")
@@ -117,7 +117,7 @@ def test_typing_new_RGB_color_on_color_picker_works(
     assert_snapshot(color_pickers.nth(0), name="st_color_picker-typed_new_rgb_color")
 
 
-def test_typing_new_HSL_color_on_color_picker_works(
+def test_typing_new_hsl_color_on_color_picker_works(
     app: Page, assert_snapshot: ImageCompareFunction
 ):
     color_pickers = app.get_by_test_id("stColorPicker")

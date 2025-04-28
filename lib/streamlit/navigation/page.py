@@ -27,7 +27,7 @@ from streamlit.util import calc_md5
 
 
 @gather_metrics("Page")
-def Page(
+def Page(  # noqa: N802
     page: str | Path | Callable[[], None],
     *,
     title: str | None = None,

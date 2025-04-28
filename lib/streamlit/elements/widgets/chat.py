@@ -196,9 +196,7 @@ class ChatInputSerde:
     allowed_types: Sequence[str] | None = None
 
     def deserialize(
-        self,
-        ui_value: ChatInputValueProto | None,
-        widget_id: str = "",
+        self, ui_value: ChatInputValueProto | None
     ) -> str | ChatInputValue | None:
         if ui_value is None or not ui_value.HasField("data"):
             return None

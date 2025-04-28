@@ -125,7 +125,7 @@ class WStates(MutableMapping[str, Any]):
         elif value_field_name == "json_value":
             value = json.loads(value)
 
-        deserialized = metadata.deserializer(value, metadata.id)
+        deserialized = metadata.deserializer(value)
 
         # Update metadata to reflect information from WidgetState proto
         self.set_widget_metadata(
@@ -683,7 +683,7 @@ class SessionState:
             # This is the first time the widget is registered, so we save its
             # value in widget state.
             deserializer = metadata.deserializer
-            initial_widget_value = deepcopy(deserializer(None, metadata.id))
+            initial_widget_value = deepcopy(deserializer(None))
             self._new_widget_state.set_from_value(widget_id, initial_widget_value)
 
         # Get the current value of the widget for use as its return value.

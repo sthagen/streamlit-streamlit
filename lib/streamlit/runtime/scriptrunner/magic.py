@@ -21,8 +21,7 @@ from typing import Any, Final
 from streamlit import config
 
 # When a Streamlit app is magicified, we insert a `magic_funcs` import near the top of
-# its module's AST:
-# import streamlit.runtime.scriptrunner.magic_funcs as __streamlitmagic__
+# its module's AST: import streamlit.runtime.scriptrunner.magic_funcs as __streamlitmagic__
 MAGIC_MODULE_NAME: Final = "__streamlitmagic__"
 
 
@@ -217,8 +216,8 @@ def _get_st_write_from_expr(
         return None
 
     # If tuple, call st.write(*the_tuple). This allows us to add a comma at the end of a
-    # statement to turn it into an expression that should be st-written. Ex:
-    # "np.random.randn(1000, 2),"
+    # statement to turn it into an expression that should be
+    # st-written. Ex: "np.random.randn(1000, 2),"
     args = node.value.elts if type(node.value) is ast.Tuple else [node.value]
     return _build_st_write_call(args)
 

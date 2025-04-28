@@ -64,7 +64,7 @@ def test_download_button_widget_rendering(
     assert_snapshot(download_buttons.nth(11), name="st_download_button-help")
 
 
-def test_show_tooltip_on_hover(app: Page, assert_snapshot: ImageCompareFunction):
+def test_show_tooltip_on_hover(app: Page):
     download_button = app.get_by_test_id("stDownloadButton").nth(5)
     download_button.hover()
     expect(app.get_by_test_id("stTooltipContent")).to_have_text("Example help text")
@@ -132,7 +132,7 @@ def test_reset_on_other_widget_change(app: Page):
     )
 
 
-def test_downloads_RAR_file_on_click(app: Page):
+def test_downloads_rar_file_on_click(app: Page):
     # Start waiting for the download
     with app.expect_download() as download_info:
         # Perform the action that initiates download

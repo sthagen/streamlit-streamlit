@@ -66,11 +66,7 @@ class RadioSerde(Generic[T]):
 
         return 0 if len(self.options) == 0 else index_(self.options, v)
 
-    def deserialize(
-        self,
-        ui_value: int | None,
-        widget_id: str = "",
-    ) -> T | None:
+    def deserialize(self, ui_value: int | None) -> T | None:
         idx = ui_value if ui_value is not None else self.index
 
         return (

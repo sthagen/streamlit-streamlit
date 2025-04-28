@@ -214,7 +214,7 @@ class PlotlyChartSelectionSerde:
     selection state.
     """
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> PlotlyState:
+    def deserialize(self, ui_value: str | None) -> PlotlyState:
         empty_selection_state: PlotlyState = {
             "selection": {
                 "points": [],

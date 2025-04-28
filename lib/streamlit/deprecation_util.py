@@ -200,7 +200,7 @@ def _create_deprecated_obj_wrapper(obj: TObj, show_warning: Callable[[], Any]) -
 
         @staticmethod
         def _make_magic_function_proxy(name):
-            def proxy(self, *args):
+            def proxy(self, *args):  # noqa: ARG001
                 maybe_show_warning()
                 return getattr(obj, name)
 

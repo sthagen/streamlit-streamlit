@@ -69,7 +69,7 @@ def test_audio_end_time_loop(app: Page):
     audio_element = app.get_by_test_id("stAudio").nth(2)
     audio_element.evaluate("el => el.play()")
     # The corresponding element definition looks like this:
-    # st.audio(url2, start_time=15, end_time=19, loop=True)
+    # > st.audio(url2, start_time=15, end_time=19, loop=True)
     # We wait for 6 seconds, which mean the current time should be
     # approximately 17 (4 seconds until end_time and 2 seconds starting from start time)
     app.wait_for_timeout(6000)

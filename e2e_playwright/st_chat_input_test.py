@@ -363,18 +363,14 @@ def test_file_upload_error_message_file_too_large(app: Page):
     expect(app.get_by_text("File must be 1.0MB or smaller.")).to_be_visible()
 
 
-def test_single_file_upload_button_tooltip(
-    app: Page, assert_snapshot: ImageCompareFunction
-):
+def test_single_file_upload_button_tooltip(app: Page):
     """Test that the single file upload button tooltip renders correctly."""
     chat_input = app.get_by_test_id("stChatInput").nth(3)
     chat_input.get_by_role("button").nth(0).hover()
     expect(app.get_by_text("Upload or drag and drop a file")).to_be_visible()
 
 
-def test_multi_file_upload_button_tooltip(
-    app: Page, assert_snapshot: ImageCompareFunction
-):
+def test_multi_file_upload_button_tooltip(app: Page):
     """Test that the single file upload button tooltip renders correctly."""
     chat_input = app.get_by_test_id("stChatInput").nth(4)
     chat_input.get_by_role("button").nth(0).hover()

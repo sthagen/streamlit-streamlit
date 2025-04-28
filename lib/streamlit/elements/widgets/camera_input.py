@@ -73,7 +73,7 @@ class CameraInputSerde:
         return state_proto
 
     def deserialize(
-        self, ui_value: FileUploaderStateProto | None, widget_id: str
+        self, ui_value: FileUploaderStateProto | None
     ) -> SomeUploadedSnapshotFile:
         upload_files = _get_upload_files(ui_value)
         if len(upload_files) == 0:

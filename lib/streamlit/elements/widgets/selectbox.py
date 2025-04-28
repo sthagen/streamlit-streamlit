@@ -115,11 +115,7 @@ class SelectboxSerde(Generic[T]):
             # options
             return cast("str", v)
 
-    def deserialize(
-        self,
-        ui_value: str | None,
-        widget_id: str = "",
-    ) -> T | str | None:
+    def deserialize(self, ui_value: str | None) -> T | str | None:
         # check if the option is pointing to a generic option type T,
         # otherwise return the option itself
         if ui_value is None:

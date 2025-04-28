@@ -36,6 +36,10 @@ This module is lazy-loaded.
 # by default.
 # mypy: disable-error-code="import-not-found, unused-ignore, misc"
 
+# Deactivate unused argument errors for this file since we need lots of
+# unused arguments to comply with the LangChain callback interface.
+# ruff: noqa: ARG002
+
 from __future__ import annotations
 
 import time

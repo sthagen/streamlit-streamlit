@@ -40,7 +40,7 @@ class AuthCache:
 
     # for set method, we are follow the same signature used in Authlib
     # the expires_in is not used in our case
-    def set(self, key, value, expires_in):
+    def set(self, key, value, expires_in):  # noqa: ARG002
         self.cache[key] = value
 
     def get_dict(self):

@@ -335,8 +335,9 @@ def test_in_form_selection_and_session_state(app: Page):
         empty_selection,
     )
 
-    # submit the form. The selection uses a debounce of 200ms; if we click too early, the state is not updated correctly and we submit the old, unselected values
-    # app.wait_for_timeout(210)
+    # submit the form. The selection uses a debounce of 200ms; if we click too early,
+    # the state is not updated correctly and we submit the old, unselected values
+    app.wait_for_timeout(210)
     click_form_button(app, "Submit")
 
     expected_selection = re.compile(

@@ -659,7 +659,6 @@ class AlternativeComponentRegistryTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         registry = AlternativeComponentRegistryTest.AlternativeComponentRegistry()
-        # ComponentRegistry.initialize(registry)
         self.assertEqual(ComponentRegistry.instance(), registry)
         self.assertIsInstance(
             registry, AlternativeComponentRegistryTest.AlternativeComponentRegistry

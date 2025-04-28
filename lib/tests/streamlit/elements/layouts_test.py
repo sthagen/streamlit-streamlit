@@ -192,8 +192,8 @@ class ColumnsTest(DeltaGeneratorTestCase):
 
         columns_blocks = all_deltas[1:4]
 
-        # 4 elements will be created: 1 horizontal block, 3 columns, each receives
-        # border=True
+        # 4 elements will be created: 1 horizontal block, 3 columns,
+        # each receives: border=True
         self.assertEqual(len(all_deltas), 4)
         self.assertTrue(columns_blocks[0].add_block.column.show_border)
         self.assertTrue(columns_blocks[1].add_block.column.show_border)

@@ -99,9 +99,7 @@ class PagesManager:
         self._intended_page_script_hash = page_script_hash
         self._intended_page_name = page_name
 
-    def get_initial_active_script(
-        self, page_script_hash: PageHash, page_name: PageName
-    ) -> PageInfo | None:
+    def get_initial_active_script(self, page_script_hash: PageHash) -> PageInfo | None:
         return {
             # We always run the main script in V2 as it's the common code
             "script_path": self.main_script_path,

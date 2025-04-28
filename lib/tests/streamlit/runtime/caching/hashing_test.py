@@ -248,7 +248,6 @@ class HashTest(unittest.TestCase):
         # Note: We're able to break the recursive cycle caused by the identity
         # hash func but it causes all cycles to hash to the same thing.
         # https://github.com/streamlit/streamlit/issues/1659
-        # self.assertNotEqual(foo(2), foo(1))
 
     def test_tuple(self):
         self.assertEqual(get_hash((1, 2)), get_hash((1, 2)))

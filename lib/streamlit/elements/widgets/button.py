@@ -80,7 +80,7 @@ class ButtonSerde:
     def serialize(self, v: bool) -> bool:
         return bool(v)
 
-    def deserialize(self, ui_value: bool | None, widget_id: str = "") -> bool:
+    def deserialize(self, ui_value: bool | None) -> bool:
         return ui_value or False
 
 

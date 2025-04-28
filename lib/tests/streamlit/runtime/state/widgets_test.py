@@ -51,7 +51,7 @@ def _create_widget(id, states):
 
 
 def create_metadata(id, value_type):
-    return WidgetMetadata(id, lambda x, s: x, identity, value_type)
+    return WidgetMetadata(id, lambda x: x, identity, value_type)
 
 
 def identity(x):
@@ -124,7 +124,7 @@ class WidgetManagerTests(unittest.TestCase):
 
         mock_callback = MagicMock()
 
-        def deserializer(x, s):
+        def deserializer(x):
             return x
 
         callback_cases = [
@@ -167,7 +167,7 @@ class WidgetManagerTests(unittest.TestCase):
         session_state = SessionState()
         session_state.set_widgets_from_proto(widget_states)
         session_state._set_widget_metadata(
-            WidgetMetadata("other_widget", lambda x, s: x, None, "trigger_value", True)
+            WidgetMetadata("other_widget", lambda x: x, None, "trigger_value", True)
         )
 
         widgets = session_state.get_widget_states()
@@ -183,10 +183,10 @@ class WidgetManagerTests(unittest.TestCase):
         _create_widget("int", states).int_value = 123
         session_state.set_widgets_from_proto(states)
         session_state._set_widget_metadata(
-            WidgetMetadata("trigger", lambda x, s: x, None, "trigger_value")
+            WidgetMetadata("trigger", lambda x: x, None, "trigger_value")
         )
         session_state._set_widget_metadata(
-            WidgetMetadata("int", lambda x, s: x, None, "int_value")
+            WidgetMetadata("int", lambda x: x, None, "int_value")
         )
 
         self.assertTrue(session_state["trigger"])
@@ -209,10 +209,10 @@ class WidgetManagerTests(unittest.TestCase):
         _create_widget("int", states).int_value = 123
         session_state.set_widgets_from_proto(states)
         session_state._set_widget_metadata(
-            WidgetMetadata("chat_input", lambda x, s: x, None, "chat_input_value")
+            WidgetMetadata("chat_input", lambda x: x, None, "chat_input_value")
         )
         session_state._set_widget_metadata(
-            WidgetMetadata("int", lambda x, s: x, None, "int_value")
+            WidgetMetadata("int", lambda x: x, None, "int_value")
         )
 
         self.assertEqual("Some Value", session_state["chat_input"].data)

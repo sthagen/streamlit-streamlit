@@ -104,13 +104,13 @@ class TestSingleSelectSerde:
     def test_deserialize(self):
         option_indices = [5, 6, 7]
         serde = _SingleSelectSerde[int](option_indices)
-        res = serde.deserialize([1], "")
+        res = serde.deserialize([1])
         assert res == 6
 
     def test_deserialize_with_default_value(self):
         option_indices = [5, 6, 7]
         serde = _SingleSelectSerde[int](option_indices, default_value=[2])
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res == 7
 
     def test_deserialize_raise_indexerror(self):
@@ -118,7 +118,7 @@ class TestSingleSelectSerde:
         serde = _SingleSelectSerde[int](option_indices)
 
         with pytest.raises(IndexError):
-            serde.deserialize([3], "")
+            serde.deserialize([3])
 
 
 class TestMultiSelectSerde:
@@ -144,19 +144,19 @@ class TestMultiSelectSerde:
     def test_deserialize(self):
         option_indices = [5, 6, 7]
         serde = _MultiSelectSerde[int](option_indices)
-        res = serde.deserialize([0, 2], "")
+        res = serde.deserialize([0, 2])
         assert res == [5, 7]
 
     def test_deserialize_empty_list(self):
         option_indices = [5, 6, 7]
         serde = _MultiSelectSerde[int](option_indices)
-        res = serde.deserialize([], "")
+        res = serde.deserialize([])
         assert res == []
 
     def test_deserialize_with_default_value(self):
         option_indices = [5, 6, 7]
         serde = _MultiSelectSerde[int](option_indices, default_value=[0, 2])
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res == [5, 7]
 
     def test_deserialize_raise_indexerror(self):
@@ -164,7 +164,7 @@ class TestMultiSelectSerde:
         serde = _MultiSelectSerde[int](option_indices)
 
         with pytest.raises(IndexError):
-            serde.deserialize([3], "")
+            serde.deserialize([3])
 
 
 class TestSingleOrMultiSelectSerde:
@@ -189,7 +189,7 @@ class TestSingleOrMultiSelectSerde:
     ):
         option_indices = [5, 6, 7]
         serde = ButtonGroupSerde[int](option_indices, [], selection_mode)
-        res = serde.deserialize([1], "")
+        res = serde.deserialize([1])
         assert res == expected
 
     @parameterized.expand([("single", 7), ("multi", [7])])
@@ -198,7 +198,7 @@ class TestSingleOrMultiSelectSerde:
     ):
         option_indices = [5, 6, 7]
         serde = ButtonGroupSerde[int](option_indices, [2], selection_mode)
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res == expected
 
     @parameterized.expand([("single",), ("multi",)])
@@ -207,7 +207,7 @@ class TestSingleOrMultiSelectSerde:
         serde = ButtonGroupSerde[int](option_indices, [], selection_mode)
 
         with pytest.raises(IndexError):
-            serde.deserialize([3], "")
+            serde.deserialize([3])
 
 
 class TestFeedbackCommand(DeltaGeneratorTestCase):

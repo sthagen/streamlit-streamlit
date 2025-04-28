@@ -366,8 +366,8 @@ def _infer_vegalite_type(
         return "quantitative"
 
     elif typ == "categorical" and data.cat.ordered:
-        # STREAMLIT MOD: The original code returns a tuple here:
-        # return ("ordinal", data.cat.categories.tolist())
+        # The original code returns a tuple here:
+        # return ("ordinal", data.cat.categories.tolist())  # noqa: ERA001
         # But returning the tuple here isn't compatible with our
         # built-in chart implementation. And it also doesn't seem to be necessary.
         # Altair already extracts the correct sort order somewhere else.
@@ -387,11 +387,11 @@ def _infer_vegalite_type(
         return "temporal"
     else:
         # STREAMLIT MOD: I commented this out since Streamlit doesn't use warnings.warn.
-        # warnings.warn(
-        #     "I don't know how to infer vegalite type from '{}'.  "
-        #     "Defaulting to nominal.".format(typ),
-        #     stacklevel=1,
-        # )
+        # > warnings.warn(
+        # >     "I don't know how to infer vegalite type from '{}'.  "
+        # >     "Defaulting to nominal.".format(typ),
+        # >     stacklevel=1,
+        # > )
         return "nominal"
 
 
@@ -551,7 +551,7 @@ def _melt_data(
         )
 
     # Arrow has problems with object types after melting two different dtypes
-    # pyarrow.lib.ArrowTypeError: "Expected a <TYPE> object, got a object"
+    # > pyarrow.lib.ArrowTypeError: "Expected a <TYPE> object, got a object"
     fixed_df = dataframe_util.fix_arrow_incompatible_column_types(
         melted_df,
         selected_columns=[

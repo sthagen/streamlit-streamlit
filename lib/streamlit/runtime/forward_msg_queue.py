@@ -82,13 +82,13 @@ class ForwardMsgQueue:
         # since the queue can be flushed to the browser at any time.
         # For example:
         # queue 1:
-        # empty [0, 0]  <- skipped
-        # markdown [0, 0]
-        # empty [1, 0]  <- send to frontend
+        # > empty [0, 0]  <- skipped
+        # > markdown [0, 0]
+        # > empty [1, 0]  <- send to frontend
         #
         # queue 2:
-        # markdown [1, 0]
-        # ...
+        # > markdown [1, 0]
+        # > ...
 
         delta_key = tuple(msg.metadata.delta_path)
         if delta_key in self._delta_index_map:
@@ -204,9 +204,9 @@ def _maybe_compose_delta_msgs(
         # We never replace add_block deltas, because blocks can have
         # other dependent deltas later in the queue. For example:
         #
-        #   placeholder = st.empty()
-        #   placeholder.columns(1)
-        #   placeholder.empty()
+        # >  placeholder = st.empty()
+        # >  placeholder.columns(1)
+        # >  placeholder.empty()
         #
         # The call to "placeholder.columns(1)" creates two blocks, a parent
         # container with delta_path (0, 0), and a column child with

@@ -74,7 +74,7 @@ class WStateTests(unittest.TestCase):
         wstates.set_widget_metadata(
             WidgetMetadata(
                 id="widget_id_1",
-                deserializer=lambda x, s: str(x),
+                deserializer=lambda x: str(x),
                 serializer=lambda x: int(x),
                 value_type="int_value",
             )
@@ -84,7 +84,7 @@ class WStateTests(unittest.TestCase):
         wstates.set_widget_metadata(
             WidgetMetadata(
                 id="widget_id_2",
-                deserializer=lambda x, s: x,
+                deserializer=lambda x: x,
                 serializer=identity,
                 value_type="int_value",
             )
@@ -99,7 +99,7 @@ class WStateTests(unittest.TestCase):
         self.wstates.set_widget_metadata(
             WidgetMetadata(
                 id="widget_id_3",
-                deserializer=lambda x, s: x,
+                deserializer=lambda x: x,
                 serializer=identity,
                 value_type="json_value",
             )
@@ -162,7 +162,7 @@ class WStateTests(unittest.TestCase):
             self.wstates.set_widget_metadata(
                 WidgetMetadata(
                     id=widget_id,
-                    deserializer=lambda x, s: x,
+                    deserializer=lambda x: x,
                     serializer=identity,
                     value_type="int_value",
                     fragment_id=fragment_id,
@@ -199,7 +199,7 @@ class WStateTests(unittest.TestCase):
         self.wstates.set_widget_metadata(
             WidgetMetadata(
                 id="widget_id_1",
-                deserializer=lambda x, s: x,
+                deserializer=lambda x: x,
                 serializer=identity,
                 value_type="int_array_value",
             )
@@ -214,7 +214,7 @@ class WStateTests(unittest.TestCase):
         self.wstates.set_widget_metadata(
             WidgetMetadata(
                 id="widget_id_3",
-                deserializer=lambda x, s: x,
+                deserializer=lambda x: x,
                 serializer=identity,
                 value_type="json_value",
             )
@@ -235,7 +235,7 @@ class WStateTests(unittest.TestCase):
     def test_call_callback(self):
         metadata = WidgetMetadata(
             id="widget_id_1",
-            deserializer=lambda x, s: str(x),
+            deserializer=lambda x: str(x),
             serializer=lambda x: int(x),
             value_type="int_value",
             callback=MagicMock(),
@@ -382,7 +382,7 @@ def check_roundtrip(widget_id: str, value: Any) -> None:
     serializer = metadata.serializer
     deserializer = metadata.deserializer
 
-    assert deserializer(serializer(value), "") == value
+    assert deserializer(serializer(value)) == value
 
 
 @patch("streamlit.runtime.Runtime.exists", MagicMock(return_value=True))
@@ -706,7 +706,7 @@ class SessionStateMethodTests(unittest.TestCase):
         wstates.set_widget_metadata(
             WidgetMetadata(
                 id=existing_widget_key,
-                deserializer=lambda x, s: str(x),
+                deserializer=lambda x: str(x),
                 serializer=lambda x: bool(x),
                 value_type="bool_value",
             )
@@ -714,7 +714,7 @@ class SessionStateMethodTests(unittest.TestCase):
         wstates.set_widget_metadata(
             WidgetMetadata(
                 id=generated_widget_key,
-                deserializer=lambda x, s: str(x),
+                deserializer=lambda x: str(x),
                 serializer=lambda x: bool(x),
                 value_type="bool_value",
             )
@@ -737,7 +737,7 @@ class SessionStateMethodTests(unittest.TestCase):
 
         metadata = WidgetMetadata(
             id=f"{GENERATED_ELEMENT_ID_PREFIX}-0-widget_id_1",
-            deserializer=lambda _, __: WIDGET_VALUE,
+            deserializer=lambda _: WIDGET_VALUE,
             serializer=identity,
             value_type="int_value",
         )
@@ -842,7 +842,7 @@ class IsStaleWidgetTests(unittest.TestCase):
     def test_is_stale_widget_active_id(self):
         metadata = WidgetMetadata(
             id="widget_id_1",
-            deserializer=lambda x, s: str(x),
+            deserializer=lambda x: str(x),
             serializer=lambda x: int(x),
             value_type="int_value",
         )
@@ -851,7 +851,7 @@ class IsStaleWidgetTests(unittest.TestCase):
     def test_is_stale_widget_unrelated_fragment(self):
         metadata = WidgetMetadata(
             id="widget_id_1",
-            deserializer=lambda x, s: str(x),
+            deserializer=lambda x: str(x),
             serializer=lambda x: int(x),
             value_type="int_value",
             fragment_id="my_fragment",
@@ -861,7 +861,7 @@ class IsStaleWidgetTests(unittest.TestCase):
     def test_is_stale_widget_actually_stale_fragment(self):
         metadata = WidgetMetadata(
             id="widget_id_1",
-            deserializer=lambda x, s: str(x),
+            deserializer=lambda x: str(x),
             serializer=lambda x: int(x),
             value_type="int_value",
             fragment_id="my_fragment",
@@ -871,7 +871,7 @@ class IsStaleWidgetTests(unittest.TestCase):
     def test_is_stale_widget_actually_stale_no_fragment(self):
         metadata = WidgetMetadata(
             id="widget_id_1",
-            deserializer=lambda x, s: str(x),
+            deserializer=lambda x: str(x),
             serializer=lambda x: int(x),
             value_type="int_value",
             fragment_id="my_fragment",

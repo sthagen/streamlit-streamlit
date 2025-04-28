@@ -174,7 +174,7 @@ class SliderSerde:
             )
         return value
 
-    def deserialize(self, ui_value: list[float] | None, widget_id: str = ""):
+    def deserialize(self, ui_value: list[float] | None):
         if ui_value is not None:
             val = ui_value
         else:

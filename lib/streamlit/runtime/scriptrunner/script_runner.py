@@ -265,7 +265,7 @@ class ScriptRunner:
         # _maybe_handle_execution_control_request.
         self._execing = False
 
-        # This is initialized in start()
+        # This is initialized in the start() method
         self._script_thread: threading.Thread | None = None
 
     def __repr__(self) -> str:
@@ -484,7 +484,7 @@ class ScriptRunner:
                 rerun_data.page_script_hash, rerun_data.page_name
             )
             active_script = self._pages_manager.get_initial_active_script(
-                rerun_data.page_script_hash, rerun_data.page_name
+                rerun_data.page_script_hash
             )
             main_page_info = self._pages_manager.get_main_page()
 

@@ -276,7 +276,7 @@ def _main_run(
     bootstrap.run(file, is_hello, args, flag_options)
 
 
-# SUBCOMMAND: cache
+# SUBCOMMAND cache
 
 
 @main.group("cache")
@@ -299,7 +299,7 @@ def cache_clear():
     caching.cache_resource.clear()
 
 
-# SUBCOMMAND: config
+# SUBCOMMAND config
 
 
 @main.group("config")
@@ -318,7 +318,7 @@ def config_show(**kwargs):
     _config.show_config()
 
 
-# SUBCOMMAND: activate
+# SUBCOMMAND activate
 
 
 @main.group("activate", invoke_without_command=True)
@@ -335,7 +335,7 @@ def activate_reset():
     Credentials.get_current().reset()
 
 
-# SUBCOMMAND: test
+# SUBCOMMAND test
 
 
 @main.group("test", hidden=True)

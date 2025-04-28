@@ -116,11 +116,7 @@ class MultiSelectSerde(Generic[T]):
                 values.append(cast("str", v))
         return values
 
-    def deserialize(
-        self,
-        ui_value: list[str] | None,
-        widget_id: str = "",
-    ) -> list[T | str] | list[T]:
+    def deserialize(self, ui_value: list[str] | None) -> list[T | str] | list[T]:
         if ui_value is None:
             return [self.options[i] for i in self.default_options_indices]
 

@@ -98,7 +98,8 @@ def app_server_extra_args(prepare_secrets_file) -> list[str]:
 
 
 @pytest.mark.parametrize("fake_oidc_server", ["success"], indirect=True)
-def test_login_successful(app: Page, fake_oidc_server, prepare_secrets_file):
+@pytest.mark.usefixtures("fake_oidc_server", "prepare_secrets_file")
+def test_login_successful(app: Page):
     """Test authentication flow with test provider."""
     button_element = get_button(app, "TEST LOGIN")
     button_element.click()
@@ -113,7 +114,8 @@ def test_login_successful(app: Page, fake_oidc_server, prepare_secrets_file):
 
 
 @pytest.mark.parametrize("fake_oidc_server", ["failure"], indirect=True)
-def test_login_failure(app: Page, fake_oidc_server, prepare_secrets_file):
+@pytest.mark.usefixtures("fake_oidc_server", "prepare_secrets_file")
+def test_login_failure(app: Page):
     """Test authentication flow with error response from oidc server."""
     button_element = get_button(app, "TEST LOGIN")
     button_element.click()

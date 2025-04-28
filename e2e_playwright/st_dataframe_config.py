@@ -707,8 +707,8 @@ st.dataframe(
         "localized time": st.column_config.TimeColumn(format="localized"),
         "iso8601": st.column_config.DatetimeColumn(format="iso8601"),
         # We cannot reliably test distance via e2e tests because it wouldn't
-        # stay stable.
-        # "distance": st.column_config.DatetimeColumn(format="distance"),
+        # stay stable:
+        # "distance": st.column_config.DatetimeColumn(format="distance"),  # noqa: ERA001
     },
     hide_index=True,
     use_container_width=False,

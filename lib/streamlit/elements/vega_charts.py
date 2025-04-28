@@ -227,7 +227,7 @@ class VegaLiteStateSerde:
 
     selection_parameters: Sequence[str]
 
-    def deserialize(self, ui_value: str | None, widget_id: str = "") -> VegaLiteState:
+    def deserialize(self, ui_value: str | None) -> VegaLiteState:
         empty_selection_state: VegaLiteState = {
             "selection": AttributeDictionary(
                 # Initialize the select state with empty dictionaries for each selection parameter.
@@ -256,8 +256,8 @@ def _prepare_vega_lite_spec(
     **kwargs,
 ) -> VegaLiteSpec:
     if kwargs:
-        # Support passing in kwargs. Example:
-        #   marshall(proto, {foo: 'bar'}, baz='boz')
+        # Support passing in kwargs.
+        # > marshall(proto, {foo: 'bar'}, baz='boz')
         # Merge spec with unflattened kwargs, where kwargs take precedence.
         # This only works for string keys, but kwarg keys are strings anyways.
         spec = dict(spec, **dicttools.unflatten(kwargs, _CHANNELS))
@@ -313,10 +313,10 @@ def _marshall_chart_data(
         del spec["datasets"]
 
     # Pull data out of spec dict when it's in a top-level 'data' key:
-    #   {data: df}
-    #   {data: {values: df, ...}}
-    #   {data: {url: 'url'}}
-    #   {data: {name: 'foo'}}
+    # > {data: df}
+    # > {data: {values: df, ...}}
+    # > {data: {url: 'url'}}
+    # > {data: {name: 'foo'}}
     if "data" in spec:
         data_spec = spec["data"]
 

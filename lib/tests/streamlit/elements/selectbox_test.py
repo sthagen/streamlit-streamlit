@@ -365,7 +365,7 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize("Option A", "")
+        res = serde.deserialize("Option A")
         assert res == "Option A"
 
     def test_deserialize_with_new_option(self):
@@ -377,7 +377,7 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize("New Option", "")
+        res = serde.deserialize("New Option")
         assert res == "New Option"
 
     def test_deserialize_none(self):
@@ -389,7 +389,7 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res is None
 
     def test_deserialize_with_default_index(self):
@@ -403,7 +403,7 @@ class TestSelectboxSerde:
             default_option_index=default_index,
         )
 
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res == "Option C"
 
     def test_deserialize_empty_options_with_default_index(self):
@@ -417,7 +417,7 @@ class TestSelectboxSerde:
             default_option_index=default_index,
         )
 
-        res = serde.deserialize(None, "")
+        res = serde.deserialize(None)
         assert res is None
 
     def test_deserialize_complex_options(self):
@@ -441,7 +441,7 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize("First", "")
+        res = serde.deserialize("First")
         assert res == complex_options[0]
 
     def test_deserialize_numeric_string_options(self):
@@ -453,10 +453,10 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize("2", "")
+        res = serde.deserialize("2")
         assert res == "2"
 
-        res = serde.deserialize("4", "")
+        res = serde.deserialize("4")
         assert res == "4"
 
     def test_deserialize_enum_options(self):
@@ -475,5 +475,5 @@ class TestSelectboxSerde:
             formatted_option_to_option_index=formatted_option_to_option_index,
         )
 
-        res = serde.deserialize("TestEnum.B", "")
+        res = serde.deserialize("TestEnum.B")
         assert res == TestEnum.B

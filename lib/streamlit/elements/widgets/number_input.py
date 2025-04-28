@@ -70,9 +70,7 @@ class NumberInputSerde:
     def serialize(self, v: Number | None) -> Number | None:
         return v
 
-    def deserialize(
-        self, ui_value: Number | None, widget_id: str = ""
-    ) -> Number | None:
+    def deserialize(self, ui_value: Number | None) -> Number | None:
         val: Number | None = ui_value if ui_value is not None else self.value
 
         if val is not None and self.data_type == NumberInputProto.INT:
