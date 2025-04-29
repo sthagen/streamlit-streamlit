@@ -34,6 +34,7 @@ line-ending = "lf"
 
 [lint]
 select = [
+  "A",      # Check for python builtins being shadowed.
   "ARG",    # Checks for unused arguments.
   "ASYNC",  # Opinionated linting for asyncio.
   "B",      # flake8-bugbear
@@ -61,6 +62,7 @@ select = [
   "PIE",    # Rules to prevent unnecessary code logic.
   "PLC",    # pycodestyle conventions
   "PLE",    # Pylint error rules.
+  "PLR",    # Pylint refactoring rules.
   "PLW",    # Pylint warning rules
   "PYI",    # Linting rules for type annotations.
   "Q",      # Linting rules for quotes.
@@ -105,8 +107,17 @@ ignore = [
   "D202",    # Checks for no-blank line after docstring.
   "FIX002",  # Checks todo comments (which we want to allow).
   "PGH003",  # Checks for blanket type ignore.
+  "PLR2004", # Checks for numerical values that could be put into a constant.
+  "PLR0904", # Checks for classes with too many public methods.
+  "PLR0911", # Checks for functions with too many return statements.
+  "PLR0912", # Checks for functions with too many branches.
+  "PLR0913", # Checks for functions with too many arguments.
+  "PLR0914", # Checks for functions with too many local variables.
+  "PLR0915", # Checks for functions with too many statements.
+  "PLR0916", # Checks for too many boolean expressions in if statements.
   "N806",    # Checks for non-lowercased variable names in functions.
   "N818",    # Checks for Error suffix for exceptions.
+  "A002",    # Checks if function argument shadows a Python builtin.
 ]
 exclude = [
   # pympler is a vendored dependency that doesn't conform to our linting rules:
@@ -115,7 +126,7 @@ exclude = [
 
 [lint.per-file-ignores]
 "e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999"]
-"lib/streamlit/__init__.py" = ["E402", "PLC0414"]
+"lib/streamlit/__init__.py" = ["E402", "PLC0414", "A001"]
 "lib/setup.py" = ["INP"]
 "lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG"]
 "scripts/**" = ["T20", "INP", "PERF"]

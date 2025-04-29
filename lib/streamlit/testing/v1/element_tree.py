@@ -278,7 +278,7 @@ class Error(AlertBase):
 
 
 @dataclass(repr=False)
-class Warning(AlertBase):
+class Warning(AlertBase):  # noqa: A001
     def __init__(self, proto: AlertProto, root: ElementTree):
         super().__init__(proto, root)
         self.type = "warning"
@@ -559,7 +559,7 @@ class DateInput(Widget):
 
 
 @dataclass(repr=False)
-class Exception(Element):
+class Exception(Element):  # noqa: A001
     message: str
     is_markdown: bool
     stack_trace: list[str]
@@ -1956,14 +1956,14 @@ def parse_tree_from_messages(messages: list[ForwardMsg]) -> ElementTree:
             ty = elt.WhichOneof("type")
             new_node: Node
             if ty == "alert":
-                format = elt.alert.format
-                if format == AlertProto.Format.ERROR:
+                alert_format = elt.alert.format
+                if alert_format == AlertProto.Format.ERROR:
                     new_node = Error(elt.alert, root=root)
-                elif format == AlertProto.Format.INFO:
+                elif alert_format == AlertProto.Format.INFO:
                     new_node = Info(elt.alert, root=root)
-                elif format == AlertProto.Format.SUCCESS:
+                elif alert_format == AlertProto.Format.SUCCESS:
                     new_node = Success(elt.alert, root=root)
-                elif format == AlertProto.Format.WARNING:
+                elif alert_format == AlertProto.Format.WARNING:
                     new_node = Warning(elt.alert, root=root)
                 else:
                     raise ValueError(

@@ -105,7 +105,6 @@ class ColumnConfigUtilsTest(unittest.TestCase):
             (pd.Series([], dtype="object"), ColumnDataKind.EMPTY),
             (pd.Series([None, None]), ColumnDataKind.EMPTY),
             (pd.Series([pd.NA, pd.NA]), ColumnDataKind.EMPTY),
-            #
             (pd.Series([1 + 2j, 2 + 3j]), ColumnDataKind.COMPLEX),
             (
                 pd.Series([pd.Period("2000Q1"), pd.Period("2000Q2")]),

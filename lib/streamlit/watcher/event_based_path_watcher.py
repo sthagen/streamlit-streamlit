@@ -359,7 +359,21 @@ class _FolderEventHandler(events.FileSystemEventHandler):
 
         abs_changed_path = os.path.abspath(changed_path)
 
+        # First check if the exact path is being watched
         changed_path_info = self._watched_paths.get(abs_changed_path, None)
+
+        # If the exact path isn't found, check if it's inside any watched directories
+        # This is necessary for the folder watching feature to detect changes to files
+        # within watched directories, not just the directories themselves
+        for path, info in self._watched_paths.items():
+            if (
+                os.path.isdir(path)
+                and os.path.commonpath([path, abs_changed_path]) == path
+            ):
+                changed_path_info = info
+                break
+
+        # If we still haven't found a matching path, ignore this event
         if changed_path_info is None:
             _LOGGER.debug(
                 "Ignoring changed path %s.\nWatched_paths: %s",

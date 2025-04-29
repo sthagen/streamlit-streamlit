@@ -433,13 +433,14 @@ class FileUploaderMixin:
             help=help,
         )
 
-        if type:
-            type = normalize_upload_file_type(type)
+        normalized_type = normalize_upload_file_type(type) if type else None
 
         file_uploader_proto = FileUploaderProto()
         file_uploader_proto.id = element_id
         file_uploader_proto.label = label
-        file_uploader_proto.type[:] = type if type is not None else []
+        file_uploader_proto.type[:] = (
+            normalized_type if normalized_type is not None else []
+        )
         file_uploader_proto.max_upload_size_mb = config.get_option(
             "server.maxUploadSize"
         )
@@ -453,7 +454,7 @@ class FileUploaderMixin:
         if help is not None:
             file_uploader_proto.help = dedent(help)
 
-        serde = FileUploaderSerde(accept_multiple_files, allowed_types=type)
+        serde = FileUploaderSerde(accept_multiple_files, allowed_types=normalized_type)
 
         # FileUploader's widget value is a list of file IDs
         # representing the current set of files that this uploader should

@@ -226,13 +226,13 @@ class CredentialsClassTest(unittest.TestCase):
         with (
             patch(
                 "streamlit.runtime.credentials.open", mock_open(), create=True
-            ) as open,
+            ) as file_open,
             patch("streamlit.runtime.credentials.os.makedirs") as make_dirs,
         ):
             c.save()
 
             make_dirs.assert_called_once_with(streamlit_root_path, exist_ok=True)
-            open.return_value.write.assert_called_once_with(truth)
+            file_open.return_value.write.assert_called_once_with(truth)
 
     @patch(
         "streamlit.runtime.credentials.file_util.get_streamlit_file_path", mock_get_path

@@ -143,8 +143,8 @@ class LocalDiskCacheStorage(CacheStorage):
         if self.persist == "disk":
             path = self._get_cache_file_path(key)
             try:
-                with streamlit_read(path, binary=True) as input:
-                    value = input.read()
+                with streamlit_read(path, binary=True) as file:
+                    value = file.read()
                     _LOGGER.debug("Disk cache HIT: %s", key)
                     return bytes(value)
             except FileNotFoundError:

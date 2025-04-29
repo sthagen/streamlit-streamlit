@@ -52,7 +52,7 @@ from streamlit.testing.v1.element_tree import (
     ElementList,
     ElementTree,
     Error,
-    Exception,
+    Exception,  # noqa: A004
     Expander,
     Header,
     Info,
@@ -79,7 +79,7 @@ from streamlit.testing.v1.element_tree import (
     Title,
     Toast,
     Toggle,
-    Warning,
+    Warning,  # noqa: A004
     WidgetList,
     repr_,
 )

@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 from parameterized import parameterized
 
-import streamlit.source_util as source_util
+from streamlit import source_util
 
 
 class PageHelperFunctionTests(unittest.TestCase):

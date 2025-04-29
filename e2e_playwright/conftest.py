@@ -442,8 +442,7 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
             # want to download a CSV via the blob: url; Chrome seems to be more lax
             frame_src_blob = ""
             if browser is not None and (
-                browser.browser_type.name == "webkit"
-                or browser.browser_type.name == "firefox"
+                browser.browser_type.name in {"webkit", "firefox"}
             ):
                 frame_src_blob = "blob:"
 

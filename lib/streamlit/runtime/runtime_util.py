@@ -74,7 +74,7 @@ def serialize_forward_msg(msg: ForwardMsg) -> bytes:
     if len(msg_str) > get_max_message_size_bytes():
         # Overwrite the offending ForwardMsg.delta with an error to display.
         # This assumes that the size limit wasn't exceeded due to metadata.
-        import streamlit.elements.exception as exception
+        from streamlit.elements import exception
 
         msg_size_error = MessageSizeError(msg_str)
         _LOGGER.warning(

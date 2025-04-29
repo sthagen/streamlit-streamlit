@@ -705,7 +705,7 @@ class SliderMixin:
             ) and max_value - min_value < timedelta(days=1):
                 step = timedelta(minutes=15)
         if format is None:
-            format = cast("str", DEFAULTS[data_type]["format"])
+            format = cast("str", DEFAULTS[data_type]["format"])  # noqa: A001
 
         if step == 0:
             raise StreamlitAPIException(

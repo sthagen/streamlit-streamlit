@@ -208,14 +208,14 @@ def parse_selection_mode(
         )
 
     parsed_selection_modes = []
-    for selection_mode in selection_mode_set:
-        if selection_mode == "single-row":
+    for mode in selection_mode_set:
+        if mode == "single-row":
             parsed_selection_modes.append(ArrowProto.SelectionMode.SINGLE_ROW)
-        elif selection_mode == "multi-row":
+        elif mode == "multi-row":
             parsed_selection_modes.append(ArrowProto.SelectionMode.MULTI_ROW)
-        elif selection_mode == "single-column":
+        elif mode == "single-column":
             parsed_selection_modes.append(ArrowProto.SelectionMode.SINGLE_COLUMN)
-        elif selection_mode == "multi-column":
+        elif mode == "multi-column":
             parsed_selection_modes.append(ArrowProto.SelectionMode.MULTI_COLUMN)
     return set(parsed_selection_modes)
 

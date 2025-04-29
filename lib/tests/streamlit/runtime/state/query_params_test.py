@@ -35,7 +35,7 @@ class QueryParamsMethodTests(DeltaGeneratorTestCase):
     def test__iter__doesnt_include_embed_keys(self):
         self.query_params._query_params = self.query_params_dict_with_embed_key
         for key in self.query_params.__iter__():
-            if key == "embed" or key == "embed_options":
+            if key in {"embed", "embed_options"}:
                 raise KeyError("Cannot iterate through embed or embed_options key")
 
     def test__getitem__raises_KeyError_for_nonexistent_key_for_embed(self):

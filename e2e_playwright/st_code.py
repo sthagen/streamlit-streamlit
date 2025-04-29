@@ -95,3 +95,24 @@ print("That will scroll")
 
 st.code(long_code, height=200)
 st.code(code, height=200)
+
+# width tests
+long_code = """
+def process_data(data):
+    # This is a longer function to demonstrate width behavior
+    result = []
+    for item in data:
+        if item % 2 == 0:
+            result.append(item * 2)
+        else:
+            result.append(item * 3)
+    return result
+
+# Example usage
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+processed = process_data(data)
+print(processed)
+"""
+
+st.code(long_code, width=400, wrap_lines=True)
+st.code(long_code, width="stretch")

@@ -18,7 +18,7 @@ import ast
 import sys
 import unittest
 
-import streamlit.runtime.scriptrunner.magic as magic
+from streamlit.runtime.scriptrunner import magic
 from tests.testutil import patch_config_options
 
 

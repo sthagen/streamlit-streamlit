@@ -615,11 +615,11 @@ class AppSession:
 
             self._enqueue_forward_msg(msg)
 
-        elif (
-            event == ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS
-            or event == ScriptRunnerEvent.SCRIPT_STOPPED_WITH_COMPILE_ERROR
-            or event == ScriptRunnerEvent.FRAGMENT_STOPPED_WITH_SUCCESS
-        ):
+        elif event in {
+            ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS,
+            ScriptRunnerEvent.SCRIPT_STOPPED_WITH_COMPILE_ERROR,
+            ScriptRunnerEvent.FRAGMENT_STOPPED_WITH_SUCCESS,
+        }:
             if self._state != AppSessionState.SHUTDOWN_REQUESTED:
                 self._state = AppSessionState.APP_NOT_RUNNING
 
@@ -633,10 +633,10 @@ class AppSession:
             self._enqueue_forward_msg(self._create_script_finished_message(status))
             self._debug_last_backmsg_id = None
 
-            if (
-                event == ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS
-                or event == ScriptRunnerEvent.FRAGMENT_STOPPED_WITH_SUCCESS
-            ):
+            if event in {
+                ScriptRunnerEvent.SCRIPT_STOPPED_WITH_SUCCESS,
+                ScriptRunnerEvent.FRAGMENT_STOPPED_WITH_SUCCESS,
+            }:
                 # The script completed successfully: update our
                 # LocalSourcesWatcher to account for any source code changes
                 # that change which modules should be watched.

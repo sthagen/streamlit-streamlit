@@ -22,10 +22,9 @@ from pathlib import Path
 from unittest import mock
 
 import numpy as np
-import PIL.Image as Image
 import pytest
 from parameterized import parameterized
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 
 import streamlit as st
 from streamlit.elements.lib.image_utils import (

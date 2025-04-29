@@ -475,12 +475,12 @@ def test_widgets_maintain_state_in_fragment(app: Page):
     """Test that widgets maintain state in a fragment."""
     get_page_link(app, "page 10").click()
 
-    input = app.get_by_test_id("stTextInput").locator("input").first
-    input.fill("Hello")
-    input.blur()
+    input_el = app.get_by_test_id("stTextInput").locator("input").first
+    input_el.fill("Hello")
+    input_el.blur()
     wait_for_app_run(app)
 
-    expect(input).to_have_value("Hello")
+    expect(input_el).to_have_value("Hello")
 
 
 def test_widget_state_reset_on_page_switch(app: Page):

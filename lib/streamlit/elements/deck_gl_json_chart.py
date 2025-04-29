@@ -91,10 +91,10 @@ def parse_selection_mode(
         )
 
     parsed_selection_modes = []
-    for selection_mode in selection_mode_set:
-        if selection_mode == "single-object":
+    for mode in selection_mode_set:
+        if mode == "single-object":
             parsed_selection_modes.append(PydeckProto.SelectionMode.SINGLE_OBJECT)
-        elif selection_mode == "multi-object":
+        elif mode == "multi-object":
             parsed_selection_modes.append(PydeckProto.SelectionMode.MULTI_OBJECT)
     return set(parsed_selection_modes)
 

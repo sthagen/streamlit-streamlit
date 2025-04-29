@@ -17,9 +17,9 @@ from __future__ import annotations
 from typing import Final
 
 import streamlit
-import streamlit.elements.exception as exception
 from streamlit import config
 from streamlit.delta_generator_singletons import get_dg_singleton_instance
+from streamlit.elements import exception
 from streamlit.logger import get_logger
 
 _LOGGER: Final = get_logger(__name__)

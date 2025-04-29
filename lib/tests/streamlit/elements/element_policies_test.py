@@ -189,7 +189,7 @@ class CheckCacheReplayTest(ElementPoliciesTest):
         in_cached_function.set(False)
 
 
-class FragmentCannotWriteToOutsidePathTest(unittest.TestCase):  #
+class FragmentCannotWriteToOutsidePathTest(unittest.TestCase):
     def setUp(self):
         ctx = MagicMock()
         ctx.current_fragment_id = "my_fragment_id"

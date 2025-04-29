@@ -12,8 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
+import pytest
+from parameterized import parameterized
+
 import streamlit as st
+from streamlit.errors import StreamlitInvalidWidthError
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class CodeElement(DeltaGeneratorTestCase):
@@ -30,6 +37,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, False)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "python")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_python(self):
         """Test st.code with python language."""
@@ -41,6 +53,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, False)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "python")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_none(self):
         """Test st.code with None language."""
@@ -52,6 +69,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, False)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "plaintext")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_none_with_line_numbers(self):
         """Test st.code with None language and line numbers."""
@@ -63,6 +85,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, True)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "plaintext")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_python_with_line_numbers(self):
         """Test st.code with Python language and line numbers."""
@@ -74,6 +101,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, True)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "python")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_with_wrap_true(self):
         """Test st.code with wrap_lines=True."""
@@ -85,6 +117,11 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, False)
         self.assertEqual(element.code.wrap_lines, True)
         self.assertEqual(element.code.language, "python")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
 
     def test_st_code_with_wrap_false(self):
         """Test st.code with wrap_lines=False."""
@@ -96,3 +133,51 @@ class CodeElement(DeltaGeneratorTestCase):
         self.assertEqual(element.code.show_line_numbers, False)
         self.assertEqual(element.code.wrap_lines, False)
         self.assertEqual(element.code.language, "python")
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
+
+    def test_st_code_with_width_pixels(self):
+        """Test st.code with width in pixels."""
+        code = "print('My string = %d' % my_value)"
+        st.code(code, width=500)
+
+        element = self.get_delta_from_queue().new_element
+        self.assertEqual(element.code.code_text, code)
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.PIXEL_WIDTH.value,
+        )
+        self.assertEqual(element.code.width_config.pixel_width, 500)
+
+    def test_st_code_with_width_stretch(self):
+        """Test st.code with stretch width."""
+        code = "print('My string = %d' % my_value)"
+        st.code(code, width="stretch")
+
+        element = self.get_delta_from_queue().new_element
+        self.assertEqual(element.code.code_text, code)
+        self.assertEqual(
+            element.code.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(element.code.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -100,
+            0,
+            100.5,
+            None,
+        ]
+    )
+    def test_st_code_with_invalid_width(self, width):
+        """Test st.code with invalid width values."""
+        code = "print('My string = %d' % my_value)"
+
+        with pytest.raises(StreamlitInvalidWidthError) as e:
+            st.code(code, width=width)
+        assert "Invalid width" in str(e.value)

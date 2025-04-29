@@ -14,8 +14,8 @@
 
 from __future__ import annotations
 
-import urllib.parse as parse
 from typing import Any
+from urllib import parse
 
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.ForwardMsg_pb2 import ForwardMsg

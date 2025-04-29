@@ -23,10 +23,10 @@ from typing import TYPE_CHECKING, Any, Callable, TypeVar
 # We cannot lazy-load click here because its used via decorators.
 import click
 
-import streamlit.runtime.caching as caching
-import streamlit.web.bootstrap as bootstrap
 from streamlit import config as _config
+from streamlit.runtime import caching
 from streamlit.runtime.credentials import Credentials, check_credentials
+from streamlit.web import bootstrap
 from streamlit.web.cache_storage_manager_config import (
     create_default_cache_storage_manager,
 )
@@ -146,7 +146,7 @@ def main(log_level="info"):
 
 
 @main.command("help")
-def help():
+def help():  # noqa: A001
     """Print this help message."""
     # We use _get_command_line_as_string to run some error checks but don't do
     # anything with its return value.

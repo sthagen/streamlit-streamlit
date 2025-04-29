@@ -201,8 +201,8 @@ def _get_machine_id_v4() -> str:
     stable_id = None
 
     if os.path.exists(filepath):
-        with file_util.streamlit_read(filepath) as input:
-            stable_id = input.read()
+        with file_util.streamlit_read(filepath) as file:
+            stable_id = file.read()
 
     if not stable_id:
         stable_id = str(uuid.uuid4())

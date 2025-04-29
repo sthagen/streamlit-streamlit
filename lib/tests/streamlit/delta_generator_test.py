@@ -31,8 +31,8 @@ import pytest
 from parameterized import parameterized
 
 import streamlit as st
-import streamlit.delta_generator as delta_generator
 import streamlit.runtime.state.widgets as w
+from streamlit import delta_generator
 from streamlit.cursor import LockedCursor, make_delta_path
 from streamlit.delta_generator import DeltaGenerator
 from streamlit.delta_generator_singletons import get_dg_singleton_instance

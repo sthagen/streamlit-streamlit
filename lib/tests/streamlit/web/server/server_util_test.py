@@ -21,8 +21,8 @@ from unittest.mock import patch
 
 from parameterized import parameterized
 
-import streamlit.web.server.server_util as server_util
 from streamlit import config
+from streamlit.web.server import server_util
 from tests import testutil
 
 

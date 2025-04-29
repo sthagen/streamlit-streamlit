@@ -49,7 +49,7 @@ class ConfigUtilTest(unittest.TestCase):
 
     def test_clean_paragraphs(self):
         # from https://www.lipsum.com/
-        input = textwrap.dedent(
+        input_text = textwrap.dedent(
             """
             Lorem              ipsum dolor sit amet,
             consectetur adipiscing elit.
@@ -67,7 +67,7 @@ class ConfigUtilTest(unittest.TestCase):
             "Maecenas libero est,\n ultricies\neget ligula eget, ",
         ]
 
-        result = config_util._clean_paragraphs(input)
+        result = config_util._clean_paragraphs(input_text)
         self.assertEqual(truth, result)
 
     def test_clean_paragraphs_empty_string(self):

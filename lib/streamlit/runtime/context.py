@@ -367,7 +367,7 @@ class ContextProxy:
         session_client_request = _get_request()
         if session_client_request is not None:
             remote_ip = session_client_request.remote_ip
-            if remote_ip == "::1" or remote_ip == "127.0.0.1":
+            if remote_ip in {"::1", "127.0.0.1"}:
                 return None
             return remote_ip
         return None

@@ -97,12 +97,12 @@ def _validate_image_format_string(
     - For all other strings, return "PNG" if the image has an alpha channel,
     "GIF" if the image is a GIF, and "JPEG" otherwise.
     """
-    format = format.upper()
-    if format in {"JPEG", "PNG"}:
-        return cast("ImageFormat", format)
+    img_format = format.upper()
+    if img_format in {"JPEG", "PNG"}:
+        return cast("ImageFormat", img_format)
 
     # We are forgiving on the spelling of JPEG
-    if format == "JPG":
+    if img_format == "JPG":
         return "JPEG"
 
     pil_image: PILImage
@@ -149,9 +149,9 @@ def _np_array_to_bytes(array: npt.NDArray[Any], output_format: str = "JPEG") -> 
     from PIL import Image
 
     img = Image.fromarray(array.astype(np.uint8))
-    format = _validate_image_format_string(img, output_format)
+    img_format = _validate_image_format_string(img, output_format)
 
-    return _pil_to_bytes(img, format)
+    return _pil_to_bytes(img, img_format)
 
 
 def _verify_np_shape(array: npt.NDArray[Any]) -> npt.NDArray[Any]:
@@ -216,16 +216,13 @@ def _clip_image(image: npt.NDArray[Any], clamp: bool) -> npt.NDArray[Any]:
     if issubclass(image.dtype.type, np.floating):
         if clamp:
             data = np.clip(image, 0, 1.0)
-        else:
-            if np.amin(image) < 0.0 or np.amax(image) > 1.0:
-                raise RuntimeError("Data is outside [0.0, 1.0] and clamp is not set.")
+        elif np.amin(image) < 0.0 or np.amax(image) > 1.0:
+            raise RuntimeError("Data is outside [0.0, 1.0] and clamp is not set.")
         data = data * 255
-    else:
-        if clamp:
-            data = np.clip(image, 0, 255)
-        else:
-            if np.amin(image) < 0 or np.amax(image) > 255:
-                raise RuntimeError("Data is outside [0, 255] and clamp is not set.")
+    elif clamp:
+        data = np.clip(image, 0, 255)
+    elif np.amin(image) < 0 or np.amax(image) > 255:
+        raise RuntimeError("Data is outside [0, 255] and clamp is not set.")
     return data
 
 
@@ -301,8 +298,8 @@ def image_to_url(
 
     # PIL Images
     elif isinstance(image, (ImageFile.ImageFile, Image.Image)):
-        format = _validate_image_format_string(image, output_format)
-        image_data = _pil_to_bytes(image, format)
+        img_format = _validate_image_format_string(image, output_format)
+        image_data = _pil_to_bytes(image, img_format)
 
     # BytesIO
     # Note: This doesn't support SVG. We could convert to png (cairosvg.svg2png)
@@ -430,15 +427,17 @@ def marshall_images(
 
     proto_imgs.width = int(width)
     # Each image in an image list needs to be kept track of at its own coordinates.
-    for coord_suffix, (image, caption) in enumerate(zip(images, captions)):
+    for coord_suffix, (single_image, single_caption) in enumerate(
+        zip(images, captions)
+    ):
         proto_img = proto_imgs.imgs.add()
-        if caption is not None:
-            proto_img.caption = str(caption)
+        if single_caption is not None:
+            proto_img.caption = str(single_caption)
 
         # We use the index of the image in the input image list to identify this image inside
         # MediaFileManager. For this, we just add the index to the image's "coordinates".
         image_id = "%s-%i" % (coordinates, coord_suffix)
 
         proto_img.url = image_to_url(
-            image, width, clamp, channels, output_format, image_id
+            single_image, width, clamp, channels, output_format, image_id
         )

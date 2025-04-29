@@ -117,11 +117,10 @@ If you think this is actually a Streamlit bug, please
 
         if hash_source is None:
             object_desc = "something"
+        elif hasattr(hash_source, "__name__"):
+            object_desc = f"`{hash_source.__name__}()`"
         else:
-            if hasattr(hash_source, "__name__"):
-                object_desc = f"`{hash_source.__name__}()`"
-            else:
-                object_desc = "a function"
+            object_desc = "a function"
 
         decorator_name = ""
         if self.cache_type is CacheType.RESOURCE:

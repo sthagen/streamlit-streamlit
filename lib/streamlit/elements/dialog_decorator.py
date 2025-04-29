@@ -97,7 +97,6 @@ def _dialog_decorator(
             # if the dialog should be closed, st.rerun() has to be called
             # (same behavior as with st.fragment)
             _ = non_optional_func(*args, **kwargs)
-            return None
 
         # the fragment decorator has multiple return types so that you can pass
         # arguments to it. Here we know the return type, so we cast
