@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import enum
+import os
 import unittest
 from datetime import date
 from decimal import Decimal
@@ -535,6 +536,11 @@ class DataframeUtilTest(unittest.TestCase):
         assert converted_df.shape == items.shape
 
     @pytest.mark.require_integration
+    @pytest.mark.skipif(
+        not os.environ.get("SNOWFLAKE_ACCOUNT")
+        or not os.environ.get("SNOWFLAKE_PASSWORD"),
+        reason="SNOWFLAKE_ACCOUNT and SNOWFLAKE_PASSWORD secrets must be set for this test to run.",
+    )
     def test_verify_snowpark_integration(self):
         """Integration test snowpark object handling.
         This is in addition to the tests using the mocks to verify that

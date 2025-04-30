@@ -358,7 +358,7 @@ def _get_user_info() -> UserInfo:
     ctx = _get_script_run_ctx()
     if ctx is None:
         _LOGGER.warning(
-            "No script run context available. st.experimental_user will return an empty dictionary."
+            "No script run context available. st.user will return an empty dictionary."
         )
         return {}
 
@@ -486,13 +486,13 @@ class UserInfoProxy(Mapping[str, Union[str, bool, None]]):
         try:
             return _get_user_info()[key]
         except KeyError:
-            raise KeyError(f'st.experimental_user has no key "{key}".')
+            raise KeyError(f'st.user has no key "{key}".')
 
     def __getattr__(self, key: str) -> str | bool | None:
         try:
             return _get_user_info()[key]
         except KeyError:
-            raise AttributeError(f'st.experimental_user has no attribute "{key}".')
+            raise AttributeError(f'st.user has no attribute "{key}".')
 
     def __setattr__(self, name: str, value: str | None) -> NoReturn:
         raise StreamlitAPIException("st.user cannot be modified")
