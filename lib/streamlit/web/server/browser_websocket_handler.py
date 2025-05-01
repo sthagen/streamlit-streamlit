@@ -113,6 +113,11 @@ class BrowserWebSocketHandler(WebSocketHandler, SessionClient):
             del cookie_value["is_logged_in"]
             user_info.update(cookie_value)
 
+        else:
+            _LOGGER.error(
+                "Origin mismatch, the origin of websocket request is not the same origin of redirect_uri in secrets.toml",
+            )
+
         return user_info
 
     def write_forward_msg(self, msg: ForwardMsg) -> None:

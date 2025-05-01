@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Final
 from urllib.parse import urlparse
 
 import tornado.web
@@ -26,9 +26,12 @@ from streamlit.auth_util import (
     get_secrets_auth_section,
 )
 from streamlit.errors import StreamlitAuthError
+from streamlit.logger import get_logger
 from streamlit.url_util import make_url_path
 from streamlit.web.server.oidc_mixin import TornadoOAuth, TornadoOAuth2App
 from streamlit.web.server.server_util import AUTH_COOKIE_NAME
+
+_LOGGER: Final = get_logger(__name__)
 
 auth_cache = AuthCache()
 
@@ -128,15 +131,31 @@ class AuthCallbackHandler(AuthHandlerMixin, tornado.web.RequestHandler):
         provider = self._get_provider_by_state()
         origin = self._get_origin_from_secrets()
         if origin is None:
+            _LOGGER.error(
+                "Error, misconfigured origin for `redirect_uri` in secrets. ",
+            )
             self.redirect_to_base()
             return
 
         error = self.get_argument("error", None)
         if error:
+            error_description = self.get_argument("error_description", None)
+            sanitized_error = error.replace("\n", "").replace("\r", "")
+            sanitized_error_description = (
+                error_description.replace("\n", "").replace("\r", "")
+                if error_description
+                else None
+            )
+            _LOGGER.error(
+                f"""Error during authentication: {sanitized_error}. Error description: {sanitized_error_description}""",
+            )
             self.redirect_to_base()
             return
 
         if provider is None:
+            _LOGGER.error(
+                "Error, missing provider for oauth callback.",
+            )
             self.redirect_to_base()
             return
 
@@ -147,6 +166,10 @@ class AuthCallbackHandler(AuthHandlerMixin, tornado.web.RequestHandler):
         cookie_value = dict(user, origin=origin, is_logged_in=True)
         if user:
             self.set_auth_cookie(cookie_value)
+        else:
+            _LOGGER.error(
+                "Error, missing user info.",
+            )
         self.redirect_to_base()
 
     def _get_provider_by_state(self) -> str | None:
