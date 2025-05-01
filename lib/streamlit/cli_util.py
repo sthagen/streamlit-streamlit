@@ -60,7 +60,7 @@ def _open_browser_with_webbrowser(url: str) -> None:
 def _open_browser_with_command(command: str, url: str) -> None:
     cmd_line = [command, url]
     with open(os.devnull, "w") as devnull:
-        subprocess.Popen(cmd_line, stdout=devnull, stderr=subprocess.STDOUT)
+        subprocess.Popen(cmd_line, stdout=devnull, stderr=subprocess.STDOUT)  # noqa: S603
 
 
 def open_browser(url: str) -> None:

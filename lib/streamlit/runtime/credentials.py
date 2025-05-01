@@ -104,6 +104,7 @@ def _send_email(email: str) -> None:
         metrics_url,
         headers=headers,
         data=json.dumps(data).encode(),
+        timeout=10,
     )
 
     response.raise_for_status()

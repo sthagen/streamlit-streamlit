@@ -473,8 +473,9 @@ def _make_function_key(cache_type: CacheType, func: FunctionType) -> str:
 
     # Include the function's __module__ and __qualname__ strings in the hash.
     # This means that two identical functions in different modules
-    # will not share a hash; it also means that two identical *nested*
-    # functions in the same module will not share a hash.
+    # will not share a hash.
+    # It also means that two identical *nested* functions in the same module
+    # *will* share a hash (see https://github.com/streamlit/streamlit/issues/11157).
     update_hash(
         (func.__module__, func.__qualname__),
         hasher=func_hasher,

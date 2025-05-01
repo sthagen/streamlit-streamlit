@@ -24,8 +24,10 @@ import types
 from typing import TYPE_CHECKING, Any, Final, cast
 
 import streamlit
+from streamlit.elements.lib.layout_utils import validate_width
 from streamlit.proto.DocString_pb2 import DocString as DocStringProto
 from streamlit.proto.DocString_pb2 import Member as MemberProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner.script_runner import (
     __file__ as SCRIPTRUNNER_FILENAME,  # noqa: N812
@@ -35,6 +37,7 @@ from streamlit.string_util import is_mem_address_str
 
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
+    from streamlit.elements.lib.layout_utils import WidthWithoutContent
 
 
 CONFUSING_STREAMLIT_SIG_PREFIXES: Final = ("(element, ",)
@@ -42,7 +45,9 @@ CONFUSING_STREAMLIT_SIG_PREFIXES: Final = ("(element, ",)
 
 class HelpMixin:
     @gather_metrics("help")
-    def help(self, obj: Any = streamlit) -> DeltaGenerator:
+    def help(
+        self, obj: Any = streamlit, *, width: WidthWithoutContent = "stretch"
+    ) -> DeltaGenerator:
         """Display help and other information for a given object.
 
         Depending on the type of object that is passed in, this displays the
@@ -54,6 +59,9 @@ class HelpMixin:
         obj : any
             The object whose information should be displayed. If left
             unspecified, this call will display help for Streamlit itself.
+        width : "stretch" or int
+            The width of the help element. Can be "stretch" to fill the container
+            width, or an integer to specify a fixed width in pixels.
 
         Example
         -------
@@ -115,7 +123,10 @@ class HelpMixin:
             height: 700px
         """
         doc_string_proto = DocStringProto()
-        _marshall(doc_string_proto, obj)
+
+        validate_width(width, allow_content=False)
+        _marshall(doc_string_proto, obj, width)
+
         return self.dg._enqueue("doc_string", doc_string_proto)
 
     @property
@@ -124,7 +135,9 @@ class HelpMixin:
         return cast("DeltaGenerator", self)
 
 
-def _marshall(doc_string_proto: DocStringProto, obj: Any) -> None:
+def _marshall(
+    doc_string_proto: DocStringProto, obj: Any, width: WidthWithoutContent = "stretch"
+) -> None:
     """Construct a DocString object.
 
     See DeltaGenerator.help for docs.
@@ -145,6 +158,14 @@ def _marshall(doc_string_proto: DocStringProto, obj: Any) -> None:
         doc_string_proto.value = obj_value
 
     doc_string_proto.members.extend(_get_members(obj))
+
+    # Set width configuration
+    width_config = WidthConfig()
+    if isinstance(width, int):
+        width_config.pixel_width = width
+    else:
+        width_config.use_stretch = True
+    doc_string_proto.width_config.CopyFrom(width_config)
 
 
 def _get_name(obj):

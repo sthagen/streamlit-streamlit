@@ -15,8 +15,12 @@
 import os
 from unittest import mock
 
+from parameterized import parameterized
+
 import streamlit as st
+from streamlit.errors import StreamlitInvalidWidthError
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 def patch_varname_getter():
@@ -89,3 +93,38 @@ class StHelpAPITest(DeltaGeneratorTestCase):
 
         with self.assertRaises(ValueError):
             st.help(ConditionalHello(False, ValueError))
+
+    def test_help_width(self):
+        """Test that help() correctly handles width parameter."""
+        # Test with stretch width
+        st.help(st, width="stretch")
+        c = self.get_delta_from_queue().new_element.doc_string
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+        # Test with pixel width
+        st.help(st, width=500)
+        c = self.get_delta_from_queue().new_element.doc_string
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(c.width_config.pixel_width, 500)
+
+        # Test default width (should be stretch)
+        st.help(st)
+        c = self.get_delta_from_queue().new_element.doc_string
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        ["invalid", -100, 0, 100.5, None],
+    )
+    def test_help_invalid_width(self, width):
+        """Test that help() raises an error for invalid width values."""
+        with self.assertRaises(StreamlitInvalidWidthError) as exc_info:
+            st.help(st, width=width)
+        self.assertIn("Invalid width", str(exc_info.exception))

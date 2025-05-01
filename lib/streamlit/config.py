@@ -348,7 +348,7 @@ def _delete_option(key: str) -> None:
             "_config_options should always be populated here."
         )
         del _config_options[key]
-    except Exception:
+    except Exception:  # noqa: S110
         # We don't care if the option already doesn't exist.
         pass
 
@@ -1471,12 +1471,12 @@ def _maybe_convert_to_number(v: Any) -> Any:
     """Convert v to int or float, or leave it as is."""
     try:
         return int(v)
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     try:
         return float(v)
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     return v

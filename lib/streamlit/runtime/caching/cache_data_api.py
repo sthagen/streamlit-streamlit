@@ -634,7 +634,7 @@ class DataCache(Cache):
             raise CacheError(str(e)) from e
 
         try:
-            entry = pickle.loads(pickled_entry)
+            entry = pickle.loads(pickled_entry)  # noqa: S301
             if not isinstance(entry, CachedResult):
                 # Loaded an old cache file format, remove it and let the caller
                 # rerun the function.

@@ -294,7 +294,7 @@ class StreamlitPage:
                 module = types.ModuleType("__main__")
                 # We want __file__ to be the string path to the script
                 module.__dict__["__file__"] = str(self._page)
-                exec(code, module.__dict__)
+                exec(code, module.__dict__)  # noqa: S102
 
     @property
     def _script_hash(self) -> str:

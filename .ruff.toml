@@ -67,7 +67,7 @@ select = [
   "PYI",    # Linting rules for type annotations.
   "Q",      # Linting rules for quotes.
   "RUF100", # Unused noqa directive
-  "S324",   # Check usage of insecure hashlib functions.
+  "S",      # Linting rules to enforce secure code.
   "SLOT",   # Enforces usage of slots.
   "T10",    # Check for debugger statements.
   "T20",    # Check for Print statements in python files.
@@ -118,6 +118,7 @@ ignore = [
   "N806",    # Checks for non-lowercased variable names in functions.
   "N818",    # Checks for Error suffix for exceptions.
   "A002",    # Checks if function argument shadows a Python builtin.
+  "S101",    # Checks for usage of assert statements.
 ]
 exclude = [
   # pympler is a vendored dependency that doesn't conform to our linting rules:
@@ -125,12 +126,11 @@ exclude = [
 ]
 
 [lint.per-file-ignores]
-"e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999"]
+"e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999", "S"]
 "lib/streamlit/__init__.py" = ["E402", "PLC0414", "A001"]
 "lib/setup.py" = ["INP"]
-"lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG"]
-"scripts/**" = ["T20", "INP", "PERF"]
-".github/**" = ["T20", "INP", "PERF"]
+"lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG", "S"]
+"scripts/**" = ["T20", "INP", "PERF", "S"]
 
 [lint.flake8-tidy-imports]
 # Disallow all relative imports.

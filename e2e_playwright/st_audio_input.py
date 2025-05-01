@@ -146,3 +146,9 @@ render_special_audio_inputs()
 render_callback_audio_input()
 render_remount_test()
 track_runs()
+
+# Audio input with stretch width
+st.audio_input("Width Stretch", width="stretch")
+
+# Audio input with fixed pixel width
+st.audio_input("Width 300px", width=300)

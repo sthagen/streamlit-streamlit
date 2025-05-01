@@ -19,6 +19,8 @@ syntax = "proto3";
 option java_package = "com.snowflake.apps.streamlit";
 option java_outer_classname = "DocStringProto";
 
+import "streamlit/proto/WidthConfig.proto";
+
 // Formatted text
 message DocString {
 
@@ -48,6 +50,9 @@ message DocString {
 
   // List of this object's methods and member variables.
   repeated Member members = 8;
+
+  // Indicates the width setting: "stetch" or a pixel value.
+  streamlit.WidthConfig width_config = 9;
 }
 
 

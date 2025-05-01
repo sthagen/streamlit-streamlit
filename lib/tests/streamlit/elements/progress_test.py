@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from parameterized import parameterized
+
 import streamlit as st
 from streamlit.errors import StreamlitAPIException
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class DeltaGeneratorProgressTest(DeltaGeneratorTestCase):
@@ -69,3 +72,41 @@ class DeltaGeneratorProgressTest(DeltaGeneratorTestCase):
             st.progress(value)
             element = self.get_delta_from_queue().new_element
             self.assertEqual(int(value * 100), element.progress.value)
+
+    def test_progress_width(self):
+        """Test Progress with width parameter."""
+        st.progress(50, width="stretch")
+        c = self.get_delta_from_queue().new_element.progress
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertEqual(c.width_config.use_stretch, True)
+
+        st.progress(50, width=500)
+        c = self.get_delta_from_queue().new_element.progress
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(c.width_config.pixel_width, 500)
+
+        st.progress(50)
+        c = self.get_delta_from_queue().new_element.progress
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertEqual(c.width_config.use_stretch, True)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -100,
+            0,
+            100.5,
+            None,
+        ]
+    )
+    def test_progress_invalid_width(self, invalid_width):
+        """Test Progress with invalid width values."""
+        with self.assertRaises(StreamlitAPIException) as ctx:
+            st.progress(50, width=invalid_width)
+        self.assertIn("Invalid width", str(ctx.exception))

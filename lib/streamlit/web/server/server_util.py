@@ -50,7 +50,7 @@ def is_url_from_allowed_origins(url: str) -> bool:
     allowed_domains: list[str | Callable[[], str | None]] = [
         # Check localhost first.
         "localhost",
-        "0.0.0.0",
+        "0.0.0.0",  # noqa: S104
         "127.0.0.1",
         # Try to avoid making unnecessary HTTP requests by checking if the user
         # manually specified a server address.
