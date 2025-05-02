@@ -33,6 +33,7 @@ from typing_extensions import TypeAlias
 
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.js_number import JSNumber, JSNumberBoundsException
+from streamlit.elements.lib.layout_utils import validate_width
 from streamlit.elements.lib.policies import (
     check_widget_policies,
     maybe_raise_label_warnings,
@@ -50,6 +51,7 @@ from streamlit.errors import (
     StreamlitValueBelowMinError,
 )
 from streamlit.proto.Slider_pb2 import Slider as SliderProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -62,6 +64,7 @@ from streamlit.runtime.state import (
 
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
+    from streamlit.elements.lib.layout_utils import WidthWithoutContent
 
 SliderNumericT = TypeVar("SliderNumericT", int, float)
 SliderDatelikeT = TypeVar("SliderDatelikeT", date, time, datetime)
@@ -353,6 +356,7 @@ class SliderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> Any:
         r"""Display a slider widget.
 
@@ -479,6 +483,8 @@ class SliderMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        width : "stretch" or pixel width
+            The width of the slider. The default is "stretch".
 
         Returns
         -------
@@ -542,6 +548,7 @@ class SliderMixin:
             kwargs=kwargs,
             disabled=disabled,
             label_visibility=label_visibility,
+            width=width,
             ctx=ctx,
         )
 
@@ -561,6 +568,7 @@ class SliderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
         ctx: ScriptRunContext | None = None,
     ) -> SliderReturn:
         key = to_key(key)
@@ -584,6 +592,7 @@ class SliderMixin:
             step=step,
             format=format,
             help=help,
+            width=width,
         )
 
         SUPPORTED_TYPES = {
@@ -882,6 +891,14 @@ class SliderMixin:
 
             slider_proto.value[:] = serialized_values
             slider_proto.set_value = True
+
+        validate_width(width)
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        slider_proto.width_config.CopyFrom(width_config)
 
         self.dg._enqueue("slider", slider_proto)
         return cast("SliderReturn", widget_state.value)

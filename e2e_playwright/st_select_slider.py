@@ -135,6 +135,18 @@ st.select_slider(
     options=np.array([1, 2, 3, 4, 5]),
 )
 
+st.select_slider(
+    "Label 13 - Width 300px",
+    options=["red", "orange", "yellow", "green", "blue"],
+    width=300,
+)
+
+st.select_slider(
+    "Label 14 - Width Stretch",
+    options=["red", "orange", "yellow", "green", "blue"],
+    width="stretch",
+)
+
 if "runs" not in st.session_state:
     st.session_state.runs = 0
 st.session_state.runs += 1

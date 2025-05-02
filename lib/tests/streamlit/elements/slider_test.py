@@ -25,12 +25,14 @@ import streamlit as st
 from streamlit.elements.lib.js_number import JSNumber
 from streamlit.errors import (
     StreamlitAPIException,
+    StreamlitInvalidWidthError,
     StreamlitValueAboveMaxError,
     StreamlitValueBelowMinError,
 )
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.testing.v1.app_test import AppTest
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class SliderTest(DeltaGeneratorTestCase):
@@ -364,6 +366,51 @@ class SliderTest(DeltaGeneratorTestCase):
             str(e.value),
             "The `value` 2023-01-01 is less than the `min_value` 2024-01-01.",
         )
+
+
+class SliderWidthTest(DeltaGeneratorTestCase):
+    def test_slider_with_width_pixels(self):
+        """Test that slider can be displayed with a specific width in pixels."""
+        st.slider("Label", min_value=0, max_value=10, width=500)
+        c = self.get_delta_from_queue().new_element.slider
+        assert (
+            c.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.PIXEL_WIDTH.value
+        )
+        assert c.width_config.pixel_width == 500
+
+    def test_slider_with_width_stretch(self):
+        """Test that slider can be displayed with a width of 'stretch'."""
+        st.slider("Label", min_value=0, max_value=10, width="stretch")
+        c = self.get_delta_from_queue().new_element.slider
+        assert (
+            c.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        assert c.width_config.use_stretch is True
+
+    def test_slider_with_default_width(self):
+        """Test that the default width is used when not specified."""
+        st.slider("Label", min_value=0, max_value=10)
+        c = self.get_delta_from_queue().new_element.slider
+        assert (
+            c.width_config.WhichOneof("width_spec")
+            == WidthConfigFields.USE_STRETCH.value
+        )
+        assert c.width_config.use_stretch is True
+
+    @parameterized.expand(
+        [
+            ("invalid_string", "invalid"),
+            ("negative", -1),
+            ("zero", 0),
+            ("float", 100.5),
+        ]
+    )
+    def test_width_config_invalid(self, name, invalid_width):
+        """Test width config with various invalid values."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.slider("the label", width=invalid_width)
 
 
 def test_id_stability():

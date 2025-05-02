@@ -29,6 +29,7 @@ from typing_extensions import TypeGuard
 
 from streamlit.dataframe_util import OptionSequence, convert_anything_to_list
 from streamlit.elements.lib.form_utils import current_form_id
+from streamlit.elements.lib.layout_utils import validate_width
 from streamlit.elements.lib.options_selector_utils import (
     index_,
     maybe_coerce_enum,
@@ -48,6 +49,7 @@ from streamlit.elements.lib.utils import (
 )
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.Slider_pb2 import Slider as SliderProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -62,6 +64,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from streamlit.delta_generator import DeltaGenerator
+    from streamlit.elements.lib.layout_utils import WidthWithoutContent
     from streamlit.runtime.state.common import RegisterWidgetResult
 
 
@@ -119,6 +122,7 @@ class SelectSliderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> tuple[T, T]: ...
 
     # The overload-overlap error given by mypy here stems from
@@ -148,6 +152,7 @@ class SelectSliderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> T: ...
 
     @gather_metrics("select_slider")
@@ -165,6 +170,7 @@ class SelectSliderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> T | tuple[T, T]:
         r"""
         Display a slider widget to select items from a list.
@@ -252,6 +258,11 @@ class SelectSliderMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        width : "stretch" or int
+            The width of the slider. If "stretch", the slider will stretch to
+            fill the available space. If an integer, the slider will have a fixed
+            width in pixels.
+
         Returns
         -------
         any value or tuple of any value
@@ -314,6 +325,7 @@ class SelectSliderMixin:
             disabled=disabled,
             label_visibility=label_visibility,
             ctx=ctx,
+            width=width,
         )
 
     def _select_slider(
@@ -330,6 +342,7 @@ class SelectSliderMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         ctx: ScriptRunContext | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> T | tuple[T, T]:
         key = to_key(key)
 
@@ -375,6 +388,7 @@ class SelectSliderMixin:
             options=[str(format_func(option)) for option in opt],
             value=slider_value,
             help=help,
+            width=width,
         )
 
         slider_proto = SliderProto()
@@ -395,6 +409,15 @@ class SelectSliderMixin:
         )
         if help is not None:
             slider_proto.help = dedent(help)
+
+        # Set width config
+        validate_width(width)
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        slider_proto.width_config.CopyFrom(width_config)
 
         serde = SelectSliderSerde(opt, slider_value, _is_range_value(value))
 
