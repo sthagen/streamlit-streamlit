@@ -100,3 +100,6 @@ st.text_input("text input 15 - emoji icon", placeholder="Placeholder", icon="ðŸ”
 st.text_input(
     "text input 16 - material icon", placeholder="Placeholder", icon=":material/search:"
 )
+
+st.text_input("text input 17 (width=200px)", "width test", width=200)
+st.text_input("text input 18 (width='stretch')", "width test", width="stretch")

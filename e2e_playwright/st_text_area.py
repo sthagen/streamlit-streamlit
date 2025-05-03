@@ -98,3 +98,6 @@ st.write("text area 14 (value from form) - value: ", form_value)
 st.text_area(
     "text area 15 -> :material/check: :rainbow[Fancy] **markdown** `label` _support_"
 )
+
+st.text_area("text area 16 (width=200px)", "width test", width=200)
+st.text_area("text area 17 (width='stretch')", "width test", width="stretch")

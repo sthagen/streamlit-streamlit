@@ -20,7 +20,7 @@ from parameterized import parameterized
 
 import streamlit as st
 from streamlit import config
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitInvalidWidthError
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.runtime.uploaded_file_manager import (
@@ -29,6 +29,7 @@ from streamlit.runtime.uploaded_file_manager import (
     UploadedFileRec,
 )
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class FileUploaderTest(DeltaGeneratorTestCase):
@@ -252,3 +253,48 @@ class FileUploaderTest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue(-2).new_element.exception
         self.assertEqual(el.type, "CachedWidgetWarning")
         self.assertTrue(el.is_warning)
+
+
+class FileUploaderWidthTest(DeltaGeneratorTestCase):
+    def test_file_uploader_with_width_pixels(self):
+        """Test that file_uploader can be displayed with a specific width in pixels."""
+        st.file_uploader("Label", width=500)
+        c = self.get_delta_from_queue().new_element.file_uploader
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.PIXEL_WIDTH.value,
+        )
+        self.assertEqual(c.width_config.pixel_width, 500)
+
+    def test_file_uploader_with_width_stretch(self):
+        """Test that file_uploader can be displayed with a width of 'stretch'."""
+        st.file_uploader("Label", width="stretch")
+        c = self.get_delta_from_queue().new_element.file_uploader
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    def test_file_uploader_with_default_width(self):
+        """Test that the default width is used when not specified."""
+        st.file_uploader("Label")
+        c = self.get_delta_from_queue().new_element.file_uploader
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -1,
+            0,
+            100.5,
+        ]
+    )
+    def test_width_config_invalid(self, invalid_width):
+        """Test width config with various invalid values."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.file_uploader("the label", width=invalid_width)

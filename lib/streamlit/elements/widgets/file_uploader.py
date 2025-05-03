@@ -26,6 +26,7 @@ from streamlit.elements.lib.file_uploader_utils import (
     normalize_upload_file_type,
 )
 from streamlit.elements.lib.form_utils import current_form_id
+from streamlit.elements.lib.layout_utils import WidthWithoutContent, validate_width
 from streamlit.elements.lib.policies import (
     check_widget_policies,
     maybe_raise_label_warnings,
@@ -40,6 +41,7 @@ from streamlit.elements.lib.utils import (
 from streamlit.proto.Common_pb2 import FileUploaderState as FileUploaderStateProto
 from streamlit.proto.Common_pb2 import UploadedFileInfo as UploadedFileInfoProto
 from streamlit.proto.FileUploader_pb2 import FileUploader as FileUploaderProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -167,6 +169,7 @@ class FileUploaderMixin:
         *,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> list[UploadedFile] | None: ...
 
     # 1. type is given as not a keyword-only argument
@@ -185,6 +188,7 @@ class FileUploaderMixin:
         *,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> UploadedFile | None: ...
 
     # The following 2 overloads represent the cases where
@@ -208,6 +212,7 @@ class FileUploaderMixin:
         kwargs: WidgetKwargs | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> list[UploadedFile] | None: ...
 
     # 1. type is skipped or a keyword argument
@@ -226,6 +231,7 @@ class FileUploaderMixin:
         kwargs: WidgetKwargs | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> UploadedFile | None: ...
 
     @gather_metrics("file_uploader")
@@ -242,6 +248,7 @@ class FileUploaderMixin:
         *,  # keyword-only arguments:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> UploadedFile | list[UploadedFile] | None:
         r"""Display a file uploader widget.
         By default, uploaded files are limited to 200 MB each. You can
@@ -326,6 +333,11 @@ class FileUploaderMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        width : "stretch" or int
+            The width of the file uploader widget. If "stretch" (default), the widget
+            will take up the full width of its container. If an integer, the width
+            will be set to that number of pixels.
+
         Returns
         -------
         None, UploadedFile, or list of UploadedFile
@@ -394,6 +406,7 @@ class FileUploaderMixin:
             kwargs=kwargs,
             disabled=disabled,
             label_visibility=label_visibility,
+            width=width,
             ctx=ctx,
         )
 
@@ -411,6 +424,7 @@ class FileUploaderMixin:
         label_visibility: LabelVisibility = "visible",
         disabled: bool = False,
         ctx: ScriptRunContext | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> UploadedFile | list[UploadedFile] | None:
         key = to_key(key)
 
@@ -431,6 +445,7 @@ class FileUploaderMixin:
             type=type,
             accept_multiple_files=accept_multiple_files,
             help=help,
+            width=width,
         )
 
         normalized_type = normalize_upload_file_type(type) if type else None
@@ -469,6 +484,14 @@ class FileUploaderMixin:
             ctx=ctx,
             value_type="file_uploader_state_value",
         )
+
+        validate_width(width)
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        file_uploader_proto.width_config.CopyFrom(width_config)
 
         self.dg._enqueue("file_uploader", file_uploader_proto)
 

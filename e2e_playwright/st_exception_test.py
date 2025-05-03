@@ -33,10 +33,31 @@ def test_st_exception_displays_correctly(
     # Make sure that there is not hover active on the exceptions
     themed_app.get_by_test_id("stMarkdownContainer").first.hover()
 
-    for i in range(6):
-        assert_snapshot(
-            themed_app.get_by_test_id("stException").nth(i), name=f"st_exception-{i}"
-        )
+    expect(themed_app.get_by_test_id("stException")).to_have_count(6)
+
+    # Use descriptive names for each exception snapshot
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(0), name="st_exception-basic"
+    )
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(1),
+        name="st_exception-long_message",
+    )
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(2),
+        name="st_exception-with_markdown",
+    )
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(3), name="st_exception-fixed_width"
+    )
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(4),
+        name="st_exception-stretch_width",
+    )
+    assert_snapshot(
+        themed_app.get_by_test_id("stException").nth(5),
+        name="st_exception-raised_with_traceback",
+    )
 
 
 def test_check_top_level_class(app: Page):

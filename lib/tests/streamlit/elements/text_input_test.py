@@ -20,11 +20,12 @@ from unittest.mock import MagicMock, patch
 from parameterized import parameterized
 
 import streamlit as st
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitInvalidWidthError
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.proto.TextInput_pb2 import TextInput
 from streamlit.testing.v1.app_test import AppTest
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class TextInputTest(DeltaGeneratorTestCase):
@@ -195,6 +196,50 @@ class TextInputTest(DeltaGeneratorTestCase):
             "Unsupported label_visibility option 'wrong_value'. Valid values are "
             "'visible', 'hidden' or 'collapsed'.",
         )
+
+    def test_width_config_default(self):
+        """Test that default width is 'stretch'."""
+        st.text_input("the label")
+
+        c = self.get_delta_from_queue().new_element.text_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    def test_width_config_pixel(self):
+        """Test that pixel width works properly."""
+        st.text_input("the label", width=100)
+
+        c = self.get_delta_from_queue().new_element.text_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(c.width_config.pixel_width, 100)
+
+    def test_width_config_stretch(self):
+        """Test that 'stretch' width works properly."""
+        st.text_input("the label", width="stretch")
+
+        c = self.get_delta_from_queue().new_element.text_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -100,
+            0,
+            100.5,
+            None,
+        ]
+    )
+    def test_invalid_width(self, width):
+        """Test that invalid width values raise exceptions."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.text_input("the label", width=width)
 
     def test_shows_cached_widget_replay_warning(self):
         """Test that a warning is shown when this widget is used inside a cached function."""

@@ -29,7 +29,7 @@ def test_text_area_widget_rendering(
 ):
     """Test that the st.text_area widgets are correctly rendered via screenshot matching."""
     text_area_widgets = themed_app.get_by_test_id("stTextArea")
-    expect(text_area_widgets).to_have_count(15)
+    expect(text_area_widgets).to_have_count(17)
 
     assert_snapshot(text_area_widgets.nth(0), name="st_text_area-default")
     assert_snapshot(text_area_widgets.nth(1), name="st_text_area-value_some_text")
@@ -44,6 +44,8 @@ def test_text_area_widget_rendering(
     assert_snapshot(text_area_widgets.nth(10), name="st_text_area-height_250")
     assert_snapshot(text_area_widgets.nth(11), name="st_text_area-height_75")
     assert_snapshot(text_area_widgets.nth(14), name="st_text_area-markdown_label")
+    assert_snapshot(text_area_widgets.nth(15), name="st_text_area-width_200px")
+    assert_snapshot(text_area_widgets.nth(16), name="st_text_area-width_stretch")
 
 
 def test_help_tooltip_works(app: Page):

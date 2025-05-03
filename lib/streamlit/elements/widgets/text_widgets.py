@@ -19,6 +19,7 @@ from textwrap import dedent
 from typing import TYPE_CHECKING, Literal, cast, overload
 
 from streamlit.elements.lib.form_utils import current_form_id
+from streamlit.elements.lib.layout_utils import WidthWithoutContent, validate_width
 from streamlit.elements.lib.policies import (
     check_widget_policies,
     maybe_raise_label_warnings,
@@ -33,6 +34,7 @@ from streamlit.elements.lib.utils import (
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.TextArea_pb2 import TextArea as TextAreaProto
 from streamlit.proto.TextInput_pb2 import TextInput as TextInputProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -91,6 +93,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> str:
         pass
 
@@ -112,6 +115,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> str | None:
         pass
 
@@ -133,6 +137,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> str | None:
         r"""Display a single-line text input widget.
 
@@ -233,6 +238,9 @@ class TextWidgetsMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
 
+        width : WidthWithoutContent
+            The width of the text input. Defaults to "stretch".
+
         Returns
         -------
         str or None
@@ -267,6 +275,7 @@ class TextWidgetsMixin:
             disabled=disabled,
             label_visibility=label_visibility,
             icon=icon,
+            width=width,
             ctx=ctx,
         )
 
@@ -287,6 +296,7 @@ class TextWidgetsMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
         key = to_key(key)
@@ -298,6 +308,7 @@ class TextWidgetsMixin:
             default_value=None if value == "" else value,
         )
         maybe_raise_label_warnings(label, label_visibility)
+        validate_width(width)
 
         # Make sure value is always string or None:
         value = str(value) if value is not None else None
@@ -314,6 +325,7 @@ class TextWidgetsMixin:
             autocomplete=autocomplete,
             placeholder=str(placeholder),
             icon=icon,
+            width=width,
         )
 
         session_state = get_session_state().filtered_state
@@ -342,6 +354,14 @@ class TextWidgetsMixin:
 
         if icon is not None:
             text_input_proto.icon = validate_icon_or_emoji(icon)
+
+        # Set up width configuration
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        text_input_proto.width_config.CopyFrom(width_config)
 
         if type == "default":
             text_input_proto.type = TextInputProto.DEFAULT
@@ -396,6 +416,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> str:
         pass
 
@@ -415,6 +436,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> str | None:
         pass
 
@@ -434,6 +456,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
     ) -> str | None:
         r"""Display a multi-line text input widget.
 
@@ -511,6 +534,9 @@ class TextWidgetsMixin:
             label, which can help keep the widget alligned with other widgets.
             If this is ``"collapsed"``, Streamlit displays no label or spacer.
 
+        width : WidthWithoutContent
+            The width of the text area. Defaults to "stretch".
+
         Returns
         -------
         str or None
@@ -557,6 +583,7 @@ class TextWidgetsMixin:
             placeholder=placeholder,
             disabled=disabled,
             label_visibility=label_visibility,
+            width=width,
             ctx=ctx,
         )
 
@@ -575,6 +602,7 @@ class TextWidgetsMixin:
         placeholder: str | None = None,
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
+        width: WidthWithoutContent = "stretch",
         ctx: ScriptRunContext | None = None,
     ) -> str | None:
         key = to_key(key)
@@ -586,6 +614,7 @@ class TextWidgetsMixin:
             default_value=None if value == "" else value,
         )
         maybe_raise_label_warnings(label, label_visibility)
+        validate_width(width)
 
         value = str(value) if value is not None else None
 
@@ -599,6 +628,7 @@ class TextWidgetsMixin:
             max_chars=max_chars,
             help=help,
             placeholder=str(placeholder),
+            width=width,
         )
 
         session_state = get_session_state().filtered_state
@@ -627,6 +657,14 @@ class TextWidgetsMixin:
 
         if placeholder is not None:
             text_area_proto.placeholder = str(placeholder)
+
+        # Set up width configuration
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        text_area_proto.width_config.CopyFrom(width_config)
 
         serde = TextAreaSerde(value)
         widget_state = register_widget(

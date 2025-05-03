@@ -125,6 +125,9 @@ with col1:
         "Uses compact file uploader", type=["txt", "pdf"], accept_multiple_files=True
     )
 
+st.file_uploader("Width Stretch", width="stretch", key="uploader_stretch")
+st.file_uploader("Width 300px", width=300, key="uploader_300px")
+
 if "runs" not in st.session_state:
     st.session_state.runs = 0
 st.session_state.runs += 1

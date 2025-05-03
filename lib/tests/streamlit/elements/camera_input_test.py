@@ -19,11 +19,12 @@ from unittest.mock import patch
 from parameterized import parameterized
 
 import streamlit as st
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitInvalidWidthError
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class CameraInputTest(DeltaGeneratorTestCase):
@@ -97,3 +98,48 @@ class CameraInputTest(DeltaGeneratorTestCase):
             str(e.exception),
             "Invalid file extension: `.png`. Allowed: ['.jpg']",
         )
+
+
+class CameraInputWidthTest(DeltaGeneratorTestCase):
+    def test_camera_input_with_width_pixels(self):
+        """Test that camera_input can be displayed with a specific width in pixels."""
+        st.camera_input("Label", width=500)
+        c = self.get_delta_from_queue().new_element.camera_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.PIXEL_WIDTH.value,
+        )
+        self.assertEqual(c.width_config.pixel_width, 500)
+
+    def test_camera_input_with_width_stretch(self):
+        """Test that camera_input can be displayed with a width of 'stretch'."""
+        st.camera_input("Label", width="stretch")
+        c = self.get_delta_from_queue().new_element.camera_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    def test_camera_input_with_default_width(self):
+        """Test that the default width is used when not specified."""
+        st.camera_input("Label")
+        c = self.get_delta_from_queue().new_element.camera_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"),
+            WidthConfigFields.USE_STRETCH.value,
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -1,
+            0,
+            100.5,
+        ]
+    )
+    def test_width_config_invalid(self, invalid_width):
+        """Test width config with various invalid values."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.camera_input("the label", width=invalid_width)
