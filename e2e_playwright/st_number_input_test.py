@@ -24,7 +24,7 @@ from e2e_playwright.shared.app_utils import (
     get_element_by_key,
 )
 
-NUMBER_INPUT_COUNT = 15
+NUMBER_INPUT_COUNT = 17
 
 
 def test_number_input_widget_display(
@@ -55,6 +55,8 @@ def test_number_input_widget_display(
     )
     assert_snapshot(number_input_elements.nth(13), name="st_number_input-emoji_icon")
     assert_snapshot(number_input_elements.nth(14), name="st_number_input-material_icon")
+    assert_snapshot(number_input_elements.nth(15), name="st_number_input-width_200px")
+    assert_snapshot(number_input_elements.nth(16), name="st_number_input-width_stretch")
 
 
 def test_help_tooltip_works(app: Page):
@@ -66,7 +68,7 @@ def test_number_input_has_correct_default_values(app: Page):
     markdown_elements = app.get_by_test_id("stMarkdown")
     # 1 st.write for each number input value (inputs 1-12)
     # + 1 extra st.write for number input 9 (on_change)
-    expect(markdown_elements).to_have_count(NUMBER_INPUT_COUNT - 2)
+    expect(markdown_elements).to_have_count(NUMBER_INPUT_COUNT - 4)
 
     expected = [
         "number input 1 (default) - value: 0.0",

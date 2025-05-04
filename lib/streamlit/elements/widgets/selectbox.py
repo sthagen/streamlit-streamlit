@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast, overloa
 
 from streamlit.dataframe_util import OptionSequence, convert_anything_to_list
 from streamlit.elements.lib.form_utils import current_form_id
+from streamlit.elements.lib.layout_utils import WidthWithoutContent, validate_width
 from streamlit.elements.lib.options_selector_utils import (
     create_mappings,
     index_,
@@ -37,6 +38,7 @@ from streamlit.elements.lib.utils import (
 )
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.Selectbox_pb2 import Selectbox as SelectboxProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -147,6 +149,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: Literal[False] = False,
+        width: WidthWithoutContent = "stretch",
     ) -> T: ...
 
     @overload
@@ -166,6 +169,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: Literal[True] = True,
+        width: WidthWithoutContent = "stretch",
     ) -> T | str: ...
 
     @overload
@@ -185,6 +189,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: Literal[False] = False,
+        width: WidthWithoutContent = "stretch",
     ) -> T | None: ...
 
     @overload
@@ -204,6 +209,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: Literal[True] = True,
+        width: WidthWithoutContent = "stretch",
     ) -> T | str | None: ...
 
     @overload
@@ -223,6 +229,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: bool = False,
+        width: WidthWithoutContent = "stretch",
     ) -> T | str | None: ...
 
     @gather_metrics("selectbox")
@@ -242,6 +249,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: bool = False,
+        width: WidthWithoutContent = "stretch",
     ) -> T | str | None:
         r"""Display a select widget.
 
@@ -340,6 +348,11 @@ class SelectboxMixin:
             Streamlit will use a case-insensitive match from ``options`` before
             adding a new item.
 
+        width : "stretch" or int
+            The width of the selectbox. If "stretch", the selectbox will stretch
+            to fill the available space. If a number, the selectbox will have a
+            fixed width of that many pixels. Defaults to "stretch".
+
         Returns
         -------
         any
@@ -421,6 +434,7 @@ class SelectboxMixin:
             disabled=disabled,
             label_visibility=label_visibility,
             accept_new_options=accept_new_options,
+            width=width,
             ctx=ctx,
         )
 
@@ -440,6 +454,7 @@ class SelectboxMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         accept_new_options: bool = False,
+        width: WidthWithoutContent = "stretch",
         ctx: ScriptRunContext | None = None,
     ) -> T | str | None:
         key = to_key(key)
@@ -451,6 +466,7 @@ class SelectboxMixin:
             default_value=None if index == 0 else index,
         )
         maybe_raise_label_warnings(label, label_visibility)
+        validate_width(width)
 
         opt = convert_anything_to_list(options)
         check_python_comparable(opt)
@@ -487,6 +503,7 @@ class SelectboxMixin:
             help=help,
             placeholder=placeholder,
             accept_new_options=accept_new_options,
+            width=width,
         )
 
         session_state = get_session_state().filtered_state
@@ -509,6 +526,14 @@ class SelectboxMixin:
 
         if help is not None:
             selectbox_proto.help = dedent(help)
+
+        # Set up width configuration
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        selectbox_proto.width_config.CopyFrom(width_config)
 
         serde = SelectboxSerde(
             opt,

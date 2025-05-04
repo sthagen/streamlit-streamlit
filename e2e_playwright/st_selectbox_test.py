@@ -23,7 +23,7 @@ def test_selectbox_widget_rendering(
 ):
     """Test that the selectbox widgets are correctly rendered via screenshot matching."""
     selectbox_widgets = themed_app.get_by_test_id("stSelectbox")
-    expect(selectbox_widgets).to_have_count(17)
+    expect(selectbox_widgets).to_have_count(19)
 
     assert_snapshot(selectbox_widgets.nth(0), name="st_selectbox-default")
     assert_snapshot(selectbox_widgets.nth(1), name="st_selectbox-formatted_options")
@@ -40,6 +40,8 @@ def test_selectbox_widget_rendering(
     assert_snapshot(selectbox_widgets.nth(10), name="st_selectbox-dataframe_options")
     assert_snapshot(selectbox_widgets.nth(11), name="st_selectbox-value_from_state")
     assert_snapshot(selectbox_widgets.nth(12), name="st_selectbox-markdown_label")
+    assert_snapshot(selectbox_widgets.nth(17), name="st_selectbox-width_200px")
+    assert_snapshot(selectbox_widgets.nth(18), name="st_selectbox-width_stretch")
 
 
 def test_selectbox_has_correct_initial_values(app: Page):

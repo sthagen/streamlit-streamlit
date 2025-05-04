@@ -23,6 +23,7 @@ from typing_extensions import TypeAlias
 
 from streamlit.elements.lib.form_utils import current_form_id
 from streamlit.elements.lib.js_number import JSNumber, JSNumberBoundsException
+from streamlit.elements.lib.layout_utils import WidthWithoutContent, validate_width
 from streamlit.elements.lib.policies import (
     check_widget_policies,
     maybe_raise_label_warnings,
@@ -42,6 +43,7 @@ from streamlit.errors import (
     StreamlitValueBelowMinError,
 )
 from streamlit.proto.NumberInput_pb2 import NumberInput as NumberInputProto
+from streamlit.proto.WidthConfig_pb2 import WidthConfig
 from streamlit.runtime.metrics_util import gather_metrics
 from streamlit.runtime.scriptrunner import ScriptRunContext, get_script_run_ctx
 from streamlit.runtime.state import (
@@ -96,7 +98,7 @@ class NumberInputMixin:
         max_value: int | None = None,
         value: IntOrNone | Literal["min"] = "min",
         step: int | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None
+        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None, width: WidthWithoutContent = "stretch"
     ) -> int | IntOrNone:
         ...
 
@@ -113,7 +115,7 @@ class NumberInputMixin:
         max_value: int,
         value: IntOrNone | Literal["min"] = "min",
         step: int | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None
+        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None, width: WidthWithoutContent = "stretch"
     ) -> int | IntOrNone:
         ...
 
@@ -128,7 +130,7 @@ class NumberInputMixin:
         *,
         value: int,
         step: int | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None
+        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None, width: WidthWithoutContent = "stretch"
     ) -> int:
         ...
 
@@ -145,7 +147,7 @@ class NumberInputMixin:
         value: IntOrNone | Literal["min"] = "min",
         *,
         step: int,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None
+        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None, width: WidthWithoutContent = "stretch"
     ) -> int | IntOrNone:
         ...
 
@@ -161,7 +163,7 @@ class NumberInputMixin:
         max_value: float | None = None,
         value: FloatOrNone | Literal["min"] = "min",
         step: float | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None
+        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, placeholder: str | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible", icon: str | None = None, width: WidthWithoutContent = "stretch"
     ) -> float | FloatOrNone:
         ...
     # # fmt: on
@@ -185,6 +187,7 @@ class NumberInputMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
     ) -> Number | None:
         r"""Display a numeric input widget.
 
@@ -307,6 +310,9 @@ class NumberInputMixin:
               <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>`_
               font library.
 
+        width : WidthWithoutContent
+            The width of the number input. Can be an integer or "stretch". Defaults to "stretch".
+
         Returns
         -------
         int or float or None
@@ -355,6 +361,7 @@ class NumberInputMixin:
             disabled=disabled,
             label_visibility=label_visibility,
             icon=icon,
+            width=width,
             ctx=ctx,
         )
 
@@ -376,6 +383,7 @@ class NumberInputMixin:
         disabled: bool = False,
         label_visibility: LabelVisibility = "visible",
         icon: str | None = None,
+        width: WidthWithoutContent = "stretch",
         ctx: ScriptRunContext | None = None,
     ) -> Number | None:
         key = to_key(key)
@@ -387,6 +395,7 @@ class NumberInputMixin:
             default_value=value if value != "min" else None,
         )
         maybe_raise_label_warnings(label, label_visibility)
+        validate_width(width)
 
         element_id = compute_and_register_element_id(
             "number_input",
@@ -401,6 +410,7 @@ class NumberInputMixin:
             help=help,
             placeholder=None if placeholder is None else str(placeholder),
             icon=icon,
+            width=width,
         )
 
         # Ensure that all arguments are of the same type.
@@ -551,6 +561,14 @@ class NumberInputMixin:
 
         if icon is not None:
             number_input_proto.icon = validate_icon_or_emoji(icon)
+
+        # Set up width configuration
+        width_config = WidthConfig()
+        if isinstance(width, int):
+            width_config.pixel_width = width
+        else:
+            width_config.use_stretch = True
+        number_input_proto.width_config.CopyFrom(width_config)
 
         serde = NumberInputSerde(value, data_type)
         widget_state = register_widget(

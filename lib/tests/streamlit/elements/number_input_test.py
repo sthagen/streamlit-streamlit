@@ -23,6 +23,7 @@ import streamlit as st
 from streamlit.elements.lib.js_number import JSNumber
 from streamlit.errors import (
     StreamlitAPIException,
+    StreamlitInvalidWidthError,
     StreamlitValueAboveMaxError,
     StreamlitValueBelowMinError,
 )
@@ -32,6 +33,7 @@ from streamlit.proto.NumberInput_pb2 import NumberInput
 from streamlit.proto.WidgetStates_pb2 import WidgetState
 from streamlit.testing.v1.app_test import AppTest
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 
 class NumberInputTest(DeltaGeneratorTestCase):
@@ -364,6 +366,50 @@ class NumberInputTest(DeltaGeneratorTestCase):
             "Unsupported label_visibility option 'wrong_value'. Valid values are "
             "'visible', 'hidden' or 'collapsed'.",
         )
+
+    def test_width_config_default(self):
+        """Test that default width is 'stretch'."""
+        st.number_input("the label")
+
+        c = self.get_delta_from_queue().new_element.number_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    def test_width_config_pixel(self):
+        """Test that pixel width works properly."""
+        st.number_input("the label", width=100)
+
+        c = self.get_delta_from_queue().new_element.number_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(c.width_config.pixel_width, 100)
+
+    def test_width_config_stretch(self):
+        """Test that 'stretch' width works properly."""
+        st.number_input("the label", width="stretch")
+
+        c = self.get_delta_from_queue().new_element.number_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -100,
+            0,
+            100.5,
+            None,
+        ]
+    )
+    def test_invalid_width(self, width):
+        """Test that invalid width values raise exceptions."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.number_input("the label", width=width)
 
     def test_should_keep_type_of_return_value_after_rerun(self):
         # set the initial page script hash
