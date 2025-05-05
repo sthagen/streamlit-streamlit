@@ -35,7 +35,7 @@ DISALLOWED_FEATURES_IN_LABEL: list[str] = [
 ]
 DISALLOWED_FEATURES_IN_HEADINGS: list[str] = ["Blockquote", "Table"]
 # List of markdown features that are not allowed in button-like elements:
-DISALLOWED_FEATURES_IN_BUTTONS: list[str] = DISALLOWED_FEATURES_IN_LABEL + ["Link"]
+DISALLOWED_FEATURES_IN_BUTTONS: list[str] = [*DISALLOWED_FEATURES_IN_LABEL, "Link"]
 
 # Mapping between a feature and the supported markdown features:
 DISALLOWED_MARKDOWN_FEATURES: dict[str, list[str]] = {
@@ -46,9 +46,9 @@ DISALLOWED_MARKDOWN_FEATURES: dict[str, list[str]] = {
     "st_error": [],
     "st_warning": [],
     "st_info": [],
-    "st_title": DISALLOWED_FEATURES_IN_HEADINGS + ["Heading 2"],
-    "st_header": DISALLOWED_FEATURES_IN_HEADINGS + ["Heading 1"],
-    "st_subheader": DISALLOWED_FEATURES_IN_HEADINGS + ["Heading 1", "Heading 2"],
+    "st_title": [*DISALLOWED_FEATURES_IN_HEADINGS, "Heading 2"],
+    "st_header": [*DISALLOWED_FEATURES_IN_HEADINGS, "Heading 1"],
+    "st_subheader": [*DISALLOWED_FEATURES_IN_HEADINGS, "Heading 1", "Heading 2"],
     "st_checkbox": DISALLOWED_FEATURES_IN_LABEL,
     "st_toggle": DISALLOWED_FEATURES_IN_LABEL,
     "st_radio_widget_label": DISALLOWED_FEATURES_IN_LABEL,

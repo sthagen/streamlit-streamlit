@@ -57,7 +57,7 @@ def index_(iterable: Iterable[_Value], x: _Value) -> int:
         elif isinstance(value, float) and isinstance(x, float):
             if abs(x - value) < _FLOAT_EQUALITY_EPSILON:
                 return i
-    raise ValueError(f"{str(x)} is not in iterable")
+    raise ValueError(f"{x} is not in iterable")
 
 
 def check_and_convert_to_indices(

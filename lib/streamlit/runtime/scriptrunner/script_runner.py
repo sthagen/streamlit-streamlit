@@ -161,11 +161,7 @@ def _mpa_v1(main_script_path: str):
         expanded=False,
     )
 
-    if page._page != main_page._page:
-        # Only run the page if it is not pointing to this script:
-        page.run()
-        # Finish the script execution here to only run the selected page
-        raise StopException()
+    page.run()
 
 
 class ScriptRunner:
@@ -645,7 +641,8 @@ class ScriptRunner:
                     else:
                         if PagesManager.uses_pages_directory:
                             _mpa_v1(self._main_script_path)
-                        exec(code, module.__dict__)  # noqa: S102
+                        else:
+                            exec(code, module.__dict__)  # noqa: S102
                         self._fragment_storage.clear(
                             new_fragment_ids=ctx.new_fragment_ids
                         )

@@ -90,11 +90,8 @@ def _new_fragment_id_queue(
                 "functions during fragment reruns."
             )
 
-        assert (
-            new_queue := list(
-                dropwhile(lambda x: x != ctx.current_fragment_id, curr_queue)
-            )
-        ), (
+        new_queue = list(dropwhile(lambda x: x != ctx.current_fragment_id, curr_queue))
+        assert new_queue, (
             "Could not find current_fragment_id in fragment_id_queue. This should never happen."
         )
 

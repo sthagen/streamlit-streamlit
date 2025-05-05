@@ -99,7 +99,7 @@ class SubtitleUtilsTest(DeltaGeneratorTestCase):
         self.assertEqual(
             _srt_to_vtt(srt_string),
             expected,
-            f"Expected {srt_string} to be transformed into {str(expected)}.",
+            f"Expected {srt_string} to be transformed into {expected!s}.",
         )
 
     def test_srt_vtt_bytes(self):
@@ -107,7 +107,7 @@ class SubtitleUtilsTest(DeltaGeneratorTestCase):
         self.assertEqual(
             _srt_to_vtt(SRT_DATA_EN.encode("utf-8")),
             VTT_DATA_EN,
-            f"Expected {SRT_DATA_EN} to be transformed into {str(VTT_DATA_EN)}.",
+            f"Expected {SRT_DATA_EN} to be transformed into {VTT_DATA_EN!s}.",
         )
 
     def test_process_subtitle_data(self):

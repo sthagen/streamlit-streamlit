@@ -74,11 +74,19 @@ class AddRowsMetadata:
 
 
 class ChartType(Enum):
-    AREA = {"mark_type": "area", "command": "area_chart"}
-    VERTICAL_BAR = {"mark_type": "bar", "command": "bar_chart", "horizontal": False}
-    HORIZONTAL_BAR = {"mark_type": "bar", "command": "bar_chart", "horizontal": True}
-    LINE = {"mark_type": "line", "command": "line_chart"}
-    SCATTER = {"mark_type": "circle", "command": "scatter_chart"}
+    AREA: Final = {"mark_type": "area", "command": "area_chart"}
+    VERTICAL_BAR: Final = {
+        "mark_type": "bar",
+        "command": "bar_chart",
+        "horizontal": False,
+    }
+    HORIZONTAL_BAR: Final = {
+        "mark_type": "bar",
+        "command": "bar_chart",
+        "horizontal": True,
+    }
+    LINE: Final = {"mark_type": "line", "command": "line_chart"}
+    SCATTER: Final = {"mark_type": "circle", "command": "scatter_chart"}
 
 
 # Color and size legends need different title paddings in order for them
@@ -1035,7 +1043,7 @@ def _get_size_encoding(
             return alt.SizeValue(100)
         else:
             raise StreamlitAPIException(
-                f"This does not look like a valid size: {repr(size_value)}"
+                f"This does not look like a valid size: {size_value!r}"
             )
 
     elif size_column is not None or size_value is not None:

@@ -284,7 +284,7 @@ class DeltaGenerator(
 
     def __enter__(self) -> None:
         # with block started
-        context_dg_stack.set(context_dg_stack.get() + (self,))
+        context_dg_stack.set((*context_dg_stack.get(), self))
 
     def __exit__(
         self,
@@ -530,7 +530,7 @@ class DeltaGenerator(
         # a brand new cursor for this new block we're creating.
         block_cursor = cursor.RunningCursor(
             root_container=dg._root_container,
-            parent_path=dg._cursor.parent_path + (dg._cursor.index,),
+            parent_path=(*dg._cursor.parent_path, dg._cursor.index),
         )
 
         # `dg_type` param added for st.status container. It allows us to

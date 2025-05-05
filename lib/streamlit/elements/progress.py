@@ -89,7 +89,7 @@ def _get_text(text: str | None) -> str | None:
     if isinstance(text, str):
         return clean_text(text)
     raise StreamlitAPIException(
-        f"Progress Text is of type {str(type(text))}, which is not an accepted type."
+        f"Progress Text is of type {type(text)}, which is not an accepted type."
         "Text only accepts: str. Please convert the text to an accepted type."
     )
 

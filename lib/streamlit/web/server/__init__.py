@@ -19,8 +19,8 @@ from streamlit.web.server.stats_request_handler import StatsRequestHandler
 
 __all__ = [
     "ComponentRequestHandler",
-    "allow_cross_origin_requests",
     "Server",
-    "server_address_is_unix_socket",
     "StatsRequestHandler",
+    "allow_cross_origin_requests",
+    "server_address_is_unix_socket",
 ]

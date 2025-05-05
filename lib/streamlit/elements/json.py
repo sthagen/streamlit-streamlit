@@ -134,7 +134,7 @@ class JsonMixin:
             json_proto.max_expand_depth = expanded
         else:
             raise TypeError(
-                f"The type {str(type(expanded))} of `expanded` is not supported"
+                f"The type {type(expanded)} of `expanded` is not supported"
                 ", must be bool or int."
             )
 

@@ -221,7 +221,7 @@ class AlertMixin:
         >>>
         >>> st.info('This is a purely informational message', icon="ℹ️")
 
-        """
+        """  # noqa: RUF002
 
         alert_proto = AlertProto()
         alert_proto.body = clean_text(body)

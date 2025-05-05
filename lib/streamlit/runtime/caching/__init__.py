@@ -86,13 +86,13 @@ cache = _cache
 
 
 __all__ = [
-    "cache",
     "CACHE_DOCS_URL",
-    "save_element_message",
-    "save_block_message",
-    "save_media_data",
-    "get_data_cache_stats_provider",
-    "get_resource_cache_stats_provider",
+    "cache",
     "cache_data",
     "cache_resource",
+    "get_data_cache_stats_provider",
+    "get_resource_cache_stats_provider",
+    "save_block_message",
+    "save_element_message",
+    "save_media_data",
 ]

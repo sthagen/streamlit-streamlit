@@ -98,7 +98,7 @@ def _fix_sys_argv(main_script_path: str, args: list[str]) -> None:
     """
     import sys
 
-    sys.argv = [main_script_path] + list(args)
+    sys.argv = [main_script_path, *list(args)]
 
 
 def _on_server_start(server: Server) -> None:
@@ -346,7 +346,8 @@ def run(
         # Check if we're already in an event loop
         if asyncio.get_running_loop().is_running():
             # Use `asyncio.create_task` if we're in an async context
-            asyncio.create_task(main())
+            # TODO(lukasmasuch): Do we have to store a reference for the task here?
+            asyncio.create_task(main())  # noqa: RUF006
         else:
             # Otherwise, use `asyncio.run`
             asyncio.run(main())

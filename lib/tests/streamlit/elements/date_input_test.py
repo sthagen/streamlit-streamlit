@@ -20,10 +20,11 @@ from parameterized import parameterized
 from pytest import raises
 
 import streamlit as st
-from streamlit.errors import StreamlitAPIException
+from streamlit.errors import StreamlitAPIException, StreamlitInvalidWidthError
 from streamlit.proto.LabelVisibilityMessage_pb2 import LabelVisibilityMessage
 from streamlit.testing.v1.app_test import AppTest
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
+from tests.streamlit.elements.layout_test_utils import WidthConfigFields
 
 TODAY = datetime.today()
 
@@ -332,6 +333,50 @@ class DateInputTest(DeltaGeneratorTestCase):
         el = self.get_delta_from_queue(-2).new_element.exception
         self.assertEqual(el.type, "CachedWidgetWarning")
         self.assertTrue(el.is_warning)
+
+    def test_width_config_default(self):
+        """Test that default width is 'stretch'."""
+        st.date_input("the label")
+
+        c = self.get_delta_from_queue().new_element.date_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    def test_width_config_pixel(self):
+        """Test that pixel width works properly."""
+        st.date_input("the label", width=200)
+
+        c = self.get_delta_from_queue().new_element.date_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.PIXEL_WIDTH.value
+        )
+        self.assertEqual(c.width_config.pixel_width, 200)
+
+    def test_width_config_stretch(self):
+        """Test that 'stretch' width works properly."""
+        st.date_input("the label", width="stretch")
+
+        c = self.get_delta_from_queue().new_element.date_input
+        self.assertEqual(
+            c.width_config.WhichOneof("width_spec"), WidthConfigFields.USE_STRETCH.value
+        )
+        self.assertTrue(c.width_config.use_stretch)
+
+    @parameterized.expand(
+        [
+            "invalid",
+            -100,
+            0,
+            100.5,
+            None,
+        ]
+    )
+    def test_invalid_width(self, width):
+        """Test that invalid width values raise exceptions."""
+        with self.assertRaises(StreamlitInvalidWidthError):
+            st.date_input("the label", width=width)
 
 
 def test_date_input_interaction():

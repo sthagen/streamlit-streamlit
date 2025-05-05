@@ -134,7 +134,7 @@ else:
     sys.exit(1)
 
 
-icon_from_latest_font = list(new_icon_names)[0]
+icon_from_latest_font = next(iter(new_icon_names))
 
 generated_code = f"""### LATEST MATERIAL ICON TEST START ###
 st.success(

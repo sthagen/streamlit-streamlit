@@ -34,49 +34,49 @@ line-ending = "lf"
 
 [lint]
 select = [
-  "A",      # Check for python builtins being shadowed.
-  "ARG",    # Checks for unused arguments.
-  "ASYNC",  # Opinionated linting for asyncio.
-  "B",      # flake8-bugbear
-  "C4",     # Helps you write better list/set/dict comprehensions.
-  "D",      # Check docstrings.
-  "E",      # pycodestyle errors
-  "ERA",    # Checks for commented out code.
-  "F",      # pyflakes
-  "FA",     # Verifies files use from __future__ import annotations if a type is used in the module that can be rewritten using PEP 563.
-  "FIX",    # Only allow todo comments in the codebase.
-  "FLY",    # Checks for bad usage of string join.
-  "FURB",   # Rules to refurbish and modernize Python codebases.
-  "G",      # Better usage of built-in logging
-  "I",      # isort - Import sorting
-  "ICN",    # Checks import naming conventions.
-  "INT",    # Checks wrong usage of gettext module.
-  "INP",    # Checks implicit namespace packages.
-  "ISC",    # Encourage correct string literal concatenation.
-  "LOG",    # Checks for issues using the standard library logging module.
-  "N",      # Linting rules for pep8 naming conventions.
-  "NPY",    # Linting rules for numpy
-  "PD",     # Opinionated linting for pandas.
-  "PERF",   # Rules to prevent performance anti-patterns.
-  "PGH",    # Pygrep hook rules.
-  "PIE",    # Rules to prevent unnecessary code logic.
-  "PLC",    # pycodestyle conventions
-  "PLE",    # Pylint error rules.
-  "PLR",    # Pylint refactoring rules.
-  "PLW",    # Pylint warning rules
-  "PYI",    # Linting rules for type annotations.
-  "Q",      # Linting rules for quotes.
-  "RUF100", # Unused noqa directive
-  "S",      # Linting rules to enforce secure code.
-  "SLOT",   # Enforces usage of slots.
-  "T10",    # Check for debugger statements.
-  "T20",    # Check for Print statements in python files.
-  "TC",     # Linting for type-checking imports & forward references.
-  "TD",     # Checks correct usage of TODO comments.
-  "TID",    # Helps you write tidier imports.
-  "UP",     # pyupgrade
-  "W",      # pycodestyle warnings
-  "YTT",    # Checks wrong usage of sys.version / sys.version_info.
+  "A",     # Check for python builtins being shadowed.
+  "ARG",   # Checks for unused arguments.
+  "ASYNC", # Opinionated linting for asyncio.
+  "B",     # flake8-bugbear
+  "C4",    # Helps you write better list/set/dict comprehensions.
+  "D",     # Check docstrings.
+  "E",     # pycodestyle errors
+  "ERA",   # Checks for commented out code.
+  "F",     # pyflakes
+  "FA",    # Verifies files use from __future__ import annotations if a type is used in the module that can be rewritten using PEP 563.
+  "FIX",   # Only allow todo comments in the codebase.
+  "FLY",   # Checks for bad usage of string join.
+  "FURB",  # Rules to refurbish and modernize Python codebases.
+  "G",     # Better usage of built-in logging
+  "I",     # isort - Import sorting
+  "ICN",   # Checks import naming conventions.
+  "INT",   # Checks wrong usage of gettext module.
+  "INP",   # Checks implicit namespace packages.
+  "ISC",   # Encourage correct string literal concatenation.
+  "LOG",   # Checks for issues using the standard library logging module.
+  "N",     # Linting rules for pep8 naming conventions.
+  "NPY",   # Linting rules for numpy
+  "PD",    # Opinionated linting for pandas.
+  "PERF",  # Rules to prevent performance anti-patterns.
+  "PGH",   # Pygrep hook rules.
+  "PIE",   # Rules to prevent unnecessary code logic.
+  "PLC",   # pycodestyle conventions
+  "PLE",   # Pylint error rules.
+  "PLR",   # Pylint refactoring rules.
+  "PLW",   # Pylint warning rules
+  "PYI",   # Linting rules for type annotations.
+  "Q",     # Linting rules for quotes.
+  "RUF",   # Ruff specific rules.
+  "S",     # Linting rules to enforce secure code.
+  "SLOT",  # Enforces usage of slots.
+  "T10",   # Check for debugger statements.
+  "T20",   # Check for Print statements in python files.
+  "TC",    # Linting for type-checking imports & forward references.
+  "TD",    # Checks correct usage of TODO comments.
+  "TID",   # Helps you write tidier imports.
+  "UP",    # pyupgrade
+  "W",     # pycodestyle warnings
+  "YTT",   # Checks wrong usage of sys.version / sys.version_info.
 ]
 ignore = [
   "B008",    # Checks for function calls in default function arguments.

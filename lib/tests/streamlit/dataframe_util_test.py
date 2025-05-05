@@ -644,7 +644,7 @@ class DataframeUtilTest(unittest.TestCase):
         self.assertEqual(
             data_format,
             metadata.expected_data_format,
-            f"{str(input_data)} is expected to be {metadata.expected_data_format} but was {data_format}.",
+            f"{input_data} is expected to be {metadata.expected_data_format} but was {data_format}.",
         )
 
     @parameterized.expand(

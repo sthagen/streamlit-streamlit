@@ -310,7 +310,7 @@ class Secrets(Mapping[str, Any]):
 
             if len(sub_secrets) == 1:
                 # if there's just one file, collapse it so it's directly under `dirname`
-                secrets[dirname] = sub_secrets[list(sub_secrets.keys())[0]]
+                secrets[dirname] = sub_secrets[next(iter(sub_secrets.keys()))]
             else:
                 secrets[dirname] = sub_secrets
 

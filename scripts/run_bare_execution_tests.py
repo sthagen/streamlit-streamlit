@@ -42,7 +42,11 @@ E2E_DIRS = [
 
 # the hostframe_app.py script does not work because without a script_context
 # the navigation function will raise an exception when trying some non-existing page properties.
-EXCLUDED_FILENAMES: set[str] = {"compilation_error_dialog.py", "hostframe_app.py"}
+EXCLUDED_FILENAMES: set[str] = {
+    "compilation_error_dialog.py",
+    "hostframe_app.py",
+    "conftest.py",
+}
 
 # Since there is not DISPLAY set (and since Streamlit is not actually running
 # and fixing Matplotlib in these tests), we set the MPL backend to something
@@ -111,7 +115,7 @@ def main():
         click.secho(
             "\n".join(_command_to_string(command) for command in failed), fg="red"
         )
-        click.secho(f"\n{len(failed)} failed scripts", fg="red", bold=True)
+        click.secho(f"\n{len(failed)} failed scripts: {failed}", fg="red", bold=True)
         sys.exit(-1)
 
 

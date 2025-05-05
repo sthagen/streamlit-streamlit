@@ -865,3 +865,43 @@ def is_child_bounding_box_inside_parent(
         and (child_box["y"] + child_box["height"])
         <= (parent_box["y"] + parent_box["height"])
     )
+
+
+def get_button_group(app: Page, key: str) -> Locator:
+    """Get a button group with the given key.
+
+    Parameters
+    ----------
+    app : Page
+        The page to search for the button group.
+
+    key : str
+        The key of the button group to get.
+
+    Returns
+    -------
+    Locator
+        The button group.
+    """
+    return get_element_by_key(app, key).get_by_test_id("stButtonGroup").first
+
+
+def get_segment_button(locator: Locator, text: str) -> Locator:
+    """Get a segment button with the given button group.
+
+    Parameters
+    ----------
+    locator : Locator
+        The locator of the button groupto search for the segment button.
+
+    text : str
+        The text of the segment button to get.
+
+    Returns
+    -------
+    Locator
+        The segment button.
+    """
+    return locator.get_by_test_id(
+        re.compile("stBaseButton-segmented_control(Active)?")
+    ).filter(has_text=text)

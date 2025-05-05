@@ -194,7 +194,7 @@ class _HashStack:
     def pretty_print(self) -> str:
         def to_str(v: Any) -> str:
             try:
-                return f"Object of type {type_util.get_fqn_type(v)}: {str(v)}"
+                return f"Object of type {type_util.get_fqn_type(v)}: {v}"
             except Exception:
                 return "<Unable to convert item to string>"
 

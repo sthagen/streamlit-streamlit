@@ -368,7 +368,7 @@ class ButtonGroupCommandTests(DeltaGeneratorTestCase):
         comand("thumbs", key=key)
 
         delta = self.get_delta_from_queue().new_element.button_group
-        assert delta.id.endswith(f"-{str(key)}")
+        assert delta.id.endswith(f"-{key}")
 
     @parameterized.expand(
         [

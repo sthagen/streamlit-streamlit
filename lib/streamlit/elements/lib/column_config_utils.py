@@ -509,9 +509,7 @@ def _convert_column_config_to_json(column_config_mapping: ColumnConfigMapping) -
         # Ignore all None values and prefix columns specified by numerical index:
         return json.dumps(
             {
-                (
-                    f"{_NUMERICAL_POSITION_PREFIX}{str(k)}" if isinstance(k, int) else k
-                ): v
+                (f"{_NUMERICAL_POSITION_PREFIX}{k!s}" if isinstance(k, int) else k): v
                 for (k, v) in remove_none_values(column_config_mapping).items()
             },
             allow_nan=False,
