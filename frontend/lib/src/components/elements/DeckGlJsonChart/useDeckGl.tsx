@@ -63,7 +63,7 @@ type UseDeckGlShape = {
   width: number | string
 }
 
-export type UseDeckGlProps = Omit<DeckGLProps, "mapboxToken"> & {
+export type UseDeckGlProps = Omit<DeckGLProps, "width"> & {
   isLightTheme: boolean
   theme: EmotionTheme
 }
@@ -222,26 +222,37 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
   }, [isFullScreen, isLightTheme, element.json])
 
   const deck = useMemo<DeckObject>(() => {
-    const copy = { ...parsedPydeckJson }
+    const jsonCopy = { ...parsedPydeckJson }
 
-    // If unset, use either the Mapbox light or dark style based on Streamlit's theme
-    // For Mapbox styles, see https://docs.mapbox.com/api/maps/styles/#mapbox-styles
-    if (!copy.mapStyle) {
-      copy.mapStyle = `mapbox://styles/mapbox/${
-        isLightTheme ? "light" : "dark"
-      }-v9`
+    // If unset, use either the light or dark style based on Streamlit's theme.
+    if (!jsonCopy.mapStyle) {
+      jsonCopy.mapStyle = isLightTheme
+        ? "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        : "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
     }
 
-    if (copy.layers) {
+    const isUsingCarto =
+      jsonCopy?.mapProvider == "carto" ||
+      (jsonCopy?.mapStyle && jsonCopy.mapStyle?.indexOf("cartocdn") >= 0)
+
+    if (isUsingCarto && !jsonCopy.cartoKey) {
+      // This key was manually created by Carto just for Streamlit. It is NOT
+      // connected to any paid accounts, or secure API access, or anything of
+      // the sort. It's is just used for Carto to be able to separate Streamlit
+      // usage from other types in their own internal stats.
+      jsonCopy.cartoKey = "x7g2plm9yq8vfrc"
+    }
+
+    if (jsonCopy.layers) {
       const anyLayersHaveSelection = Object.values(
         data.selection.indices
       ).some(layer => layer?.length)
 
-      const anyLayersHavePickableDefined = copy.layers.some(layer =>
+      const anyLayersHavePickableDefined = jsonCopy.layers.some(layer =>
         Object.hasOwn(layer, "pickable")
       )
 
-      copy.layers = copy.layers.map(layer => {
+      jsonCopy.layers = jsonCopy.layers.map(layer => {
         if (
           !layer ||
           Array.isArray(layer) ||
@@ -330,9 +341,9 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
       })
     }
 
-    delete copy?.views // We are not using views. This avoids a console warning.
+    delete jsonCopy?.views // We are not using views. This avoids a console warning.
 
-    return jsonConverter.convert(copy)
+    return jsonConverter.convert(jsonCopy)
   }, [
     data.selection.indices,
     isLightTheme,

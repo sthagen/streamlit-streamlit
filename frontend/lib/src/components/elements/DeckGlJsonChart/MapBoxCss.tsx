@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { default } from "./withMapboxToken"
+import React, { FC } from "react"
+import "mapbox-gl/dist/mapbox-gl.css"
+
+/**
+ * This component only exists so we can programmatically load the Mapbox CSS
+ * when the user wants to use Mapbox instead of Carto.
+ */
+export const MapBoxCss: FC = () => {
+  return <></>
+}

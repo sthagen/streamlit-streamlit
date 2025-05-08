@@ -141,7 +141,8 @@ def _fix_pydeck_mapbox_api_warning() -> None:
     will throw an exception.
     """
 
-    os.environ["MAPBOX_API_KEY"] = config.get_option("mapbox.token")
+    if "MAPBOX_API_KEY" not in os.environ:
+        os.environ["MAPBOX_API_KEY"] = config.get_option("mapbox.token")
 
 
 def _maybe_print_static_folder_warning(main_script_path: str) -> None:

@@ -26,7 +26,6 @@ import streamlit as st
 from streamlit.elements.map import _DEFAULT_MAP, _DEFAULT_ZOOM_LEVEL
 from streamlit.errors import StreamlitAPIException
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
-from tests.testutil import patch_config_options
 
 mock_df = pd.DataFrame({"lat": [1, 2, 3, 4], "lon": [10, 20, 30, 40]})
 
@@ -273,20 +272,6 @@ class StMapTest(DeltaGeneratorTestCase):
         c = json.loads(self.get_delta_from_queue().new_element.deck_gl_json_chart.json)
         self.assertEqual(len(c.get("layers")[0].get("data")[0]), 2)
         self.assertEqual(len(df.columns), 3)
-
-    # This test was turned off while we investigate issues with the feature.
-    def turnedoff_test_map_style_raises_error(self):
-        """Test that map_style raises error when no Mapbox token is present."""
-        with self.assertRaises(StreamlitAPIException):
-            st.map(mock_df, map_style="MY_MAP_STYLE")
-
-    # This test was turned off while we investigate issues with the feature.
-    @patch_config_options({"mapbox.token": "MY_TOKEN"})
-    def turnedoff_test_map_style(self):
-        """Test that map_style works when a Mapbox token is present."""
-        st.map(mock_df, map_style="MY_MAP_STYLE")
-        c = json.loads(self.get_delta_from_queue().new_element.deck_gl_json_chart.json)
-        self.assertEqual(c.get("mapStyle"), "MY_MAP_STYLE")
 
     def test_default_map_copy(self):
         """Test that _DEFAULT_MAP is not modified as other work occurs."""

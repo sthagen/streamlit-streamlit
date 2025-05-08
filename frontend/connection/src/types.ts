@@ -166,7 +166,7 @@ export interface StreamlitEndpoints {
  */
 export type LibConfig = {
   /**
-   * the mapbox token that can be configured by a platform
+   * The mapbox token that can be configured by a platform.
    */
   mapboxToken?: string
 

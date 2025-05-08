@@ -85,7 +85,6 @@ const getProps = (
       json: JSON.stringify(json),
       ...elementProps,
     }),
-    mapboxToken: "mapboxToken",
     widgetMgr: new WidgetStateManager({
       sendRerunBackMsg: vi.fn(),
       formsDataChanged: vi.fn(),
