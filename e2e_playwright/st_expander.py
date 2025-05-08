@@ -79,3 +79,10 @@ expander_emoji_icon = st.expander("Expander with emoji icon!", icon="🎈").writ
 st.expander(
     "-> :material/check: :rainbow[Fancy] _**markdown** `label` _support_"
 ).write("Content")
+
+
+level1 = st.expander("Nested expander", expanded=True)
+level1.write("First level expander")
+
+level2 = level1.expander("Inside expander")
+level2.write("Second level expander")

@@ -79,7 +79,7 @@ def _send_email(email: str) -> None:
         ).json()
         metrics_url = response_json.get("url", "")
     except Exception:
-        _LOGGER.error("Failed to fetch metrics URL")
+        _LOGGER.exception("Failed to fetch metrics URL")
         return
 
     headers = {
@@ -150,7 +150,7 @@ class Credentials:
             with open(self._conf_file) as f:
                 data = toml.load(f).get("general")
             if data is None:
-                raise Exception
+                raise RuntimeError  # noqa: TRY301
             self.activation = _verify_email(data.get("email"))
         except FileNotFoundError:
             if auto_resolve:
@@ -164,7 +164,7 @@ class Credentials:
                 self.reset()
                 self.activate(show_instructions=not auto_resolve)
                 return
-            raise Exception(
+            raise RuntimeError(
                 textwrap.dedent(
                     """
                 Unable to load credentials from %s.

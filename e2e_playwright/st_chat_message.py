@@ -123,3 +123,7 @@ with st.chat_message("assistant"):
 
 assistant_message = {"role": "assistant", "content": llm_response, "sources": sources}
 st.session_state.messages.append(assistant_message)
+
+with st.chat_message("assistant"):
+    st.write("This message contains another message:")
+    st.chat_message("user", avatar="🧑").write("This is a nested chat message.")

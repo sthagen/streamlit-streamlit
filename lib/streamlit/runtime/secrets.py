@@ -37,7 +37,9 @@ _LOGGER: Final = get_logger(__name__)
 
 
 class SecretErrorMessages:
-    """SecretErrorMessages stores all error messages we use for secrets to allow customization for different environments.
+    """SecretErrorMessages stores all error messages we use for secrets to allow customization
+    for different environments.
+
     For example Streamlit Cloud can customize the message to be different than the open source.
 
     For internal use, may change in future releases without notice.
@@ -46,13 +48,15 @@ class SecretErrorMessages:
     def __init__(self):
         self.missing_attr_message = lambda attr_name: (
             f'st.secrets has no attribute "{attr_name}". '
-            f"Did you forget to add it to secrets.toml, mount it to secret directory, or the app settings on Streamlit Cloud? "
-            f"More info: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management"
+            "Did you forget to add it to secrets.toml, mount it to secret directory, or the app settings "
+            "on Streamlit Cloud? More info: "
+            "https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management"
         )
         self.missing_key_message = lambda key: (
             f'st.secrets has no key "{key}". '
-            f"Did you forget to add it to secrets.toml, mount it to secret directory, or the app settings on Streamlit Cloud? "
-            f"More info: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management"
+            "Did you forget to add it to secrets.toml, mount it to secret directory, or the app settings "
+            "on Streamlit Cloud? More info: "
+            "https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management"
         )
         self.no_secrets_found = lambda file_paths: (
             f"No secrets found. Valid paths for a secrets.toml file or secret directories are: {', '.join(file_paths)}"
@@ -272,7 +276,8 @@ class Secrets(Mapping[str, Any]):
         return secrets, found_secrets_file
 
     def _parse_directory(self, path: str) -> tuple[Mapping[str, Any], bool]:
-        """Parse a directory for secrets. Directory style can be used to support Kubernetes secrets that are mounted to folders.
+        """Parse a directory for secrets. Directory style can be used to support Kubernetes secrets that are
+        mounted to folders.
 
         Example structure:
         - top_level_secret_folder
@@ -380,7 +385,9 @@ class Secrets(Mapping[str, Any]):
             return self._secrets
 
     def to_dict(self) -> dict[str, Any]:
-        """Converts the secrets store into a nested dictionary, where nested AttrDict objects are also converted into dictionaries."""
+        """Converts the secrets store into a nested dictionary, where nested AttrDict objects are
+        also converted into dictionaries.
+        """
         secrets = self._parse()
         return _convert_to_dict(secrets)
 

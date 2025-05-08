@@ -78,12 +78,12 @@ class BaseConnection(ABC, Generic[RawConnectionT]):
     def __getattribute__(self, name: str) -> Any:
         try:
             return object.__getattribute__(self, name)
-        except AttributeError as e:
+        except AttributeError:
             if hasattr(self._instance, name):
                 raise AttributeError(
                     f"`{name}` doesn't exist here, but you can call `._instance.{name}` instead"
                 )
-            raise e
+            raise
 
     # Methods with default implementations that we don't expect subclasses to want or
     # need to overwrite.

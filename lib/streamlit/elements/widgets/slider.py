@@ -201,10 +201,6 @@ class SliderSerde:
 
 
 class SliderMixin:
-    # For easier readability, all the arguments with un-changing types across these overload signatures have been
-    # collapsed onto a single line.
-
-    # fmt: off
     # If min/max/value/step are not provided, then we return an int.
     # if ONLY step is provided, then it must be an int and we return an int.
     @overload
@@ -213,11 +209,18 @@ class SliderMixin:
         label: str,
         min_value: None = None,
         max_value: None = None,
-        value:  None = None,
+        value: None = None,
         step: int | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> int:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        *,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> int: ...
 
     # If min-value or max_value is provided and a numeric type, and value (if provided)
     #   is a singular numeric, return the same numeric type.
@@ -229,9 +232,16 @@ class SliderMixin:
         max_value: SliderNumericT | None = None,
         value: SliderNumericT | None = None,
         step: StepNumericT[SliderNumericT] | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> SliderNumericT:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        *,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> SliderNumericT: ...
 
     # If value is provided and a sequence of numeric type,
     #   return a tuple of the same numeric type.
@@ -244,9 +254,15 @@ class SliderMixin:
         *,
         value: SliderNumericSpanT[SliderNumericT],
         step: StepNumericT[SliderNumericT] | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> tuple[SliderNumericT, SliderNumericT]:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> tuple[SliderNumericT, SliderNumericT]: ...
 
     # If value is provided positionally and a sequence of numeric type,
     #   return a tuple of the same numeric type.
@@ -257,11 +273,17 @@ class SliderMixin:
         min_value: SliderNumericT,
         max_value: SliderNumericT,
         value: SliderNumericSpanT[SliderNumericT],
-        /,
         step: StepNumericT[SliderNumericT] | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> tuple[SliderNumericT, SliderNumericT]:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        *,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> tuple[SliderNumericT, SliderNumericT]: ...
 
     # If min-value is provided and a datelike type, and value (if provided)
     #   is a singular datelike, return the same datelike type.
@@ -273,9 +295,16 @@ class SliderMixin:
         max_value: SliderDatelikeT | None = None,
         value: SliderDatelikeT | None = None,
         step: StepDatelikeT | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> SliderDatelikeT:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        *,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> SliderDatelikeT: ...
 
     # If max-value is provided and a datelike type, and value (if provided)
     #   is a singular datelike, return the same datelike type.
@@ -288,9 +317,15 @@ class SliderMixin:
         max_value: SliderDatelikeT,
         value: SliderDatelikeT | None = None,
         step: StepDatelikeT | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> SliderDatelikeT:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> SliderDatelikeT: ...
 
     # If value is provided and a datelike type, return the same datelike type.
     @overload
@@ -302,9 +337,15 @@ class SliderMixin:
         *,
         value: SliderDatelikeT,
         step: StepDatelikeT | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> SliderDatelikeT:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> SliderDatelikeT: ...
 
     # If value is provided and a sequence of datelike type,
     #   return a tuple of the same datelike type.
@@ -317,9 +358,15 @@ class SliderMixin:
         *,
         value: SliderDatelikeSpanT[SliderDatelikeT],
         step: StepDatelikeT | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> tuple[SliderDatelikeT, SliderDatelikeT]:
-        ...
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> tuple[SliderDatelikeT, SliderDatelikeT]: ...
 
     # If value is provided positionally and a sequence of datelike type,
     #   return a tuple of the same datelike type.
@@ -332,11 +379,16 @@ class SliderMixin:
         value: SliderDatelikeSpanT[SliderDatelikeT],
         /,
         step: StepDatelikeT | None = None,
-        format: str | None = None, key: Key | None = None, help: str | None = None, on_change: WidgetCallback | None = None, args: WidgetArgs | None = None, kwargs: WidgetKwargs | None = None, *, disabled: bool = False, label_visibility: LabelVisibility = "visible"
-    ) -> tuple[SliderDatelikeT, SliderDatelikeT]:
-        ...
-
-    # fmt: on
+        format: str | None = None,
+        key: Key | None = None,
+        help: str | None = None,
+        on_change: WidgetCallback | None = None,
+        args: WidgetArgs | None = None,
+        kwargs: WidgetKwargs | None = None,
+        *,
+        disabled: bool = False,
+        label_visibility: LabelVisibility = "visible",
+    ) -> tuple[SliderDatelikeT, SliderDatelikeT]: ...
 
     # https://github.com/python/mypy/issues/17614
     @gather_metrics("slider")  # type: ignore[misc]

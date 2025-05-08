@@ -74,6 +74,7 @@ select = [
   "TC",    # Linting for type-checking imports & forward references.
   "TD",    # Checks correct usage of TODO comments.
   "TID",   # Helps you write tidier imports.
+  "TRY",   # Checks for exception handling anti-patterns.
   "UP",    # pyupgrade
   "W",     # pycodestyle warnings
   "YTT",   # Checks wrong usage of sys.version / sys.version_info.
@@ -81,7 +82,6 @@ select = [
 ignore = [
   "B008",    # Checks for function calls in default function arguments.
   "B904",    # Checks for raise statements in exception handlers that lack a from clause.
-  "E501",    # Checks for lines that exceed the specified maximum character length.
   "ISC001",  # Checks for implicitly concatenated strings on a single line.
   "NPY002",  # Checks for the use of legacy np.random function calls.
   "PYI036",  # Checks for incorrect function signatures on __exit__ and __aexit__ methods.
@@ -116,9 +116,10 @@ ignore = [
   "PLR0915", # Checks for functions with too many statements.
   "PLR0916", # Checks for too many boolean expressions in if statements.
   "N806",    # Checks for non-lowercased variable names in functions.
-  "N818",    # Checks for Error suffix for exceptions.
   "A002",    # Checks if function argument shadows a Python builtin.
   "S101",    # Checks for usage of assert statements.
+  "TRY003",  # Checks for exception messages that are not defined in the exception class itself.
+  "TRY300",  # Checks for return statements in try blocks.
 ]
 exclude = [
   # pympler is a vendored dependency that doesn't conform to our linting rules:
@@ -126,11 +127,11 @@ exclude = [
 ]
 
 [lint.per-file-ignores]
-"e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999", "S"]
+"e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999", "S", "TRY"]
 "lib/streamlit/__init__.py" = ["E402", "PLC0414", "A001"]
 "lib/setup.py" = ["INP"]
-"lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG", "S"]
-"scripts/**" = ["T20", "INP", "PERF", "S"]
+"lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG", "S", "TRY", "E501"]
+"scripts/**" = ["T20", "INP", "PERF", "S", "TRY002"]
 
 [lint.flake8-tidy-imports]
 # Disallow all relative imports.
@@ -143,8 +144,6 @@ known-first-party = ["streamlit", "shared", "tests", "e2e_playwright"]
 convention = "numpy"
 
 [lint.pycodestyle]
-# E501 is currently deactivated, but suggested to be activated
-# by developers via VS Code settings.
 # Allow lines (e.g. comments) up to 120 characters instead of 88,
 # which works well with Github.
 max-line-length = 120

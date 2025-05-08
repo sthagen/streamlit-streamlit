@@ -49,7 +49,7 @@ class FragmentStorageKeyError(Error, KeyError):
     pass
 
 
-class FragmentHandledException(Exception):
+class FragmentHandledException(Exception):  # noqa: N818
     """An exception that is raised by the fragment
     when it has handled the exception itself.
     """
@@ -57,15 +57,15 @@ class FragmentHandledException(Exception):
     pass
 
 
-class NoStaticFiles(Error):
+class NoStaticFiles(Error):  # noqa: N818
     pass
 
 
-class NoSessionContext(Error):
+class NoSessionContext(Error):  # noqa: N818
     pass
 
 
-class MarkdownFormattedException(Error):
+class MarkdownFormattedException(Error):  # noqa: N818
     """Exceptions with Markdown in their description.
 
     Instances of this class can use markdown in their messages, which will get
@@ -199,7 +199,8 @@ class StreamlitInvalidSidebarStateError(LocalizableStreamlitException):
 
     def __init__(self, initial_sidebar_state: str):
         super().__init__(
-            '`initial_sidebar_state` must be `"auto"` or `"expanded"` or `"collapsed"` (got `"{initial_sidebar_state}"`)',
+            '`initial_sidebar_state` must be `"auto"` or `"expanded"` or '
+            '`"collapsed"` (got `"{initial_sidebar_state}"`)',
             initial_sidebar_state=initial_sidebar_state,
         )
 
@@ -413,7 +414,9 @@ class StreamlitFragmentWidgetsNotAllowedOutsideError(LocalizableStreamlitExcepti
 
 
 class StreamlitInvalidFormCallbackError(LocalizableStreamlitException):
-    """Exception raised a `on_change` callback is set on any element in a form except for the `st.form_submit_button`."""
+    """Exception raised a `on_change` callback is set on any element in a form except for
+    the `st.form_submit_button`.
+    """
 
     def __init__(self):
         super().__init__(

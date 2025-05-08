@@ -442,8 +442,8 @@ def _parse_selection_mode(
         raise StreamlitAPIException(
             "Selections are activated, but the provided chart spec does not "
             "have any selections defined. To add selections to `st.altair_chart`, check out the documentation "
-            "[here](https://altair-viz.github.io/user_guide/interactions.html#selections-capturing-chart-interactions). "
-            "For adding selections to `st.vega_lite_chart`, take a look "
+            "[here](https://altair-viz.github.io/user_guide/interactions.html#selections-capturing-chart-interactions)."
+            " For adding selections to `st.vega_lite_chart`, take a look "
             "at the specification [here](https://vega.github.io/vega-lite/docs/selection.html)."
         )
 

@@ -13,7 +13,9 @@
 # limitations under the License.
 
 
-"""To determine the Canvas click points, you can run the Streamlit app, attach an event listener to the canvas and read the position from there."""
+"""To determine the Canvas click points, you can run the Streamlit app,
+attach an event listener to the canvas and read the position from there.
+"""
 
 import re
 from dataclasses import dataclass
@@ -307,7 +309,10 @@ def _test_shift_click_point_selection_scatter_chart_displays_selection(
 
     expected_prefix = "Scatter chart with selection_point:"
     expected_selection = re.compile(
-        "\\{'selection': \\{'param_1': \\[\\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, \\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, \\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, \\{'Origin': 'Japan', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}\\]\\}\\}"
+        "\\{'selection': \\{'param_1': \\[\\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, "
+        "\\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, "
+        "\\{'Origin': 'USA', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}, "
+        "\\{'Origin': 'Japan', 'Horsepower': .+, 'Miles_per_Gallon': .+\\}\\]\\}\\}"
     )
     expect_prefixed_markdown(app, expected_prefix, expected_selection)
 

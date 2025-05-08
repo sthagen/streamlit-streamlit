@@ -191,11 +191,8 @@ class LayoutsMixin:
         (preferred) or just call methods directly on the returned object. See
         examples below.
 
-        Columns can only be placed inside other columns up to one level of nesting.
-
-        .. warning::
-            Columns cannot be placed inside other columns in the sidebar. This
-            is only possible in the main area of the app.
+        .. note::
+            We recommend against nesting columns more than once since it might look bad on smaller devices.
 
         Parameters
         ----------
@@ -503,9 +500,6 @@ class LayoutsMixin:
         (preferred) or just call methods directly on the returned object. See
         examples below.
 
-        .. warning::
-            Currently, you may not put expanders inside another expander.
-
         Parameters
         ----------
         label : str
@@ -624,7 +618,7 @@ class LayoutsMixin:
         See examples below.
 
         .. warning::
-            You may not put a popover inside another popover.
+            We strongly advise against nesting popovers.
 
         Parameters
         ----------

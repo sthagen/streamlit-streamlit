@@ -27,7 +27,11 @@ from streamlit.runtime.scriptrunner_utils.script_run_context import get_script_r
 
 
 def _invalid_logo_text(field_name: str):
-    return f"The {field_name} passed to st.logo is invalid - See [documentation](https://docs.streamlit.io/develop/api-reference/media/st.logo) for more information on valid types"
+    return (
+        f"The {field_name} passed to st.logo is invalid - See "
+        "[documentation](https://docs.streamlit.io/develop/api-reference/media/st.logo) "
+        "for more information on valid types"
+    )
 
 
 @gather_metrics("logo")
@@ -154,7 +158,8 @@ def logo(
             fwd_msg.logo.link = link
         else:
             raise StreamlitAPIException(
-                f"Invalid link: {link} - the link param supports external links only and must start with either http:// or https://."
+                f"Invalid link: {link} - the link param supports external links only and must "
+                f"start with either http:// or https://."
             )
 
     if icon_image:

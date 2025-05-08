@@ -112,7 +112,7 @@ AUTH_LOGIN_ENDPOINT: Final = "/auth/login"
 AUTH_LOGOUT_ENDPOINT: Final = "/auth/logout"
 
 
-class RetriesExceeded(Exception):
+class RetriesExceededError(Exception):
     pass
 
 
@@ -175,7 +175,7 @@ def _get_ssl_options(cert_file: str | None, key_file: str | None) -> SSLContext 
         try:
             ssl_ctx.load_cert_chain(cert_file, key_file)
         except ssl.SSLError:
-            _LOGGER.error(
+            _LOGGER.exception(
                 "Failed to load SSL certificate. Make sure "
                 "cert file '%s' and key file '%s' are correct.",
                 cert_file,
@@ -218,7 +218,7 @@ def start_listening_tcp_socket(http_server: HTTPServer) -> None:
         except OSError as e:
             if e.errno == errno.EADDRINUSE:
                 if server_port_is_manually_set():
-                    _LOGGER.error("Port %s is already in use", port)
+                    _LOGGER.error("Port %s is already in use", port)  # noqa: TRY400
                     sys.exit(1)
                 else:
                     _LOGGER.debug(
@@ -237,7 +237,7 @@ def start_listening_tcp_socket(http_server: HTTPServer) -> None:
                 raise
 
     if call_count >= MAX_PORT_SEARCH_RETRIES:
-        raise RetriesExceeded(
+        raise RetriesExceededError(
             f"Cannot start Streamlit server. Port {port} is already in use, and "
             f"Streamlit was unable to find a free port after {MAX_PORT_SEARCH_RETRIES} attempts.",
         )

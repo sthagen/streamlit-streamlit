@@ -67,7 +67,8 @@ def _assert_first_dialog_to_be_opened(should_open: bool) -> None:
     if should_open and script_run_ctx:
         if script_run_ctx.has_dialog_opened:
             raise StreamlitAPIException(
-                "Only one dialog is allowed to be opened at the same time. Please make sure to not call a dialog-decorated function more than once in a script run."
+                "Only one dialog is allowed to be opened at the same time. "
+                "Please make sure to not call a dialog-decorated function more than once in a script run."
             )
         script_run_ctx.has_dialog_opened = True
 

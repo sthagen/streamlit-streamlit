@@ -101,9 +101,10 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
 
         try:
             if not self._is_active_session(session_id):
-                raise Exception("Invalid session_id")
-        except Exception as e:
-            self.send_error(400, reason=str(e))
+                self.send_error(400, reason="Invalid session_id")
+                return
+        except Exception as ex:
+            self.send_error(400, reason=str(ex))
             return
 
         uploaded_files: list[UploadedFileRec] = []

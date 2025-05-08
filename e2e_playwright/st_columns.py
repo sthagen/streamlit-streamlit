@@ -17,7 +17,10 @@ import numpy as np
 
 import streamlit as st
 
-LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+LOREM_IPSUM = (
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+    "incididunt ut labore et dolore magna aliqua."
+)
 
 BLACK_IMG = np.repeat(0, 601350).reshape(633, 950)
 
@@ -105,7 +108,7 @@ with st.expander("Vertical alignment - bottom", expanded=True):
     col3.checkbox("Checkbox 1 (bottom)")
     col3.checkbox("Checkbox 2 (bottom)")
 
-if st.button("Nested columns - two levels (raises exception)"):
+if st.button("Nested columns - two levels"):
     col1, col2 = st.columns(2)
     with col1:
         subcol1, subcol2 = st.columns(2)
@@ -117,7 +120,7 @@ if st.button("Nested columns - two levels (raises exception)"):
         subcol2.write(LOREM_IPSUM)
         st.write(LOREM_IPSUM)
 
-if st.button("Nested columns - in sidebar (raises exception)"):
+if st.button("Nested columns - in sidebar"):
     with st.sidebar:
         col1, col2 = st.columns(2)
         col1.text_input("Text input 1")

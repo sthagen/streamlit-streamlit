@@ -38,7 +38,11 @@ _LOGGER: Final = get_logger(__name__)
 
 # When client.showErrorDetails is False, we show a generic warning in the
 # frontend when we encounter an uncaught app exception.
-_GENERIC_UNCAUGHT_EXCEPTION_TEXT: Final = "This app has encountered an error. The original error message is redacted to prevent data leaks.  Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app)."
+_GENERIC_UNCAUGHT_EXCEPTION_TEXT: Final = (
+    "This app has encountered an error. The original error message is redacted "
+    "to prevent data leaks. Full error details have been recorded in the logs "
+    "(if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app)."
+)
 
 
 class ExceptionMixin:

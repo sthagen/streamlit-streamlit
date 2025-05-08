@@ -110,9 +110,9 @@ class AuthLoginHandler(AuthHandlerMixin, tornado.web.RequestHandler):
 
     def _parse_provider_token(self) -> str | None:
         provider_token = self.get_argument("provider", None)
+        if provider_token is None:
+            return None
         try:
-            if provider_token is None:
-                raise StreamlitAuthError("Missing provider token")
             payload = decode_provider_token(provider_token)
         except StreamlitAuthError:
             return None
@@ -180,7 +180,7 @@ class AuthCallbackHandler(AuthHandlerMixin, tornado.web.RequestHandler):
             _, _, recorded_provider, code = key.split("_")
             state_provider_mapping[code] = recorded_provider
 
-        provider: str | None = state_provider_mapping.get(state_code_from_url, None)
+        provider: str | None = state_provider_mapping.get(state_code_from_url)
         return provider
 
     def _get_origin_from_secrets(self) -> str | None:

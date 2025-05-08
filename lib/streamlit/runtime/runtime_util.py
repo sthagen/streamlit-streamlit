@@ -39,7 +39,8 @@ class MessageSizeError(MarkdownFormattedException):
         # This needs to have zero indentation otherwise the markdown will render incorrectly.
         return (
             f"""
-**Data of size {len(failed_msg_str) / 1e6:.1f} MB exceeds the message size limit of {get_max_message_size_bytes() / 1e6} MB.**
+**Data of size {len(failed_msg_str) / 1e6:.1f} MB exceeds the message size limit of
+{get_max_message_size_bytes() / 1e6} MB.**
 
 This is often caused by a large chart or dataframe. Please decrease the amount of data sent
 to the browser, or increase the limit by setting the config option `server.maxMessageSize`.

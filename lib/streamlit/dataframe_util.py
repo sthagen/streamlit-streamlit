@@ -1319,7 +1319,8 @@ def convert_pandas_df_to_data_format(
 
     Returns
     -------
-    pd.DataFrame, pd.Series, pyarrow.Table, np.ndarray, xarray.Dataset, xarray.DataArray, polars.Dataframe, polars.Series, list, set, tuple, or dict.
+    pd.DataFrame, pd.Series, pyarrow.Table, np.ndarray, xarray.Dataset,
+    xarray.DataArray, polars.Dataframe, polars.Series, list, set, tuple, or dict.
         The converted dataframe.
     """
 

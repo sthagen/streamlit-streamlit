@@ -51,7 +51,9 @@ st.write("Value 2:", w2)
 
 # Slider 6
 w3 = st.slider(
-    "Label 3 - This is a very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long label",
+    "Label 3 - This is a very very very very very very very very very very very very very "
+    "very very very very very very very very very very very very very very very very very "
+    "very very very very very very very very very very very very very very very long label",
     0,
     100,
     1,

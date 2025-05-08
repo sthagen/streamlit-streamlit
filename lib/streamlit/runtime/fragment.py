@@ -246,11 +246,11 @@ def _fragment(
                         except (
                             RerunException,
                             StopException,
-                        ) as e:
+                        ):
                             # The wrapped_fragment function is executed
                             # inside of a exec_func_with_error_handling call, so
                             # there is a correct handler for these exceptions.
-                            raise e
+                            raise
                         except Exception as e:
                             # render error here so that the delta path is correct
                             # for full app runs, the error will be displayed by the

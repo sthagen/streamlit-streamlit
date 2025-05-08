@@ -46,7 +46,8 @@ def test_collapsed_toast_rendering(
     toasts.nth(1).hover()
 
     expect(toasts.nth(1)).to_contain_text(
-        "🦄Random toast message that is a really really really really really really really long message, going wayview moreClose"
+        "🦄Random toast message that is a really really really really really really "
+        "really long message, going wayview moreClose"
     )
     assert_snapshot(toasts.nth(1), name="toast-collapsed")
 
@@ -68,7 +69,8 @@ def test_expanded_toast_rendering(
     expand.click()
 
     expect(toasts.nth(1)).to_contain_text(
-        "🦄Random toast message that is a really really really really really really really long message, going way past the 3 line limitview lessClose"
+        "🦄Random toast message that is a really really really really really really "
+        "really long message, going way past the 3 line limitview lessClose"
     )
     assert_snapshot(toasts.nth(1), name="toast-expanded")
 

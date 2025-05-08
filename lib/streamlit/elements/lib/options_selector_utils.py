@@ -54,9 +54,12 @@ def index_(iterable: Iterable[_Value], x: _Value) -> int:
     for i, value in enumerate(iterable):
         if x == value:
             return i
-        elif isinstance(value, float) and isinstance(x, float):
-            if abs(x - value) < _FLOAT_EQUALITY_EPSILON:
-                return i
+        if (
+            isinstance(value, float)
+            and isinstance(x, float)
+            and abs(x - value) < _FLOAT_EQUALITY_EPSILON
+        ):
+            return i
     raise ValueError(f"{x} is not in iterable")
 
 
@@ -107,11 +110,11 @@ def _coerce_enum(from_enum_value: E1, to_enum_class: type[E2]) -> E1 | E2:
     match as well. (This is configurable in streamlist configs)
     """
     if not isinstance(from_enum_value, Enum):
-        raise ValueError(
+        raise ValueError(  # noqa: TRY004
             f"Expected an Enum in the first argument. Got {type(from_enum_value)}"
         )
     if not isinstance(to_enum_class, EnumMeta):
-        raise ValueError(
+        raise ValueError(  # noqa: TRY004
             f"Expected an EnumMeta/Type in the second argument. Got {type(to_enum_class)}"
         )
     if isinstance(from_enum_value, to_enum_class):

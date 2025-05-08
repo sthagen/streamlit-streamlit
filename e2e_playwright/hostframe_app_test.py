@@ -79,7 +79,8 @@ def _open_embed(iframed_app: IframedPage) -> FrameLocator:
 
 def _check_widgets_and_sidebar_nav_links_disabled(frame_locator: FrameLocator):
     # Verify that the app's widgets & sidebar nav links are disabled
-    # Note: checking via .to_be_disabled() only works on native control elements (HTML button, input, select, textarea, option, optgroup)
+    # Note: checking via .to_be_disabled() only works on native control elements
+    # (HTML button, input, select, textarea, option, optgroup)
     # Other elements (like <label> tags) need to check for a "disabled" attribute instead.
     # See https://playwright.dev/python/docs/api/class-locatorassertions#locator-assertions-to-be-disabled
 

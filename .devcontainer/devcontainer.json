@@ -88,7 +88,6 @@
         "editor.codeActionsOnSave": { "source.fixAll": "always" },
         "vitest.maximumConfigs": 5,
         "mypy-type-checker.importStrategy": "fromEnvironment",
-        "ruff.lint.extendSelect": ["E501"],
         "ruff.nativeServer": true,
         "ruff.organizeImports": true,
         "ruff.fixAll": true,

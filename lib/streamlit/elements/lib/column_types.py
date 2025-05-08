@@ -485,7 +485,7 @@ def NumberColumn(
     .. output::
         https://doc-number-column.streamlit.app/
         height: 300px
-    """
+    """  # noqa: E501
 
     return ColumnConfig(
         label=label,
@@ -2058,7 +2058,7 @@ def ProgressColumn(
     .. output::
         https://doc-progress-column.streamlit.app/
         height: 300px
-    """
+    """  # noqa: E501
 
     return ColumnConfig(
         label=label,

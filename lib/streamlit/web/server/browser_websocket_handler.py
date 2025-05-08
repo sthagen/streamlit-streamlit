@@ -115,7 +115,8 @@ class BrowserWebSocketHandler(WebSocketHandler, SessionClient):
 
         else:
             _LOGGER.error(
-                "Origin mismatch, the origin of websocket request is not the same origin of redirect_uri in secrets.toml",
+                "Origin mismatch, the origin of websocket request is not the "
+                "same origin of redirect_uri in secrets.toml",
             )
 
         return user_info
@@ -212,7 +213,7 @@ class BrowserWebSocketHandler(WebSocketHandler, SessionClient):
             if isinstance(payload, str):
                 # Sanity check. (The frontend should only be sending us bytes;
                 # Protobuf.ParseFromString does not accept str input.)
-                raise RuntimeError(
+                raise TypeError(  # noqa: TRY301
                     "WebSocket received an unexpected `str` message. "
                     "(We expect `bytes` only.)"
                 )

@@ -394,12 +394,13 @@ class DeltaGeneratorColumnsTest(DeltaGeneratorTestCase):
         except StreamlitAPIException:
             self.fail("Error, one level of nested columns should be allowed!")
 
-    def test_three_levels_of_columns_raise_streamlit_api_exception(self):
-        level1, _ = _ = st.columns(2)
-        level2, _ = level1.columns(2)
-        exc = "Columns can only be placed inside other columns up to one level of nesting."
-        with pytest.raises(StreamlitAPIException, match=exc):
+    def test_three_levels_of_columns_does_not_raise_any_exception(self):
+        try:
+            level1, _ = _ = st.columns(2)
+            level2, _ = level1.columns(2)
             _, _ = level2.columns(2)
+        except StreamlitAPIException:
+            self.fail("Error, one level of nested columns should be allowed!")
 
     def test_one_level_of_columns_is_allowed_in_the_sidebar(self):
         try:
@@ -408,19 +409,19 @@ class DeltaGeneratorColumnsTest(DeltaGeneratorTestCase):
         except StreamlitAPIException:
             self.fail("Error, 1 level column should be allowed in the sidebar!")
 
-    def test_two_levels_of_columns_in_the_sidebar_raise_streamlit_api_exception(self):
-        exc = "Columns cannot be placed inside other columns in the sidebar. This is only possible in the main area of the app."
-        with pytest.raises(StreamlitAPIException, match=exc):
+    def test_two_levels_of_columns_is_allowed_in_the_sidebar(self):
+        try:
             with st.sidebar:
                 col1, _ = st.columns(2)
                 _, _ = col1.columns(2)
+        except StreamlitAPIException:
+            self.fail("Error, 1 level column should be allowed in the sidebar!")
 
 
 class DeltaGeneratorExpanderTest(DeltaGeneratorTestCase):
-    def test_nested_expanders(self):
+    def test_nested_expanders_allowed(self):
         level1 = st.expander("level 1")
-        with self.assertRaises(StreamlitAPIException):
-            level1.expander("level 2")
+        level1.expander("level 2")
 
 
 class DeltaGeneratorWithTest(DeltaGeneratorTestCase):

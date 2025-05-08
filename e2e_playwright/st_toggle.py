@@ -22,7 +22,8 @@ i2 = st.toggle("toggle 2 (False)", False)
 st.write("toggle 2 - value:", i2)
 
 i3 = st.toggle(
-    "toggle 3: This is a really really really really long label that should wrap eventually if we keep adding more text to it "
+    "toggle 3: This is a really really really really long label that should wrap "
+    "eventually if we keep adding more text to it"
 )
 st.write("toggle 3 - value:", i3)
 

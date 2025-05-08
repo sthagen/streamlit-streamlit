@@ -45,12 +45,11 @@ class ChatTest(DeltaGeneratorTestCase):
         with self.assertRaises(TypeError):
             st.chat_message()
 
-    def test_nesting_is_disallowed(self):
-        """Test that it is not allowed to be nested."""
-        with self.assertRaises(StreamlitAPIException):
-            with st.chat_message("user"):
-                with st.chat_message("assistant"):
-                    st.write("hello")
+    def test_nesting_is_allowed(self):
+        """Test that it is allowed to be nested."""
+        with st.chat_message("user"):
+            with st.chat_message("assistant"):
+                st.write("hello")
 
     @parameterized.expand(
         [

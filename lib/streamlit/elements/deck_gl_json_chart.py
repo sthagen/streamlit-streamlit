@@ -268,7 +268,7 @@ class PydeckMixin:
         height: int | None = None,
         selection_mode: Literal[
             "single-object"
-        ],  # Selection mode will only be activated by on_select param, this is a default value here to make it work with mypy
+        ],  # Selection mode will only be activated by on_select param; default value here to make it work with mypy
         on_select: Literal["ignore"],  # No default value here to make it work with mypy
         key: Key | None = None,
     ) -> DeltaGenerator: ...

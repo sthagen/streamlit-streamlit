@@ -442,12 +442,12 @@ def gather_metrics(name: str, func: F | None = None) -> Callable[[F], F] | F:
                 _LOGGER.debug("Failed to collect command telemetry", exc_info=ex)
         try:
             result = non_optional_func(*args, **kwargs)
-        except RerunException as ex:
+        except RerunException:
             # Duplicated from below, because static analysis tools get confused
             # by deferring the rethrow.
             if tracking_activated and command_telemetry:
                 command_telemetry.time = to_microseconds(timer() - exec_start)
-            raise ex
+            raise
         finally:
             # Activate tracking again if command executes without any exceptions
             # we only want to do that if this command has set the

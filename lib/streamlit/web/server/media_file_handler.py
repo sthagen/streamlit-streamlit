@@ -87,7 +87,7 @@ class MediaFileHandler(tornado.web.StaticFileHandler):
         try:
             self._storage.get_file(absolute_path)
         except MediaFileStorageError:
-            _LOGGER.error("MediaFileHandler: Missing file %s", absolute_path)
+            _LOGGER.exception("MediaFileHandler: Missing file %s", absolute_path)
             raise tornado.web.HTTPError(404, "not found")
 
         return absolute_path
@@ -121,7 +121,7 @@ class MediaFileHandler(tornado.web.StaticFileHandler):
             # abspath is the hash as used `get_absolute_path`
             media_file = cls._storage.get_file(abspath)
         except Exception:
-            _LOGGER.error("MediaFileHandler: Missing file %s", abspath)
+            _LOGGER.exception("MediaFileHandler: Missing file %s", abspath)
             return None
 
         _LOGGER.debug(

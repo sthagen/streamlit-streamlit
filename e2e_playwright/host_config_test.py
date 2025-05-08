@@ -81,7 +81,8 @@ def test_block_error_dialogs(page: Page, app_port: int):
     # Navigate to a non-existent page to trigger page not found error
     page.goto(f"http://localhost:{app_port}/nonexistent_page")
 
-    # Wait until the expected error is logged - console should include 2 404 errors (health & host-config) then the page not found error
+    # Wait until the expected error is logged - console should include 2 404 errors
+    # (health & host-config) then the page not found error
     wait_until(
         page,
         lambda: any(

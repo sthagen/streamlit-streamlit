@@ -44,7 +44,8 @@ st.text(f"value 4: {i4}")
 i5 = st.multiselect(
     "multiselect 5",
     [
-        f"{x} I am a ridiculously long string to have in a multiselect, so perhaps I should just not wrap and go to the next line."
+        f"{x} I am a ridiculously long string to have in a multiselect, "
+        "so perhaps I should just not wrap and go to the next line."
         for x in range(5)
     ],
 )

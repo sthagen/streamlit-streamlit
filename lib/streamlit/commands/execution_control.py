@@ -219,7 +219,9 @@ def switch_page(page: str | Path | StreamlitPage) -> NoReturn:  # type: ignore[m
 
         if len(matched_pages) == 0:
             raise StreamlitAPIException(
-                f"Could not find page: `{page}`. Must be the file path relative to the main script, from the directory: `{os.path.basename(main_script_directory)}`. Only the main app file and files in the `pages/` directory are supported."
+                f"Could not find page: `{page}`. Must be the file path relative to the main script, "
+                f"from the directory: `{os.path.basename(main_script_directory)}`. Only the main app file "
+                "and files in the `pages/` directory are supported."
             )
 
         page_script_hash = matched_pages[0]["page_script_hash"]

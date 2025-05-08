@@ -40,9 +40,19 @@ PIXEL_THRESHOLD = 1.0
 
 # Common selection values
 EMPTY_SELECTION = "{'selection': {'indices': {}, 'objects': {}}}"
-FIRST_POINT_SELECTION = "{'selection': {'indices': {'MyHexLayer': [0]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
-SECOND_POINT_SELECTION = "{'selection': {'indices': {'MyHexLayer': [2]}, 'objects': {'MyHexLayer': [{'count': 100, 'hex': '88283082a9fffff'}]}}}"
-MULTI_SELECTION = "{'selection': {'indices': {'MyHexLayer': [0, 2]}, 'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}, {'count': 100, 'hex': '88283082a9fffff'}]}}}"
+FIRST_POINT_SELECTION = (
+    "{'selection': {'indices': {'MyHexLayer': [0]}, "
+    "'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}]}}}"
+)
+SECOND_POINT_SELECTION = (
+    "{'selection': {'indices': {'MyHexLayer': [2]}, "
+    "'objects': {'MyHexLayer': [{'count': 100, 'hex': '88283082a9fffff'}]}}}"
+)
+MULTI_SELECTION = (
+    "{'selection': {'indices': {'MyHexLayer': [0, 2]}, "
+    "'objects': {'MyHexLayer': [{'count': 10, 'hex': '88283082b9fffff'}, "
+    "{'count': 100, 'hex': '88283082a9fffff'}]}}}"
+)
 
 
 FIRST_POINT_COORDS: Position = {"x": 344.0, "y": 201.0}

@@ -940,10 +940,9 @@ class ButtonMixin:
             if is_url(page):
                 if label is None or label == "":
                     raise StreamlitMissingPageLabelError()
-                else:
-                    page_link_proto.page = page
-                    page_link_proto.external = True
-                    return self.dg._enqueue("page_link", page_link_proto)
+                page_link_proto.page = page
+                page_link_proto.external = True
+                return self.dg._enqueue("page_link", page_link_proto)
 
             ctx_main_script = ""
             all_app_pages = {}
@@ -1028,7 +1027,7 @@ class ButtonMixin:
                 raise StreamlitAPIException(
                     f"`st.button()` can't be used in an `st.form()`.{FORM_DOCS_INFO}"
                 )
-            elif not is_in_form(self.dg) and is_form_submitter:
+            if not is_in_form(self.dg) and is_form_submitter:
                 raise StreamlitAPIException(
                     f"`st.form_submit_button()` must be used inside an `st.form()`.{FORM_DOCS_INFO}"
                 )
@@ -1106,7 +1105,7 @@ def marshall_file(
         data_as_bytes = data.read() or b""
         mimetype = mimetype or "application/octet-stream"
     else:
-        raise RuntimeError("Invalid binary data format: %s" % type(data))
+        raise StreamlitAPIException("Invalid binary data format: %s" % type(data))
 
     if runtime.exists():
         file_url = runtime.get_instance().media_file_mgr.add(

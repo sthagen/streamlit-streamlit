@@ -85,11 +85,7 @@ def verify_pep440(version):
     use an object that does all that.  This verifies its a valid
     version.
     """
-
-    try:
-        return packaging.version.Version(version)
-    except packaging.version.InvalidVersion as e:
-        raise (e)
+    return packaging.version.Version(version)
 
 
 def verify_semver(version):
@@ -97,11 +93,7 @@ def verify_semver(version):
 
     https://semver.org/
     """
-
-    try:
-        return str(semver.Version.parse(version))
-    except ValueError as e:
-        raise (e)
+    return str(semver.Version.parse(version))
 
 
 def update_files(data, version):

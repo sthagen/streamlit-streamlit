@@ -394,7 +394,7 @@ class BootstrapPrintTest(IsolatedAsyncioTestCase):
         bootstrap._on_server_start(Mock())
         mock_log_error.assert_called_once_with(
             "Failed to load secrets.toml file",
-            exc_info=mock_exception,
+            exc_info=True,
         )
 
     @patch("streamlit.config.get_config_options")

@@ -42,7 +42,7 @@ from streamlit.proto.ForwardMsg_pb2 import ForwardMsg
 from streamlit.runtime import Runtime, RuntimeState
 from streamlit.web.server.server import (
     MAX_PORT_SEARCH_RETRIES,
-    RetriesExceeded,
+    RetriesExceededError,
     Server,
     start_listening,
 )
@@ -294,8 +294,8 @@ class PortRotateAHundredTest(unittest.TestCase):
     def test_rotates_a_hundred_ports(self):
         app = mock.MagicMock()
 
-        RetriesExceeded = streamlit.web.server.server.RetriesExceeded
-        with pytest.raises(RetriesExceeded) as pytest_wrapped_e:
+        RetriesExceededError = streamlit.web.server.server.RetriesExceededError
+        with pytest.raises(RetriesExceededError) as pytest_wrapped_e:
             with patch(
                 "streamlit.web.server.server.HTTPServer",
                 return_value=self.get_httpserver(),
@@ -328,7 +328,7 @@ class PortRotateOneTest(unittest.TestCase):
         app = mock.MagicMock()
 
         patched_server_port_is_manually_set.return_value = False
-        with pytest.raises(RetriesExceeded):
+        with pytest.raises(RetriesExceededError):
             with patch(
                 "streamlit.web.server.server.HTTPServer",
                 return_value=self.get_httpserver(),

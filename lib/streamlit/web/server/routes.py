@@ -78,13 +78,13 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
                 if os.path.sep != "/":
                     url_path = url_path.replace(os.path.sep, "/")
                 if any(url_path.endswith(x) for x in self._reserved_paths):
-                    raise e
+                    raise
 
                 self.path = self.parse_url_path(self.default_filename or "index.html")
                 absolute_path = self.get_absolute_path(self.root, self.path)
                 return super().validate_absolute_path(root, absolute_path)
 
-            raise e
+            raise
 
     def write_error(self, status_code: int, **kwargs) -> None:
         if status_code == 404:

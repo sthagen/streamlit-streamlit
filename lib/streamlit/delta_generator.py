@@ -147,6 +147,19 @@ def _maybe_print_use_warning() -> None:
             )
 
 
+def _maybe_print_fragment_callback_warning() -> None:
+    """Print a warning if elements are being modified during a fragment callback."""
+    ctx = get_script_run_ctx()
+    if ctx and getattr(ctx, "in_fragment_callback", False):
+        warning = cli_util.style_for_cli("Warning:", bold=True, fg="yellow")
+
+        logger.get_logger("root").warning(
+            f"\n  {warning} A fragment rerun was triggered with a callback that displays one or more elements. "
+            "During a fragment rerun, within a callback, displaying elements is not officially supported because "
+            "those elements will replace the existing elements at the top of your app."
+        )
+
+
 class DeltaGenerator(
     AlertMixin,
     AudioInputMixin,
@@ -454,6 +467,8 @@ class DeltaGenerator(
 
         # Warn if an element is being changed but the user isn't running the streamlit server.
         _maybe_print_use_warning()
+        # Warn if an element is being changed during a fragment callback.
+        _maybe_print_fragment_callback_warning()
 
         # Copy the marshalled proto into the overall msg proto
         msg = ForwardMsg_pb2.ForwardMsg()
@@ -514,9 +529,6 @@ class DeltaGenerator(
 
         # Prevent nested columns & expanders by checking all parents.
         block_type = block_proto.WhichOneof("type")
-        # Convert the generator to a list, so we can use it multiple times.
-        ancestor_block_types = list(dg._ancestor_block_types)
-        _check_nested_element_violation(self, block_type, ancestor_block_types)
 
         if dg._root_container is None or dg._cursor is None:
             return dg
@@ -569,35 +581,3 @@ def _writes_directly_to_sidebar(dg: DeltaGenerator) -> bool:
     in_sidebar = any(a._root_container == RootContainer.SIDEBAR for a in dg._ancestors)
     has_container = bool(list(dg._ancestor_block_types))
     return in_sidebar and not has_container
-
-
-def _check_nested_element_violation(
-    dg: DeltaGenerator, block_type: str | None, ancestor_block_types: list[BlockType]
-) -> None:
-    """Check if elements are nested in a forbidden way.
-
-    Raises
-    ------
-      StreamlitAPIException: throw if an invalid element nesting is detected.
-    """
-
-    if block_type == "column":
-        num_of_parent_columns = dg._count_num_of_parent_columns(ancestor_block_types)
-        if dg._root_container == RootContainer.SIDEBAR and num_of_parent_columns > 0:
-            raise StreamlitAPIException(
-                "Columns cannot be placed inside other columns in the sidebar. This is only possible in the main area of the app."
-            )
-        if num_of_parent_columns > 1:
-            raise StreamlitAPIException(
-                "Columns can only be placed inside other columns up to one level of nesting."
-            )
-    if block_type == "chat_message" and block_type in ancestor_block_types:
-        raise StreamlitAPIException(
-            "Chat messages cannot nested inside other chat messages."
-        )
-    if block_type == "expandable" and block_type in ancestor_block_types:
-        raise StreamlitAPIException(
-            "Expanders may not be nested inside other expanders."
-        )
-    if block_type == "popover" and block_type in ancestor_block_types:
-        raise StreamlitAPIException("Popovers may not be nested inside other popovers.")

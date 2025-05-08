@@ -286,7 +286,10 @@ experimental_dialog = _experimental_dialog_decorator
 experimental_fragment = _experimental_fragment
 experimental_user = _DeprecatedUserInfoProxy()
 
-_EXPERIMENTAL_QUERY_PARAMS_DEPRECATE_MSG = "Refer to our [docs page](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.query_params) for more information."
+_EXPERIMENTAL_QUERY_PARAMS_DEPRECATE_MSG = (
+    "Refer to our [docs page](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.query_params) "
+    "for more information."
+)
 
 experimental_get_query_params = _deprecate_func_name(
     _get_query_params,

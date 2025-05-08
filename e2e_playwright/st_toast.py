@@ -18,7 +18,8 @@ st.set_page_config(layout="wide")
 st.chat_input("input here")
 st.toast("This is a default toast message", icon="🐶")
 st.toast(
-    "Random toast message that is a really really really really really really really long message, going way past the 3 line limit",
+    "Random toast message that is a really really really really really really "
+    "really long message, going way past the 3 line limit",
     icon="🦄",
 )
 
