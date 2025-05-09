@@ -24,7 +24,7 @@ import {
   LabelVisibilityMessage as LabelVisibilityMessageProto,
 } from "@streamlit/protobuf"
 
-import { customRenderLibContext, render } from "~lib/test_util"
+import { render, renderWithContexts } from "~lib/test_util"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
 
 import DateInput, { Props } from "./DateInput"
@@ -417,7 +417,7 @@ describe("DateInput widget", () => {
       it("renders expected week day ordering", async () => {
         const user = userEvent.setup()
         const props = getProps()
-        customRenderLibContext(<DateInput {...props} />, { locale })
+        renderWithContexts(<DateInput {...props} />, { locale })
 
         await user.click(await screen.findByLabelText("Select a date."))
 
@@ -431,7 +431,7 @@ describe("DateInput widget", () => {
       it("renders expected week day ordering", async () => {
         const user = userEvent.setup()
         const props = getProps()
-        customRenderLibContext(<DateInput {...props} />, { locale })
+        renderWithContexts(<DateInput {...props} />, { locale })
 
         await user.click(await screen.findByLabelText("Select a date."))
 
@@ -445,7 +445,7 @@ describe("DateInput widget", () => {
       it("renders expected week day ordering", async () => {
         const user = userEvent.setup()
         const props = getProps()
-        customRenderLibContext(<DateInput {...props} />, { locale })
+        renderWithContexts(<DateInput {...props} />, { locale })
 
         await user.click(await screen.findByLabelText("Select a date."))
 
@@ -459,7 +459,7 @@ describe("DateInput widget", () => {
       it("falls back to en-US locale", async () => {
         const user = userEvent.setup()
         const props = getProps()
-        customRenderLibContext(<DateInput {...props} />, { locale })
+        renderWithContexts(<DateInput {...props} />, { locale })
 
         await user.click(await screen.findByLabelText("Select a date."))
 

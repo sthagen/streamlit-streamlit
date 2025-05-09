@@ -24,7 +24,7 @@ import {
   Snow as SnowProto,
 } from "@streamlit/protobuf"
 
-import { customRenderLibContext } from "~lib/test_util"
+import { renderWithContexts } from "~lib/test_util"
 import { ScriptRunState } from "~lib/ScriptRunState"
 import { ElementNode } from "~lib/AppNode"
 import { WidgetStateManager } from "~lib/WidgetStateManager"
@@ -93,7 +93,7 @@ describe("ElementNodeRenderer Block Component", () => {
       const props = getProps({
         node: createBalloonNode(scriptRunId),
       })
-      customRenderLibContext(<ElementNodeRenderer {...props} />, {
+      renderWithContexts(<ElementNodeRenderer {...props} />, {
         scriptRunState: ScriptRunState.RUNNING,
         scriptRunId: "NEW_SCRIPT_ID",
       })
@@ -113,7 +113,7 @@ describe("ElementNodeRenderer Block Component", () => {
       const props = getProps({
         node: createBalloonNode(scriptRunId),
       })
-      customRenderLibContext(<ElementNodeRenderer {...props} />, {
+      renderWithContexts(<ElementNodeRenderer {...props} />, {
         scriptRunId,
       })
 
@@ -135,7 +135,7 @@ describe("ElementNodeRenderer Block Component", () => {
       const props = getProps({
         node: createSnowNode(scriptRunId),
       })
-      customRenderLibContext(<ElementNodeRenderer {...props} />, {
+      renderWithContexts(<ElementNodeRenderer {...props} />, {
         scriptRunState: ScriptRunState.RUNNING,
         scriptRunId: "NEW_SCRIPT_ID",
       })
@@ -154,7 +154,7 @@ describe("ElementNodeRenderer Block Component", () => {
       const props = getProps({
         node: createSnowNode(scriptRunId),
       })
-      customRenderLibContext(<ElementNodeRenderer {...props} />, {
+      renderWithContexts(<ElementNodeRenderer {...props} />, {
         scriptRunId,
       })
 

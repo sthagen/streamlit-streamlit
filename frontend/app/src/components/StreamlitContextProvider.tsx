@@ -18,6 +18,8 @@ import React, { memo, PropsWithChildren, useMemo } from "react"
 
 import {
   ComponentRegistry,
+  FormsContext,
+  FormsContextProps,
   FormsData,
   LibConfig,
   LibContext,
@@ -63,14 +65,17 @@ type LibContextValues = {
   libConfig: LibConfig
   fragmentIdsThisRun: Array<string>
   locale: typeof window.navigator.language
-  formsData: FormsData
   scriptRunState: ScriptRunState
   scriptRunId: string
   componentRegistry: ComponentRegistry
 }
 
+type FormsContextValues = {
+  formsData: FormsData
+}
+
 export type StreamlitContextProviderProps = PropsWithChildren<
-  AppContextValues & LibContextValues
+  AppContextValues & LibContextValues & FormsContextValues
 >
 
 /**
@@ -101,13 +106,15 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   libConfig,
   fragmentIdsThisRun,
   locale,
-  formsData,
   scriptRunState,
   scriptRunId,
   componentRegistry,
   // Used in both contexts
   currentPageScriptHash,
   onPageChange,
+  // FormsContext
+  formsData,
+  // Children passed through
   children,
 }: StreamlitContextProviderProps) => {
   // Memoized object for AppContext values
@@ -158,7 +165,6 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
       libConfig,
       fragmentIdsThisRun,
       locale,
-      formsData,
       scriptRunState,
       scriptRunId,
       componentRegistry,
@@ -177,17 +183,24 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
       libConfig,
       fragmentIdsThisRun,
       locale,
-      formsData,
       scriptRunState,
       scriptRunId,
       componentRegistry,
     ]
   )
 
+  // formsData is not a stable reference, so memoization does not help
+  // eslint-disable-next-line @eslint-react/no-unstable-context-value
+  const formsContextProps: FormsContextProps = {
+    formsData,
+  }
+
   return (
     <AppContext.Provider value={appContextProps}>
       <LibContext.Provider value={libContextProps}>
-        {children}
+        <FormsContext.Provider value={formsContextProps}>
+          {children}
+        </FormsContext.Provider>
       </LibContext.Provider>
     </AppContext.Provider>
   )

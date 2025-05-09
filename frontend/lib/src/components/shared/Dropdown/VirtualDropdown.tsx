@@ -120,9 +120,13 @@ const VirtualDropdown = React.forwardRef<any, any>((props, ref) => {
         height={height}
         itemCount={children.length}
         itemData={children}
-        itemKey={(index: number, data: { props: OptionListProps }[]) =>
-          data[index].props.item.value
-        }
+        itemKey={(index: number, data: { props: OptionListProps }[]) => {
+          const { id, value } = data[index].props.item
+
+          // For all current use cases, id should always be defined, but
+          // we also allow the value to be used as a fallback.
+          return id ?? value
+        }}
         itemSize={convertRemToPx(theme.sizes.dropdownItemHeight)}
       >
         {FixedSizeListItem}

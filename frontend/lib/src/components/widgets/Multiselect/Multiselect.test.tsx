@@ -449,4 +449,18 @@ describe("Multiselect widget", () => {
       expect(updatedOptions[1]).toHaveTextContent("c")
     })
   })
+
+  it("allows case sensitive new options to be added", async () => {
+    const user = userEvent.setup()
+    const props = getProps({
+      options: ["aa", "Aa", "aA"],
+      acceptNewOptions: true,
+    })
+    render(<Multiselect {...props} />)
+    const selectboxInput = screen.getByRole("combobox")
+
+    await user.type(selectboxInput, "AA")
+
+    expect(screen.getByText("Add: AA")).toBeInTheDocument()
+  })
 })

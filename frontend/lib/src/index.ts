@@ -26,6 +26,8 @@ export { default as IsDialogContext } from "./components/core/IsDialogContext"
 export { default as IsSidebarContext } from "./components/core/IsSidebarContext"
 export { LibContext } from "./components/core/LibContext"
 export type { LibConfig, LibContextProps } from "./components/core/LibContext"
+export { FormsContext } from "./components/core/FormsContext"
+export type { FormsContextProps } from "./components/core/FormsContext"
 export { PortalProvider } from "./components/core/Portal/PortalProvider"
 export { default as ThemeProvider } from "./components/core/ThemeProvider"
 export { default as AlertElement } from "./components/elements/AlertElement"
@@ -78,11 +80,7 @@ export { mockTheme } from "./mocks/mockTheme"
 export { RootStyleProvider } from "./RootStyleProvider"
 export { ScriptRunState } from "./ScriptRunState"
 export { SessionInfo } from "./SessionInfo"
-export {
-  customRenderLibContext,
-  mockWindowLocation,
-  render,
-} from "./test_util"
+export { renderWithContexts, mockWindowLocation, render } from "./test_util"
 export {
   AUTO_THEME_NAME,
   baseTheme,

@@ -21,7 +21,7 @@ import { userEvent } from "@testing-library/user-event"
 
 import { PageLink as PageLinkProto } from "@streamlit/protobuf"
 
-import { customRenderLibContext, render } from "~lib/test_util"
+import { render, renderWithContexts } from "~lib/test_util"
 import { lightTheme } from "~lib/theme"
 
 import PageLink, { Props } from "./PageLink"
@@ -88,7 +88,7 @@ describe("PageLink", () => {
     const user = userEvent.setup()
     const props = getProps()
 
-    customRenderLibContext(<PageLink {...props} />, {
+    renderWithContexts(<PageLink {...props} />, {
       onPageChange: mockOnPageChange,
     })
 
@@ -101,7 +101,7 @@ describe("PageLink", () => {
     const user = userEvent.setup()
     const props = getProps({}, { disabled: true })
 
-    customRenderLibContext(<PageLink {...props} />, {
+    renderWithContexts(<PageLink {...props} />, {
       onPageChange: mockOnPageChange,
     })
 
@@ -114,7 +114,7 @@ describe("PageLink", () => {
     const user = userEvent.setup()
     const props = getProps({ page: "http://example.com", external: true })
 
-    customRenderLibContext(<PageLink {...props} />, {
+    renderWithContexts(<PageLink {...props} />, {
       onPageChange: mockOnPageChange,
     })
 
@@ -141,7 +141,7 @@ describe("PageLink", () => {
 
   it("renders a current page link properly", () => {
     const props = getProps({ pageScriptHash: "main_page_hash" })
-    customRenderLibContext(<PageLink {...props} />, {
+    renderWithContexts(<PageLink {...props} />, {
       currentPageScriptHash: "main_page_hash",
     })
 

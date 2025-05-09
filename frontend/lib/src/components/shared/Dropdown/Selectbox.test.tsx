@@ -309,4 +309,18 @@ describe("Selectbox widget with optional props", () => {
 
     expect(screen.getByTestId("stTooltipIcon")).toBeInTheDocument()
   })
+
+  it("allows case sensitive new options to be added", async () => {
+    const user = userEvent.setup()
+    const props = getProps({
+      options: ["aa", "Aa", "aA"],
+      acceptNewOptions: true,
+    })
+    render(<Selectbox {...props} />)
+    const selectboxInput = screen.getByRole("combobox")
+
+    await user.type(selectboxInput, "AA")
+
+    expect(screen.getByText("Add: AA")).toBeInTheDocument()
+  })
 })

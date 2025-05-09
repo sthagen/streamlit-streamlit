@@ -32,7 +32,7 @@ import { WidgetStateManager } from "~lib/WidgetStateManager"
 import { bgColorToBaseString, toExportedTheme } from "~lib/theme"
 import { mockEndpoints } from "~lib/mocks/mocks"
 import { mockTheme } from "~lib/mocks/mockTheme"
-import { customRenderLibContext } from "~lib/test_util"
+import { renderWithContexts } from "~lib/test_util"
 import * as UseResizeObserver from "~lib/hooks/useResizeObserver"
 
 import ComponentInstance, {
@@ -90,7 +90,7 @@ describe("ComponentInstance", () => {
   it("registers a message listener on render", () => {
     const componentRegistry = getComponentRegistry()
     const registerListener = vi.spyOn(componentRegistry, "registerListener")
-    customRenderLibContext(
+    renderWithContexts(
       <ComponentInstance
         element={createElementProp()}
         disabled={false}
@@ -114,7 +114,7 @@ describe("ComponentInstance", () => {
       componentRegistry,
       "deregisterListener"
     )
-    const { unmount } = customRenderLibContext(
+    const { unmount } = renderWithContexts(
       <ComponentInstance
         element={createElementProp()}
         disabled={false}
@@ -134,7 +134,7 @@ describe("ComponentInstance", () => {
   })
 
   it("renders its iframe correctly", () => {
-    customRenderLibContext(
+    renderWithContexts(
       <ComponentInstance
         element={createElementProp()}
         disabled={false}
@@ -160,7 +160,7 @@ describe("ComponentInstance", () => {
   })
 
   it("displays a skeleton initially with a certain height", () => {
-    customRenderLibContext(
+    renderWithContexts(
       <ComponentInstance
         element={createElementProp()}
         disabled={false}
@@ -184,7 +184,7 @@ describe("ComponentInstance", () => {
   })
 
   it("will not displays a skeleton when height is explicitly set to 0", () => {
-    customRenderLibContext(
+    renderWithContexts(
       <ComponentInstance
         element={createElementProp({ height: 0 })}
         disabled={false}
@@ -208,7 +208,7 @@ describe("ComponentInstance", () => {
   describe("COMPONENT_READY handler", () => {
     it("posts a RENDER message to the iframe", () => {
       const jsonArgs = { foo: "string", bar: 5 }
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -243,7 +243,7 @@ describe("ComponentInstance", () => {
     })
 
     it("hides the skeleton and maintains iframe height of 0", () => {
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp()}
           disabled={false}
@@ -280,7 +280,7 @@ describe("ComponentInstance", () => {
 
     it("prevents RENDER message until component is ready", () => {
       const jsonArgs = { foo: "string", bar: 5 }
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -306,7 +306,7 @@ describe("ComponentInstance", () => {
       // (This can happen during development, when the component's devserver
       // reloads.)
       const jsonArgs = { foo: "string", bar: 5 }
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -355,7 +355,7 @@ describe("ComponentInstance", () => {
 
     it("send render message whenever the args change and the component is ready", () => {
       let jsonArgs = { foo: "string", bar: 5 }
-      const { rerender } = customRenderLibContext(
+      const { rerender } = renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -411,7 +411,7 @@ describe("ComponentInstance", () => {
       })
 
       const jsonArgs = { foo: "string", bar: 5 }
-      const { rerender } = customRenderLibContext(
+      const { rerender } = renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -469,7 +469,7 @@ describe("ComponentInstance", () => {
     it("errors on unrecognized API version", () => {
       const badAPIVersion = CUSTOM_COMPONENT_API_VERSION + 1
       const jsonArgs = { foo: "string", bar: 5 }
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp(jsonArgs)}
           disabled={false}
@@ -506,7 +506,7 @@ describe("ComponentInstance", () => {
       const element = createElementProp(jsonArgs, [
         new SpecialArg({ key: "foo" }),
       ])
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={element}
           disabled={false}
@@ -527,7 +527,7 @@ describe("ComponentInstance", () => {
     })
 
     it("warns if COMPONENT_READY hasn't been received after a timeout", () => {
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp()}
           disabled={false}
@@ -558,7 +558,7 @@ describe("ComponentInstance", () => {
         componentRegistry,
         "checkSourceUrlResponse"
       )
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp()}
           disabled={false}
@@ -588,7 +588,7 @@ describe("ComponentInstance", () => {
         "sendTimeoutError"
       )
 
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={createElementProp()}
           disabled={false}
@@ -622,7 +622,7 @@ describe("ComponentInstance", () => {
       }
 
       const element = createElementProp(jsonValue)
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={element}
           disabled={false}
@@ -683,7 +683,7 @@ describe("ComponentInstance", () => {
       const jsonValue = {}
 
       const element = createElementProp(jsonValue)
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={element}
           disabled={false}
@@ -752,7 +752,7 @@ describe("ComponentInstance", () => {
       }
 
       const element = createElementProp(jsonValue)
-      customRenderLibContext(
+      renderWithContexts(
         <ComponentInstance
           element={element}
           disabled={false}
@@ -796,7 +796,7 @@ describe("ComponentInstance", () => {
       it("updates the frameHeight without re-rendering", () => {
         const jsonValue = {}
         const element = createElementProp(jsonValue)
-        customRenderLibContext(
+        renderWithContexts(
           <ComponentInstance
             element={element}
             disabled={false}
@@ -854,7 +854,7 @@ describe("ComponentInstance", () => {
         }
 
         const element = createElementProp(jsonValue)
-        customRenderLibContext(
+        renderWithContexts(
           <ComponentInstance
             element={element}
             disabled={false}
