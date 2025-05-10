@@ -243,7 +243,7 @@ class WatchedPath:
         *,  # keyword-only arguments:
         glob_pattern: str | None = None,
         allow_nonexistent: bool = False,
-    ):
+    ) -> None:
         self.md5 = md5
         self.modification_time = modification_time
 

@@ -35,7 +35,7 @@ class MemoryUploadedFileManager(UploadedFileManager):
     This class can be used safely from multiple threads simultaneously.
     """
 
-    def __init__(self, upload_endpoint: str):
+    def __init__(self, upload_endpoint: str) -> None:
         self.file_storage: dict[str, dict[str, UploadedFileRec]] = defaultdict(dict)
         self.endpoint = upload_endpoint
 

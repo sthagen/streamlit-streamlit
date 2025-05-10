@@ -17,6 +17,7 @@
 import React, {
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -126,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     window ? window.innerWidth : Infinity
   )
 
-  const { activeTheme } = React.useContext(LibContext)
+  const { activeTheme } = useContext(LibContext)
   const { hideSidebarNav, appPages, appLogo } = useAppContext()
 
   useEffect(() => {

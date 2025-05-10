@@ -15,13 +15,19 @@
  */
 
 import React, {
+  createElement,
   CSSProperties,
+  FC,
   FunctionComponent,
   HTMLProps,
   memo,
+  PropsWithChildren,
   ReactElement,
   ReactNode,
+  useCallback,
   useContext,
+  useEffect,
+  useState,
 } from "react"
 
 import xxhash from "xxhashjs"
@@ -146,6 +152,7 @@ export function createAnchorFromText(text: string | null): string {
   }
 
   // If slugify is not able to create a slug, fallback to hash
+  // eslint-disable-next-line import/no-named-as-default-member
   return xxhash.h32(text, 0xabcd).toString(16)
 }
 
@@ -200,16 +207,16 @@ interface HeadingWithActionElementsProps {
 }
 
 export const HeadingWithActionElements: FunctionComponent<
-  React.PropsWithChildren<HeadingWithActionElementsProps>
+  PropsWithChildren<HeadingWithActionElementsProps>
 > = ({ tag, anchor: propsAnchor, help, hideAnchor, children, tagProps }) => {
-  const isInSidebar = React.useContext(IsSidebarContext)
-  const isInDialog = React.useContext(IsDialogContext)
-  const [elementId, setElementId] = React.useState(propsAnchor)
-  const [target, setTarget] = React.useState<HTMLElement | null>(null)
+  const isInSidebar = useContext(IsSidebarContext)
+  const isInDialog = useContext(IsDialogContext)
+  const [elementId, setElementId] = useState(propsAnchor)
+  const [target, setTarget] = useState<HTMLElement | null>(null)
 
   const { addScriptFinishedHandler, removeScriptFinishedHandler } =
-    React.useContext(LibContext)
-  const onScriptFinished = React.useCallback(() => {
+    useContext(LibContext)
+  const onScriptFinished = useCallback(() => {
     if (target !== null) {
       // wait a bit for everything on page to finish loading
       window.setTimeout(() => {
@@ -218,14 +225,14 @@ export const HeadingWithActionElements: FunctionComponent<
     }
   }, [target])
 
-  React.useEffect(() => {
+  useEffect(() => {
     addScriptFinishedHandler(onScriptFinished)
     return () => {
       removeScriptFinishedHandler(onScriptFinished)
     }
   }, [addScriptFinishedHandler, removeScriptFinishedHandler, onScriptFinished])
 
-  const ref = React.useCallback(
+  const ref = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
     (node: any) => {
       if (node === null) {
@@ -255,7 +262,7 @@ export const HeadingWithActionElements: FunctionComponent<
   // We nest the action-elements (tooltip, link-icon) into the header element (e.g. h1),
   // so that it appears inline. For context: we also tried setting the h's display attribute to 'inline', but
   // then we would need to add padding to the outer container and fiddle with the vertical alignment.
-  const headerElementWithActions = React.createElement(
+  const headerElementWithActions = createElement(
     tag,
     {
       ...tagProps,
@@ -283,7 +290,7 @@ type HeadingProps = JSX.IntrinsicElements["h1"] &
   ReactMarkdownProps & { level: number; "data-anchor"?: string }
 
 export const CustomHeading: FunctionComponent<
-  React.PropsWithChildren<HeadingProps>
+  PropsWithChildren<HeadingProps>
 > = ({ node, children, ...rest }) => {
   const anchor = rest["data-anchor"]
   return (
@@ -328,7 +335,7 @@ export type CustomCodeTagProps = JSX.IntrinsicElements["code"] &
  * Renders code tag with highlighting based on requested language.
  */
 export const CustomCodeTag: FunctionComponent<
-  React.PropsWithChildren<CustomCodeTagProps>
+  PropsWithChildren<CustomCodeTagProps>
 > = ({ inline, className, children, ...props }) => {
   const match = /language-(\w+)/.exec(className || "")
   const codeText = String(children).trim().replace(/\n$/, "")
@@ -349,7 +356,7 @@ export const CustomCodeTag: FunctionComponent<
  * Renders pre tag with added margin.
  */
 export const CustomPreTag: FunctionComponent<
-  React.PropsWithChildren<ReactMarkdownProps>
+  PropsWithChildren<ReactMarkdownProps>
 > = ({ children }) => {
   return (
     <StyledPreWrapper data-testid="stMarkdownPre">{children}</StyledPreWrapper>
@@ -679,7 +686,7 @@ export function RenderedMarkdown({
  * Wraps the <ReactMarkdown> component to include our standard
  * renderers and AST plugins (for syntax highlighting, HTML support, etc).
  */
-const StreamlitMarkdown: React.FC<Props> = ({
+const StreamlitMarkdown: FC<Props> = ({
   source,
   allowHTML,
   style,

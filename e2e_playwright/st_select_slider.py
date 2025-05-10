@@ -19,7 +19,7 @@ import streamlit as st
 from streamlit import runtime
 
 
-def format_option(option):
+def format_option(option: str) -> str:
     return f"Color: {option}"
 
 

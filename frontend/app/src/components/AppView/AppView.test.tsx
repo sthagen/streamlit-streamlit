@@ -41,16 +41,6 @@ import * as StreamlitContextProviderModule from "@streamlit/app/src/components/S
 
 import AppView, { AppViewProps } from "./AppView"
 
-// Mock needed for Block.tsx
-class ResizeObserver {
-  observe(): void {}
-
-  unobserve(): void {}
-
-  disconnect(): void {}
-}
-window.ResizeObserver = ResizeObserver
-
 const FAKE_SCRIPT_HASH = "fake_script_hash"
 
 function getContextOutput(context: Partial<AppContextProps>): AppContextProps {

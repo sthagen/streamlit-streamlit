@@ -77,11 +77,11 @@ class ShowErrorDetailsConfigOptions(str, Enum):
     NONE = "none"
 
     @staticmethod
-    def is_true_variation(val: str | bool):
+    def is_true_variation(val: str | bool) -> bool:
         return val in ["true", "True", True]
 
     @staticmethod
-    def is_false_variation(val: str | bool):
+    def is_false_variation(val: str | bool) -> bool:
         return val in ["false", "False", False]
 
         # Config options can be set from several places including the command-line and
@@ -466,8 +466,7 @@ def _logger_log_level() -> str:
     """
     if get_option("global.developmentMode"):
         return "debug"
-    else:
-        return "info"
+    return "info"
 
 
 @_create_option("logger.messageFormat", type_=str)
@@ -484,8 +483,7 @@ def _logger_message_format() -> str:
         from streamlit.logger import DEFAULT_LOG_MESSAGE
 
         return DEFAULT_LOG_MESSAGE
-    else:
-        return "%(asctime)s %(message)s"
+    return "%(asctime)s %(message)s"
 
 
 @_create_option(
@@ -1382,7 +1380,9 @@ def _set_option(key: str, value: Any, where_defined: str) -> None:
         _config_options[key].set_value(value, where_defined)
 
 
-def _update_config_with_sensitive_env_var(config_options: dict[str, ConfigOption]):
+def _update_config_with_sensitive_env_var(
+    config_options: dict[str, ConfigOption],
+) -> None:
     """Update the config system by parsing the environment variable.
 
     This should only be called from get_config_options.
@@ -1529,7 +1529,7 @@ CONFIG_FILENAMES = [
 
 
 def get_config_options(
-    force_reparse=False, options_from_flags: dict[str, Any] | None = None
+    force_reparse: bool = False, options_from_flags: dict[str, Any] | None = None
 ) -> dict[str, ConfigOption]:
     """Create and return a dict mapping config option names to their values,
     returning a cached dict if possible.
@@ -1652,7 +1652,7 @@ def _set_development_mode() -> None:
 
 
 def on_config_parsed(
-    func: Callable[[], None], force_connect=False, lock=False
+    func: Callable[[], None], force_connect: bool = False, lock: bool = False
 ) -> Callable[[], bool]:
     """Wait for the config file to be parsed then call func.
 

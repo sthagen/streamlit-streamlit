@@ -438,6 +438,7 @@ export function getCellFromArrow(
       parsedDate = convertTimeToDate(arrowCell.content, arrowCell.field)
     } else {
       // All other datetime related values are assumed to be in milliseconds
+      // eslint-disable-next-line import/no-named-as-default-member
       parsedDate = moment.utc(Number(arrowCell.content)).toDate()
     }
 

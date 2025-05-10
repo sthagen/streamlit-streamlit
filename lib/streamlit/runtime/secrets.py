@@ -152,11 +152,10 @@ class AttrDict(Mapping[str, Any]):
         self.__dict__["__nested_secrets__"] = dict(value)
 
     @staticmethod
-    def _maybe_wrap_in_attr_dict(value) -> Any:
+    def _maybe_wrap_in_attr_dict(value: Any) -> Any:
         if not isinstance(value, Mapping):
             return value
-        else:
-            return AttrDict(value)
+        return AttrDict(value)
 
     def __len__(self) -> int:
         return len(self.__nested_secrets__)
@@ -178,13 +177,13 @@ class AttrDict(Mapping[str, Any]):
         except KeyError:
             raise AttributeError(_missing_attr_error_message(attr_name))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.__nested_secrets__)
 
-    def __setitem__(self, key, value) -> NoReturn:
+    def __setitem__(self, key: str, value: Any) -> NoReturn:
         raise TypeError("Secrets does not support item assignment.")
 
-    def __setattr__(self, key, value) -> NoReturn:
+    def __setattr__(self, key: str, value: Any) -> NoReturn:
         raise TypeError("Secrets does not support attribute assignment.")
 
     def to_dict(self) -> dict[str, Any]:
@@ -439,7 +438,7 @@ class Secrets(Mapping[str, Any]):
             # failed to avoid repeatedly trying to install it.
             self._file_watchers_installed = True
 
-    def _on_secrets_changed(self, changed_file_path) -> None:
+    def _on_secrets_changed(self, changed_file_path: str) -> None:
         with self._lock:
             _LOGGER.debug("Secret path %s changed, reloading", changed_file_path)
             self._reset()
@@ -459,8 +458,7 @@ class Secrets(Mapping[str, Any]):
             value = self._parse()[key]
             if not isinstance(value, Mapping):
                 return value
-            else:
-                return AttrDict(value)
+            return AttrDict(value)
         # We add FileNotFoundError since __getattr__ is expected to only raise
         # AttributeError. Without handling FileNotFoundError, unittests.mocks
         # fails during mock creation on Python3.9
@@ -477,8 +475,7 @@ class Secrets(Mapping[str, Any]):
             value = self._parse()[key]
             if not isinstance(value, Mapping):
                 return value
-            else:
-                return AttrDict(value)
+            return AttrDict(value)
         except KeyError:
             raise KeyError(_missing_key_error_message(key))
 

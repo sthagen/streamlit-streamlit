@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useEffect } from "react"
+import React, { memo, ReactElement, useContext, useEffect } from "react"
 
 import { DownloadButton as DownloadButtonProto } from "@streamlit/protobuf"
 
@@ -54,7 +54,7 @@ function DownloadButton(props: Props): ReactElement {
 
   const {
     libConfig: { enforceDownloadInNewTab = false }, // Default to false, if no libConfig, e.g. for tests
-  } = React.useContext(LibContext)
+  } = useContext(LibContext)
 
   let kind = BaseButtonKind.SECONDARY
   if (element.type === "primary") {

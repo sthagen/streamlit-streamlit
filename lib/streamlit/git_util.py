@@ -145,7 +145,7 @@ class GitRepo:
 
         return False
 
-    def get_repo_info(self):
+    def get_repo_info(self) -> tuple[str, str, str] | None:
         if not self.is_valid():
             return None
 

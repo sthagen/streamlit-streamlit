@@ -93,11 +93,11 @@ const interpolate = (info: PickingInfo, body: string): string => {
     matchedVariables.forEach((match: string) => {
       const variable = match.substring(1, match.length - 1)
 
-      if (info.object.hasOwnProperty(variable)) {
+      if (Object.hasOwn(info.object, variable)) {
         body = body.replace(match, info.object[variable])
       } else if (
-        info.object.hasOwnProperty("properties") &&
-        info.object.properties.hasOwnProperty(variable)
+        Object.hasOwn(info.object, "properties") &&
+        Object.hasOwn(info.object.properties, variable)
       ) {
         body = body.replace(match, info.object.properties[variable])
       }
@@ -129,7 +129,8 @@ function getStateFromWidgetMgr(
 
   const stringValue = widgetMgr.getStringValue(element)
   const currState: DeckGlElementState | null = stringValue
-    ? JSON5.parse(stringValue)
+    ? // eslint-disable-next-line import/no-named-as-default-member
+      JSON5.parse(stringValue)
     : null
 
   return currState ?? EMPTY_STATE
@@ -214,6 +215,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     isSelectionModeActivated && Object.keys(data.selection.indices).length > 0
 
   const parsedPydeckJson = useMemo(() => {
+    // eslint-disable-next-line import/no-named-as-default-member
     return Object.freeze(JSON5.parse<ParsedDeckGlConfig>(element.json))
     // Only parse JSON when transitioning to/from fullscreen, the json changes, or theme changes
     // TODO: Update to match React best practices
@@ -358,14 +360,14 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
     if (!isEqual(deck.initialViewState, initialViewState)) {
       const diff = Object.keys(deck.initialViewState).reduce(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-        (diff, key): any => {
+        (diffArg, key): any => {
           // @ts-expect-error
           if (deck.initialViewState[key] === initialViewState?.[key]) {
-            return diff
+            return diffArg
           }
 
           return {
-            ...diff,
+            ...diffArg,
             // @ts-expect-error
             [key]: deck.initialViewState[key],
           }
@@ -384,6 +386,7 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
         return null
       }
 
+      // eslint-disable-next-line import/no-named-as-default-member
       const parsedTooltip = JSON5.parse(tooltip)
 
       if (parsedTooltip.html) {
@@ -398,8 +401,8 @@ export const useDeckGl = (props: UseDeckGlProps): UseDeckGlShape => {
   )
 
   const onViewStateChange = useCallback(
-    ({ viewState }: ViewStateChangeParameters) => {
-      setViewState(viewState)
+    ({ viewState: viewStateArg }: ViewStateChangeParameters) => {
+      setViewState(viewStateArg)
     },
     [setViewState]
   )

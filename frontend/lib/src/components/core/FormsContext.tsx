@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import { createContext } from "react"
 
 import { FormsData } from "~lib/WidgetStateManager"
 
@@ -35,7 +35,7 @@ export interface FormsContextProps {
  * Initialize FormsContext with a default value of null so downstream usages
  * will trigger runtime errors if context expected to exist but does not.
  */
-export const FormsContext = React.createContext<FormsContextProps | null>(null)
+export const FormsContext = createContext<FormsContextProps | null>(null)
 
 // Set the conetxt display name for useRequiredContext error message
 FormsContext.displayName = "FormsContext"

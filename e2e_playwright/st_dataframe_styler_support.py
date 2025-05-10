@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import random
 
 import numpy as np
@@ -31,7 +33,7 @@ st.dataframe(df.style.format({"test": "{:.2f}"}), use_container_width=False)
 st.header("Pandas Styler: Background color")
 
 
-def highlight_first(value):
+def highlight_first(value: float) -> str:
     return "background-color: yellow" if value == 0 else ""
 
 
@@ -43,7 +45,7 @@ st.header("Pandas Styler: Background and font styling")
 df = pd.DataFrame(np.random.randn(20, 4), columns=["A", "B", "C", "D"])
 
 
-def style_negative(v, props=""):
+def style_negative(v: float, props: str = "") -> str | None:
     return props if v < 0 else None
 
 
@@ -75,10 +77,10 @@ weather_df = pd.DataFrame(
 )
 
 
-def rain_condition(v):
+def rain_condition(v: float) -> str:
     if v < 1.75:
         return "Dry"
-    elif v < 2.75:
+    if v < 2.75:
         return "Rain"
     return "Heavy Rain"
 
@@ -105,7 +107,9 @@ st.dataframe(
                 None,
             ]
         }
-    ).style.format(lambda url: url.replace("https://", "Website: ") if url else ""),
+    ).style.format(
+        lambda url: str(url).replace("https://", "Website: ") if url else ""
+    ),
     column_config={"col_0": st.column_config.LinkColumn()},
 )
 

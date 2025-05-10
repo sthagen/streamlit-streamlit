@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useEffect, useRef, useState } from "react"
+import React, {
+  memo,
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 
 import { ExpandLess, ExpandMore } from "@emotion-icons/material-outlined"
 
@@ -55,7 +62,7 @@ export interface ExpanderIconProps {
  */
 export const ExpanderIcon = (props: ExpanderIconProps): ReactElement => {
   const { icon } = props
-  const { activeTheme } = React.useContext(LibContext)
+  const { activeTheme } = useContext(LibContext)
 
   const iconProps = {
     size: "lg" as IconSize,

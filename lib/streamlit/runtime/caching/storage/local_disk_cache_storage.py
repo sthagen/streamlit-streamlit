@@ -120,7 +120,7 @@ class LocalDiskCacheStorage(CacheStorage):
     This is the default cache persistence layer for `@st.cache_data`.
     """
 
-    def __init__(self, context: CacheStorageContext):
+    def __init__(self, context: CacheStorageContext) -> None:
         self.function_key = context.function_key
         self.persist = context.persist
         self._ttl_seconds = context.ttl_seconds

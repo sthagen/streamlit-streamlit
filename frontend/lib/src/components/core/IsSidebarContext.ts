@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import React from "react"
+import { createContext } from "react"
 
-export default React.createContext(false)
+export default createContext(false)

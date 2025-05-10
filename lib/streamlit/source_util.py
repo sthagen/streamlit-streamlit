@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TextIO, TypedDict
 
 from typing_extensions import NotRequired, TypeAlias
 
@@ -38,7 +38,7 @@ class PageInfo(TypedDict):
     url_pathname: NotRequired[str]
 
 
-def open_python_file(filename: str):
+def open_python_file(filename: str) -> TextIO:
     """Open a read-only Python file taking proper care of its encoding.
 
     In Python 3, we would like all files to be opened with utf-8 encoding.
@@ -52,8 +52,7 @@ def open_python_file(filename: str):
         # Open file respecting PEP263 encoding. If no encoding header is
         # found, opens as utf-8.
         return tokenize.open(filename)
-    else:
-        return open(filename, encoding="utf-8")
+    return open(filename, encoding="utf-8")
 
 
 PAGE_FILENAME_REGEX = re.compile(r"([0-9]*)[_ -]*(.*)\.py")

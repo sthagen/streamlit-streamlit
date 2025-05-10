@@ -27,8 +27,8 @@ import { useCallback, useLayoutEffect, useRef } from "react"
  */
 function squareStepper(current: number, to: number): number {
   const sign = Math.sign(to - current)
-  const step = Math.sqrt(Math.abs(to - current))
-  const next = current + step * sign
+  const currStep = Math.sqrt(Math.abs(to - current))
+  const next = current + currStep * sign
 
   if (sign > 0) {
     return Math.min(to, next)

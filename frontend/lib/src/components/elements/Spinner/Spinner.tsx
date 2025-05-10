@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement } from "react"
+import React, { memo, ReactElement, useEffect, useState } from "react"
 
 import classNames from "classnames"
 
@@ -36,9 +36,9 @@ export interface SpinnerProps {
 
 function Spinner({ element }: Readonly<SpinnerProps>): ReactElement {
   const { cache, showTime } = element
-  const [elapsedTime, setElapsedTime] = React.useState(0)
+  const [elapsedTime, setElapsedTime] = useState(0)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!showTime) return
 
     const timer = setInterval(() => {

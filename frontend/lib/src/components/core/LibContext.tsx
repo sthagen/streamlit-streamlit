@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import { createContext } from "react"
 
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
 import { ScriptRunState } from "~lib/ScriptRunState"
@@ -151,7 +151,7 @@ const noOpEndpoints: StreamlitEndpoints = {
   deleteFileAtURL: () => Promise.reject(new Error("unimplemented endpoint")),
 }
 
-export const LibContext = React.createContext<LibContextProps>({
+export const LibContext = createContext<LibContextProps>({
   isFullScreen: false,
   setFullScreen: () => {},
   addScriptFinishedHandler: () => {},

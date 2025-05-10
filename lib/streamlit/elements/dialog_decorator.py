@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast, overload
 
 from streamlit.delta_generator_singletons import (
     get_dg_singleton_instance,
@@ -74,7 +74,7 @@ def _dialog_decorator(
         )
 
     @wraps(non_optional_func)
-    def wrap(*args, **kwargs) -> None:
+    def wrap(*args: Any, **kwargs: Any) -> None:
         _assert_no_nested_dialogs()
         # Call the Dialog on the event_dg because it lives outside of the normal
         # Streamlit UI flow. For example, if it is called from the sidebar, it should
@@ -109,7 +109,7 @@ def _dialog_decorator(
 
         with dialog:
             fragmented_dialog_content()
-            return None
+            return
 
     return cast("F", wrap)
 

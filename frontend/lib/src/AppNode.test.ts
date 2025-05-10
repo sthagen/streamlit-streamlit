@@ -1081,8 +1081,8 @@ describe("AppRoot.getElements", () => {
 })
 
 /** Create a `Text` element node with the given properties. */
-function text(text: string, scriptRunId = NO_SCRIPT_RUN_ID): ElementNode {
-  const element = makeProto(Element, { text: { body: text } })
+function text(textArg: string, scriptRunId = NO_SCRIPT_RUN_ID): ElementNode {
+  const element = makeProto(Element, { text: { body: textArg } })
   return new ElementNode(
     element,
     ForwardMsgMetadata.create(),
@@ -1189,8 +1189,7 @@ declare module "vitest" {
 }
 
 expect.extend({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  toBeTextNode(received, text): any {
+  toBeTextNode(received, textArg) {
     const elementNode = received as ElementNode
     if (isNullOrUndefined(elementNode)) {
       return {
@@ -1211,8 +1210,8 @@ expect.extend({
     const textBody = elementNode.element.text?.body
     return {
       message: () =>
-        `expected ${received}.element.text.body to be "${text}", but it was "${textBody}"`,
-      pass: textBody === text,
+        `expected ${received}.element.text.body to be "${textArg}", but it was "${textBody}"`,
+      pass: textBody === textArg,
     }
   },
 })

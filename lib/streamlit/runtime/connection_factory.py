@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 #   2. Writing two new @overloads for connection_factory (one for the case where the
 #      only the connection name is specified and another when both name and type are).
 #   3. Updating test_get_first_party_connection_helper in connection_factory_test.py.
-FIRST_PARTY_CONNECTIONS = {
+FIRST_PARTY_CONNECTIONS: Final[dict[str, type[BaseConnection[Any]]]] = {
     "snowflake": SnowflakeConnection,
     "snowpark": SnowparkConnection,
     "sql": SQLConnection,
@@ -65,7 +65,7 @@ def _create_connection(
     connection_class: type[ConnectionClass],
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> ConnectionClass:
     """Create an instance of connection_class with the given name and kwargs.
 
@@ -76,7 +76,7 @@ def _create_connection(
     """
 
     def __create_connection(
-        name: str, connection_class: type[ConnectionClass], **kwargs
+        name: str, connection_class: type[ConnectionClass], **kwargs: Any
     ) -> ConnectionClass:
         return connection_class(connection_name=name, **kwargs)
 
@@ -103,7 +103,7 @@ def _create_connection(
     return __create_connection(name, connection_class, **kwargs)
 
 
-def _get_first_party_connection(connection_class: str):
+def _get_first_party_connection(connection_class: str) -> type[BaseConnection[Any]]:
     if connection_class in FIRST_PARTY_CONNECTIONS:
         return FIRST_PARTY_CONNECTIONS[connection_class]
 
@@ -119,7 +119,7 @@ def connection_factory(
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
     autocommit: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> SQLConnection:
     pass
 
@@ -131,7 +131,7 @@ def connection_factory(
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
     autocommit: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> SQLConnection:
     pass
 
@@ -142,7 +142,7 @@ def connection_factory(
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
     autocommit: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> SnowflakeConnection:
     pass
 
@@ -154,7 +154,7 @@ def connection_factory(
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
     autocommit: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> SnowflakeConnection:
     pass
 
@@ -164,7 +164,7 @@ def connection_factory(
     name: Literal["snowpark"],
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> SnowparkConnection:
     pass
 
@@ -175,7 +175,7 @@ def connection_factory(
     type: Literal["snowpark"],
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> SnowparkConnection:
     pass
 
@@ -186,7 +186,7 @@ def connection_factory(
     type: type[ConnectionClass],
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> ConnectionClass:
     pass
 
@@ -197,7 +197,7 @@ def connection_factory(
     type: str | None = None,
     max_entries: int | None = None,
     ttl: float | timedelta | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> BaseConnection[Any]:
     pass
 

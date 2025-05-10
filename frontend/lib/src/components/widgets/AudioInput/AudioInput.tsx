@@ -19,6 +19,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react"
 
@@ -89,7 +90,7 @@ const AudioInput: React.FC<Props> = ({
   const theme = useTheme()
   const previousTheme = usePrevious(theme)
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null)
-  const waveSurferRef = React.useRef<HTMLDivElement | null>(null)
+  const waveSurferRef = useRef<HTMLDivElement | null>(null)
   const [deleteFileUrl, setDeleteFileUrl] = useWidgetManagerElementState<
     string | null
   >({

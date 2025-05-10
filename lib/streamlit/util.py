@@ -27,7 +27,7 @@ def memoize(func: Callable[..., Any]) -> Callable[..., Any]:
     result: list[Any] = []
 
     @functools.wraps(func)
-    def wrapped_func():
+    def wrapped_func() -> Any:
         if not result:
             result.append(func())
         return result[0]

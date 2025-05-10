@@ -70,7 +70,6 @@
     "decamelize": "^6.0.0",
     "deck.gl": "^9.1.11",
     "dompurify": "^3.2.5",
-    "fzy.js": "^0.4.1",
     "hoist-non-react-statics": "^3.3.2",
     "immer": "^9.0.19",
     "json5": "^2.2.3",

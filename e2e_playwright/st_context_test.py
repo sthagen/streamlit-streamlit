@@ -39,7 +39,7 @@ def test_locale(app: Page):
     expect_prefixed_markdown(app, "Locale primary language:", "it-IT")
 
 
-def test_url(app: Page, app_port):
+def test_url(app: Page, app_port: int):
     """Test that the URL is correctly set."""
     expected_url = f"http://localhost:{app_port}"
     expect_prefixed_markdown(app, "Full url:", expected_url)

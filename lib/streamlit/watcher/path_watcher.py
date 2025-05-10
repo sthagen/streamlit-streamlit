@@ -38,7 +38,7 @@ class NoOpPathWatcher:
         *,  # keyword-only arguments:
         glob_pattern: str | None = None,
         allow_nonexistent: bool = False,
-    ):
+    ) -> None:
         pass
 
 

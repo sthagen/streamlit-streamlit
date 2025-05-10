@@ -31,7 +31,7 @@ _LOGGER: Final = getLogger(__name__)
 class MessageSizeError(MarkdownFormattedException):
     """Exception raised when a websocket message is larger than the configured limit."""
 
-    def __init__(self, failed_msg_str: Any):
+    def __init__(self, failed_msg_str: Any) -> None:
         msg = self._get_message(failed_msg_str)
         super().__init__(msg)
 
@@ -55,7 +55,7 @@ of the client's browser and the Streamlit server._
 class BadDurationStringError(StreamlitAPIException):
     """Raised when a bad duration argument string is passed."""
 
-    def __init__(self, duration: str):
+    def __init__(self, duration: str) -> None:
         MarkdownFormattedException.__init__(
             self,
             "TTL string doesn't look right. It should be formatted as"

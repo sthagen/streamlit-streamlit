@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Any
+
 import pytest
 from playwright.sync_api import Page
 
@@ -28,7 +30,10 @@ information.
 
 
 @pytest.fixture(scope="function", params=["en-US", "de-DE", "ja-JP", "ar-EG"])
-def browser_context_args(request, browser_context_args):
+def browser_context_args(
+    request: pytest.FixtureRequest,
+    browser_context_args: dict[str, Any],
+) -> dict[str, Any]:
     """
     Parameterized fixture that runs for every test function in this module.
     Tests against 4 different locales.

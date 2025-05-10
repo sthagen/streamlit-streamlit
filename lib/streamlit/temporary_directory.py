@@ -16,8 +16,12 @@ from __future__ import annotations
 
 import shutil
 import tempfile
+from typing import TYPE_CHECKING, cast
 
 from streamlit import util
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 # We provide our own context manager for temporary directory that wraps
 # tempfile.mkdtemp
@@ -48,9 +52,14 @@ class TemporaryDirectory:
     def __repr__(self) -> str:
         return util.repr_(self)
 
-    def __enter__(self):
-        self._path = tempfile.mkdtemp(*self._args, **self._kwargs)
+    def __enter__(self) -> str:
+        self._path = cast("str", tempfile.mkdtemp(*self._args, **self._kwargs))
         return self._path
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        exc_traceback: TracebackType | None,
+    ) -> None:
         shutil.rmtree(self._path)

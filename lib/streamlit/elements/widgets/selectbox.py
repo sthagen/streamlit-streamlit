@@ -72,7 +72,7 @@ class SelectboxSerde(Generic[T]):
         formatted_options: list[str],
         formatted_option_to_option_index: dict[str, int],
         default_option_index: int | None = None,
-    ):
+    ) -> None:
         """Initialize the SelectboxSerde.
 
         We do not store an option_to_formatted_option mapping because the generic

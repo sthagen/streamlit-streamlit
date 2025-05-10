@@ -320,5 +320,5 @@ function tryGetValue(
   defaultValue: any = undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
 ): any {
-  return obj.hasOwnProperty(name) ? obj[name] : defaultValue
+  return Object.hasOwn(obj, name) ? obj[name] : defaultValue
 }

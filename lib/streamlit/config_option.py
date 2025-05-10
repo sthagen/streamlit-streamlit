@@ -108,7 +108,7 @@ class ConfigOption:
         replaced_by: str | None = None,
         type_: type = str,
         sensitive: bool = False,
-    ):
+    ) -> None:
         """Create a ConfigOption with the given name.
 
         Parameters
@@ -301,7 +301,7 @@ class ConfigOption:
         return now > expiration_date
 
     @property
-    def env_var(self):
+    def env_var(self) -> str:
         """Get the name of the environment variable that can be used to set the option."""
         name = self.key.replace(".", "_")
         return f"STREAMLIT_{to_snake_case(name).upper()}"

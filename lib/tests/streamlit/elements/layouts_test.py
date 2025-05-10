@@ -20,6 +20,7 @@ from parameterized import parameterized
 import streamlit as st
 from streamlit.errors import FragmentHandledException, StreamlitAPIException
 from streamlit.proto.Block_pb2 import Block as BlockProto
+from streamlit.proto.GapSize_pb2 import GapSize
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
@@ -45,7 +46,9 @@ class ColumnsTest(DeltaGeneratorTestCase):
             columns_blocks[0].add_block.column.vertical_alignment,
             BlockProto.Column.VerticalAlignment.TOP,
         )
-        self.assertEqual(columns_blocks[0].add_block.column.gap, "small")
+        self.assertEqual(
+            columns_blocks[0].add_block.column.gap_config.gap_size, GapSize.SMALL
+        )
         self.assertEqual(columns_blocks[0].add_block.column.show_border, False)
 
         # Check the weights are correct
@@ -136,16 +139,32 @@ class ColumnsTest(DeltaGeneratorTestCase):
 
         all_deltas = self.get_all_deltas_from_queue()
 
-        horizontal_block = all_deltas[0]
+        horizontal_container = all_deltas[0]
         columns_blocks = all_deltas[1:4]
 
         # 4 elements will be created: 1 horizontal block, 3 columns, each receives
         # "small" gap arg
         self.assertEqual(len(all_deltas), 4)
-        self.assertEqual(horizontal_block.add_block.horizontal.gap, "small")
-        self.assertEqual(columns_blocks[0].add_block.column.gap, "small")
-        self.assertEqual(columns_blocks[1].add_block.column.gap, "small")
-        self.assertEqual(columns_blocks[2].add_block.column.gap, "small")
+        self.assertTrue(
+            horizontal_container.add_block.flex_container.gap_config.WhichOneof(
+                "gap_spec"
+            )
+            == "gap_size"
+        )
+        self.assertEqual(
+            horizontal_container.add_block.flex_container.gap_config.gap_size,
+            GapSize.SMALL,
+        )
+
+        for col_block in columns_blocks:
+            self.assertTrue(
+                col_block.add_block.column.gap_config.WhichOneof("gap_spec")
+                == "gap_size"
+            )
+            self.assertEqual(
+                col_block.add_block.column.gap_config.gap_size,
+                GapSize.SMALL,
+            )
 
     def test_columns_with_medium_gap(self):
         """Test that it works correctly with "medium" gap argument"""
@@ -154,16 +173,32 @@ class ColumnsTest(DeltaGeneratorTestCase):
 
         all_deltas = self.get_all_deltas_from_queue()
 
-        horizontal_block = all_deltas[0]
+        horizontal_container = all_deltas[0]
         columns_blocks = all_deltas[1:4]
 
         # 4 elements will be created: 1 horizontal block, 3 columns, each receives
         # "medium" gap arg
         self.assertEqual(len(all_deltas), 4)
-        self.assertEqual(horizontal_block.add_block.horizontal.gap, "medium")
-        self.assertEqual(columns_blocks[0].add_block.column.gap, "medium")
-        self.assertEqual(columns_blocks[1].add_block.column.gap, "medium")
-        self.assertEqual(columns_blocks[2].add_block.column.gap, "medium")
+        self.assertTrue(
+            horizontal_container.add_block.flex_container.gap_config.WhichOneof(
+                "gap_spec"
+            )
+            == "gap_size"
+        )
+        self.assertEqual(
+            horizontal_container.add_block.flex_container.gap_config.gap_size,
+            GapSize.MEDIUM,
+        )
+
+        for col_block in columns_blocks:
+            self.assertTrue(
+                col_block.add_block.column.gap_config.WhichOneof("gap_spec")
+                == "gap_size"
+            )
+            self.assertEqual(
+                col_block.add_block.column.gap_config.gap_size,
+                GapSize.MEDIUM,
+            )
 
     def test_columns_with_large_gap(self):
         """Test that it works correctly with "large" gap argument"""
@@ -172,16 +207,32 @@ class ColumnsTest(DeltaGeneratorTestCase):
 
         all_deltas = self.get_all_deltas_from_queue()
 
-        horizontal_block = all_deltas[0]
+        horizontal_container = all_deltas[0]
         columns_blocks = all_deltas[1:4]
 
         # 4 elements will be created: 1 horizontal block, 3 columns, each receives
         # "large" gap arg
         self.assertEqual(len(all_deltas), 4)
-        self.assertEqual(horizontal_block.add_block.horizontal.gap, "large")
-        self.assertEqual(columns_blocks[0].add_block.column.gap, "large")
-        self.assertEqual(columns_blocks[1].add_block.column.gap, "large")
-        self.assertEqual(columns_blocks[2].add_block.column.gap, "large")
+        self.assertTrue(
+            horizontal_container.add_block.flex_container.gap_config.WhichOneof(
+                "gap_spec"
+            )
+            == "gap_size"
+        )
+        self.assertEqual(
+            horizontal_container.add_block.flex_container.gap_config.gap_size,
+            GapSize.LARGE,
+        )
+
+        for col_block in columns_blocks:
+            self.assertTrue(
+                col_block.add_block.column.gap_config.WhichOneof("gap_spec")
+                == "gap_size"
+            )
+            self.assertEqual(
+                col_block.add_block.column.gap_config.gap_size,
+                GapSize.LARGE,
+            )
 
     def test_columns_with_border(self):
         """Test that it works correctly with border argument"""
@@ -267,13 +318,13 @@ class ContainerTest(DeltaGeneratorTestCase):
         """Test that it can be called with border parameter"""
         st.container(border=True)
         container_block = self.get_delta_from_queue()
-        self.assertTrue(container_block.add_block.vertical.border)
+        self.assertTrue(container_block.add_block.flex_container.border)
 
     def test_without_parameters(self):
         """Test that it can be called without any parameters."""
         st.container()
         container_block = self.get_delta_from_queue()
-        self.assertFalse(container_block.add_block.vertical.border)
+        self.assertFalse(container_block.add_block.flex_container.border)
         self.assertFalse(container_block.add_block.allow_empty)
         self.assertEqual(container_block.add_block.id, "")
 
@@ -289,9 +340,11 @@ class ContainerTest(DeltaGeneratorTestCase):
         st.container(height=100)
 
         container_block = self.get_delta_from_queue()
-        self.assertEqual(container_block.add_block.vertical.height, 100)
+        self.assertEqual(
+            container_block.add_block.flex_container.height_config.pixel_height, 100
+        )
         # Should allow empty and have a border as default:
-        self.assertTrue(container_block.add_block.vertical.border)
+        self.assertTrue(container_block.add_block.flex_container.border)
         self.assertTrue(container_block.add_block.allow_empty)
 
 

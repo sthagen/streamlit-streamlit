@@ -30,7 +30,7 @@ _LOGGER: Final = get_logger(__name__)
 
 
 class ComponentRequestHandler(tornado.web.RequestHandler):
-    def initialize(self, registry: BaseComponentRegistry):
+    def initialize(self, registry: BaseComponentRegistry) -> None:
         self._registry = registry
 
     def get(self, path: str) -> None:

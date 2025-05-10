@@ -42,6 +42,7 @@ from streamlit.runtime.forward_msg_cache import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
     from pathlib import Path
 
     from streamlit.cursor import RunningCursor
@@ -117,11 +118,11 @@ class ScriptRunContext:
     _production_query_params_used = False
 
     @property
-    def page_script_hash(self):
+    def page_script_hash(self) -> str:
         return self.pages_manager.current_page_script_hash
 
     @property
-    def active_script_hash(self):
+    def active_script_hash(self) -> str:
         return self._active_script_hash
 
     @property
@@ -129,7 +130,7 @@ class ScriptRunContext:
         return self.pages_manager.main_script_parent
 
     @contextlib.contextmanager
-    def run_with_active_hash(self, page_hash: str):
+    def run_with_active_hash(self, page_hash: str) -> Generator[None, None, None]:
         original_page_hash = self._active_script_hash
         self._active_script_hash = page_hash
         try:
@@ -138,7 +139,7 @@ class ScriptRunContext:
             # in the event of any exception, ensure we set the active hash back
             self._active_script_hash = original_page_hash
 
-    def set_mpa_v2_page(self, page_script_hash: str):
+    def set_mpa_v2_page(self, page_script_hash: str) -> None:
         self._active_script_hash = self.pages_manager.main_script_hash
         self.pages_manager.set_current_page_script_hash(page_script_hash)
 
@@ -240,7 +241,7 @@ SCRIPT_RUN_CONTEXT_ATTR_NAME: Final = "streamlit_script_run_ctx"
 
 def add_script_run_ctx(
     thread: threading.Thread | None = None, ctx: ScriptRunContext | None = None
-):
+) -> threading.Thread:
     """Adds the current ScriptRunContext to a newly-created thread.
 
     This should be called from this thread's parent thread,

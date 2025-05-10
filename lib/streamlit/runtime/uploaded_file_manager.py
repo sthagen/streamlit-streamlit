@@ -65,7 +65,7 @@ class UploadedFile(io.BytesIO):
     initialized with `bytes`.
     """
 
-    def __init__(self, record: UploadedFileRec, file_urls: FileURLsProto):
+    def __init__(self, record: UploadedFileRec, file_urls: FileURLsProto) -> None:
         # BytesIO's copy-on-write semantics doesn't seem to be mentioned in
         # the Python docs - possibly because it's a CPython-only optimization
         # and not guaranteed to be in other Python runtimes. But it's detailed

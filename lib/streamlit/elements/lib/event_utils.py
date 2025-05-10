@@ -26,7 +26,7 @@ class AttributeDictionary(dict[Any, Any]):
     attribute-style access.
     """
 
-    def __getattr__(self, key):
+    def __getattr__(self, key: str) -> Any:
         try:
             item = self.__getitem__(key)
             return AttributeDictionary(item) if isinstance(item, dict) else item

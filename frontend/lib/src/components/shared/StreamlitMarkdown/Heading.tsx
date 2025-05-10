@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, ReactElement } from "react"
+import React, { Fragment, ReactElement, useContext } from "react"
 
 import { Heading as HeadingProto } from "@streamlit/protobuf"
 
@@ -56,8 +56,8 @@ function makeMarkdownHeading(tag: string, markdown: string): string {
 function Heading(props: HeadingProtoProps): ReactElement {
   const { element } = props
   const { tag, anchor, body, help, hideAnchor, divider } = element
-  const isInSidebar = React.useContext(IsSidebarContext)
-  const isInDialog = React.useContext(IsDialogContext)
+  const isInSidebar = useContext(IsSidebarContext)
+  const isInDialog = useContext(IsDialogContext)
   // st.header can contain new lines which are just interpreted as new
   // markdown to be rendered as such.
   const [heading, ...rest] = body.split("\n")

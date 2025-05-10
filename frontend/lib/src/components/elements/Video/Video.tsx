@@ -58,17 +58,17 @@ function Video({
 
     // Recover the state in case this component got unmounted
     // and mounted again for the same element.
-    const preventAutoplay = elementMgr.getElementState(
+    const preventAutoplayState = elementMgr.getElementState(
       element.id,
       "preventAutoplay"
     )
 
-    if (!preventAutoplay) {
+    if (!preventAutoplayState) {
       // Set the state to prevent autoplay in case there is an unmount + mount
       // for the same element.
       elementMgr.setElementState(element.id, "preventAutoplay", true)
     }
-    return preventAutoplay ?? false
+    return preventAutoplayState ?? false
   }, [element.id, elementMgr])
 
   // Create a stable dependency for checking subtitle source urls
@@ -179,9 +179,8 @@ function Video({
     }
   }, [loop, startTime])
 
-  const getYoutubeSrc = (url: string): string => {
-    const { startTime, endTime, loop, autoplay, muted } = element
-    const youtubeUrl = new URL(url)
+  const getYoutubeSrc = (urlArg: string): string => {
+    const youtubeUrl = new URL(urlArg)
 
     if (startTime && !isNaN(startTime)) {
       youtubeUrl.searchParams.append("start", startTime.toString())

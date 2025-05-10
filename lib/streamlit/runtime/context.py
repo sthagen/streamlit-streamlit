@@ -64,7 +64,7 @@ def _normalize_header(name: str) -> str:
 
 
 class StreamlitHeaders(Mapping[str, str]):
-    def __init__(self, headers: Iterable[tuple[str, str]]):
+    def __init__(self, headers: Iterable[tuple[str, str]]) -> None:
         dict_like_headers: dict[str, list[str]] = {}
 
         for key, value in headers:
@@ -98,7 +98,7 @@ class StreamlitHeaders(Mapping[str, str]):
 
 
 class StreamlitCookies(Mapping[str, str]):
-    def __init__(self, cookies: Mapping[str, str]):
+    def __init__(self, cookies: Mapping[str, str]) -> None:
         self._cookies = MappingProxyType(cookies)
 
     @classmethod

@@ -14,7 +14,7 @@
 
 import re
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Locator, Page, expect
 
 from e2e_playwright.conftest import ImageCompareFunction
 from e2e_playwright.shared.app_utils import (
@@ -24,10 +24,7 @@ from e2e_playwright.shared.app_utils import (
 )
 
 
-def _get_basic_column_container(
-    app: Page,
-    index: int = 0,
-):
+def _get_basic_column_container(app: Page, index: int = 0) -> Locator:
     column_container = app.get_by_test_id("stHorizontalBlock").nth(index)
     expect(column_container).to_be_visible()
     return column_container

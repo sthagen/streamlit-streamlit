@@ -73,7 +73,7 @@ def pages_from_nav_sections(
     return page_list
 
 
-def send_page_not_found(ctx: ScriptRunContext):
+def send_page_not_found(ctx: ScriptRunContext) -> None:
     msg = ForwardMsg()
     msg.page_not_found.page_name = ""
     ctx.enqueue(msg)
@@ -335,9 +335,10 @@ def _navigation(
             }
 
     msg = ForwardMsg()
-    if position == "hidden":
-        msg.navigation.position = NavigationProto.Position.HIDDEN
-    elif config.get_option("client.showSidebarNavigation") is False:
+    if (
+        position == "hidden"
+        or config.get_option("client.showSidebarNavigation") is False
+    ):
         msg.navigation.position = NavigationProto.Position.HIDDEN
     else:
         msg.navigation.position = NavigationProto.Position.SIDEBAR

@@ -167,7 +167,7 @@ class Runtime:
         """
         return cls._instance is not None
 
-    def __init__(self, config: RuntimeConfig):
+    def __init__(self, config: RuntimeConfig) -> None:
         """Create a Runtime instance. It won't be started yet.
 
         Runtime is *not* thread-safe. Its public methods are generally

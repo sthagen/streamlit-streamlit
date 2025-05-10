@@ -41,6 +41,10 @@ Usage:
 <script>
   window.addEventListener("message", (event) => {
     console.log("Received message event:", event);
+
+    if (event.data.type === "REDIRECT_TO_URL") {
+      window.location.href = event.data.url
+    }
   });
 
   function sendMessage(data) {
@@ -169,7 +173,7 @@ Usage:
         font: 0,
         base: 0,
         bodyFont: '"Inter", "Source Sans Pro", sans-serif',
-        codeFont: '"Apercu Mono", "Source Code Pro", monospace',
+        codeFont: '"Source Code Pro", monospace',
         baseFontSize: 14,
         fontFaces: [
           {
@@ -185,21 +189,6 @@ Usage:
           {
             family: "Inter",
             url: "https://rsms.me/inter/font-files/Inter-Bold.woff2?v=3.19",
-            weight: 700,
-          },
-          {
-            family: "Apercu Mono",
-            url: "https://app.snowflake.com/static/2c4863733dec5a69523e.woff2",
-            weight: 400,
-          },
-          {
-            family: "Apercu Mono",
-            url: "https://app.snowflake.com/static/e903ae189d31a97e231e.woff2",
-            weight: 500,
-          },
-          {
-            family: "Apercu Mono",
-            url: "https://app.snowflake.com/static/32447307374154c88bc0.woff2",
             weight: 700,
           },
         ],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react"
+import React, { memo, PureComponent } from "react"
 
 import axios from "axios"
 import isEqual from "lodash/isEqual"
@@ -78,7 +78,7 @@ export interface State {
   files: UploadFileInfo[]
 }
 
-class FileUploader extends React.PureComponent<InnerProps, State> {
+class FileUploader extends PureComponent<InnerProps, State> {
   private readonly formClearHelper = new FormClearHelper()
 
   /**
@@ -307,6 +307,7 @@ class FileUploader extends React.PureComponent<InnerProps, State> {
 
   public uploadFile = (fileURLs: IFileURLs, file: File): void => {
     // Create an UploadFileInfo for this file and add it to our state.
+    // eslint-disable-next-line import/no-named-as-default-member -- TODO: Utilize AbortController instead
     const cancelToken = axios.CancelToken.source()
     const uploadingFileInfo = new UploadFileInfo(
       file.name,

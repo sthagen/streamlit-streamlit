@@ -121,7 +121,7 @@ it in the future.
 # is designed to leverage our original v1 version of multi-page apps. This
 # function will be called to run the script in lieu of the main script. This
 # function simulates the v1 setup using the modern v2 commands (st.navigation)
-def _mpa_v1(main_script_path: str):
+def _mpa_v1(main_script_path: str) -> None:
     from pathlib import Path
 
     from streamlit.commands.navigation import PageType, _navigation
@@ -176,7 +176,7 @@ class ScriptRunner:
         user_info: dict[str, str | bool | None],
         fragment_storage: FragmentStorage,
         pages_manager: PagesManager,
-    ):
+    ) -> None:
         """Initialize the ScriptRunner.
 
         (The ScriptRunner won't start executing until start() is called.)

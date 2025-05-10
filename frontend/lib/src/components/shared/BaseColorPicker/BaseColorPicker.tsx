@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react"
+import React, { memo, useCallback, useEffect, useState } from "react"
 
 import { StatefulPopover as UIPopover } from "baseui/popover"
 import { ChromePicker, ColorResult } from "react-color"
@@ -86,22 +86,22 @@ const BaseColorPicker = (props: BaseColorPickerProps): React.ReactElement => {
     onChange,
     help,
   } = props
-  const [value, setValue] = React.useState(propValue)
+  const [value, setValue] = useState(propValue)
   const theme: EmotionTheme = useTheme()
 
   // Reset the value when the prop value changes
-  React.useEffect(() => {
+  useEffect(() => {
     setValue(propValue)
   }, [propValue])
 
   // Note: This is a "local" onChange handler used to update the color preview
   // (allowing the user to click and drag). this.props.onChange is only called
   // when the ColorPicker popover is closed.
-  const onColorChange = React.useCallback((color: ColorResult): void => {
+  const onColorChange = useCallback((color: ColorResult): void => {
     setValue(color.hex)
   }, [])
 
-  const onColorClose = React.useCallback((): void => {
+  const onColorClose = useCallback((): void => {
     onChange(value)
   }, [onChange, value])
 

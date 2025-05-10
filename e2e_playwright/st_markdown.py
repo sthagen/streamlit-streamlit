@@ -166,7 +166,7 @@ with st.container(key="latex_elements"):
         \sum_{k=0}^{n-1} ar^k =
         a \left(\frac{1-r^{n}}{1-r}\right)
         """,
-        help="This is example tooltip displayed on latex.",
+        help="foo",
     )
 
     try:
@@ -178,6 +178,17 @@ with st.container(key="latex_elements"):
         out = "a + b"
 
     st.latex(out)
+
+    st.latex(
+        "this is a very long formula this is a very long formula this is a very long "
+        "formula this is a very long formula this is a very long formula"
+    )
+
+    st.latex(
+        "this is a very long formula this is a very long formula this is a very long "
+        "formula this is a very long formula this is a very long formula",
+        help="foo",
+    )
 
 "---"
 
@@ -208,6 +219,11 @@ Inline math with $\KaTeX$
 
 $$
 ax^2 + bx + c = 0
+$$
+
+$$
+this is a very long formula this is a very long formula this is a very long formula
+this is a very long formula this is a very long formula
 $$
 
 > This is a blockquote

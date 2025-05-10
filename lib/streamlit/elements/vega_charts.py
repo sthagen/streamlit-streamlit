@@ -253,7 +253,7 @@ class VegaLiteStateSerde:
 def _prepare_vega_lite_spec(
     spec: VegaLiteSpec,
     use_container_width: bool,
-    **kwargs,
+    **kwargs: Any,
 ) -> VegaLiteSpec:
     if kwargs:
         # Support passing in kwargs.
@@ -345,7 +345,7 @@ def _convert_altair_to_vega_lite_spec(
 
     datasets = {}
 
-    def id_transform(data) -> dict[str, str]:
+    def id_transform(data: Any) -> dict[str, str]:
         """Altair data transformer that serializes the data,
         creates a stable name based on the hash of the data,
         stores the bytes into the datasets mapping and

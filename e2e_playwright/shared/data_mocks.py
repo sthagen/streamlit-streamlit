@@ -209,7 +209,7 @@ def random_date() -> datetime:
 
 
 class TestObject:
-    def __str__(self):
+    def __str__(self) -> str:
         return "TestObject"
 
 

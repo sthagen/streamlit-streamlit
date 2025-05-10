@@ -85,8 +85,8 @@ SliderDatelikeSpanT: TypeAlias = Union[
 StepNumericT: TypeAlias = SliderNumericT
 StepDatelikeT: TypeAlias = timedelta
 
-SliderStep = Union[int, float, timedelta]
-SliderScalar = Union[int, float, date, time, datetime]
+SliderStep: TypeAlias = Union[int, float, timedelta]
+SliderScalar: TypeAlias = Union[int, float, date, time, datetime]
 SliderValueT = TypeVar("SliderValueT", int, float, date, time, datetime)
 SliderValueGeneric: TypeAlias = Union[
     SliderValueT,
@@ -162,7 +162,7 @@ class SliderSerde:
     single_value: bool
     orig_tz: tzinfo | None
 
-    def deserialize_single_value(self, value: float):
+    def deserialize_single_value(self, value: float) -> SliderScalar:
         if self.data_type == SliderProto.INT:
             return int(value)
         if self.data_type == SliderProto.DATETIME:
@@ -177,7 +177,7 @@ class SliderSerde:
             )
         return value
 
-    def deserialize(self, ui_value: list[float] | None):
+    def deserialize(self, ui_value: list[float] | None) -> Any:
         if ui_value is not None:
             val = ui_value
         else:
@@ -185,8 +185,10 @@ class SliderSerde:
             val = self.value
 
         # The widget always returns a float array, so fix the return type if necessary
-        val = [self.deserialize_single_value(v) for v in val]
-        return val[0] if self.single_value else tuple(val)
+        deserialized_values = [self.deserialize_single_value(v) for v in val]
+        return (
+            deserialized_values[0] if self.single_value else tuple(deserialized_values)
+        )
 
     def serialize(self, v: Any) -> list[Any]:
         range_value = isinstance(v, (list, tuple))
@@ -607,10 +609,10 @@ class SliderMixin:
     def _slider(
         self,
         label: str,
-        min_value=None,
-        max_value=None,
-        value=None,
-        step=None,
+        min_value: Any = None,
+        max_value: Any = None,
+        value: Any = None,
+        step: Any = None,
         format: str | None = None,
         key: Key | None = None,
         help: str | None = None,
@@ -693,12 +695,11 @@ class SliderMixin:
         def value_to_generic_type(v):
             if isinstance(v, Integral):
                 return SUPPORTED_TYPES[Integral]
-            elif isinstance(v, Real):
+            if isinstance(v, Real):
                 return SUPPORTED_TYPES[Real]
-            else:
-                return SUPPORTED_TYPES[type(v)]
+            return SUPPORTED_TYPES[type(v)]
 
-        def all_same_type(items):
+        def all_same_type(items: Any) -> bool:
             return len(set(map(value_to_generic_type, items))) < 2
 
         if not all_same_type(value):
@@ -930,6 +931,7 @@ class SliderMixin:
             for value in serialized_values:
                 # Use the deserialized values for more readable error messages for dates/times
                 deserialized_value = serde.deserialize_single_value(value)
+
                 if value < slider_proto.min:
                     raise StreamlitValueBelowMinError(
                         value=deserialized_value,

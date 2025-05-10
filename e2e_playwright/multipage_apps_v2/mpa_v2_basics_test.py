@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Locator, Page, expect
 
 from e2e_playwright.conftest import (
     ImageCompareFunction,
@@ -30,17 +30,21 @@ from e2e_playwright.shared.app_utils import (
 )
 
 
-def main_heading(app: Page):
+def main_heading(app: Page) -> Locator:
     return app.get_by_test_id("stHeading").nth(0)
 
 
-def page_heading(app: Page):
+def page_heading(app: Page) -> Locator:
     return app.get_by_test_id("stHeading").nth(1)
 
 
 def check_field(
-    app: Page, *, hide_sidebarnav=False, dynamic_pages=False, add_sidebar_elements=False
-):
+    app: Page,
+    *,
+    hide_sidebarnav: bool = False,
+    dynamic_pages: bool = False,
+    add_sidebar_elements: bool = False,
+) -> None:
     if hide_sidebarnav:
         click_checkbox(app, "Hide sidebar")
 
@@ -70,7 +74,7 @@ expected_page_order = [
 
 def get_page_link(
     app: Page, page_name: str, page_order: list[str] = expected_page_order
-):
+) -> Locator:
     return (
         app.get_by_test_id("stSidebarNav").locator("a").nth(page_order.index(page_name))
     )

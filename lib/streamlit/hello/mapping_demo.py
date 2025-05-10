@@ -23,7 +23,7 @@ from streamlit.hello.utils import show_code
 
 def mapping_demo():
     @st.cache_data
-    def from_data_file(filename):
+    def from_data_file(filename: str) -> pd.DataFrame:
         url = (
             "https://raw.githubusercontent.com/streamlit/"
             "example-data/master/hello/v1/%s" % filename

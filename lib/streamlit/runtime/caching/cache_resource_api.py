@@ -151,7 +151,7 @@ class CachedResourceFuncInfo(CachedFuncInfo):
         ttl: float | timedelta | str | None,
         validate: ValidateFunc | None,
         hash_funcs: HashFuncsDict | None = None,
-    ):
+    ) -> None:
         super().__init__(
             func,
             show_spinner=show_spinner,
@@ -189,7 +189,7 @@ class CacheResourceAPI:
     and st.cache_resource.clear().
     """
 
-    def __init__(self, decorator_metric_name: str):
+    def __init__(self, decorator_metric_name: str) -> None:
         """Create a CacheResourceAPI instance.
 
         Parameters
@@ -234,7 +234,7 @@ class CacheResourceAPI:
         validate: ValidateFunc | None = None,
         experimental_allow_widgets: bool = False,
         hash_funcs: HashFuncsDict | None = None,
-    ):
+    ) -> F | Callable[[F], F]:
         return self._decorator(
             func,
             ttl=ttl,
@@ -255,7 +255,7 @@ class CacheResourceAPI:
         validate: ValidateFunc | None,
         experimental_allow_widgets: bool,
         hash_funcs: HashFuncsDict | None = None,
-    ):
+    ) -> F | Callable[[F], F]:
         """Decorator to cache functions that return global resources (e.g. database connections, ML models).
 
         Cached objects are shared across all users, sessions, and reruns. They
@@ -417,9 +417,9 @@ class CacheResourceAPI:
         # Support passing the params via function decorator, e.g.
         # @st.cache_resource(show_spinner=False)
         if func is None:
-            return lambda f: make_cached_func_wrapper(
+            return lambda f: make_cached_func_wrapper(  # type: ignore
                 CachedResourceFuncInfo(
-                    func=f,
+                    func=f,  # type: ignore
                     show_spinner=show_spinner,
                     max_entries=max_entries,
                     ttl=ttl,
@@ -455,7 +455,7 @@ class ResourceCache(Cache):
         ttl_seconds: float,
         validate: ValidateFunc | None,
         display_name: str,
-    ):
+    ) -> None:
         super().__init__()
         self.key = key
         self.display_name = display_name

@@ -18,6 +18,7 @@ from __future__ import annotations
 import os
 import signal
 import subprocess
+from typing import cast
 
 import pytest
 
@@ -80,7 +81,7 @@ class TestCLIRegressions:
 
         self.run_command("streamlit cache clear")
 
-    def parameterize(self, params):
+    def parameterize(self, params: str) -> list[str]:
         return params.split(" ")
 
     def read_process_output(self, proc, num_lines_to_read):
@@ -93,10 +94,10 @@ class TestCLIRegressions:
 
         return output
 
-    def run_command(self, command):
+    def run_command(self, command: str) -> str:
         return subprocess.check_output(self.parameterize(command)).decode("UTF-8")
 
-    def run_single_proc(self, command, num_lines_to_read=4):
+    def run_single_proc(self, command: str, num_lines_to_read: int = 4) -> str:
         proc = subprocess.Popen(
             command,
             shell=True,
@@ -105,7 +106,7 @@ class TestCLIRegressions:
             preexec_fn=os.setpgrp,  # noqa: PLW1509
         )
 
-        output = self.read_process_output(proc, num_lines_to_read)
+        output = cast("str", self.read_process_output(proc, num_lines_to_read))
 
         try:
             os.kill(os.getpgid(proc.pid), signal.SIGTERM)
@@ -115,7 +116,9 @@ class TestCLIRegressions:
 
         return output
 
-    def run_double_proc(self, command_one, command_two, num_lines_to_read=4):
+    def run_double_proc(
+        self, command_one: str, command_two: str, num_lines_to_read: int = 4
+    ) -> tuple[str, str]:
         proc_one = subprocess.Popen(
             command_one,
             shell=True,

@@ -111,7 +111,7 @@ class QueryParams(MutableMapping[str, str]):
         | SupportsKeysAndGetItem[str, str | Iterable[str]] = (),
         /,
         **kwds: str,
-    ):
+    ) -> None:
         # This overrides the `update` provided by MutableMapping
         # to ensure only one one ForwardMsg is sent.
         self._ensure_single_query_api_used()
@@ -173,7 +173,7 @@ class QueryParams(MutableMapping[str, str]):
         self,
         _dict: Iterable[tuple[str, str | Iterable[str]]]
         | SupportsKeysAndGetItem[str, str | Iterable[str]],
-    ):
+    ) -> None:
         self._ensure_single_query_api_used()
         old_value = self._query_params.copy()
         self.clear_with_no_forward_msg(preserve_embed=True)

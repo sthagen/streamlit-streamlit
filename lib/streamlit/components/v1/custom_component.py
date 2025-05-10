@@ -48,12 +48,12 @@ class CustomComponent(BaseCustomComponent):
 
     def __call__(
         self,
-        *args,
+        *args: Any,
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
         tab_index: int | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Any:
         """An alias for create_instance."""
         return self.create_instance(
@@ -68,12 +68,12 @@ class CustomComponent(BaseCustomComponent):
     @gather_metrics("create_instance")
     def create_instance(
         self,
-        *args,
+        *args: Any,
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
         tab_index: int | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Any:
         """Create a new instance of the component.
 
@@ -243,7 +243,7 @@ And if you're using Streamlit Cloud, add "pyarrow" to your requirements.txt."""
         dg._enqueue("component_instance", element.component_instance)
         return return_value
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Equality operator."""
         return (
             isinstance(other, CustomComponent)
@@ -253,7 +253,7 @@ And if you're using Streamlit Cloud, add "pyarrow" to your requirements.txt."""
             and self.module_name == other.module_name
         )
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: object) -> bool:
         """Inequality operator."""
 
         # we have to use "not X == Y"" here because if we use "X != Y"

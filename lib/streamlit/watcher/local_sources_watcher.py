@@ -46,7 +46,7 @@ PathWatcher = None
 
 
 class LocalSourcesWatcher:
-    def __init__(self, pages_manager: PagesManager):
+    def __init__(self, pages_manager: PagesManager) -> None:
         self._pages_manager = pages_manager
         self._main_script_path = os.path.abspath(self._pages_manager.main_script_path)
         self._watch_folders = config.get_option("server.folderWatchList")
@@ -108,7 +108,7 @@ class LocalSourcesWatcher:
     def register_file_change_callback(self, cb: Callable[[str], None]) -> None:
         self._on_path_changed.append(cb)
 
-    def on_path_changed(self, filepath):
+    def on_path_changed(self, filepath: str) -> None:
         _LOGGER.debug("Path changed: %s", filepath)
         if filepath not in self._watched_modules:
             # Check if this is a file in a watched directory
@@ -143,7 +143,7 @@ class LocalSourcesWatcher:
         for cb in self._on_path_changed:
             cb(filepath)
 
-    def close(self):
+    def close(self) -> None:
         for wm in self._watched_modules.values():
             wm.watcher.close()
         self._watched_modules = {}
@@ -190,10 +190,10 @@ class LocalSourcesWatcher:
         wm.watcher.close()
         del self._watched_modules[filepath]
 
-    def _file_is_new(self, filepath):
+    def _file_is_new(self, filepath: str) -> bool:
         return filepath not in self._watched_modules
 
-    def _file_should_be_watched(self, filepath):
+    def _file_should_be_watched(self, filepath: str) -> bool:
         # Using short circuiting for performance.
         return self._file_is_new(filepath) and (
             file_util.file_is_in_folder_glob(filepath, self._script_folder)

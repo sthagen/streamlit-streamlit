@@ -20,7 +20,7 @@ import os
 import sys
 import uuid
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Final
+from typing import TYPE_CHECKING, Any, Callable, Final
 
 from google.protobuf.json_format import ParseDict
 
@@ -480,7 +480,7 @@ class AppSession:
         else:
             self._enqueue_forward_msg(self._create_file_change_message())
 
-    def _on_secrets_file_changed(self, _) -> None:
+    def _on_secrets_file_changed(self, _: Any) -> None:
         """Called when `secrets.file_change_listener` emits a Signal."""
 
         # NOTE: At the time of writing, this function only calls

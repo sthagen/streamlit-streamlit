@@ -477,7 +477,7 @@ def _fix_column_headers(data_df: pd.DataFrame) -> None:
         )
 
 
-def _check_column_names(data_df: pd.DataFrame):
+def _check_column_names(data_df: pd.DataFrame) -> None:
     """Check if the column names in the provided dataframe are valid.
 
     It's not allowed to have duplicate column names or column names that are
@@ -511,7 +511,7 @@ def _check_type_compatibilities(
     data_df: pd.DataFrame,
     columns_config: ColumnConfigMapping,
     dataframe_schema: DataframeSchema,
-):
+) -> None:
     """Check column type to data type compatibility.
 
     Iterates the index and all columns of the dataframe to check if

@@ -167,7 +167,7 @@ class StreamlitPage:
         icon: str | None = None,
         url_path: str | None = None,
         default: bool = False,
-    ):
+    ) -> None:
         # Must appear before the return so all pages, even if running in bare Python,
         # have a _default property. This way we can always tell which script needs to run.
         self._default: bool = default

@@ -48,6 +48,7 @@ from playwright.sync_api import (
     Route,
 )
 from pytest import FixtureRequest
+from typing_extensions import Self
 
 from e2e_playwright.shared.git_utils import get_git_root
 from e2e_playwright.shared.performance import (
@@ -103,7 +104,7 @@ class AsyncSubprocess:
         self._proc = None
         self._stdout_file = None
 
-    def terminate(self):
+    def terminate(self) -> str | None:
         """Terminate the process and return its stdout/stderr in a string."""
         if self._proc is not None:
             self._proc.terminate()
@@ -120,11 +121,11 @@ class AsyncSubprocess:
 
         return stdout
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self.start()
         return self
 
-    def start(self):
+    def start(self) -> None:
         # Start the process and capture its stdout/stderr output to a temp
         # file. We do this instead of using subprocess.PIPE (which causes the
         # Popen object to capture the output to its own internal buffer),
@@ -291,7 +292,7 @@ def app(page: Page, app_port: int) -> Page:
 
     if response is None:
         raise RuntimeError("Unable to load page")
-    elif response.status != 200:
+    if response.status != 200:
         print(f"Unsuccessful in loading page. Status: {response.status}", flush=True)
         if response.status == 404:
             print(
@@ -299,8 +300,7 @@ def app(page: Page, app_port: int) -> Page:
                 flush=True,
             )
         raise RuntimeError("Unable to load page")
-    else:
-        print("Successfully loaded page", flush=True)
+    print("Successfully loaded page", flush=True)
 
     start_capture_traces(page)
     wait_for_app_loaded(page)
@@ -308,7 +308,11 @@ def app(page: Page, app_port: int) -> Page:
 
 
 @pytest.fixture(scope="function")
-def static_app(page: Page, app_port: int, request) -> Page:
+def static_app(
+    page: Page,
+    app_port: int,
+    request: FixtureRequest,
+) -> Page:
     """Fixture that opens the app."""
     query_param = request.node.get_closest_marker("query_param")
     query_string = query_param.args[0] if query_param else ""
@@ -375,19 +379,47 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
     app_url = f"http://localhost:{app_port}"
     # the CSP header returned for the Streamlit index.html loaded in the iframe. This is
     # similar to a common CSP we have seen in the wild.
-    app_csp_header = (
-        f"default-src 'none'; worker-src blob:; form-action 'none'; "
-        f"connect-src ws://localhost:{app_port}/_stcore/stream "
-        f"http://localhost:{app_port}/_stcore/allowed-message-origins "
-        f"http://localhost:{app_port}/_stcore/upload_file/ "
-        f"https://some-prefix.com/somethingelse/_stcore/upload_file/ "
-        f"http://localhost:{app_port}/_stcore/host-config "
-        f"http://localhost:{app_port}/_stcore/health; script-src 'unsafe-inline' "
-        f"'unsafe-eval' {app_url}/static/js/; style-src 'unsafe-inline' "
-        f"{app_url}/static/css/; img-src data: {app_url}/favicon.png "
-        f"{app_url}/favicon.ico; font-src {app_url}/static/fonts/ "
-        f"{app_url}/static/media/; frame-ancestors {fake_iframe_server_origin};"
-    )
+    app_csp_header = f"""
+default-src 'none';
+worker-src blob:;
+form-action 'none';
+frame-ancestors {fake_iframe_server_origin};
+frame-src data: {app_url}/_stcore/component/;
+img-src 'self' https: data: blob:;
+media-src 'self' https: data: blob:;
+connect-src ws://localhost:{app_port}/_stcore/stream
+    {app_url}/_stcore/allowed-message-origins
+    {app_url}/_stcore/upload_file/
+    {app_url}/_stcore/host-config
+    {app_url}/_stcore/health
+    {app_url}/_stcore/message
+    {app_url}/media/
+    https://some-prefix.com/somethingelse/_stcore/upload_file/
+    https://events.mapbox.com/
+    https://api.mapbox.com/v4/
+    https://api.mapbox.com/raster/v1/
+    https://api.mapbox.com/rasterarrays/v1/
+    https://api.mapbox.com/styles/v1/mapbox/
+    https://api.mapbox.com/fonts/v1/mapbox/
+    https://api.mapbox.com/models/v1/mapbox/
+    https://api.mapbox.com/map-sessions/v1
+    https://data.streamlit.io/tokens.json
+    https://basemaps.cartocdn.com
+    https://tiles.basemaps.cartocdn.com
+    https://tiles-a.basemaps.cartocdn.com
+    https://tiles-b.basemaps.cartocdn.com
+    https://tiles-c.basemaps.cartocdn.com
+    https://tiles-d.basemaps.cartocdn.com
+    data: blob:;
+style-src 'unsafe-inline'
+    https://api.mapbox.com/mapbox-gl-js/
+    {app_url}/static/css/
+    blob:;
+script-src 'unsafe-inline' 'wasm-unsafe-eval' blob:
+    https://api.mapbox.com/mapbox-gl-js/
+    {app_url}/static/js/;
+font-src {app_url}/static/fonts/ {app_url}/static/media/ https: data: blob:;
+""".replace("\n", " ").strip()
 
     def _open_app(iframe_element_attrs: IframedPageAttrs | None = None) -> FrameLocator:
         _iframe_element_attrs = iframe_element_attrs
@@ -491,6 +523,7 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
             frame_locator.nth(0).get_by_test_id("stAppViewContainer").wait_for(
                 timeout=30000, state="attached"
             )
+
         return frame_locator
 
     return IframedPage(page, _open_app)
@@ -499,7 +532,7 @@ def iframed_app(page: Page, app_port: int) -> IframedPage:
 @pytest.fixture(scope="session")
 def browser_type_launch_args(
     browser_type_launch_args: dict[str, Any], browser_name: str
-):
+) -> dict[str, Any]:
     """Fixture that adds the fake device and ui args to the browser type launch args."""
     # The browser context fixture in pytest-playwright is defined in session scope, and
     # depends on the browser_type_launch_args fixture. This means that we can't
@@ -534,7 +567,7 @@ def browser_type_launch_args(
 
 
 @pytest.fixture(scope="function", params=["light_theme", "dark_theme"])
-def app_theme(request) -> str:
+def app_theme(request: FixtureRequest) -> str:
     """Fixture that returns the theme name."""
     return str(request.param)
 
@@ -830,7 +863,7 @@ def assert_snapshot(
 
 
 @pytest.fixture(scope="function", autouse=True)
-def playwright_profiling(request, page: Page):
+def playwright_profiling(request: FixtureRequest, page: Page):
     if request.node.get_closest_marker("no_perf") or not is_supported_browser(page):
         yield
         return
@@ -848,7 +881,7 @@ def playwright_profiling(request, page: Page):
 def wait_for_app_run(
     page_or_locator: Page | Locator | FrameLocator,
     wait_delay: int = 100,
-):
+) -> None:
     """Wait for the given page to finish running."""
     # Add a little timeout to wait for eventual debounce timeouts used in some widgets.
 
@@ -941,7 +974,7 @@ def wait_until(
 
     start = time.time()
 
-    def timed_out():
+    def timed_out() -> bool:
         elapsed = time.time() - start
         elapsed_ms = elapsed * 1000
         return elapsed_ms > timeout

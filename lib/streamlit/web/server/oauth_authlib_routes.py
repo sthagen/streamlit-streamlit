@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Final
+from typing import Any, Final, cast
 from urllib.parse import urlparse
 
 import tornado.web
@@ -168,7 +168,7 @@ class AuthCallbackHandler(AuthHandlerMixin, tornado.web.RequestHandler):
 
         client, _ = create_oauth_client(provider)
         token = client.authorize_access_token(self)
-        user = token.get("userinfo")
+        user = cast("dict[str, Any]", token.get("userinfo"))
 
         cookie_value = dict(user, origin=origin, is_logged_in=True)
         if user:

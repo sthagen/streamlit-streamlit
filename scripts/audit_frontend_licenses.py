@@ -117,7 +117,7 @@ def get_license_type(package: PackageInfo) -> str:
     return package[1]
 
 
-def check_licenses(licenses) -> NoReturn:
+def check_licenses(licenses: list[str]) -> NoReturn:
     # `yarn licenses` outputs a bunch of lines.
     # The last line contains the JSON object we care about
     packages = []

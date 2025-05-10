@@ -120,11 +120,17 @@ const NumberInput: React.FC<Props> = ({
   }, [element.dataType, element.step])
 
   const commitValue = useCallback(
-    ({ value, source }: { value: number | null; source: Source }) => {
-      if (notNullOrUndefined(value) && (min > value || value > max)) {
+    ({
+      value: valueArg,
+      source,
+    }: {
+      value: number | null
+      source: Source
+    }) => {
+      if (notNullOrUndefined(valueArg) && (min > valueArg || valueArg > max)) {
         inputRef.current?.reportValidity()
       } else {
-        const newValue = value ?? elementDefault ?? null
+        const newValue = valueArg ?? elementDefault ?? null
 
         switch (elementDataType) {
           case NumberInputProto.DataType.INT:
@@ -186,11 +192,13 @@ const NumberInput: React.FC<Props> = ({
   }, [])
 
   const updateFromProtobuf = useCallback((): void => {
-    const { value } = element
+    const { value: elementValue } = element
     element.setValue = false
-    setValue(value ?? null)
-    setFormattedValue(formatValue({ value: value ?? null, ...element, step }))
-    commitValue({ value: value ?? null, source: { fromUi: false } })
+    setValue(elementValue ?? null)
+    setFormattedValue(
+      formatValue({ value: elementValue ?? null, ...element, step })
+    )
+    commitValue({ value: elementValue ?? null, source: { fromUi: false } })
   }, [element, step, commitValue])
 
   // on component mount, we want to update the value from protobuf if setValue is true, otherwise commit current value
@@ -246,9 +254,9 @@ const NumberInput: React.FC<Props> = ({
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
-    const { value } = e.target
+    const { value: targetValue } = e.target
 
-    if (value === "") {
+    if (targetValue === "") {
       setDirty(true)
       setValue(null)
       setFormattedValue(null)
@@ -256,14 +264,14 @@ const NumberInput: React.FC<Props> = ({
       let numValue: number
 
       if (element.dataType === NumberInputProto.DataType.INT) {
-        numValue = parseInt(value, 10)
+        numValue = parseInt(targetValue, 10)
       } else {
-        numValue = parseFloat(value)
+        numValue = parseFloat(targetValue)
       }
 
       setDirty(true)
       setValue(numValue)
-      setFormattedValue(value)
+      setFormattedValue(targetValue)
     }
   }
 

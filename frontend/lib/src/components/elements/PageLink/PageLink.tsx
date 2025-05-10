@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement } from "react"
+import React, { memo, ReactElement, useContext } from "react"
 
 import { useTheme } from "@emotion/react"
 
@@ -52,8 +52,8 @@ function shouldUseContainerWidth(
 }
 
 function PageLink(props: Readonly<Props>): ReactElement {
-  const { onPageChange, currentPageScriptHash } = React.useContext(LibContext)
-  const isInSidebar = React.useContext(IsSidebarContext)
+  const { onPageChange, currentPageScriptHash } = useContext(LibContext)
+  const isInSidebar = useContext(IsSidebarContext)
 
   const { colors }: EmotionTheme = useTheme()
 

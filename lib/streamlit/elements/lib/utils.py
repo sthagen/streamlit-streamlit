@@ -70,9 +70,9 @@ def get_label_visibility_proto_value(
 
     if label_visibility_string == "visible":
         return LabelVisibilityMessage.LabelVisibilityOptions.VISIBLE
-    elif label_visibility_string == "hidden":
+    if label_visibility_string == "hidden":
         return LabelVisibilityMessage.LabelVisibilityOptions.HIDDEN
-    elif label_visibility_string == "collapsed":
+    if label_visibility_string == "collapsed":
         return LabelVisibilityMessage.LabelVisibilityOptions.COLLAPSED
 
     raise ValueError(f"Unknown label visibility value: {label_visibility_string}")
@@ -85,9 +85,9 @@ def get_chat_input_accept_file_proto_value(
 
     if accept_file_value is False:
         return ChatInput.AcceptFile.NONE
-    elif accept_file_value is True:
+    if accept_file_value is True:
         return ChatInput.AcceptFile.SINGLE
-    elif accept_file_value == "multiple":
+    if accept_file_value == "multiple":
         return ChatInput.AcceptFile.MULTIPLE
 
     raise ValueError(f"Unknown accept file value: {accept_file_value}")
@@ -240,7 +240,7 @@ def compute_and_register_element_id(
     return element_id
 
 
-def save_for_app_testing(ctx: ScriptRunContext, k: str, v: Any):
+def save_for_app_testing(ctx: ScriptRunContext, k: str, v: Any) -> None:
     if config.get_option("global.appTest"):
         try:
             ctx.session_state[TESTING_KEY][k] = v

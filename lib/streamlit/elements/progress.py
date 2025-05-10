@@ -61,26 +61,23 @@ def _check_float_between(value: float, low: float = 0.0, high: float = 1.0) -> b
     )
 
 
-def _get_value(value):
+def _get_value(value: FloatOrInt) -> int:
     if isinstance(value, int):
         if 0 <= value <= 100:
             return value
-        else:
-            raise StreamlitAPIException(
-                "Progress Value has invalid value [0, 100]: %d" % value
-            )
+        raise StreamlitAPIException(
+            "Progress Value has invalid value [0, 100]: %d" % value
+        )
 
-    elif isinstance(value, float):
+    if isinstance(value, float):
         if _check_float_between(value, low=0.0, high=1.0):
             return int(value * 100)
-        else:
-            raise StreamlitAPIException(
-                "Progress Value has invalid value [0.0, 1.0]: %f" % value
-            )
-    else:
         raise StreamlitAPIException(
-            "Progress Value has invalid type: %s" % type(value).__name__
+            "Progress Value has invalid value [0.0, 1.0]: %f" % value
         )
+    raise StreamlitAPIException(
+        "Progress Value has invalid type: %s" % type(value).__name__
+    )
 
 
 def _get_text(text: str | None) -> str | None:

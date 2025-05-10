@@ -239,7 +239,7 @@ class Installation:
         return util.repr_(self)
 
     @property
-    def installation_id(self):
+    def installation_id(self) -> str:
         return self.installation_id_v3
 
 
@@ -284,7 +284,7 @@ def _get_arg_metadata(arg: object) -> str | None:
 
 
 def _get_command_telemetry(
-    _command_func: Callable[..., Any], _command_name: str, *args, **kwargs
+    _command_func: Callable[..., Any], _command_name: str, *args: Any, **kwargs: Any
 ) -> Command:
     """Get telemetry information for the given callable and its arguments."""
     arg_keywords = inspect.getfullargspec(_command_func).args
@@ -391,12 +391,11 @@ def gather_metrics(name: str, func: F | None = None) -> Callable[[F], F] | F:
             )
 
         return wrapper
-    else:
-        # To make mypy type narrow F | None -> F
-        non_optional_func = func
+    # To make mypy type narrow F | None -> F
+    non_optional_func = func
 
     @wraps(non_optional_func)
-    def wrapped_func(*args, **kwargs):
+    def wrapped_func(*args: Any, **kwargs: Any) -> Any:
         from timeit import default_timer as timer
 
         exec_start = timer()

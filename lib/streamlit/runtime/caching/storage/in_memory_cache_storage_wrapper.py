@@ -57,7 +57,9 @@ class InMemoryCacheStorageWrapper(CacheStorage):
     it from multiple threads.
     """
 
-    def __init__(self, persist_storage: CacheStorage, context: CacheStorageContext):
+    def __init__(
+        self, persist_storage: CacheStorage, context: CacheStorageContext
+    ) -> None:
         self.function_key = context.function_key
         self.function_display_name = context.function_display_name
         self._ttl_seconds = context.ttl_seconds

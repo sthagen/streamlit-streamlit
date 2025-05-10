@@ -20,7 +20,7 @@ import json
 import os
 import sys
 import textwrap
-from typing import Final, NamedTuple, NoReturn
+from typing import Final, NamedTuple, NoReturn, cast
 from uuid import uuid4
 
 from streamlit import cli_util, env_util, file_util, util
@@ -116,12 +116,12 @@ class Credentials:
     _singleton: Credentials | None = None
 
     @classmethod
-    def get_current(cls):
+    def get_current(cls) -> Credentials:
         """Return the singleton instance."""
         if cls._singleton is None:
             Credentials()
 
-        return Credentials._singleton
+        return cast("Credentials", Credentials._singleton)
 
     def __init__(self):
         """Initialize class."""

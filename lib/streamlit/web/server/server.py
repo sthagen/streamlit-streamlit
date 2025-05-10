@@ -244,7 +244,7 @@ def start_listening_tcp_socket(http_server: HTTPServer) -> None:
 
 
 class Server:
-    def __init__(self, main_script_path: str, is_hello: bool):
+    def __init__(self, main_script_path: str, is_hello: bool) -> None:
         """Create the server. It won't be started yet."""
         _set_tornado_log_levels()
         self.initialize_mimetypes()

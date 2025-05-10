@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement, useEffect, useState } from "react"
+import React, {
+  memo,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 
 import { useTheme } from "@emotion/react"
 import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
@@ -96,7 +102,7 @@ function ColumnMenu({
     }
   }, [])
 
-  const closeMenu = React.useCallback((): void => {
+  const closeMenu = useCallback((): void => {
     onCloseMenu()
   }, [onCloseMenu])
 

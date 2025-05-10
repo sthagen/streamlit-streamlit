@@ -84,7 +84,7 @@ class WStates(MutableMapping[str, Any]):
     states: dict[str, WState] = field(default_factory=dict)
     widget_metadata: dict[str, WidgetMetadata[Any]] = field(default_factory=dict)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return util.repr_(self)
 
     def __getitem__(self, k: str) -> Any:
@@ -123,7 +123,7 @@ class WStates(MutableMapping[str, Any]):
             # Array types are messages with data in a `data` field
             value = value.data
         elif value_field_name == "json_value":
-            value = json.loads(value)
+            value = json.loads(cast("str", value))
 
         deserialized = metadata.deserializer(value)
 
@@ -330,7 +330,7 @@ class KeyIdMapper:
         self._key_id_mapping.clear()
         self._id_key_mapping.clear()
 
-    def delete(self, key: str):
+    def delete(self, key: str) -> None:
         widget_id = self._key_id_mapping[key]
         del self._key_id_mapping[key]
         del self._id_key_mapping[widget_id]
@@ -371,7 +371,7 @@ class SessionState:
     # widget state at one point.
     query_params: QueryParams = field(default_factory=QueryParams)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return util.repr_(self)
 
     # is it possible for a value to get through this without being deserialized?
@@ -609,9 +609,10 @@ class SessionState:
             if metadata is not None:
                 if metadata.value_type == "trigger_value":
                     self._new_widget_state[state_id] = Value(False)
-                elif metadata.value_type == "string_trigger_value":
-                    self._new_widget_state[state_id] = Value(None)
-                elif metadata.value_type == "chat_input_value":
+                elif metadata.value_type in {
+                    "string_trigger_value",
+                    "chat_input_value",
+                }:
                     self._new_widget_state[state_id] = Value(None)
 
         for state_id in self._old_state:
@@ -619,9 +620,10 @@ class SessionState:
             if metadata is not None:
                 if metadata.value_type == "trigger_value":
                     self._old_state[state_id] = False
-                elif metadata.value_type == "string_trigger_value":
-                    self._old_state[state_id] = None
-                elif metadata.value_type == "chat_input_value":
+                elif metadata.value_type in {
+                    "string_trigger_value",
+                    "chat_input_value",
+                }:
                     self._old_state[state_id] = None
 
     def _remove_stale_widgets(self, active_widget_ids: set[str]) -> None:
@@ -762,14 +764,14 @@ def _is_stale_widget(
 ) -> bool:
     if not metadata:
         return True
-    elif metadata.id in active_widget_ids:
-        return False
+
     # If we're running 1 or more fragments, but this widget is unrelated to any of the
     # fragments that we're running, then it should not be marked as stale as its value
     # may still be needed for a future fragment run or full script run.
-    elif fragment_ids_this_run and metadata.fragment_id not in fragment_ids_this_run:
-        return False
-    return True
+    return not (
+        metadata.id in active_widget_ids
+        or (fragment_ids_this_run and metadata.fragment_id not in fragment_ids_this_run)
+    )
 
 
 @dataclass

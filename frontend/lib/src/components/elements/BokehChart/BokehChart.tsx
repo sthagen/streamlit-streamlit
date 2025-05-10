@@ -71,9 +71,9 @@ export function BokehChart({
     [element.useContainerWidth, height, width]
   )
 
-  const removeAllChildNodes = (element: Node): void => {
-    while (element.lastChild) {
-      element.lastChild.remove()
+  const removeAllChildNodes = (elementArg: Node): void => {
+    while (elementArg.lastChild) {
+      elementArg.lastChild.remove()
     }
   }
 

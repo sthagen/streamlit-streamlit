@@ -165,7 +165,7 @@ class ButtonGroupSerde(Generic[T]):
         options: Sequence[T],
         default_values: list[int],
         type: Literal["single", "multi"],
-    ):
+    ) -> None:
         self.options = options
         self.default_values = default_values
         self.type = type
@@ -250,7 +250,7 @@ def _build_proto(
     return proto
 
 
-def _maybe_raise_selection_mode_warning(selection_mode: SelectionMode):
+def _maybe_raise_selection_mode_warning(selection_mode: SelectionMode) -> None:
     """Check if the selection_mode value is valid or raise exception otherwise."""
     if selection_mode not in ["single", "multi"]:
         raise StreamlitAPIException(

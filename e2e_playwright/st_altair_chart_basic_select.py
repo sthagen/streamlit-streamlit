@@ -27,7 +27,7 @@ st.header("Altair Chart with point and interval selection")
 
 # taken from vega_datasets cars example
 @st.cache_data  # use caching to avoid a potential issue with flakiness
-def get_cars_data():
+def get_cars_data() -> pd.DataFrame:
     return data.cars()
 
 

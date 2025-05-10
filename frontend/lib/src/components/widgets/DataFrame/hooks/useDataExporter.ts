@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import { useCallback } from "react"
 
 import { DataEditorProps } from "@glideapps/glide-data-grid"
 import { getLogger } from "loglevel"
@@ -135,7 +135,7 @@ function useDataExporter(
   numRows: number,
   enforceDownloadInNewTab: boolean
 ): DataExporterReturn {
-  const exportToCsv = React.useCallback(async () => {
+  const exportToCsv = useCallback(async () => {
     const timestamp = new Date().toISOString().slice(0, 16).replace(":", "-")
     const suggestedName = `${timestamp}_export.csv`
     try {
@@ -202,8 +202,8 @@ function useDataExporter(
         link.click()
         document.body.removeChild(link) // Clean up
         URL.revokeObjectURL(url) // Free up memory
-      } catch (error) {
-        LOG.error("Failed to export data as CSV", error)
+      } catch (e) {
+        LOG.error("Failed to export data as CSV", e)
       }
     }
   }, [columns, numRows, getCellContent, enforceDownloadInNewTab])

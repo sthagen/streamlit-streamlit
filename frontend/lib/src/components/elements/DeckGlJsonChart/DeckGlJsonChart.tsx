@@ -137,8 +137,8 @@ export const DeckGlJsonChart: FC<DeckGLProps> = props => {
               ((): [number, unknown][] => {
                 const indices = currState?.selection?.indices?.[layerId] || []
 
-                return indices.map((index, i) => [
-                  index,
+                return indices.map((currIndex, i) => [
+                  currIndex,
                   currState.selection?.objects?.[layerId]?.[i],
                 ])
               })()

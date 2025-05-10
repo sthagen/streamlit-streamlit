@@ -28,11 +28,11 @@ import { StreamlitEndpoints } from "@streamlit/connection"
 import {
   AppRoot,
   BlockNode,
+  ContainerContentsWrapper,
   FileUploadClient,
   IGuestToHostMessage,
   LibContext,
   Profiler,
-  VerticalBlock,
   WidgetStateManager,
 } from "@streamlit/lib"
 import { Logo } from "@streamlit/protobuf"
@@ -108,7 +108,7 @@ function AppView(props: AppViewProps): ReactElement {
     endpoints,
   } = props
 
-  React.useEffect(() => {
+  useEffect(() => {
     const listener = (): void => {
       sendMessageToHost({
         type: "UPDATE_HASH",
@@ -174,14 +174,16 @@ function AppView(props: AppViewProps): ReactElement {
     )
   }
 
-  const renderLogo = (appLogo: Logo): ReactElement => {
-    const displayImage = appLogo.iconImage ? appLogo.iconImage : appLogo.image
+  const renderLogo = (appLogoArg: Logo): ReactElement => {
+    const displayImage = appLogoArg.iconImage
+      ? appLogoArg.iconImage
+      : appLogoArg.image
     const source = endpoints.buildMediaURL(displayImage)
 
     const logo = (
       <StyledLogo
         src={source}
-        size={appLogo.size}
+        size={appLogoArg.size}
         alt="Logo"
         className="stLogo"
         data-testid="stLogo"
@@ -190,10 +192,10 @@ function AppView(props: AppViewProps): ReactElement {
       />
     )
 
-    if (appLogo.link) {
+    if (appLogoArg.link) {
       return (
         <StyledLogoLink
-          href={appLogo.link}
+          href={appLogoArg.link}
           target="_blank"
           rel="noreferrer"
           data-testid="stLogoLink"
@@ -211,7 +213,7 @@ function AppView(props: AppViewProps): ReactElement {
     : StyledAppViewMain
 
   const renderBlock = (node: BlockNode): ReactElement => (
-    <VerticalBlock
+    <ContainerContentsWrapper
       node={node}
       endpoints={endpoints}
       widgetMgr={widgetMgr}

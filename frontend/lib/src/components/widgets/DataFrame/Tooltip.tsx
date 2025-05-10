@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, ReactElement } from "react"
+import React, { memo, ReactElement, useCallback, useState } from "react"
 
 import { useTheme } from "@emotion/react"
 import { ACCESSIBILITY_TYPE, PLACEMENT, Popover } from "baseui/popover"
@@ -55,11 +55,11 @@ function Tooltip({
   content,
   clearTooltip,
 }: TooltipProps): ReactElement {
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = useState(true)
   const theme: EmotionTheme = useTheme()
   const { colors, fontSizes, radii, fontWeights } = theme
 
-  const closeTooltip = React.useCallback((): void => {
+  const closeTooltip = useCallback((): void => {
     setOpen(false)
     clearTooltip()
   }, [clearTooltip, setOpen])

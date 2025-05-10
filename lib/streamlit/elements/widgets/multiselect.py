@@ -75,7 +75,7 @@ class MultiSelectSerde(Generic[T]):
         formatted_options: list[str],
         formatted_option_to_option_index: dict[str, int],
         default_options_indices: list[int] | None = None,
-    ):
+    ) -> None:
         """Initialize the MultiSelectSerde.
 
         We do not store an option_to_formatted_option mapping because the generic
@@ -140,7 +140,7 @@ def _get_default_count(default: Sequence[Any] | Any | None) -> int:
 
 def _check_max_selections(
     selections: Sequence[Any] | Any | None, max_selections: int | None
-):
+) -> None:
     if max_selections is None:
         return
 

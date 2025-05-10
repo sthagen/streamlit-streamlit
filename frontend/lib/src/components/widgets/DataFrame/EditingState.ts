@@ -85,7 +85,7 @@ class EditingState {
       (row: Map<number, GridCell>, rowIndex: number, _map) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
         const editedRow: Record<string, any> = {}
-        row.forEach((cell: GridCell, colIndex: number, _map) => {
+        row.forEach((cell: GridCell, colIndex: number) => {
           const column = columnsByIndex.get(colIndex)
           if (column) {
             editedRow[getColumnName(column)] = column.getCellValue(cell)

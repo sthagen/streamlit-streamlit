@@ -15,6 +15,8 @@
  */
 
 import React, {
+  createRef,
+  forwardRef,
   memo,
   ReactElement,
   useCallback,
@@ -111,16 +113,16 @@ function Slider({
   // eslint-disable-next-line react-compiler/react-compiler
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSetValueWithSource = useCallback(
-    debounce(DEBOUNCE_TIME_MS, (value: number[]): void => {
-      setValueWithSource({ value, fromUi: true })
+    debounce(DEBOUNCE_TIME_MS, (valueArg: number[]): void => {
+      setValueWithSource({ value: valueArg, fromUi: true })
     }) as (value: number[]) => void,
     []
   )
 
   const handleChange = useCallback(
-    ({ value }: { value: number[] }): void => {
-      setUiValue(value)
-      debouncedSetValueWithSource(value)
+    ({ value: valueArg }: { value: number[] }): void => {
+      setUiValue(valueArg)
+      debouncedSetValueWithSource(valueArg)
     },
     [debouncedSetValueWithSource]
   )
@@ -148,7 +150,7 @@ function Slider({
   // eslint-disable-next-line react-compiler/react-compiler
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const renderThumb = useCallback(
-    React.forwardRef<HTMLDivElement, StyleProps>(function renderThumb(
+    forwardRef<HTMLDivElement, StyleProps>(function renderThumb(
       props: StyleProps,
       ref
     ): ReactElement {
@@ -156,7 +158,7 @@ function Slider({
       const thumbIndex = $thumbIndex || 0
       thumbRefs[thumbIndex] = ref as React.MutableRefObject<HTMLDivElement>
       // eslint-disable-next-line @eslint-react/no-create-ref
-      thumbValueRefs[thumbIndex] ||= React.createRef<HTMLDivElement>()
+      thumbValueRefs[thumbIndex] ||= createRef<HTMLDivElement>()
 
       const passThrough = pick(props, [
         "role",
@@ -337,6 +339,7 @@ function formatValue(value: number, element: SliderProto): string {
     // The timestamp is always set to the UTC timezone, even so, the actual timezone
     // for this timestamp in the backend could be different.
     // However, the frontend component does not need to know about the actual timezone.
+    // eslint-disable-next-line import/no-named-as-default-member
     return moment.utc(value / 1000).format(format)
   }
 

@@ -89,7 +89,7 @@ class MemoryFile(NamedTuple):
 
 
 class MemoryMediaFileStorage(MediaFileStorage, CacheStatsProvider):
-    def __init__(self, media_endpoint: str):
+    def __init__(self, media_endpoint: str) -> None:
         """Create a new MemoryMediaFileStorage instance.
 
         Parameters

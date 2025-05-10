@@ -169,6 +169,12 @@ export const StyledStreamlitMarkdown =
           isCaption
         ),
 
+        // This is required so that long Latex formulas in `st.latex` are scrollable
+        // when `help` is set (see below).
+        "&:has(.katex-display)": {
+          overflowX: "hidden",
+        },
+
         p: {
           wordBreak: "break-word",
           marginBottom: isLabel ? theme.spacing.none : "",
@@ -268,6 +274,13 @@ export const StyledStreamlitMarkdown =
 
         "p, ol, ul, dl, li": {
           fontSize: "inherit",
+        },
+
+        // Allow long Latex formulas that are not inline (i.e. either from `st.latex`
+        // or in their own paragraph inside `st.markdown`) to scroll horizontally.
+        ".katex-display": {
+          overflowX: "auto",
+          overflowY: "hidden",
         },
       }
     }

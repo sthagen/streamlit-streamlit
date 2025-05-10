@@ -100,6 +100,8 @@ from streamlit.runtime.scriptrunner import enqueue_message as _enqueue_message
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from google.protobuf.message import Message
 
     from streamlit.cursor import Cursor
@@ -301,9 +303,9 @@ class DeltaGenerator(
 
     def __exit__(
         self,
-        type: Any,
-        value: Any,
-        traceback: Any,
+        typ: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
     ) -> Literal[False]:
         # with block ended
 
@@ -365,7 +367,7 @@ class DeltaGenerator(
 
         return wrapper
 
-    def __deepcopy__(self, _memo):
+    def __deepcopy__(self, _memo: Any) -> DeltaGenerator:
         dg = DeltaGenerator(
             root_container=self._root_container,
             cursor=deepcopy(self._cursor),
@@ -406,8 +408,7 @@ class DeltaGenerator(
         """
         if self._provided_cursor is None:
             return cursor.get_container_cursor(self._root_container)
-        else:
-            return self._provided_cursor
+        return self._provided_cursor
 
     @property
     def _is_top_level(self) -> bool:

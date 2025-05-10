@@ -645,8 +645,7 @@ class ArrowMixin:
             )
             self.dg._enqueue("arrow_data_frame", proto)
             return cast("DataframeState", widget_state.value)
-        else:
-            return self.dg._enqueue("arrow_data_frame", proto)
+        return self.dg._enqueue("arrow_data_frame", proto)
 
     @gather_metrics("table")
     def table(self, data: Data = None) -> DeltaGenerator:
@@ -733,7 +732,7 @@ class ArrowMixin:
         return self.dg._enqueue("arrow_table", proto)
 
     @gather_metrics("add_rows")
-    def add_rows(self, data: Data = None, **kwargs) -> DeltaGenerator | None:
+    def add_rows(self, data: Data = None, **kwargs: Any) -> DeltaGenerator | None:
         """Concatenate a dataframe to the bottom of the current one.
 
         Parameters

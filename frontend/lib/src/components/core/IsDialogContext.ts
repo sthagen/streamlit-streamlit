@@ -18,6 +18,6 @@
  * Context to indicate to child elements that they are rendered within a dialog.
  */
 
-import React from "react"
+import { createContext } from "react"
 
-export default React.createContext(false)
+export default createContext(false)

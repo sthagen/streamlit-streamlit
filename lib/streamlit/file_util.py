@@ -19,15 +19,16 @@ import errno
 import io
 import os
 from pathlib import Path
+from typing import Final
 
 from streamlit import env_util, errors
 from streamlit.string_util import is_binary_string
 
 # Configuration and credentials are stored inside the ~/.streamlit folder
-CONFIG_FOLDER_NAME = ".streamlit"
+CONFIG_FOLDER_NAME: Final = ".streamlit"
 
 # If enableStaticServing is enabled, static file served from the ./static folder
-APP_STATIC_FOLDER_NAME = "static"
+APP_STATIC_FOLDER_NAME: Final = "static"
 
 
 def get_encoded_file_data(
@@ -128,12 +129,11 @@ def get_static_dir() -> str:
 
 def get_app_static_dir(main_script_path: str) -> str:
     """Get the folder where app static files live."""
-    main_script_path = Path(main_script_path)
-    static_dir = main_script_path.parent / APP_STATIC_FOLDER_NAME
+    static_dir = Path(main_script_path).parent / APP_STATIC_FOLDER_NAME
     return os.path.abspath(static_dir)
 
 
-def get_streamlit_file_path(*filepath) -> str:
+def get_streamlit_file_path(*filepath: str) -> str:
     """Return the full path to a file in ~/.streamlit.
 
     This doesn't guarantee that the file (or its directory) exists.
@@ -145,7 +145,7 @@ def get_streamlit_file_path(*filepath) -> str:
     return str(home / CONFIG_FOLDER_NAME / Path(*filepath))
 
 
-def get_project_streamlit_file_path(*filepath):
+def get_project_streamlit_file_path(*filepath: str) -> str:
     """Return the full path to a filepath in ${CWD}/.streamlit.
 
     This doesn't guarantee that the file (or its directory) exists.
@@ -214,7 +214,7 @@ def file_in_pythonpath(filepath: str) -> bool:
     )
 
 
-def normalize_path_join(*args):
+def normalize_path_join(*args: str) -> str:
     """Return the normalized path of the joined path.
 
     Parameters
@@ -230,7 +230,7 @@ def normalize_path_join(*args):
     return os.path.normpath(os.path.join(*args))
 
 
-def get_main_script_directory(main_script):
+def get_main_script_directory(main_script: str) -> str:
     """Return the full path to the main script directory.
 
     Parameters

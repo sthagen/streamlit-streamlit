@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import { useCallback, useMemo } from "react"
 
 import {
   BaseDrawArgs,
@@ -116,7 +116,7 @@ type CustomRendererReturn = Pick<
  *    that can be passed to the `DataEditor` component.
  */
 function useCustomRenderer(columns: BaseColumn[]): CustomRendererReturn {
-  const drawCell: DrawCellCallback = React.useCallback(
+  const drawCell: DrawCellCallback = useCallback(
     (args, draw) => {
       const { cell, theme, ctx, rect } = args
       const colPos = args.col
@@ -152,7 +152,7 @@ function useCustomRenderer(columns: BaseColumn[]): CustomRendererReturn {
   )
 
   // Load extra cell renderers from the glide-data-grid-cells package:
-  const customRenderers = React.useMemo(
+  const customRenderers = useMemo(
     () =>
       [
         SparklineCell,

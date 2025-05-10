@@ -35,6 +35,7 @@ line-ending = "lf"
 [lint]
 select = [
   "A",     # Check for python builtins being shadowed.
+  "ANN",   # Enforces usage of type annotations.
   "ARG",   # Checks for unused arguments.
   "ASYNC", # Opinionated linting for asyncio.
   "B",     # flake8-bugbear
@@ -84,7 +85,6 @@ ignore = [
   "B904",    # Checks for raise statements in exception handlers that lack a from clause.
   "ISC001",  # Checks for implicitly concatenated strings on a single line.
   "NPY002",  # Checks for the use of legacy np.random function calls.
-  "PYI036",  # Checks for incorrect function signatures on __exit__ and __aexit__ methods.
   "PYI041",  # Checks for parameter annotations that contain redundant unions between builtin numeric types (e.g., int | float).
   "PYI051",  # Checks for redundant unions between a Literal and a builtin supertype of that Literal.
   "UP031",   # Checks for printf-style string formatting, and offers to replace it with str.format calls.
@@ -120,6 +120,7 @@ ignore = [
   "S101",    # Checks for usage of assert statements.
   "TRY003",  # Checks for exception messages that are not defined in the exception class itself.
   "TRY300",  # Checks for return statements in try blocks.
+  "ANN401",  # Checks that `any` is not used as an annotation.
 ]
 exclude = [
   # pympler is a vendored dependency that doesn't conform to our linting rules:
@@ -130,7 +131,18 @@ exclude = [
 "e2e_playwright/**" = ["T20", "B018", "PD", "PERF", "N999", "S", "TRY"]
 "lib/streamlit/__init__.py" = ["E402", "PLC0414", "A001"]
 "lib/setup.py" = ["INP"]
-"lib/tests/**" = ["PD", "D", "INP", "PERF", "N", "ARG", "S", "TRY", "E501"]
+"lib/tests/**" = [
+  "PD",
+  "D",
+  "INP",
+  "PERF",
+  "N",
+  "ARG",
+  "S",
+  "TRY",
+  "E501",
+  "ANN",
+]
 "scripts/**" = ["T20", "INP", "PERF", "S", "TRY002"]
 
 [lint.flake8-tidy-imports]
@@ -155,3 +167,10 @@ allow-dict-calls-with-keyword-arguments = true
 [lint.flake8-unused-arguments]
 # Ignore unused variadic argument, like *args and **kwargs.
 ignore-variadic-names = true
+
+[lint.flake8-annotations]
+# Allow missing return annotation on functions that return None:
+suppress-none-returning = true
+# Surpresses errors for fully untyped functions:
+# TODO(lukasmasuch): Activate this for additional strictness.
+ignore-fully-untyped = true

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import math
+from typing import cast
 
 from playwright.sync_api import Page, expect
 
@@ -103,6 +104,8 @@ def test_sidebar_resize_functionality(app: Page):
     handle_box = resize_handle.bounding_box()
 
     # Get the handle's starting position
+    assert handle_box is not None
+
     handle_x = handle_box["x"] + handle_box["width"] / 2
     handle_y = handle_box["y"] + handle_box["height"] / 2
 
@@ -114,7 +117,7 @@ def test_sidebar_resize_functionality(app: Page):
     app.mouse.up()
 
     # Wait for the resize to take effect
-    def check_width_changed():
+    def check_width_changed() -> bool:
         current_width = sidebar.evaluate("el => el.getBoundingClientRect().width")
         return current_width > initial_width
 
@@ -125,7 +128,7 @@ def test_sidebar_resize_functionality(app: Page):
 
     # Verify the width increased by approximately drag_distance
     # We use a tolerance of +/- 3px to account for rounding and rendering differences
-    def check_approximate_width_change():
+    def check_approximate_width_change() -> bool:
         current_width = sidebar.evaluate("el => el.getBoundingClientRect().width")
         width_change = current_width - initial_width
         return math.isclose(width_change, drag_distance, abs_tol=3)
@@ -139,7 +142,7 @@ def test_sidebar_resize_functionality(app: Page):
     last_seen_width = after_drag_width
     stable_count = 0
 
-    def check_width_stabilized():
+    def check_width_stabilized() -> bool:
         nonlocal last_seen_width, stable_count
         current_width = sidebar.evaluate("el => el.getBoundingClientRect().width")
 
@@ -156,14 +159,18 @@ def test_sidebar_resize_functionality(app: Page):
     wait_until(app, check_width_stabilized)
 
     # Now get the stable width after clicking
-    click_width = sidebar.evaluate("el => el.getBoundingClientRect().width")
+    click_width = cast(
+        "int", sidebar.evaluate("el => el.getBoundingClientRect().width")
+    )
 
     # Finally, test double-click to reset width
     resize_handle.dblclick()
 
     # Wait for the reset to take effect
-    def check_width_reset():
-        reset_width = sidebar.evaluate("el => el.getBoundingClientRect().width")
+    def check_width_reset() -> bool:
+        reset_width = cast(
+            "int", sidebar.evaluate("el => el.getBoundingClientRect().width")
+        )
         return reset_width != click_width
 
     wait_until(app, check_width_reset)

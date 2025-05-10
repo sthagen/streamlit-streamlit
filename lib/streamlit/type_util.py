@@ -119,8 +119,7 @@ def is_type(obj: object, fqn_type_pattern: str | re.Pattern[str]) -> bool:
     fqn_type = get_fqn_type(obj)
     if isinstance(fqn_type_pattern, str):
         return fqn_type_pattern == fqn_type
-    else:
-        return fqn_type_pattern.match(fqn_type) is not None
+    return fqn_type_pattern.match(fqn_type) is not None
 
 
 def _is_type_instance(obj: object, type_to_check: str) -> bool:
@@ -161,7 +160,7 @@ def to_bytes(obj: BytesLike) -> bytes:
     """
     if isinstance(obj, bytearray):
         return bytes(obj)
-    elif isinstance(obj, bytes):
+    if isinstance(obj, bytes):
         return obj
 
     raise RuntimeError(f"{obj} is not convertible to bytes")
@@ -317,7 +316,7 @@ def is_pydeck(obj: object) -> TypeGuard[Deck]:
     return is_type(obj, "pydeck.bindings.deck.Deck")
 
 
-def is_pydantic_model(obj) -> bool:
+def is_pydantic_model(obj: object) -> bool:
     """True if input looks like a Pydantic model instance."""
 
     if isinstance(obj, type):

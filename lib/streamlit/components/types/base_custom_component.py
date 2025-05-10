@@ -40,7 +40,7 @@ class BaseCustomComponent(ABC):
         path: str | None = None,
         url: str | None = None,
         module_name: str | None = None,
-    ):
+    ) -> None:
         if (path is None and url is None) or (path is not None and url is not None):
             raise StreamlitAPIException(
                 "Either 'path' or 'url' must be set, but not both."
@@ -56,12 +56,12 @@ class BaseCustomComponent(ABC):
 
     def __call__(
         self,
-        *args,
+        *args: Any,
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
         tab_index: int | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Any:
         """An alias for create_instance."""
         return self.create_instance(
@@ -99,24 +99,24 @@ class BaseCustomComponent(ABC):
         return f"'{self.name}': {self.path if self.path is not None else self.url}"
 
     @abstractmethod
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Equality operator."""
         return NotImplemented
 
     @abstractmethod
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: object) -> bool:
         """Inequality operator."""
         return NotImplemented
 
     @abstractmethod
     def create_instance(
         self,
-        *args,
+        *args: Any,
         default: Any = None,
         key: str | None = None,
         on_change: WidgetCallback | None = None,
         tab_index: int | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Any:
         """Create a new instance of the component.
 

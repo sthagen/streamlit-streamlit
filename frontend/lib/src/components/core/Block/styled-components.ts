@@ -18,40 +18,23 @@ import React from "react"
 
 import styled from "@emotion/styled"
 
-import { Block as BlockProto } from "@streamlit/protobuf"
+import { Block as BlockProto, streamlit } from "@streamlit/protobuf"
 
 import { StyledCheckbox } from "~lib/components/widgets/Checkbox/styled-components"
 import { EmotionTheme, STALE_STYLES } from "~lib/theme"
 
-function translateGapWidth(gap: string, theme: EmotionTheme): string {
+function translateGapWidth(
+  gap: streamlit.GapSize | undefined,
+  theme: EmotionTheme
+): string {
   let gapWidth = theme.spacing.lg
-  if (gap === "medium") {
+  if (gap === streamlit.GapSize.MEDIUM) {
     gapWidth = theme.spacing.threeXL
-  } else if (gap === "large") {
+  } else if (gap === streamlit.GapSize.LARGE) {
     gapWidth = theme.spacing.fourXL
   }
   return gapWidth
 }
-export interface StyledHorizontalBlockProps {
-  gap: string
-}
-
-export const StyledHorizontalBlock = styled.div<StyledHorizontalBlockProps>(
-  ({ theme, gap }) => {
-    const gapWidth = translateGapWidth(gap, theme)
-
-    return {
-      // While using flex for columns, padding is used for large screens and gap
-      // for small ones. This can be adjusted once more information is passed.
-      // More information and discussions can be found: Issue #2716, PR #2811
-      display: "flex",
-      flexWrap: "wrap",
-      flexGrow: 1,
-      alignItems: "stretch",
-      gap: gapWidth,
-    }
-  }
-)
 
 export interface StyledElementContainerProps {
   isStale: boolean
@@ -106,7 +89,7 @@ export const StyledElementContainer = styled.div<StyledElementContainerProps>(
 
 interface StyledColumnProps {
   weight: number
-  gap: string
+  gap: streamlit.GapSize | undefined
   showBorder: boolean
   verticalAlignment?: BlockProto.Column.VerticalAlignment
 }
@@ -155,42 +138,50 @@ export const StyledColumn = styled.div<StyledColumnProps>(
   }
 )
 
-export interface StyledVerticalBlockProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  ref?: React.RefObject<any>
-  width?: React.CSSProperties["width"]
-  maxWidth?: React.CSSProperties["maxWidth"]
-}
-
-export const StyledVerticalBlock = styled.div<StyledVerticalBlockProps>(
-  ({ theme }) => ({
-    width: "100%",
-    maxWidth: "100%",
-    position: "relative", // Required for the automatic width computation.
-    display: "flex",
-    flex: 1,
-    flexDirection: "column",
-    gap: theme.spacing.lg,
-  })
-)
-
-export interface StyledVerticalBlockBorderWrapperProps {
+export interface StyledBlockWrapperProps {
   border: boolean
   height?: number
 }
 
-export const StyledVerticalBlockBorderWrapper =
-  styled.div<StyledVerticalBlockBorderWrapperProps>(
-    ({ theme, border, height }) => ({
-      display: "block",
-      ...(border && {
-        border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
-        borderRadius: theme.radii.default,
-        padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
-      }),
-      ...(height && {
-        height: `${height}px`,
-        overflow: "auto",
-      }),
-    })
+export const StyledBlockWrapper = styled.div<StyledBlockWrapperProps>(
+  ({ theme, border, height }) => ({
+    display: "block",
+    ...(border && {
+      border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+      borderRadius: theme.radii.default,
+      padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
+    }),
+    ...(height && {
+      height: `${height}px`,
+      overflow: "auto",
+    }),
+  })
+)
+
+export interface StyledFlexContainerBlockProps {
+  direction: React.CSSProperties["flexDirection"]
+  gap?: streamlit.GapSize | undefined
+  flex?: React.CSSProperties["flex"]
+  wrap?: boolean
+}
+
+export const StyledFlexContainerBlock =
+  styled.div<StyledFlexContainerBlockProps>(
+    ({ theme, direction, gap, flex, wrap }) => {
+      let gapWidth
+      if (gap !== undefined) {
+        gapWidth = translateGapWidth(gap, theme)
+      }
+
+      return {
+        display: "flex",
+        gap: gapWidth,
+        width: "100%",
+        maxWidth: "100%",
+        height: "auto",
+        flexDirection: direction,
+        flex,
+        flexWrap: wrap ? "wrap" : "nowrap",
+      }
+    }
   )

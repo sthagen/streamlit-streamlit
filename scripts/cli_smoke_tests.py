@@ -44,7 +44,7 @@ def main():
     click.secho("CLI smoke tests succeeded!", fg="green", bold=True)
 
 
-def _can_run_streamlit(command_list):
+def _can_run_streamlit(command_list: list[str]) -> bool:
     result = subprocess.run(command_list, stdout=subprocess.DEVNULL, check=False)
     return result.returncode == 0
 

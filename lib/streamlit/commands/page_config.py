@@ -279,7 +279,9 @@ def get_random_emoji() -> str:
     return random.choice(RANDOM_EMOJIS + 10 * ENG_EMOJIS)  # noqa: S311
 
 
-def set_menu_items_proto(lowercase_menu_items, menu_items_proto) -> None:
+def set_menu_items_proto(
+    lowercase_menu_items: MenuItems, menu_items_proto: PageConfigProto.MenuItems
+) -> None:
     if GET_HELP_KEY in lowercase_menu_items:
         if lowercase_menu_items[GET_HELP_KEY] is not None:
             menu_items_proto.get_help_url = lowercase_menu_items[GET_HELP_KEY]

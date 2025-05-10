@@ -47,7 +47,7 @@ st.image(transparent_img, caption="Transparent Black Square.", width=100)
 st.header("GIF images")
 
 
-def create_gif(size, frames=1):
+def create_gif(size: int, frames: int = 1) -> bytes:
     # Create grayscale image.
     im = Image.new("L", (size, size), "white")
 

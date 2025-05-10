@@ -35,7 +35,7 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         self,
         file_mgr: MemoryUploadedFileManager,
         is_active_session: Callable[[str], bool],
-    ):
+    ) -> None:
         """
         Parameters
         ----------
@@ -49,7 +49,7 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         self._file_mgr = file_mgr
         self._is_active_session = is_active_session
 
-    def set_default_headers(self):
+    def set_default_headers(self) -> None:
         self.set_header("Access-Control-Allow-Methods", "PUT, OPTIONS, DELETE")
         self.set_header("Access-Control-Allow-Headers", "Content-Type")
         if is_xsrf_enabled():
@@ -63,7 +63,7 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         elif routes.allow_cross_origin_requests():
             self.set_header("Access-Control-Allow-Origin", "*")
 
-    def options(self, **kwargs):
+    def options(self, **kwargs: Any) -> None:
         """/OPTIONS handler for preflight CORS checks.
 
         When a browser is making a CORS request, it may sometimes first
@@ -83,7 +83,7 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         self.set_status(204)
         self.finish()
 
-    def put(self, **kwargs):
+    def put(self, **kwargs: Any) -> None:
         """Receive an uploaded file and add it to our UploadedFileManager."""
 
         args: dict[str, list[bytes]] = {}
@@ -129,7 +129,7 @@ class UploadFileRequestHandler(tornado.web.RequestHandler):
         self._file_mgr.add_file(session_id=session_id, file=uploaded_files[0])
         self.set_status(204)
 
-    def delete(self, **kwargs):
+    def delete(self, **kwargs: Any) -> None:
         """Delete file request handler."""
         session_id = self.path_kwargs["session_id"]
         file_id = self.path_kwargs["file_id"]

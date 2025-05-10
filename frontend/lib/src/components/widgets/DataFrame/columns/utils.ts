@@ -156,7 +156,7 @@ export function getErrorCell(errorMsg: string, errorDetails = ""): ErrorCell {
  * the given value type.
  */
 export function isErrorCell(cell: GridCell): cell is ErrorCell {
-  return cell.hasOwnProperty("isError") && (cell as ErrorCell).isError
+  return Object.hasOwn(cell, "isError") && (cell as ErrorCell).isError
 }
 
 interface CellWithTooltip extends BaseGridCell {
@@ -168,7 +168,7 @@ interface CellWithTooltip extends BaseGridCell {
  */
 export function hasTooltip(cell: BaseGridCell): cell is CellWithTooltip {
   return (
-    cell.hasOwnProperty("tooltip") && (cell as CellWithTooltip).tooltip !== ""
+    Object.hasOwn(cell, "tooltip") && (cell as CellWithTooltip).tooltip !== ""
   )
 }
 /**
@@ -186,7 +186,7 @@ export function isMissingValueCell(
   cell: BaseGridCell
 ): cell is MissingValueCell {
   return (
-    cell.hasOwnProperty("isMissingValue") &&
+    Object.hasOwn(cell, "isMissingValue") &&
     (cell as MissingValueCell).isMissingValue
   )
 }
@@ -686,6 +686,7 @@ export function toSafeDate(value: any): Date | null | undefined {
       }
 
       // Parse it as a unix timestamp in seconds
+      // eslint-disable-next-line import/no-named-as-default-member
       const parsedMomentDate = moment.unix(timestampInSeconds).utc()
       if (parsedMomentDate.isValid()) {
         return parsedMomentDate.toDate()
@@ -694,15 +695,20 @@ export function toSafeDate(value: any): Date | null | undefined {
 
     if (typeof value === "string") {
       // Try to parse string via momentJS:
+      // eslint-disable-next-line import/no-named-as-default-member
       const parsedMomentDate = moment.utc(value)
       if (parsedMomentDate.isValid()) {
         return parsedMomentDate.toDate()
       }
       // The pasted value was not a valid date string
       // Try to interpret value as time string instead (HH:mm:ss)
+      // eslint-disable-next-line import/no-named-as-default-member
       const parsedMomentTime = moment.utc(value, [
+        // eslint-disable-next-line import/no-named-as-default-member
         moment.HTML5_FMT.TIME_MS, // HH:mm:ss.SSS
+        // eslint-disable-next-line import/no-named-as-default-member
         moment.HTML5_FMT.TIME_SECONDS, // HH:mm:ss
+        // eslint-disable-next-line import/no-named-as-default-member
         moment.HTML5_FMT.TIME, // HH:mm
       ])
       if (parsedMomentTime.isValid()) {

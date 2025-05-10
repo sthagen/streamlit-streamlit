@@ -34,7 +34,7 @@ import weakref
 from enum import Enum
 from re import Pattern
 from types import MappingProxyType
-from typing import Any, Callable, Final, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Final, Union, cast
 
 from typing_extensions import TypeAlias
 
@@ -43,6 +43,10 @@ from streamlit.errors import StreamlitAPIException
 from streamlit.runtime.caching.cache_errors import UnhashableTypeError
 from streamlit.runtime.caching.cache_type import CacheType
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+    from PIL.Image import Image
 
 _LOGGER: Final = logger.get_logger(__name__)
 
@@ -66,11 +70,11 @@ _CYCLE_PLACEHOLDER: Final = (
 class UserHashError(StreamlitAPIException):
     def __init__(
         self,
-        orig_exc,
-        object_to_hash,
-        hash_func,
+        orig_exc: BaseException,
+        object_to_hash: Any,
+        hash_func: Callable[[Any], Any],
         cache_type: CacheType | None = None,
-    ):
+    ) -> None:
         self.alternate_name = type(orig_exc).__name__
         self.hash_func = hash_func
         self.cache_type = cache_type
@@ -80,7 +84,11 @@ class UserHashError(StreamlitAPIException):
         super().__init__(msg)
         self.with_traceback(orig_exc.__traceback__)
 
-    def _get_message_from_func(self, orig_exc, cached_func):
+    def _get_message_from_func(
+        self,
+        orig_exc: BaseException,
+        cached_func: Any,
+    ) -> str:
         args = self._get_error_message_args(orig_exc, cached_func)
 
         return (
@@ -145,7 +153,7 @@ If you think this is actually a Streamlit bug, please
 
 def update_hash(
     val: Any,
-    hasher,
+    hasher: Any,
     cache_type: CacheType,
     hash_source: Callable[..., Any] | None = None,
     hash_funcs: HashFuncsDict | None = None,
@@ -182,13 +190,13 @@ class _HashStack:
     def __repr__(self) -> str:
         return util.repr_(self)
 
-    def push(self, val: Any):
+    def push(self, val: Any) -> None:
         self._stack[id(val)] = val
 
-    def pop(self):
+    def pop(self) -> None:
         self._stack.popitem()
 
-    def __contains__(self, val: Any):
+    def __contains__(self, val: Any) -> bool:
         return id(val) in self._stack
 
     def pretty_print(self) -> str:
@@ -247,28 +255,20 @@ def _key(obj: Any | None) -> Any:
     if obj is None:
         return None
 
-    def is_simple(obj):
+    def is_simple(obj: Any) -> bool:
         return (
-            isinstance(obj, bytes)
-            or isinstance(obj, bytearray)
-            or isinstance(obj, str)
-            or isinstance(obj, float)
-            or isinstance(obj, int)
-            or isinstance(obj, bool)
-            or isinstance(obj, uuid.UUID)
+            isinstance(obj, (bytes, bytearray, str, float, int, bool, uuid.UUID))
             or obj is None
         )
 
     if is_simple(obj):
         return obj
 
-    if isinstance(obj, tuple):
-        if all(map(is_simple, obj)):
-            return obj
+    if isinstance(obj, tuple) and all(map(is_simple, obj)):
+        return obj
 
-    if isinstance(obj, list):
-        if all(map(is_simple, obj)):
-            return ("__l", tuple(obj))
+    if isinstance(obj, list) and all(map(is_simple, obj)):
+        return ("__l", tuple(obj))
 
     if inspect.isbuiltin(obj) or inspect.isroutine(obj) or inspect.iscode(obj):
         return id(obj)
@@ -279,7 +279,9 @@ def _key(obj: Any | None) -> Any:
 class _CacheFuncHasher:
     """A hasher that can hash objects with cycles."""
 
-    def __init__(self, cache_type: CacheType, hash_funcs: HashFuncsDict | None = None):
+    def __init__(
+        self, cache_type: CacheType, hash_funcs: HashFuncsDict | None = None
+    ) -> None:
         # Can't use types as the keys in the internal _hash_funcs because
         # we always remove user-written modules from memory when rerunning a
         # script in order to reload it and grab the latest code changes.
@@ -339,7 +341,7 @@ class _CacheFuncHasher:
 
         return b
 
-    def update(self, hasher, obj: Any) -> None:
+    def update(self, hasher: Any, obj: Any) -> None:
         """Update the provided hasher with the hash of an object."""
         b = self.to_bytes(obj)
         hasher.update(b)
@@ -360,10 +362,10 @@ class _CacheFuncHasher:
             # deep, so we don't try to hash them at all.
             return self.to_bytes(id(obj))
 
-        elif isinstance(obj, bytes) or isinstance(obj, bytearray):
+        if isinstance(obj, bytes) or isinstance(obj, bytearray):
             return obj
 
-        elif type_util.get_fqn_type(obj) in self._hash_funcs:
+        if type_util.get_fqn_type(obj) in self._hash_funcs:
             # Escape hatch for unsupported objects
             hash_func = self._hash_funcs[type_util.get_fqn_type(obj)]
             try:
@@ -374,57 +376,59 @@ class _CacheFuncHasher:
                 ) from ex
             return self.to_bytes(output)
 
-        elif isinstance(obj, str):
+        if isinstance(obj, str):
             return obj.encode()
 
-        elif isinstance(obj, float):
+        if isinstance(obj, float):
             return _float_to_bytes(obj)
 
-        elif isinstance(obj, int):
+        if isinstance(obj, int):
             return _int_to_bytes(obj)
 
-        elif isinstance(obj, uuid.UUID):
+        if isinstance(obj, uuid.UUID):
             return obj.bytes
 
-        elif isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime.datetime):
             return obj.isoformat().encode()
 
-        elif isinstance(obj, (list, tuple)):
+        if isinstance(obj, (list, tuple)):
             for item in obj:
                 self.update(h, item)
             return h.digest()
 
-        elif isinstance(obj, dict):
+        if isinstance(obj, dict):
             for item in obj.items():
                 self.update(h, item)
             return h.digest()
 
-        elif obj is None:
+        if obj is None:
             return b"0"
 
-        elif obj is True:
+        if obj is True:
             return b"1"
 
-        elif obj is False:
+        if obj is False:
             return b"0"
 
-        elif not isinstance(obj, type) and dataclasses.is_dataclass(obj):
+        if not isinstance(obj, type) and dataclasses.is_dataclass(obj):
             return self.to_bytes(dataclasses.asdict(obj))
-        elif isinstance(obj, Enum):
+        if isinstance(obj, Enum):
             return str(obj).encode()
 
-        elif type_util.is_type(obj, "pandas.core.series.Series"):
+        if type_util.is_type(obj, "pandas.core.series.Series"):
             import pandas as pd
 
-            obj = cast("pd.Series", obj)
-            self.update(h, obj.size)
-            self.update(h, obj.dtype.name)
+            series_obj: pd.Series = cast("pd.Series", obj)
+            self.update(h, series_obj.size)
+            self.update(h, series_obj.dtype.name)
 
-            if len(obj) >= _PANDAS_ROWS_LARGE:
-                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)
+            if len(series_obj) >= _PANDAS_ROWS_LARGE:
+                series_obj = series_obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)
 
             try:
-                self.update(h, pd.util.hash_pandas_object(obj).to_numpy().tobytes())
+                self.update(
+                    h, pd.util.hash_pandas_object(series_obj).to_numpy().tobytes()
+                )
                 return h.digest()
             except TypeError:
                 _LOGGER.warning(
@@ -434,22 +438,22 @@ class _CacheFuncHasher:
 
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
-                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
+                return b"%s" % pickle.dumps(series_obj, pickle.HIGHEST_PROTOCOL)
 
         elif type_util.is_type(obj, "pandas.core.frame.DataFrame"):
             import pandas as pd
 
-            obj = cast("pd.DataFrame", obj)
-            self.update(h, obj.shape)
+            df_obj: pd.DataFrame = cast("pd.DataFrame", obj)
+            self.update(h, df_obj.shape)
 
-            if len(obj) >= _PANDAS_ROWS_LARGE:
-                obj = obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)
+            if len(df_obj) >= _PANDAS_ROWS_LARGE:
+                df_obj = df_obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)
             try:
                 column_hash_bytes = self.to_bytes(
-                    pd.util.hash_pandas_object(obj.dtypes)
+                    pd.util.hash_pandas_object(df_obj.dtypes)
                 )
                 self.update(h, column_hash_bytes)
-                values_hash_bytes = self.to_bytes(pd.util.hash_pandas_object(obj))
+                values_hash_bytes = self.to_bytes(pd.util.hash_pandas_object(df_obj))
                 self.update(h, values_hash_bytes)
                 return h.digest()
             except TypeError:
@@ -460,7 +464,7 @@ class _CacheFuncHasher:
 
                 # Use pickle if pandas cannot hash the object for example if
                 # it contains unhashable objects.
-                return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
+                return b"%s" % pickle.dumps(df_obj, pickle.HIGHEST_PROTOCOL)
 
         elif type_util.is_type(obj, "polars.series.series.Series"):
             import polars as pl  # type: ignore[import-not-found]
@@ -513,39 +517,32 @@ class _CacheFuncHasher:
                 # it contains unhashable objects.
                 return b"%s" % pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
         elif type_util.is_type(obj, "numpy.ndarray"):
-            import numpy as np
+            np_obj: npt.NDArray[Any] = cast("npt.NDArray[Any]", obj)
+            self.update(h, np_obj.shape)
+            self.update(h, str(np_obj.dtype))
 
-            # write cast type as string to make it work with our Python 3.8 tests
-            # - can be removed once we sunset support for Python 3.8
-            obj = cast("np.ndarray[Any, Any]", obj)
-            self.update(h, obj.shape)
-            self.update(h, str(obj.dtype))
-
-            if obj.size >= _NP_SIZE_LARGE:
+            if np_obj.size >= _NP_SIZE_LARGE:
                 import numpy as np
 
                 state = np.random.RandomState(0)
-                obj = state.choice(obj.flat, size=_NP_SAMPLE_SIZE)
+                np_obj = state.choice(np_obj.flat, size=_NP_SAMPLE_SIZE)
 
-            self.update(h, obj.tobytes())
+            self.update(h, np_obj.tobytes())
             return h.digest()
         elif type_util.is_type(obj, "PIL.Image.Image"):
             import numpy as np
-            from PIL.Image import Image  # noqa: TC002
 
-            obj = cast("Image", obj)
+            pil_obj: Image = cast("Image", obj)
 
             # we don't just hash the results of obj.tobytes() because we want to use
             # the sampling logic for numpy data
-            np_array = np.frombuffer(obj.tobytes(), dtype="uint8")
+            np_array = np.frombuffer(pil_obj.tobytes(), dtype="uint8")
             return self.to_bytes(np_array)
 
         elif inspect.isbuiltin(obj):
             return bytes(obj.__name__.encode())
 
-        elif isinstance(obj, MappingProxyType) or isinstance(
-            obj, collections.abc.ItemsView
-        ):
+        elif isinstance(obj, (MappingProxyType, collections.abc.ItemsView)):
             return self.to_bytes(dict(obj))
 
         elif type_util.is_type(obj, "builtins.getset_descriptor"):
@@ -561,9 +558,8 @@ class _CacheFuncHasher:
             return h.digest()
 
         elif hasattr(obj, "name") and (
-            isinstance(obj, io.IOBase)
             # Handle temporary files used during testing
-            or isinstance(obj, tempfile._TemporaryFileWrapper)
+            isinstance(obj, (io.IOBase, tempfile._TemporaryFileWrapper))
         ):
             # Hash files as name + last modification date + offset.
             # NB: we're using hasattr("name") to differentiate between
@@ -579,7 +575,7 @@ class _CacheFuncHasher:
         elif isinstance(obj, Pattern):
             return self.to_bytes([obj.pattern, obj.flags])
 
-        elif isinstance(obj, io.StringIO) or isinstance(obj, io.BytesIO):
+        elif isinstance(obj, (io.StringIO, io.BytesIO)):
             # Hash in-memory StringIO/BytesIO by their full contents
             # and seek position.
             self.update(h, obj.tell())

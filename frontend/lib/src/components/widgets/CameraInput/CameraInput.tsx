@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react"
+import React, { PureComponent } from "react"
 
 import { X } from "@emotion-icons/open-iconic"
 import axios from "axios"
@@ -107,7 +107,7 @@ export interface State {
 const MIN_SHUTTER_EFFECT_TIME_MS = 150
 const LOG = getLogger("CameraInput")
 
-class CameraInput extends React.PureComponent<Props, State> {
+class CameraInput extends PureComponent<Props, State> {
   private localFileIdCounter = 1
 
   private RESTORED_FROM_WIDGET_STRING = "RESTORED_FROM_WIDGET"
@@ -550,6 +550,7 @@ class CameraInput extends React.PureComponent<Props, State> {
 
   public uploadFile = (fileURLs: IFileURLs, file: File): void => {
     // Create an UploadFileInfo for this file and add it to our state.
+    // eslint-disable-next-line import/no-named-as-default-member -- TODO: Utilize AbortController instead
     const cancelToken = axios.CancelToken.source()
     const uploadingFileInfo = new UploadFileInfo(
       file.name,

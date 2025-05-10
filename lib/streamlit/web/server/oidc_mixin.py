@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# ruff: noqa: ANN201
+
+from typing import Any, cast
+
 import tornado.web
 from authlib.integrations.base_client import (  # type: ignore[import-untyped]
     BaseApp,
@@ -38,8 +42,11 @@ class TornadoOAuth2App(OAuth2Mixin, OpenIDMixin, BaseApp):  # type: ignore[misc]
         return result
 
     def authorize_redirect(
-        self, request_handler: tornado.web.RequestHandler, redirect_uri=None, **kwargs
-    ):
+        self,
+        request_handler: tornado.web.RequestHandler,
+        redirect_uri: Any = None,
+        **kwargs: Any,
+    ) -> None:
         """Create a HTTP Redirect for Authorization Endpoint.
 
         :param request_handler: HTTP request instance from Tornado.
@@ -52,8 +59,8 @@ class TornadoOAuth2App(OAuth2Mixin, OpenIDMixin, BaseApp):  # type: ignore[misc]
         request_handler.redirect(auth_context["url"], status=302)
 
     def authorize_access_token(
-        self, request_handler: tornado.web.RequestHandler, **kwargs
-    ):
+        self, request_handler: tornado.web.RequestHandler, **kwargs: Any
+    ) -> dict[str, Any]:
         """
         :param request_handler: HTTP request instance from Tornado.
         :return: A token dict.
@@ -82,9 +89,9 @@ class TornadoOAuth2App(OAuth2Mixin, OpenIDMixin, BaseApp):  # type: ignore[misc]
                 token, nonce=state_data["nonce"], claims_options=claims_options
             )
             token = {**token, "userinfo": userinfo}
-        return token
+        return cast("dict[str, Any]", token)
 
-    def _save_authorize_data(self, **kwargs):
+    def _save_authorize_data(self, **kwargs: Any) -> None:
         """Authlib underlying uses the concept of "session" to store state data.
         In Tornado, we don't have a session, so we use the framework's cache option.
         """

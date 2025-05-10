@@ -63,10 +63,12 @@ def _convert_config_option_to_click_option(
     }
 
 
-def _make_sensitive_option_callback(config_option: ConfigOption):
-    def callback(_ctx: click.Context, _param: click.Parameter, cli_value) -> None:
+def _make_sensitive_option_callback(
+    config_option: ConfigOption,
+) -> Callable[[click.Context, click.Parameter, Any], None]:
+    def callback(_ctx: click.Context, _param: click.Parameter, cli_value: Any) -> None:
         if cli_value is None:
-            return None
+            return
         raise SystemExit(
             f"Setting {config_option.key!r} option using the CLI flag is not allowed. "
             f"Set this option in the configuration file or environment "
@@ -104,7 +106,7 @@ def configurator_options(func: F) -> F:
             type=parsed_parameter["type"],
             multiple=parsed_parameter["multiple"],
             **click_option_kwargs,
-        )
+        )  # type: ignore
         func = config_option(func)
     return func
 
@@ -198,7 +200,7 @@ def main_hello(**kwargs):
 @configurator_options
 @click.argument("target", required=True, envvar="STREAMLIT_RUN_TARGET")
 @click.argument("args", nargs=-1)
-def main_run(target: str, args=None, **kwargs):
+def main_run(target: str, args: list[str] | None = None, **kwargs: Any) -> None:
     """Run a Python script, piping stderr to Streamlit.
 
     The script can be local or it can be an url. In the latter case, Streamlit
@@ -216,10 +218,9 @@ def main_run(target: str, args=None, **kwargs):
                 "Streamlit requires raw Python (.py) files, but the provided file has no extension.\n"
                 "For more information, please see https://docs.streamlit.io"
             )
-        else:
-            raise click.BadArgumentUsage(
-                f"Streamlit requires raw Python (.py) files, not {extension}.\nFor more information, please see https://docs.streamlit.io"
-            )
+        raise click.BadArgumentUsage(
+            f"Streamlit requires raw Python (.py) files, not {extension}.\nFor more information, please see https://docs.streamlit.io"
+        )
 
     if url_util.is_url(target):
         from streamlit.temporary_directory import TemporaryDirectory
@@ -260,7 +261,7 @@ def _get_command_line_as_string() -> str | None:
 
 
 def _main_run(
-    file,
+    file: str,
     args: list[str] | None = None,
     flag_options: dict[str, Any] | None = None,
 ) -> None:
@@ -368,7 +369,7 @@ def test_prog_name():
 
 @main.command("init")
 @click.argument("directory", required=False)
-def main_init(directory: str | None = None):
+def main_init(directory: str | None = None) -> None:
     """Initialize a new Streamlit project.
 
     If DIRECTORY is specified, create it and initialize the project there.
