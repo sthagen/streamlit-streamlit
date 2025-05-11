@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 class DeltaGeneratorSingleton:
     """Used to initialize the DeltaGenerator classes and store them as singletons.
     This module allows us to avoid circular imports between DeltaGenerator and elements,
-    because elemens can import this singleton module instead of DeltaGenerator directly.
+    because elements can import this singleton module instead of DeltaGenerator directly.
     """
 
     _instance: DeltaGeneratorSingleton | None = None

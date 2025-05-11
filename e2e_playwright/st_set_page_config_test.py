@@ -13,12 +13,12 @@
 # limitations under the License.
 import re
 
+import pytest
 from playwright.sync_api import Page, expect
 
 from e2e_playwright.conftest import wait_until
 from e2e_playwright.shared.app_utils import (
     click_button,
-    expect_exception,
     expect_no_exception,
     get_expander,
 )
@@ -96,15 +96,6 @@ def test_allows_preceding_command_in_callback(app: Page):
     expect_no_exception(app)
 
 
-def test_double_set_page_config(app: Page):
-    """Should display an error when st.set_page_config is called
-    multiple times in a callback.
-    """
-    click_button(app, "Double Set Page Config")
-    expect_exception(app, "set_page_config() can only be called once per app page")
-    expect(app).to_have_title("Page Config 1")
-
-
 def test_with_collapsed_sidebar(app: Page):
     click_button(app, "Collapsed Sidebar")
     expect(app).to_have_title("Collapsed Sidebar")
@@ -171,3 +162,86 @@ def test_page_icon_with_material_icon(app: Page):
         "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/thumb_up/default/24px.svg",
     )
     expect_no_exception(app)
+
+
+# Tests for removal of set page config restrictions:
+def test_allow_double_set_page_config(app: Page):
+    click_button(app, "Double Set Page Config")
+    expect_no_exception(app)
+    expect(app).to_have_title("Page Config 2")
+
+
+def test_allow_set_page_config_not_first_command(app: Page):
+    click_button(app, "Page Config not first command")
+    favicon = app.locator("link[rel='shortcut icon']")
+    expect(favicon).to_have_attribute(
+        "href",
+        "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/pets/default/24px.svg",
+    )
+    updated_text = app.locator("text=Page Icon updated")
+    expect(updated_text).to_be_visible()
+    expect_no_exception(app)
+
+
+def test_set_page_config_properties_additive(app: Page):
+    click_button(app, "Set Page Config Properties Additive")
+    expect_no_exception(app)
+    expect(app).to_have_title("Page Config Additive")
+    favicon = app.locator("link[rel='shortcut icon']")
+    expect(favicon).to_have_attribute(
+        "href",
+        "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/electric_bolt/default/24px.svg",
+    )
+    app_view_container = app.get_by_test_id("stAppViewContainer")
+    expect(app_view_container).to_have_attribute("data-layout", "wide")
+
+
+# Webkit (safari) doesn't support screencast on linux machines, so menu item
+# indices not the same as other browsers
+@pytest.mark.skip_browser("webkit")
+def test_set_page_config_menu_items_additive(app: Page):
+    click_button(app, "Set Page Config Menu Items Additive")
+    expect_no_exception(app)
+
+    # Open the main menu:
+    app.get_by_test_id("stMainMenu").click()
+    # First main menu list includes "Report a Bug" and "Get help" (second is developer menu)
+    main_menu_items = app.get_by_test_id("stMainMenuList").first.get_by_role("option")
+    # These options should now be present in the main menu:
+    expect(main_menu_items.nth(4)).to_have_text("Report a bug")
+    expect(main_menu_items.nth(5)).to_have_text("Get help")
+
+
+@pytest.mark.skip_browser("webkit")
+def test_set_page_config_menu_items_overwrites(app: Page):
+    # Set the initial menu items:
+    click_button(app, "Set Initial Menu Items")
+    expect_no_exception(app)
+    # Open the main menu:
+    app.get_by_test_id("stMainMenu").click()
+    # First main menu list includes "Get help" (second is developer menu)
+    main_menu_items = app.get_by_test_id("stMainMenuList").first.get_by_role("option")
+    # Get help should be present
+    expect(main_menu_items.nth(4)).to_have_text("Get help")
+    # Open the about dialog:
+    main_menu_items.nth(5).click()
+    about_dialog = app.get_by_role("dialog")
+    expect(about_dialog).to_be_visible()
+    # The about section markdown should contain the updated text:
+    expect(about_dialog).to_contain_text("UPDATED")
+
+    # Close the dialog:
+    about_dialog.get_by_role("button", name="Close").click()
+
+    # Now overwrite the menu items:
+    click_button(app, "Menu Items Overwrite")
+    expect_no_exception(app)
+    app.get_by_test_id("stMainMenu").click()
+    main_menu_items = app.get_by_test_id("stMainMenuList").first.get_by_role("option")
+    # Get help should still be present in the main menu from the 1st call:
+    expect(main_menu_items.nth(4)).to_have_text("Get help")
+    main_menu_items.nth(5).click()
+    about_dialog = app.get_by_role("dialog")
+    expect(about_dialog).to_be_visible()
+    # The about section markdown should not contain the updated text:
+    expect(about_dialog).not_to_contain_text("UPDATED")

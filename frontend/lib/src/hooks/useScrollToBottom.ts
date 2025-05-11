@@ -134,7 +134,7 @@ export function useScrollToBottom<T extends HTMLElement>(): RefObject<T> {
       }
 
       // Sticky means:
-      // - If it is scrolled programatically, we are still in sticky mode
+      // - If it is scrolled programmatically, we are still in sticky mode
       // - If it is scrolled by the user, then sticky means if we are at the end
 
       // Only update stickiness if the scroll event is not due to synthetic scroll done by Chrome

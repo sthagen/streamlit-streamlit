@@ -375,7 +375,7 @@ describe("getLoadingScreenType", () => {
     expect(getLoadingScreenType()).toBe(LoadingScreenType.V2)
   })
 
-  it("should give precendence to 'hide'", () => {
+  it("should give precedence to 'hide'", () => {
     vi.stubGlobal("window", {
       location: {
         search:

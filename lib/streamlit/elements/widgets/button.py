@@ -420,7 +420,7 @@ class ButtonMixin:
         data with a cached function. When working with a download button, it's
         similarly recommended to convert your data into a downloadable format
         with a cached function. Caching ensures that the app reruns
-        effeciently.
+        efficiently.
 
         >>> import streamlit as st
         >>> import pandas as pd

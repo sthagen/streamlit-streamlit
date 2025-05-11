@@ -70,7 +70,7 @@ def _new_fragment_id_queue(
         # If st.rerun(scope="fragment") is called during a full script run, we raise an
         # exception. This occurs, of course, if st.rerun(scope="fragment") is called
         # outside of a fragment, but it somewhat surprisingly occurs if it gets called
-        # from within a fragment during a run of the full script. While this behvior may
+        # from within a fragment during a run of the full script. While this behavior may
         # be surprising, it seems somewhat reasonable given that the correct behavior of
         # calling st.rerun(scope="fragment") in this situation is unclear to me:
         #   * Rerunning just the fragment immediately may cause weirdness down the line

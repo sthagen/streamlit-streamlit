@@ -101,7 +101,7 @@ describe("NumberColumn", () => {
     expect((mockCell as NumberCell).data).toEqual(1.234)
   })
 
-  it("alignes numbers to the right", () => {
+  it("aligns numbers to the right", () => {
     const mockColumn = getNumberColumn(MOCK_FLOAT_ARROW_TYPE)
     const mockCell = mockColumn.getCell("1.123")
     expect(mockCell.contentAlign).toEqual("right")

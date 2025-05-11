@@ -361,11 +361,11 @@ class ButtonGroupCommandTests(DeltaGeneratorTestCase):
     @parameterized.expand(
         get_command_matrix([("string_key",), (0,), (None,)], with_st_feedback=True)
     )
-    def test_key_types(self, comand: Callable[..., None], key: str | int | None):
+    def test_key_types(self, command: Callable[..., None], key: str | int | None):
         """Test that the key argument can be passed as expected."""
 
         # use options that is compatible with all commands including st.feedback
-        comand("thumbs", key=key)
+        command("thumbs", key=key)
 
         delta = self.get_delta_from_queue().new_element.button_group
         assert delta.id.endswith(f"-{key}")

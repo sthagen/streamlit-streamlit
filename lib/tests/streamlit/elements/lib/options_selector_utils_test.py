@@ -266,7 +266,7 @@ class TestEnumCoercion:
         EnumADiffValues,
     ):
         assert _coerce_enum(EnumAOrig.A, EnumAEqual) is EnumAEqual.A
-        # Different values are coercable by default
+        # Different values are coercible by default
         assert _coerce_enum(EnumAOrig.A, EnumADiffValues) is EnumADiffValues.A
 
     def test_coerce_enum_not_coercable(
@@ -277,7 +277,7 @@ class TestEnumCoercion:
         EnumADiffQualname,
         EnumB,
     ):
-        # Things that are not coercable
+        # Things that are not coercible
         assert _coerce_enum(EnumAOrig.A, EnumADiffMembers) is EnumAOrig.A
         assert _coerce_enum(EnumAOrig.A, EnumAExtraMembers) is EnumAOrig.A
         assert _coerce_enum(EnumAOrig.A, EnumB) is EnumAOrig.A

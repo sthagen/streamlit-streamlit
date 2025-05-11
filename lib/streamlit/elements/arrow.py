@@ -93,7 +93,7 @@ class DataframeSelectionState(TypedDict, total=False):
         The selected rows, identified by their integer position. The integer
         positions match the original dataframe, even if the user sorts the
         dataframe in their browser. For a ``pandas.DataFrame``, you can
-        retrieve data from its interger position using methods like ``.iloc[]``
+        retrieve data from its integer position using methods like ``.iloc[]``
         or ``.iat[]``.
     columns : list[str]
         The selected columns, identified by their names.
@@ -327,7 +327,7 @@ class ArrowMixin:
             Desired height of the dataframe expressed in pixels. If ``height``
             is ``None`` (default), Streamlit sets the height to show at most
             ten rows. Vertical scrolling within the dataframe element is
-            enabled when the height does not accomodate all rows.
+            enabled when the height does not accommodate all rows.
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent

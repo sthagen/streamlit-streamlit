@@ -41,7 +41,7 @@ class GitRepo:
 
             # GitPython is not fully typed, and mypy is outputting inconsistent
             # type errors on Mac and Linux. We bypass type checking entirely
-            # by re-declaring the `git` import as an "Any".
+            # by redeclaring the `git` import as an "Any".
             git_package: Any = git
             self.repo = git_package.Repo(path, search_parent_directories=True)
             self.git_version = self.repo.git.version_info

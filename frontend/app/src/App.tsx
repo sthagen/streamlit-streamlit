@@ -899,7 +899,19 @@ export class App extends PureComponent<Props, State> {
       }))
     }
 
-    this.setState({ menuItems })
+    // Check if menu items defined to prevent unnecessary state updates.
+    if (menuItems) {
+      // Now that we allow multiple set page config calls, menu items are additive
+      // for behavior consistency with other page config properties.
+      this.setState((prevState: State) => {
+        if (menuItems.clearAboutMd) {
+          menuItems.aboutSectionMd = ""
+        }
+        return {
+          menuItems: { ...prevState.menuItems, ...menuItems },
+        }
+      })
+    }
   }
 
   handlePageInfoChanged = (pageInfo: PageInfo): void => {

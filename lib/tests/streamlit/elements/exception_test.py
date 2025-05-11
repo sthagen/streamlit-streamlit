@@ -317,7 +317,7 @@ class StExceptionAPITest(DeltaGeneratorTestCase):
         """Test st.exception."""
         # client.showErrorDetails has no effect on code that calls
         # st.exception directly. This test should have the same result
-        # regardless fo the config option.
+        # regardless of the config option.
         with testutil.patch_config_options(
             {"client.showErrorDetails": show_error_details}
         ):

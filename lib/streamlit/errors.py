@@ -174,19 +174,6 @@ class LocalizableStreamlitException(StreamlitAPIException):
         return self._exec_kwargs
 
 
-# st.set_page_config
-class StreamlitSetPageConfigMustBeFirstCommandError(LocalizableStreamlitException):
-    """Exception raised when the set_page_config command is not the first executed streamlit command."""
-
-    def __init__(self):
-        super().__init__(
-            "`set_page_config()` can only be called once per app page, "
-            "and must be called as the first Streamlit command in your script.\n\n"
-            "For more information refer to the [docs]"
-            "(https://docs.streamlit.io/develop/api-reference/configuration/st.set_page_config)."
-        )
-
-
 class StreamlitInvalidPageLayoutError(LocalizableStreamlitException):
     """Exception raised when an invalid value is specified for layout."""
 

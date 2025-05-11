@@ -52,7 +52,7 @@ def test_expander_collapses_and_expands(app: Page):
     main_expanders = main_container.get_by_test_id("stExpander")
     expect(main_expanders).to_have_count(
         NUMBER_OF_EXPANDERS - 1
-    )  # -1 to substract sidebar
+    )  # -1 to subtract sidebar
 
     expanders = main_expanders.all()
     # Starts expanded

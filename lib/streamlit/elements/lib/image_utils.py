@@ -360,7 +360,7 @@ def marshall_images(
     Parameters
     ----------
     coordinates
-        A string indentifying the images' location in the frontend.
+        A string identifying the images' location in the frontend.
     image
         The image or images to include in the ImageListProto.
     caption

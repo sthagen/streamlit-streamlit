@@ -159,7 +159,7 @@ class QueryParamsProxy(MutableMapping[str, str]):
         Returns
         -------
         Dict[str,str]
-            A dictionary of the current query paramters in the app's URL.
+            A dictionary of the current query parameters in the app's URL.
         """
         with get_session_state().query_params() as qp:
             return qp.to_dict()

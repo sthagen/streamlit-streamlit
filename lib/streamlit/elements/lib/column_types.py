@@ -432,7 +432,7 @@ def NumberColumn(
         - ``"engineering"``: Show the number in engineering notation (e.g. "1.235E3").
         - printf-style format string: Format the number with a printf
           specifier, like ``"%d"`` to show a signed integer (e.g. "1234") or
-          ``"%X"`` to show an unsigned hexidecimal integer (e.g. "4D2"). You
+          ``"%X"`` to show an unsigned hexadecimal integer (e.g. "4D2"). You
           can also add prefixes and suffixes. To show British pounds, use
           ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see `sprint-js
           <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.
@@ -2007,7 +2007,7 @@ def ProgressColumn(
         - ``"engineering"``: Show the number in engineering notation (e.g. "1.235E3").
         - printf-style format string: Format the number with a printf
           specifier, like ``"%d"`` to show a signed integer (e.g. "1234") or
-          ``"%X"`` to show an unsigned hexidecimal integer (e.g. "4D2"). You
+          ``"%X"`` to show an unsigned hexadecimal integer (e.g. "4D2"). You
           can also add prefixes and suffixes. To show British pounds, use
           ``"£ %.2f"`` (e.g. "£ 1234.57"). For more information, see `sprint-js
           <https://github.com/alexei/sprintf.js?tab=readme-ov-file#format-specification>`_.

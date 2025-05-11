@@ -192,7 +192,7 @@ _ignored_modules = {
     "types",
     Exception.__module__,  # 'weakref'
     __name__,
-}  # inluding this very module
+}  # including this very module
 
 # Sizes of some primitive C types
 # XXX len(pack(T, 0)) == Struct(T).size == calcsize(T)

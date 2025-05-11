@@ -51,7 +51,7 @@ export const StyledResizableContainer =
         // 19rem is the closest rem without decimals to the original size:
         maxWidth: "19rem",
         width: "80%",
-        // 6rem was manually determined as the smallest size thats still somewhat usuable:
+        // 6rem was manually determined as the smallest size thats still somewhat usable:
         minWidth: "6rem",
         top: theme.spacing.sm,
         right: theme.spacing.sm,
@@ -63,7 +63,7 @@ export const StyledResizableContainer =
         },
         "& .gdg-search-progress": {
           // We are disabling the search progress bar since it
-          // looks a bit weired in its current state and doesn't work
+          // looks a bit weird in its current state and doesn't work
           // with rounded corners
           display: "none",
         },

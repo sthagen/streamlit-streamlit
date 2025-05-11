@@ -31,7 +31,7 @@ export const StyledInputContainer = styled.div(({ theme }) => ({
   transitionProperty: "border",
   transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.4, 1)",
   borderRadius: theme.radii.default,
-  overflow: "hidden", // Fix rounded corner being overlayed with corner of internal input.
+  overflow: "hidden", // Fix rounded corner being overlaid with corner of internal input.
 
   "&.focused": {
     borderColor: theme.colors.primary,

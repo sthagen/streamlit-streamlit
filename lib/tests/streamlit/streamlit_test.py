@@ -192,7 +192,7 @@ def test_importtime_median_under_threshold():
     and check if it's under a static threshold.
     """
     # Define an acceptable threshold for import time (in microseconds).
-    # This value is also depenend a bit on the machine it's run on,
+    # This value is also dependent a bit on the machine it's run on,
     # so needs to be mainly adjusted to our CI runners.
     # While its important to keep the import time low, you can
     # modify this threshold if it's really needed to add some new features.

@@ -964,7 +964,7 @@ def _get_color_encoding(
 
             return alt.ColorValue(to_css_color(cast("Any", color_value)))
 
-        # If the color value is a list of colors of approriate length, return that.
+        # If the color value is a list of colors of appropriate length, return that.
         if isinstance(color_value, (list, tuple)):
             color_values = cast("Collection[Color]", color_value)
 

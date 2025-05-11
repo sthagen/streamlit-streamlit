@@ -33,7 +33,6 @@ from typing_extensions import TypeAlias
 from streamlit.errors import (
     NoSessionContext,
     StreamlitAPIException,
-    StreamlitSetPageConfigMustBeFirstCommandError,
 )
 from streamlit.logger import get_logger
 from streamlit.runtime.forward_msg_cache import (
@@ -98,7 +97,6 @@ class ScriptRunContext:
     command_tracking_deactivated: bool = False
     tracked_commands: list[Command] = field(default_factory=list)
     tracked_commands_counter: Counter[str] = field(default_factory=collections.Counter)
-    _set_page_config_allowed: bool = True
     _has_script_started: bool = False
     widget_ids_this_run: set[str] = field(default_factory=set)
     widget_user_keys_this_run: set[str] = field(default_factory=set)
@@ -159,8 +157,6 @@ class ScriptRunContext:
         self.context_info = context_info
         self.pages_manager.set_current_page_script_hash(page_script_hash)
         self._active_script_hash = self.pages_manager.main_script_hash
-        # Permit set_page_config when the ScriptRunContext is reused on a rerun
-        self._set_page_config_allowed = True
         self._has_script_started = False
         self.command_tracking_deactivated: bool = False
         self.tracked_commands = []
@@ -190,17 +186,6 @@ class ScriptRunContext:
 
     def enqueue(self, msg: ForwardMsg) -> None:
         """Enqueue a ForwardMsg for this context's session."""
-        if msg.HasField("page_config_changed") and not self._set_page_config_allowed:
-            raise StreamlitSetPageConfigMustBeFirstCommandError()
-
-        # We want to disallow set_page config if one of the following occurs:
-        # - set_page_config was called on this message
-        # - The script has already started and a different st call occurs (a delta)
-        if msg.HasField("page_config_changed") or (
-            msg.HasField("delta") and self._has_script_started
-        ):
-            self._set_page_config_allowed = False
-
         msg.metadata.active_script_hash = self.active_script_hash
 
         # We populate the hash and cacheable field for all messages.

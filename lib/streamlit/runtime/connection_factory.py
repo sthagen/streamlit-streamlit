@@ -233,7 +233,7 @@ def connection_factory(
         The type of connection to create. This can be one of the following:
 
         - ``None`` (default): Streamlit will infer the connection type from
-          ``name``. If the type is not inferrable from ``name``, the type must
+          ``name``. If the type is not inferable from ``name``, the type must
           be specified in ``secrets.toml`` instead.
         - ``"snowflake"``: Streamlit will initialize a connection with
           |SnowflakeConnection|_.
@@ -267,7 +267,7 @@ def connection_factory(
     **kwargs : any
         Connection-specific keyword arguments that are passed to the
         connection's ``._connect()`` method. ``**kwargs`` are typically
-        combined with (and take precendence over) key-value pairs in
+        combined with (and take precedence over) key-value pairs in
         ``secrets.toml``. To learn more, see the specific connection's
         documentation.
 
@@ -370,7 +370,7 @@ def connection_factory(
 
     if name.startswith(USE_ENV_PREFIX):
         # It'd be nice to use str.removeprefix() here, but we won't be able to do that
-        # until the minimium Python version we support is 3.9.
+        # until the minimum Python version we support is 3.9.
         envvar_name = name[len(USE_ENV_PREFIX) :]
         name = os.environ[envvar_name]
 
