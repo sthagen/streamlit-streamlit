@@ -62,9 +62,6 @@ updates:
       - dependency-name: "eslint"
         # It will take a bit more work to get this updated
         versions: [">=9.0.0"]
-      - dependency-name: "eslint-plugin-react-hooks"
-        # Requires eslint update
-        versions: [">=5.0.0"]
       - dependency-name: "@typescript-eslint/parser"
         # Requires eslint update
         versions: [">=8.0.0"]
@@ -95,12 +92,6 @@ updates:
       - dependency-name: "sass"
         # Breaks our build process, needs more investigation
         versions: [">=1.80.0"]
-      - dependency-name: "@testing-library/react"
-        # Breaks our build process, needs more investigation
-        versions: [">=15.0.0"]
-      - dependency-name: "typescript"
-        # Requires bigger updates to our types used in tests.
-        versions: [">=5.8.0"]
 
     groups:
       deck-gl:
