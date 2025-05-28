@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar
 
 # We cannot lazy-load click here because its used via decorators.
 import click
@@ -105,8 +105,8 @@ def configurator_options(func: F) -> F:
             help=parsed_parameter["description"],
             type=parsed_parameter["type"],
             multiple=parsed_parameter["multiple"],
-            **click_option_kwargs,
-        )  # type: ignore
+            **click_option_kwargs,  # type: ignore
+        )
         func = config_option(func)
     return func
 
@@ -140,8 +140,8 @@ def main(log_level: str = "info") -> None:
     if log_level:
         from streamlit.logger import get_logger
 
-        LOGGER = get_logger(__name__)
-        LOGGER.warning(
+        logger: Final = get_logger(__name__)
+        logger.warning(
             "Setting the log level using the --log_level flag is unsupported."
             "\nUse the --logger.level flag (after your streamlit command) instead."
         )
