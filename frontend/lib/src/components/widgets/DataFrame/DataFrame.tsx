@@ -239,7 +239,7 @@ function DataFrame({
   useEffect(() => {
     setColumnOrder(element.columnOrder)
 
-    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element.columnOrder.join(",")])
 
@@ -282,7 +282,7 @@ function DataFrame({
     // We only want to run this effect once during the initial component load
     // so we disable the eslint rule.
     // TODO: Update to match React best practices
-    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   )
@@ -396,7 +396,7 @@ function DataFrame({
     clearSelection(true, true)
     // Only run this on changes to the fullscreen mode:
     // TODO: Update to match React best practices
-    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFullScreen])
 
@@ -464,7 +464,7 @@ function DataFrame({
     // We only want to run this effect once during the initial component load
     // so we disable the eslint rule.
     // TODO: Update to match React best practices
-    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   )
@@ -1028,19 +1028,22 @@ function DataFrame({
           {...(isRowSelectionActivated && {
             rowMarkers: {
               // Apply style settings for the row markers column:
-              kind: "checkbox",
+              kind: "checkbox-visible",
               checkboxStyle: "square",
               theme: {
                 bgCell: gridTheme.glideTheme.bgHeader,
                 bgCellMedium: gridTheme.glideTheme.bgHeader,
+                // Use a lighter color for the checkboxes in the row markers column,
+                // otherwise its a bit too prominent:
+                textMedium: gridTheme.glideTheme.textLight,
               },
             },
             rowSelectionMode: isMultiRowSelectionActivated ? "multi" : "auto",
             rowSelect: disabled
               ? "none"
               : isMultiRowSelectionActivated
-              ? "multi"
-              : "single",
+                ? "multi"
+                : "single",
             rowSelectionBlending: "mixed",
             // Deactivate the combination of row selections
             // and cell selections. This will automatically clear
@@ -1054,8 +1057,8 @@ function DataFrame({
             columnSelect: disabled
               ? "none"
               : isMultiColumnSelectionActivated
-              ? "multi"
-              : "single",
+                ? "multi"
+                : "single",
             columnSelectionBlending: "mixed",
             // Deactivate the combination of column selections
             // and cell selections. This will automatically clear

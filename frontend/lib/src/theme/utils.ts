@@ -171,9 +171,9 @@ export const createEmotionTheme = (
       if (isColor(color)) {
         // @ts-expect-error
         colorsArg[key] = color
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string
       } else if (isColor(`#${color}`)) {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string
         colorsArg[key] = `#${color}`
       }
       return colorsArg
@@ -404,8 +404,8 @@ export const createTheme = (
       baseThemeConfig
         ? baseThemeConfig
         : getLuminance(bgColor) > 0.5
-        ? lightTheme
-        : darkTheme
+          ? lightTheme
+          : darkTheme
     ),
     { emotion: { inSidebar } }
   )
