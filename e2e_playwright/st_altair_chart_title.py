@@ -12,25 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import altair as alt
+import pandas as pd
+
 import streamlit as st
 
-st.set_page_config(layout="wide")
-st.chat_input("input here")
-st.toast("This is a default toast message", icon="🐶")
-st.toast(
-    "Random toast message that is a really really really really really really "
-    "really long message, going way past the 3 line limit",
-    icon="🦄",
+df = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [10, 20, 30, 40, 50]})
+
+chart = (
+    alt.Chart(
+        data=df,
+        title="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " * 5,
+    )
+    .mark_line()
+    .encode(x="x", y="y")
 )
 
-st.toast("Your edited image was saved!", icon=":material/cabin:")
-
-
-@st.dialog("Streamlit Toast Notification")
-def toast_notification():
-    activate_toast = st.button(label="Toast from dialog")
-    if activate_toast:
-        st.toast("Toast above dialog", icon="🎉")
-
-
-st.button("Trigger dialog", on_click=toast_notification)
+st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart, use_container_width=False)
