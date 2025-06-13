@@ -26,8 +26,6 @@ export enum BaseButtonKind {
   SECONDARY = "secondary",
   TERTIARY = "tertiary",
   GHOST = "ghost",
-  LINK = "link",
-  ICON = "icon",
   BORDERLESS_ICON = "borderlessIcon",
   BORDERLESS_ICON_ACTIVE = "borderlessIconActive",
   MINIMAL = "minimal",
@@ -227,28 +225,6 @@ export const StyledGhostButton = styled(
   },
 }))
 
-export const StyledLinkButton = styled(
-  StyledBaseButton
-)<RequiredBaseButtonProps>(({ theme }) => ({
-  backgroundColor: theme.colors.transparent,
-  padding: theme.spacing.none,
-  border: "none",
-  color: theme.colors.primary,
-  "&:hover": {
-    textDecoration: "underline",
-  },
-  "&:active": {
-    backgroundColor: theme.colors.transparent,
-    color: theme.colors.primary,
-    textDecoration: "underline",
-  },
-  "&:disabled, &:disabled:hover, &:disabled:active": {
-    backgroundColor: theme.colors.lightGray,
-    borderColor: theme.colors.transparent,
-    color: theme.colors.gray,
-  },
-}))
-
 export const StyledMinimalButton = styled(
   StyledBaseButton
 )<RequiredBaseButtonProps>(({ theme }) => ({
@@ -271,51 +247,6 @@ export const StyledSecondaryFormSubmitButton = styled(
 export const StyledTertiaryFormSubmitButton = styled(
   StyledTertiaryButton
 )<RequiredBaseButtonProps>()
-
-export const StyledIconButton = styled(
-  StyledBaseButton
-)<RequiredBaseButtonProps>(({ theme }) => {
-  return {
-    backgroundColor: theme.colors.transparent,
-    border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
-    flex: "1 1 0",
-    padding: 0,
-
-    "&:hover": {
-      borderColor: theme.colors.primary,
-      color: theme.colors.primary,
-    },
-    "&:active": {
-      backgroundColor: theme.colors.primary,
-      borderColor: theme.colors.primary,
-      color: theme.colors.white,
-    },
-    "&:not(:active)": {
-      boxShadow: "none",
-    },
-    "&:disabled, &:disabled:hover, &:disabled:active": {
-      backgroundColor: theme.colors.lightGray,
-      borderColor: theme.colors.transparent,
-      color: theme.colors.gray,
-      cursor: "not-allowed",
-    },
-  }
-})
-
-export const StyledIconButtonActive = styled(
-  StyledIconButton
-)<RequiredBaseButtonProps>(({ theme }) => {
-  return {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-    color: theme.colors.white,
-    "&:hover": {
-      backgroundColor: theme.colors.transparent,
-      borderColor: theme.colors.primary,
-      color: theme.colors.primary,
-    },
-  }
-})
 
 const StyledButtonGroupBaseButton = styled(
   StyledBaseButton
