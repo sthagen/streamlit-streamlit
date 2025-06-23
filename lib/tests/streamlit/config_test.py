@@ -486,6 +486,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.secondaryBackgroundColor",
                 "theme.textColor",
                 "theme.baseFontSize",
+                "theme.baseFontWeight",
                 "theme.baseRadius",
                 "theme.buttonRadius",
                 "theme.font",
@@ -499,6 +500,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.linkColor",
                 "theme.linkUnderline",
                 "theme.codeBackgroundColor",
+                "theme.dataframeHeaderBackgroundColor",
                 "theme.showSidebarBorder",
                 "theme.sidebar.primaryColor",
                 "theme.sidebar.backgroundColor",
@@ -516,6 +518,7 @@ class ConfigTest(unittest.TestCase):
                 "theme.sidebar.linkColor",
                 "theme.sidebar.linkUnderline",
                 "theme.sidebar.codeBackgroundColor",
+                "theme.sidebar.dataframeHeaderBackgroundColor",
                 "global.appTest",
                 "global.developmentMode",
                 "global.disableWidgetStateDuplicationWarning",
@@ -683,7 +686,9 @@ class ConfigTest(unittest.TestCase):
             "codeFontSize": None,
             "fontFaces": None,
             "baseFontSize": None,
+            "baseFontWeight": None,
             "codeBackgroundColor": None,
+            "dataframeHeaderBackgroundColor": None,
             "showSidebarBorder": None,
         }
         assert config.get_options_for_section("theme") == expected
@@ -705,6 +710,7 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.linkColor", "#2EC163", "test")
         config._set_option("theme.linkUnderline", False, "test")
         config._set_option("theme.codeBackgroundColor", "#29361e", "test")
+        config._set_option("theme.dataframeHeaderBackgroundColor", "#29361e", "test")
         config._set_option("theme.font", "Inter", "test")
         config._set_option("theme.headingFont", "Inter", "test")
         config._set_option(
@@ -721,6 +727,7 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.codeFont", "Monaspace Argon", "test")
         config._set_option("theme.codeFontSize", "12px", "test")
         config._set_option("theme.baseFontSize", 14, "test")
+        config._set_option("theme.baseFontWeight", 300, "test")
         config._set_option("theme.showSidebarBorder", True, "test")
 
         expected = {
@@ -741,6 +748,7 @@ class ConfigTest(unittest.TestCase):
             "codeFont": "Monaspace Argon",
             "codeFontSize": "12px",
             "codeBackgroundColor": "#29361e",
+            "dataframeHeaderBackgroundColor": "#29361e",
             "fontFaces": [
                 {
                     "family": "Inter",
@@ -749,6 +757,7 @@ class ConfigTest(unittest.TestCase):
                 },
             ],
             "baseFontSize": 14,
+            "baseFontWeight": 300,
             "showSidebarBorder": True,
         }
         assert config.get_options_for_section("theme") == expected
@@ -773,6 +782,9 @@ class ConfigTest(unittest.TestCase):
         config._set_option("theme.sidebar.codeFont", "Monaspace Argon", "test")
         config._set_option("theme.sidebar.codeFontSize", "12px", "test")
         config._set_option("theme.sidebar.codeBackgroundColor", "#29361e", "test")
+        config._set_option(
+            "theme.sidebar.dataframeHeaderBackgroundColor", "#29361e", "test"
+        )
 
         expected = {
             "primaryColor": "#FFF000",
@@ -791,6 +803,7 @@ class ConfigTest(unittest.TestCase):
             "codeFont": "Monaspace Argon",
             "codeFontSize": "12px",
             "codeBackgroundColor": "#29361e",
+            "dataframeHeaderBackgroundColor": "#29361e",
         }
         assert config.get_options_for_section("theme.sidebar") == expected
 
