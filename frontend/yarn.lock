@@ -3553,7 +3553,7 @@ __metadata:
     "@types/iframe-resizer": "npm:~4.0.0"
     "@types/jsdom": "npm:~21.1.7"
     "@types/lodash": "npm:^4.17.17"
-    "@types/node": "npm:^24.0.10"
+    "@types/node": "npm:^24.0.12"
     "@types/prop-types": "npm:~15.7.15"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -3615,7 +3615,7 @@ __metadata:
     ua-parser-js: "npm:^1.0.40"
     util: "npm:^0.12.5"
     uuid: "npm:^11.1.0"
-    vite: "npm:^7.0.3"
+    vite: "npm:^7.0.4"
     vite-plugin-svgr: "npm:^4.3.0"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
@@ -3639,7 +3639,7 @@ __metadata:
     loglevel: "npm:^1.9.2"
     prettier: "npm:^3.6.2"
     typesync: "npm:^0.14.3"
-    vite: "npm:^7.0.3"
+    vite: "npm:^7.0.4"
     vite-plugin-dts: "npm:^4.5.4"
     vite-plugin-svgr: "npm:^4.3.0"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -3772,14 +3772,14 @@ __metadata:
     vega-embed: "npm:^6.29.0"
     vega-interpreter: "npm:^2.0.0"
     vega-lite: "npm:5.23.0"
-    vite: "npm:^7.0.3"
+    vite: "npm:^7.0.4"
     vite-plugin-dts: "npm:^4.5.4"
     vite-plugin-svgr: "npm:^4.3.0"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
     vitest-canvas-mock: "npm:^0.3.3"
     vitest-fetch-mock: "npm:^0.4.5"
-    wavesurfer.js: "npm:^7.9.5"
+    wavesurfer.js: "npm:^7.9.9"
     xxhashjs: "npm:^0.2.2"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0
@@ -3812,7 +3812,7 @@ __metadata:
     eslint: "npm:^9.30.1"
     prettier: "npm:^3.6.2"
     typesync: "npm:^0.14.3"
-    vite: "npm:^7.0.3"
+    vite: "npm:^7.0.4"
     vite-plugin-dts: "npm:^4.5.4"
     vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
@@ -5091,16 +5091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.0.10":
-  version: 24.0.10
-  resolution: "@types/node@npm:24.0.10"
-  dependencies:
-    undici-types: "npm:~7.8.0"
-  checksum: 10c0/11dbd869d3e12ee7b7818113588950e538783e45d227122174c763cb05977defbd1e01b44b5ccd4b8997e42c3df7f7b83c6ee05cfa43d924c8882886bc5f6582
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^24.0.3":
+"@types/node@npm:^24.0.12, @types/node@npm:^24.0.3":
   version: 24.0.12
   resolution: "@types/node@npm:24.0.12"
   dependencies:
@@ -20944,9 +20935,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "vite@npm:7.0.3"
+"vite@npm:^7.0.4":
+  version: 7.0.4
+  resolution: "vite@npm:7.0.4"
   dependencies:
     esbuild: "npm:^0.25.0"
     fdir: "npm:^6.4.6"
@@ -20995,7 +20986,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/9173a1bf9fee82606f39c7b3e785638c1ac7f3473879fc88593f3a2093ed766140a08b845050fd790adb8a36e2cbc81b71401407da05d5dd747ae4f3adb89794
+  checksum: 10c0/2eb3572d60e8e6f0e291905e30989a52042350439c03002603d27a396652bf0484e13d5e8b15e0d7bd9988a8dc03ee712d45eb83e9dcf8aab4e8ecb28b0419b6
   languageName: node
   linkType: hard
 
@@ -21130,10 +21121,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wavesurfer.js@npm:^7.9.5":
-  version: 7.9.5
-  resolution: "wavesurfer.js@npm:7.9.5"
-  checksum: 10c0/ec1703c7b49b51e1ac75712588054276a0275604bd47ac576ecfa4f3f274c5a174d77391833b16b3e73b9aecd87374741daed5951d85276f6502cd18709e927c
+"wavesurfer.js@npm:^7.9.9":
+  version: 7.9.9
+  resolution: "wavesurfer.js@npm:7.9.9"
+  checksum: 10c0/ca972bf01e68d001d55cf4b486cb09cf079a608bc397cf97e2da8b9e0ec0e109cd86a354308600bdf7c689f11fffbacaaf56e5ab612fb3eaa58f2c8bcf7b39a9
   languageName: node
   linkType: hard
 
