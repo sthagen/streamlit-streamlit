@@ -156,7 +156,7 @@ class ButtonMixin:
             - ``"secondary"`` (default): The button's background coordinates
               with the app's background color for normal emphasis.
             - ``"tertiary"``: The button is plain text without a border or
-              background for subtly.
+              background for subtlety.
 
         icon : str or None
             An optional emoji or icon to display next to the button label. If ``icon``
@@ -400,7 +400,7 @@ class ButtonMixin:
             - ``"secondary"`` (default): The button's background coordinates
               with the app's background color for normal emphasis.
             - ``"tertiary"``: The button is plain text without a border or
-              background for subtly.
+              background for subtlety.
 
         icon : str or None
             An optional emoji or icon to display next to the button label. If ``icon``
@@ -648,7 +648,7 @@ class ButtonMixin:
             - ``"secondary"`` (default): The button's background coordinates
               with the app's background color for normal emphasis.
             - ``"tertiary"``: The button is plain text without a border or
-              background for subtly.
+              background for subtlety.
 
         icon : str or None
             An optional emoji or icon to display next to the button label. If ``icon``
@@ -914,8 +914,6 @@ class ButtonMixin:
         element_id = compute_and_register_element_id(
             "download_button",
             user_key=key,
-            # download_button is not allowed to be used in a form.
-            form_id=None,
             dg=self.dg,
             label=label,
             icon=icon,
@@ -1123,8 +1121,6 @@ class ButtonMixin:
         element_id = compute_and_register_element_id(
             "button",
             user_key=key,
-            # Only the
-            form_id=form_id,
             dg=self.dg,
             label=label,
             icon=icon,
