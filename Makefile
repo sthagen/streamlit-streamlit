@@ -294,6 +294,11 @@ update-snapshots-changed:
 update-material-icons:
 	python ./scripts/update_material_icon_font_and_names.py
 
+.PHONY: update-emojis
+# Update emojis based on latest emoji version.
+update-emojis:
+	python ./scripts/update_emojis.py
+
 .PHONY: update-notices
 # Update the notices file (licenses of frontend assets and dependencies).
 update-notices:
