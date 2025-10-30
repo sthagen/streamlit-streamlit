@@ -19,6 +19,7 @@ import React, {
   ReactElement,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -26,9 +27,12 @@ import React, {
 
 import { getLogger } from "loglevel"
 
-import { useAppContext } from "@streamlit/app/src/components/StreamlitContextProvider"
 import { StreamlitEndpoints } from "@streamlit/connection"
-import { isMobile } from "@streamlit/lib"
+import {
+  isMobile,
+  NavigationContext,
+  SidebarConfigContext,
+} from "@streamlit/lib"
 import { IAppPage } from "@streamlit/protobuf"
 import { localStorageAvailable } from "@streamlit/utils"
 
@@ -45,12 +49,8 @@ import { groupPagesBySection, processNavigationStructure } from "./utils"
 
 export interface Props {
   endpoints: StreamlitEndpoints
-  appPages: IAppPage[]
   collapseSidebar: () => void
   hasSidebarElements: boolean
-  onPageChange: (pageName: string) => void
-  currentPageScriptHash: string
-  expandSidebarNav: boolean
 }
 
 // We make the sidebar nav collapsible when there are more than 12 pages.
@@ -141,15 +141,13 @@ function generateNavSections(
 /** Displays a list of navigable app page links for multi-page apps. */
 const SidebarNav = ({
   endpoints,
-  appPages,
   collapseSidebar,
   hasSidebarElements,
-  onPageChange,
-  currentPageScriptHash,
-  expandSidebarNav,
 }: Props): ReactElement | null => {
   const [expanded, setExpanded] = useState(false)
-  const { pageLinkBaseUrl } = useAppContext()
+  const { expandSidebarNav } = useContext(SidebarConfigContext)
+  const { pageLinkBaseUrl, appPages, onPageChange, currentPageScriptHash } =
+    useContext(NavigationContext)
 
   const localStorageKey = `stSidebarSectionsState-${pageLinkBaseUrl}`
   const [expandedSections, setExpandedSections] = useState<Record<

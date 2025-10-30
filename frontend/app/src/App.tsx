@@ -1816,6 +1816,7 @@ export class App extends PureComponent<Props, State> {
       isDeployErrorModalOpen:
         this.state.dialog?.type === DialogType.DEPLOY_ERROR,
       metricsMgr: this.metricsMgr,
+      gitInfo: this.state.gitInfo,
     }
     this.openDialog(deployDialogProps)
   }
@@ -2190,11 +2191,8 @@ export class App extends PureComponent<Props, State> {
         widgetsDisabled={
           inputsDisabled || connectionState !== ConnectionState.CONNECTED
         }
-        gitInfo={this.state.gitInfo}
         isFullScreen={isFullScreen}
         setFullScreen={this.handleFullScreen}
-        addScriptFinishedHandler={this.addScriptFinishedHandler}
-        removeScriptFinishedHandler={this.removeScriptFinishedHandler}
         activeTheme={this.props.theme.activeTheme}
         setTheme={this.setAndSendTheme}
         availableThemes={this.props.theme.availableThemes}
@@ -2226,23 +2224,13 @@ export class App extends PureComponent<Props, State> {
               elements={elements}
               widgetMgr={this.widgetMgr}
               uploadClient={this.uploadClient}
-              appLogo={elements.logo}
-              appPages={appPages}
-              navSections={navSections}
-              onPageChange={this.onPageChange}
-              hideSidebarNav={
-                hideSidebarNav ||
-                hostHideSidebarNav ||
-                effectiveNavigationPosition === Navigation.Position.TOP
-              }
-              expandSidebarNav={expandSidebarNav}
               navigationPosition={effectiveNavigationPosition}
-              pageLinkBaseUrl={this.state.pageLinkBaseUrl}
               wideMode={userSettings.wideMode}
               embedded={isEmbed()}
               showPadding={showPadding}
               disableScrolling={disableScrolling}
-              currentPageScriptHash={currentPageScriptHash}
+              addScriptFinishedHandler={this.addScriptFinishedHandler}
+              removeScriptFinishedHandler={this.removeScriptFinishedHandler}
               topRightContent={
                 <>
                   {!hideTopBar && (

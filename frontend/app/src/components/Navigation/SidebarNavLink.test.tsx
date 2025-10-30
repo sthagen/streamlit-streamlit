@@ -22,7 +22,6 @@ import userEvent from "@testing-library/user-event"
 import { AppContextProps } from "@streamlit/app/src/components/AppContext"
 import * as StreamlitContextProviderModule from "@streamlit/app/src/components/StreamlitContextProvider"
 import { render } from "@streamlit/lib"
-import { PageConfig } from "@streamlit/protobuf"
 
 import SidebarNavLink, { SidebarNavLinkProps } from "./SidebarNavLink"
 
@@ -37,31 +36,27 @@ const getProps = (
   ...props,
 })
 
-function getContextOutput(context: Partial<AppContextProps>): AppContextProps {
+function getAppContextOutput(
+  context: Partial<AppContextProps> = {}
+): AppContextProps {
   return {
-    initialSidebarState: PageConfig.SidebarState.AUTO,
-    pageLinkBaseUrl: "",
-    currentPageScriptHash: "",
-    onPageChange: vi.fn(),
-    navSections: [],
-    appPages: [],
-    appLogo: null,
-    sidebarChevronDownshift: 0,
-    expandSidebarNav: false,
-    hideSidebarNav: false,
     widgetsDisabled: false,
-    gitInfo: null,
     showToolbar: true,
     ...context,
   }
 }
 
+// Helper to setup AppContext mock
+function setupAppContextMock(context: Partial<AppContextProps> = {}): void {
+  vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
+    getAppContextOutput(context)
+  )
+}
+
 describe("SidebarNavLink", () => {
   beforeEach(() => {
     // Default mock implementation
-    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
-      getContextOutput({})
-    )
+    setupAppContextMock()
   })
 
   afterEach(() => {
@@ -117,11 +112,7 @@ describe("SidebarNavLink", () => {
   })
 
   it("renders when widgets are disabled", () => {
-    // Update the mock to return a context with widgetsDisabled set to true
-    vi.spyOn(StreamlitContextProviderModule, "useAppContext").mockReturnValue(
-      getContextOutput({ widgetsDisabled: true })
-    )
-
+    setupAppContextMock({ widgetsDisabled: true })
     render(<SidebarNavLink {...getProps()} />)
 
     screen.getByTestId("stSidebarNavLinkContainer")
@@ -158,11 +149,7 @@ describe("SidebarNavLink", () => {
     })
 
     it("handles disabled state for top nav", () => {
-      vi.spyOn(
-        StreamlitContextProviderModule,
-        "useAppContext"
-      ).mockReturnValue(getContextOutput({ widgetsDisabled: true }))
-
+      setupAppContextMock({ widgetsDisabled: true })
       render(<SidebarNavLink {...getProps({ isTopNav: true })} />)
 
       screen.getByTestId("stTopNavLinkContainer")

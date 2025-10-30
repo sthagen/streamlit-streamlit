@@ -38,17 +38,6 @@ const getMockAppContext = (
 ): ReturnType<typeof StreamlitContextProviderModule.useAppContext> => ({
   showToolbar: true,
   widgetsDisabled: false,
-  initialSidebarState: 1,
-  pageLinkBaseUrl: "",
-  currentPageScriptHash: "",
-  onPageChange: vi.fn(),
-  navSections: [],
-  appPages: [],
-  appLogo: null,
-  sidebarChevronDownshift: 0,
-  expandSidebarNav: false,
-  hideSidebarNav: false,
-  gitInfo: null,
   ...overrides,
 })
 

@@ -72,6 +72,7 @@ import { ElementNode } from "~lib/AppNode"
 import { withCalculatedWidth } from "~lib/components/core/Layout/withCalculatedWidth"
 import { LibContext } from "~lib/components/core/LibContext"
 import Maybe from "~lib/components/core/Maybe"
+import { ScriptRunContext } from "~lib/components/core/ScriptRunContext"
 import AlertElement, {
   getAlertElementKind,
 } from "~lib/components/elements/AlertElement"
@@ -717,8 +718,9 @@ const RawElementNodeRenderer = (
 const ElementNodeRenderer = (
   props: ElementNodeRendererProps
 ): ReactElement => {
-  const { isFullScreen, fragmentIdsThisRun, scriptRunState, scriptRunId } =
-    useContext(LibContext)
+  const { isFullScreen } = useContext(LibContext)
+  const { scriptRunState, scriptRunId, fragmentIdsThisRun } =
+    useContext(ScriptRunContext)
   const { node } = props
 
   const elementType = node.element.type || ""

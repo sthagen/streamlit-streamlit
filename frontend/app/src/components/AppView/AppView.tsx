@@ -43,13 +43,15 @@ import {
   ContainerContentsWrapper,
   FileUploadClient,
   IGuestToHostMessage,
-  LibContext,
+  NavigationContext,
   Profiler,
+  SidebarConfigContext,
+  ThemeContext,
   useExecuteWhenChanged,
   useWindowDimensionsContext,
   WidgetStateManager,
 } from "@streamlit/lib"
-import { IAppPage, Logo, Navigation } from "@streamlit/protobuf"
+import { Navigation } from "@streamlit/protobuf"
 
 import ScrollToBottomContainer from "./ScrollToBottomContainer"
 import {
@@ -77,25 +79,11 @@ export interface AppViewProps {
 
   uploadClient: FileUploadClient
 
-  appPages: IAppPage[]
-
-  navSections: string[]
-
-  onPageChange: (pageName: string) => void
-
-  hideSidebarNav: boolean
-
-  expandSidebarNav: boolean
-
   navigationPosition: Navigation.Position
 
   topRightContent?: React.ReactNode
 
-  pageLinkBaseUrl?: string
-
   wideMode: boolean
-
-  appLogo: Logo | null
 
   embedded: boolean
 
@@ -103,7 +91,9 @@ export interface AppViewProps {
 
   disableScrolling: boolean
 
-  currentPageScriptHash: string
+  addScriptFinishedHandler: (func: () => void) => void
+
+  removeScriptFinishedHandler: (func: () => void) => void
 }
 
 /**
@@ -114,22 +104,16 @@ function AppView(props: AppViewProps): ReactElement {
     elements,
     widgetMgr,
     uploadClient,
-    appLogo,
-    appPages,
-    navSections,
-    onPageChange,
-    expandSidebarNav,
-    hideSidebarNav,
     sendMessageToHost,
     endpoints,
     navigationPosition,
     topRightContent,
-    pageLinkBaseUrl = "",
     wideMode,
     embedded,
     showPadding,
     disableScrolling,
-    currentPageScriptHash,
+    addScriptFinishedHandler,
+    removeScriptFinishedHandler,
   } = props
 
   useEffect(() => {
@@ -143,13 +127,16 @@ function AppView(props: AppViewProps): ReactElement {
     return () => window.removeEventListener("hashchange", listener, false)
   }, [sendMessageToHost])
 
-  const { initialSidebarState, widgetsDisabled, showToolbar } = useAppContext()
+  const { widgetsDisabled, showToolbar } = useAppContext()
 
-  const {
-    addScriptFinishedHandler,
-    removeScriptFinishedHandler,
-    activeTheme,
-  } = useContext(LibContext)
+  const { activeTheme } = useContext(ThemeContext)
+
+  const { appPages, navSections, pageLinkBaseUrl } =
+    useContext(NavigationContext)
+
+  const { initialSidebarState, appLogo, hideSidebarNav } = useContext(
+    SidebarConfigContext
+  )
 
   const { innerWidth } = useWindowDimensionsContext()
 
@@ -298,14 +285,7 @@ function AppView(props: AppViewProps): ReactElement {
           <Profiler id="Sidebar">
             <ThemedSidebar
               endpoints={endpoints}
-              appLogo={appLogo}
-              appPages={appPages}
-              navSections={navSections}
               hasElements={hasSidebarElements}
-              onPageChange={onPageChange}
-              currentPageScriptHash={currentPageScriptHash}
-              hideSidebarNav={hideSidebarNav}
-              expandSidebarNav={expandSidebarNav}
               isCollapsed={isSidebarCollapsed}
               onToggleCollapse={setSidebarCollapsedWithOptionalPersistence}
             >
@@ -323,13 +303,7 @@ function AppView(props: AppViewProps): ReactElement {
             navigation={
               navigationPosition === Navigation.Position.TOP &&
               shouldShowNavigation(appPages, navSections) ? (
-                <TopNav
-                  endpoints={endpoints}
-                  pageLinkBaseUrl={pageLinkBaseUrl}
-                  currentPageScriptHash={currentPageScriptHash}
-                  appPages={appPages}
-                  onPageChange={onPageChange}
-                />
+                <TopNav endpoints={endpoints} />
               ) : null
             }
             rightContent={topRightContent}

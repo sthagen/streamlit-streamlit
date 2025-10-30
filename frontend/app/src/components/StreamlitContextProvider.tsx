@@ -28,26 +28,23 @@ import {
   LibConfig,
   LibContext,
   LibContextProps,
+  NavigationContext,
+  NavigationContextProps,
+  ScriptRunContext,
+  ScriptRunContextProps,
   ScriptRunState,
+  SidebarConfigContext,
+  SidebarConfigContextProps,
   ThemeConfig,
+  ThemeContext,
+  ThemeContextProps,
   useRequiredContext,
 } from "@streamlit/lib"
-import { IAppPage, IGitInfo, Logo, PageConfig } from "@streamlit/protobuf"
+import { IAppPage, Logo, PageConfig } from "@streamlit/protobuf"
 
 // Type for AppContext props
 type AppContextValues = {
-  initialSidebarState: PageConfig.SidebarState
-  pageLinkBaseUrl: string
-  currentPageScriptHash: string
-  onPageChange: (pageScriptHash: string) => void
-  navSections: string[]
-  appPages: IAppPage[]
-  appLogo: Logo | null
-  sidebarChevronDownshift: number
-  expandSidebarNav: boolean
-  hideSidebarNav: boolean
   widgetsDisabled: boolean
-  gitInfo: IGitInfo | null
   showToolbar: boolean
 }
 
@@ -55,19 +52,41 @@ type AppContextValues = {
 type LibContextValues = {
   isFullScreen: boolean
   setFullScreen: (value: boolean) => void
-  addScriptFinishedHandler: (func: () => void) => void
-  removeScriptFinishedHandler: (func: () => void) => void
+  libConfig: LibConfig
+  locale: typeof window.navigator.language
+  componentRegistry: ComponentRegistry
+}
+
+// Type for NavigationContext props
+type NavigationContextValues = {
+  pageLinkBaseUrl: string
+  currentPageScriptHash: string
+  onPageChange: (pageScriptHash: string) => void
+  navSections: string[]
+  appPages: IAppPage[]
+}
+
+// Type for SidebarConfigContext props
+type SidebarConfigContextValues = {
+  initialSidebarState: PageConfig.SidebarState
+  appLogo: Logo | null
+  sidebarChevronDownshift: number
+  expandSidebarNav: boolean
+  hideSidebarNav: boolean
+}
+
+// Type for ThemeContext props
+type ThemeContextValues = {
   activeTheme: ThemeConfig
   setTheme: (theme: ThemeConfig) => void
   availableThemes: ThemeConfig[]
-  onPageChange: (pageScriptHash: string) => void
-  currentPageScriptHash: string
-  libConfig: LibConfig
-  fragmentIdsThisRun: Array<string>
-  locale: typeof window.navigator.language
+}
+
+// Type for ScriptRunContext props
+type ScriptRunContextValues = {
   scriptRunState: ScriptRunState
   scriptRunId: string
-  componentRegistry: ComponentRegistry
+  fragmentIdsThisRun: Array<string>
 }
 
 type FormsContextValues = {
@@ -75,7 +94,13 @@ type FormsContextValues = {
 }
 
 export type StreamlitContextProviderProps = PropsWithChildren<
-  AppContextValues & LibContextValues & FormsContextValues
+  AppContextValues &
+    LibContextValues &
+    NavigationContextValues &
+    SidebarConfigContextValues &
+    ThemeContextValues &
+    ScriptRunContextValues &
+    FormsContextValues
 >
 
 /**
@@ -84,34 +109,34 @@ export type StreamlitContextProviderProps = PropsWithChildren<
  */
 const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   // AppContext
-  initialSidebarState,
-  pageLinkBaseUrl,
-  navSections,
-  appPages,
-  appLogo,
-  sidebarChevronDownshift,
-  expandSidebarNav,
-  hideSidebarNav,
   widgetsDisabled,
-  gitInfo,
   showToolbar,
   // LibContext
   isFullScreen,
   setFullScreen,
-  addScriptFinishedHandler,
-  removeScriptFinishedHandler,
+  libConfig,
+  locale,
+  componentRegistry,
+  // NavigationContext
+  pageLinkBaseUrl,
+  currentPageScriptHash,
+  onPageChange,
+  navSections,
+  appPages,
+  // SidebarConfigContext
+  initialSidebarState,
+  appLogo,
+  sidebarChevronDownshift,
+  expandSidebarNav,
+  hideSidebarNav,
+  // ThemeContext
   activeTheme,
   setTheme,
   availableThemes,
-  libConfig,
-  fragmentIdsThisRun,
-  locale,
+  // ScriptRunContext
   scriptRunState,
   scriptRunId,
-  componentRegistry,
-  // Used in both contexts
-  currentPageScriptHash,
-  onPageChange,
+  fragmentIdsThisRun,
   // FormsContext
   formsData,
   // Children passed through
@@ -120,35 +145,10 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   // Memoized object for AppContext values
   const appContextProps = useMemo<AppContextProps>(
     () => ({
-      initialSidebarState,
-      pageLinkBaseUrl,
-      currentPageScriptHash,
-      onPageChange,
-      navSections,
-      appPages,
-      appLogo,
-      sidebarChevronDownshift,
-      expandSidebarNav,
-      hideSidebarNav,
       widgetsDisabled,
-      gitInfo,
       showToolbar,
     }),
-    [
-      initialSidebarState,
-      pageLinkBaseUrl,
-      currentPageScriptHash,
-      onPageChange,
-      navSections,
-      appPages,
-      appLogo,
-      sidebarChevronDownshift,
-      expandSidebarNav,
-      hideSidebarNav,
-      widgetsDisabled,
-      gitInfo,
-      showToolbar,
-    ]
+    [widgetsDisabled, showToolbar]
   )
 
   // Memoized object for LibContext values
@@ -156,37 +156,67 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
     () => ({
       isFullScreen,
       setFullScreen,
-      addScriptFinishedHandler,
-      removeScriptFinishedHandler,
-      activeTheme,
-      setTheme,
-      availableThemes,
-      onPageChange,
-      currentPageScriptHash,
       libConfig,
-      fragmentIdsThisRun,
       locale,
-      scriptRunState,
-      scriptRunId,
       componentRegistry,
     }),
+    [isFullScreen, setFullScreen, libConfig, locale, componentRegistry]
+  )
+
+  // Memoized object for NavigationContext values
+  const navigationContextProps = useMemo<NavigationContextProps>(
+    () => ({
+      pageLinkBaseUrl,
+      currentPageScriptHash,
+      onPageChange,
+      navSections,
+      appPages,
+    }),
     [
-      isFullScreen,
-      setFullScreen,
-      addScriptFinishedHandler,
-      removeScriptFinishedHandler,
+      pageLinkBaseUrl,
+      currentPageScriptHash,
+      onPageChange,
+      navSections,
+      appPages,
+    ]
+  )
+
+  // Memoized object for SidebarConfigContext values
+  const sidebarConfigContextProps = useMemo<SidebarConfigContextProps>(
+    () => ({
+      initialSidebarState,
+      appLogo,
+      sidebarChevronDownshift,
+      expandSidebarNav,
+      hideSidebarNav,
+    }),
+    [
+      initialSidebarState,
+      appLogo,
+      sidebarChevronDownshift,
+      expandSidebarNav,
+      hideSidebarNav,
+    ]
+  )
+
+  // Memoized object for ThemeContext values
+  const themeContextProps = useMemo<ThemeContextProps>(
+    () => ({
       activeTheme,
       setTheme,
       availableThemes,
-      onPageChange,
-      currentPageScriptHash,
-      libConfig,
-      fragmentIdsThisRun,
-      locale,
+    }),
+    [activeTheme, setTheme, availableThemes]
+  )
+
+  // Memoized object for ScriptRunContext values
+  const scriptRunContextProps = useMemo<ScriptRunContextProps>(
+    () => ({
       scriptRunState,
       scriptRunId,
-      componentRegistry,
-    ]
+      fragmentIdsThisRun,
+    }),
+    [scriptRunState, scriptRunId, fragmentIdsThisRun]
   )
 
   // formsData is not a stable reference, so memoization does not help
@@ -198,9 +228,17 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
   return (
     <AppContext.Provider value={appContextProps}>
       <LibContext.Provider value={libContextProps}>
-        <FormsContext.Provider value={formsContextProps}>
-          {children}
-        </FormsContext.Provider>
+        <SidebarConfigContext.Provider value={sidebarConfigContextProps}>
+          <ThemeContext.Provider value={themeContextProps}>
+            <NavigationContext.Provider value={navigationContextProps}>
+              <FormsContext.Provider value={formsContextProps}>
+                <ScriptRunContext.Provider value={scriptRunContextProps}>
+                  {children}
+                </ScriptRunContext.Provider>
+              </FormsContext.Provider>
+            </NavigationContext.Provider>
+          </ThemeContext.Provider>
+        </SidebarConfigContext.Provider>
       </LibContext.Provider>
     </AppContext.Provider>
   )

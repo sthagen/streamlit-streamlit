@@ -21,7 +21,7 @@ import {
   BaseButton,
   BaseButtonKind,
   DynamicIcon,
-  LibContext,
+  ThemeContext,
 } from "@streamlit/lib"
 
 import {
@@ -52,7 +52,7 @@ const Header = ({
   logoComponent,
 }: HeaderProps): ReactElement => {
   const { showToolbar } = useAppContext()
-  const { activeTheme } = useContext(LibContext)
+  const { activeTheme } = useContext(ThemeContext)
 
   const shouldShowLogo = logoComponent && !isSidebarOpen
   const shouldShowExpandButton = hasSidebar && !isSidebarOpen

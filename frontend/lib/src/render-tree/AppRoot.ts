@@ -37,6 +37,9 @@ import { AppNode, NO_SCRIPT_RUN_ID } from "./AppNode.interface"
 import { BlockNode } from "./BlockNode"
 import { ElementNode } from "./ElementNode"
 import { DebugVisitor } from "./visitors/DebugVisitor"
+import { ElementsSetVisitor } from "./visitors/ElementsSetVisitor"
+import { FilterMainScriptElementsVisitor } from "./visitors/FilterMainScriptElementsVisitor"
+import { GetNodeByDeltaPathVisitor } from "./visitors/GetNodeByDeltaPathVisitor"
 
 interface LogoMetadata {
   // Associated scriptHash that created the logo
@@ -268,22 +271,28 @@ export class AppRoot {
     }
   }
 
+  private ensureBlockNode(
+    node: BlockNode | undefined,
+    mainScriptHash: string = this.mainScriptHash
+  ): BlockNode {
+    return node ?? new BlockNode(mainScriptHash)
+  }
+
+  /**
+   * Clears all nodes that are not associated with the mainScriptHash.
+   * @param mainScriptHash - The hash of the main script.
+   * @returns A new AppRoot with the filtered nodes.
+   */
   filterMainScriptElements(mainScriptHash: string): AppRoot {
-    // clears all nodes that are not associated with the mainScriptHash
-    // Get the current script run id from one of the children
     const currentScriptRunId = this.main.scriptRunId
-    const main =
-      this.main.filterMainScriptElements(mainScriptHash) ||
-      new BlockNode(mainScriptHash)
-    const sidebar =
-      this.sidebar.filterMainScriptElements(mainScriptHash) ||
-      new BlockNode(mainScriptHash)
-    const event =
-      this.event.filterMainScriptElements(mainScriptHash) ||
-      new BlockNode(mainScriptHash)
-    const bottom =
-      this.bottom.filterMainScriptElements(mainScriptHash) ||
-      new BlockNode(mainScriptHash)
+    const visitor = new FilterMainScriptElementsVisitor(mainScriptHash)
+    const newChildren = this.root.children.map(child =>
+      this.ensureBlockNode(
+        child.accept(visitor) as BlockNode | undefined,
+        mainScriptHash
+      )
+    )
+
     const appLogo =
       this.appLogo?.activeScriptHash === mainScriptHash ? this.appLogo : null
 
@@ -291,7 +300,7 @@ export class AppRoot {
       mainScriptHash,
       new BlockNode(
         mainScriptHash,
-        [main, sidebar, event, bottom],
+        newChildren,
         new BlockProto({ allowEmpty: true }),
         currentScriptRunId
       ),
@@ -337,12 +346,15 @@ export class AppRoot {
 
   /** Return a Set containing all Elements in the tree. */
   public getElements(): Set<Element> {
-    const elements = new Set<Element>()
-    this.main.getElements(elements)
-    this.sidebar.getElements(elements)
-    this.event.getElements(elements)
-    this.bottom.getElements(elements)
-    return elements
+    const visitor = new ElementsSetVisitor()
+
+    // Visit each major section of the app
+    this.main.accept(visitor)
+    this.sidebar.accept(visitor)
+    this.event.accept(visitor)
+    this.bottom.accept(visitor)
+
+    return visitor.elements
   }
 
   private addElement(
@@ -375,7 +387,10 @@ export class AppRoot {
     fragmentId?: string,
     deltaMsgReceivedAt?: number
   ): AppRoot {
-    const existingNode = this.root.getIn(deltaPath)
+    const existingNode = GetNodeByDeltaPathVisitor.getNodeAtPath(
+      this.root,
+      deltaPath
+    )
 
     // If we're replacing an existing Block of the same type, this new Block
     // inherits the existing Block's children. This preserves two things:
@@ -409,8 +424,14 @@ export class AppRoot {
     namedDataSet: ArrowNamedDataSet,
     scriptRunId: string
   ): AppRoot {
-    const existingNode = this.root.getIn(deltaPath) as ElementNode
-    if (isNullOrUndefined(existingNode)) {
+    const existingNode = GetNodeByDeltaPathVisitor.getNodeAtPath(
+      this.root,
+      deltaPath
+    )
+    if (
+      isNullOrUndefined(existingNode) ||
+      !(existingNode instanceof ElementNode)
+    ) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Can't arrowAddRows: invalid deltaPath: ${deltaPath}`)
     }

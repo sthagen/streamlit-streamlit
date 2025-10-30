@@ -17,9 +17,7 @@
 import { createContext } from "react"
 
 import { ComponentRegistry } from "~lib/components/widgets/CustomComponent"
-import { ScriptRunState } from "~lib/ScriptRunState"
 import { StreamlitEndpoints } from "~lib/StreamlitEndpoints"
-import { baseTheme, ThemeConfig } from "~lib/theme"
 
 /**
  * The lib config contains various configurations that the host platform can
@@ -57,79 +55,16 @@ export interface LibContextProps {
   setFullScreen: (value: boolean) => void
 
   /**
-   * Add a callback that will be called every time the app's script finishes
-   * executing.
-   */
-  addScriptFinishedHandler: (func: () => void) => void
-
-  /** Remove a previously-added scriptFinishedHandler callback. */
-  removeScriptFinishedHandler: (func: () => void) => void
-
-  /** The currently active app theme. */
-  activeTheme: ThemeConfig
-
-  /**
-   * Set the app's active theme locally and send it the app's host (if any).
-   * @see App.setAndSendTheme
-   */
-  setTheme: (theme: ThemeConfig) => void
-
-  /** List of all available themes. */
-  availableThemes: ThemeConfig[]
-
-  /**
-   * Change the page in a multi-page app.
-   * @see PageLink
-   */
-  onPageChange: (pageScriptHash: string) => void
-
-  /**
-   * The current page of a multi-page app.
-   * @see PageLink
-   */
-  currentPageScriptHash: string
-
-  /**
    * The lib-specific configuration from the apps host which is requested via the
    * _stcore/host-config endpoint.
    */
   libConfig: LibConfig
 
   /**
-   * The IDs of the fragments that the current script run corresponds to. If the
-   * current script run isn't due to a fragment, this field is falsy.
-   */
-  fragmentIdsThisRun: Array<string>
-
-  /**
    * The current locale of the app. Defaults to the browser's locale.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
    */
   locale: typeof window.navigator.language
-
-  /**
-   * The app's current ScriptRunState. This is used in combination with
-   * scriptRunId to prune stale elements. It's also used by the app to
-   * display the "running man" indicator when the app's script is being re-run.
-   * Pulled from context in BlockNodeRenderer, ElementNodeRenderer, Tabs
-   * @see Block
-   * @see ElementNodeRender
-   * @see Tabs
-   */
-  scriptRunState: ScriptRunState
-
-  /**
-   * The ID of the current "script run". When a Streamlit script is re-run
-   * (usually as a result of the user interacting with a widget), the Streamlit
-   * backend sends a new scriptRunId to the frontend. When the script run ends,
-   * the frontend discards "stale" elements (that is, elements with a non-current
-   * scriptRunId).
-   * Pulled from context in BlockNodeRenderer, ElementNodeRenderer, Tabs
-   * @see Block
-   * @see ElementNodeRender
-   * @see Tabs
-   */
-  scriptRunId: string
 
   /**
    * The app's ComponentRegistry instance. Dispatches "Custom Component"
@@ -158,18 +93,8 @@ const noOpEndpoints: StreamlitEndpoints = {
 export const LibContext = createContext<LibContextProps>({
   isFullScreen: false,
   setFullScreen: () => {},
-  addScriptFinishedHandler: () => {},
-  removeScriptFinishedHandler: () => {},
-  activeTheme: baseTheme,
-  setTheme: () => {},
-  availableThemes: [],
-  onPageChange: () => {},
-  currentPageScriptHash: "",
   libConfig: {},
-  fragmentIdsThisRun: [],
   locale: window.navigator.language,
-  scriptRunState: ScriptRunState.NOT_RUNNING,
-  scriptRunId: "",
   // This should be overwritten
   componentRegistry: new ComponentRegistry(noOpEndpoints),
 })

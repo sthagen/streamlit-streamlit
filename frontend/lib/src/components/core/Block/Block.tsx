@@ -21,7 +21,6 @@ import classNames from "classnames"
 import { Block as BlockProto, streamlit } from "@streamlit/protobuf"
 
 import { AppNode, BlockNode, ElementNode } from "~lib/AppNode"
-import { FormsContext } from "~lib/components/core/FormsContext"
 import {
   FlexContext,
   FlexContextProvider,
@@ -35,6 +34,7 @@ import {
   shouldWidthStretch,
 } from "~lib/components/core/Layout/utils"
 import { LibContext } from "~lib/components/core/LibContext"
+import { ScriptRunContext } from "~lib/components/core/ScriptRunContext"
 import ChatMessage from "~lib/components/elements/ChatMessage"
 import Dialog from "~lib/components/elements/Dialog"
 import Expander from "~lib/components/elements/Expander"
@@ -42,9 +42,7 @@ import Popover from "~lib/components/elements/Popover"
 import Tabs, { TabProps } from "~lib/components/elements/Tabs"
 import Form from "~lib/components/widgets/Form"
 import { useEmotionTheme } from "~lib/hooks/useEmotionTheme"
-import { useRequiredContext } from "~lib/hooks/useRequiredContext"
 import { useScrollToBottom } from "~lib/hooks/useScrollToBottom"
-import { ScriptRunState } from "~lib/ScriptRunState"
 import { getElementId, notNullOrUndefined } from "~lib/util/utils"
 
 import ElementNodeRenderer from "./ElementNodeRenderer"
@@ -301,9 +299,8 @@ const MEDIUM_STRETCH_BEHAVIOR = ["chatInput"]
 
 const BlockNodeRenderer = (props: BlockPropsWithoutWidth): ReactElement => {
   const { node } = props
-  const { fragmentIdsThisRun, scriptRunState, scriptRunId } =
-    useContext(LibContext)
-  const { formsData } = useRequiredContext(FormsContext)
+  const { scriptRunState, scriptRunId, fragmentIdsThisRun } =
+    useContext(ScriptRunContext)
 
   let minStretchBehavior: MinFlexElementWidth
   if (LARGE_STRETCH_BEHAVIOR.includes(node.deltaBlock.type ?? "")) {
@@ -402,17 +399,11 @@ const BlockNodeRenderer = (props: BlockPropsWithoutWidth): ReactElement => {
   if (node.deltaBlock.type === "form") {
     const { formId, clearOnSubmit, enterToSubmit, border } = node.deltaBlock
       .form as BlockProto.Form
-    const submitButtons = formsData.submitButtons.get(formId)
-    const hasSubmitButton =
-      submitButtons !== undefined && submitButtons.length > 0
-    const scriptNotRunning = scriptRunState === ScriptRunState.NOT_RUNNING
     containerElement = (
       <Form
         formId={formId}
         clearOnSubmit={clearOnSubmit}
         enterToSubmit={enterToSubmit}
-        hasSubmitButton={hasSubmitButton}
-        scriptNotRunning={scriptNotRunning}
         widgetMgr={props.widgetMgr}
         border={border}
         overflow={styles.overflow}
