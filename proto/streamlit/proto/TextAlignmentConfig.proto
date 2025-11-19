@@ -1,4 +1,4 @@
-/**
+/**!
  * Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022-2025)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
-export { StyledLabelHelpWrapper } from "./styled-components"
-export * from "./TooltipIcon"
-export { default } from "./TooltipIcon"
+syntax = "proto3";
+
+option java_package = "com.snowflake.apps.streamlit";
+option java_outer_classname = "TextAlignmentConfigProto";
+
+package streamlit;
+
+// Text alignment configuration for text elements
+message TextAlignmentConfig {
+  enum Alignment {
+    UNSPECIFIED = 0;
+    LEFT = 1;
+    CENTER = 2;
+    RIGHT = 3;
+    JUSTIFY = 4;
+  }
+
+  Alignment alignment = 1;
+}
