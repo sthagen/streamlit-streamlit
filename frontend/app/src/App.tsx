@@ -20,7 +20,6 @@ import classNames from "classnames"
 import { enableMapSet, enablePatches } from "immer"
 import without from "lodash/without"
 import { getLogger } from "loglevel"
-import moment from "moment"
 import { flushSync } from "react-dom"
 import Hotkeys from "react-hot-keys"
 
@@ -67,6 +66,7 @@ import {
   CUSTOM_THEME_AUTO_NAME,
   DeployedAppMetadata,
   ensureError,
+  ensureHotkeysFilterConfigured,
   extractPageNameFromPathName,
   FileUploadClient,
   FormsData,
@@ -77,6 +77,7 @@ import {
   getHostSpecifiedTheme,
   getIFrameEnclosingApp,
   getLocaleLanguage,
+  getScreencastTimestamp,
   getTimezone,
   getTimezoneOffset,
   getUrl,
@@ -271,6 +272,9 @@ export class App extends PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
+
+    // Register hotkey filter:
+    ensureHotkeysFilterConfigured()
 
     // Initialize immerjs
     enablePatches()
@@ -1960,7 +1964,7 @@ export class App extends PureComponent<Props, State> {
   screencastCallback = (): void => {
     const { scriptName } = this.state
     const { startRecording } = this.props.screenCast
-    const date = moment().format("YYYY-MM-DD-HH-MM-SS")
+    const date = getScreencastTimestamp()
 
     startRecording(`streamlit-${scriptName}-${date}`)
   }
