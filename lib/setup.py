@@ -23,13 +23,15 @@ from setuptools.command.install import install
 
 THIS_DIRECTORY = Path(__file__).parent
 
-VERSION = "1.51.0"  # PEP-440
+VERSION = "1.52.2"  # PEP-440
 
 # IMPORTANT: We should try very hard *not* to add dependencies to Streamlit.
 # And if you do add one, make the required version as general as possible:
 # - Include relevant lower bound for any features we use from our dependencies
 # - Always include the lower bound as >= VERSION, to keep testing min versions easy
 # - And include an upper bound that's < NEXT_MAJOR_VERSION
+# NOTE: If you change the lower bound of a version, you will need to run
+# `make update-min-deps` and commit the changes to `min-constraints-gen.txt`.
 INSTALL_REQUIRES = [
     # Altair 5.4.0 and 5.4.1 have compatibility issues with narwhals library
     # that cause st.line_chart and other built-in charts to fail rendering.

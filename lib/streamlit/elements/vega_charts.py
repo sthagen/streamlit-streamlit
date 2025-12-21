@@ -379,7 +379,7 @@ def _convert_altair_to_vega_lite_spec(
 
     # alt.themes was deprecated in Altair 5.5.0 in favor of alt.theme
     if type_util.is_altair_version_less_than("5.5.0"):
-        alt_theme = alt.themes  # ty: ignore[unresolved-attribute]
+        alt_theme = alt.themes
     else:
         alt_theme = alt.theme
 
@@ -2092,6 +2092,11 @@ class VegaChartsMixin:
         **kwargs : any
             The Vega-Lite spec for the chart as keywords. This is an alternative
             to ``spec``.
+
+            .. deprecated::
+               ``**kwargs`` are deprecated and will be removed in a future
+               release. To specify Vega-Lite configuration options, use the
+               ``spec`` argument instead.
 
         Returns
         -------

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, PropsWithChildren, useMemo } from "react"
+import { memo, PropsWithChildren, useMemo } from "react"
 
 import {
   DownloadContext,
@@ -224,9 +224,12 @@ const StreamlitContextProvider: React.FC<StreamlitContextProviderProps> = ({
     [scriptRunState, scriptRunId, fragmentIdsThisRun]
   )
 
-  const formsContextProps: FormsContextProps = {
-    formsData,
-  }
+  const formsContextProps: FormsContextProps = useMemo(
+    () => ({
+      formsData,
+    }),
+    [formsData]
+  )
 
   const downloadContextProps: DownloadContextProps =
     useMemo<DownloadContextProps>(
