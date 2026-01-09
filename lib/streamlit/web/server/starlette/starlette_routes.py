@@ -61,6 +61,10 @@ _LOGGER: Final = get_logger(__name__)
 # Route path constants (without base URL prefix)
 # These define the canonical paths for all Starlette server endpoints.
 
+# IMPORTANT: Keep these in sync with:
+# - frontend/app/vite.config.ts (dev server proxy configuration)
+# - frontend/connection/src/DefaultStreamlitEndpoints.ts
+
 # Health check routes
 _ROUTE_HEALTH: Final = "_stcore/health"
 _ROUTE_SCRIPT_HEALTH: Final = "_stcore/script-health-check"
