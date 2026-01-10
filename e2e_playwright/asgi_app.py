@@ -12,12 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from streamlit.web.server.starlette.starlette_app import App, create_starlette_app
-from streamlit.web.server.starlette.starlette_server import UvicornRunner, UvicornServer
+"""E2E test for st.App running the mega_tester_app.py script."""
 
-__all__ = [
-    "App",
-    "UvicornRunner",
-    "UvicornServer",
-    "create_starlette_app",
-]
+from streamlit.starlette import App
+
+# Create the ASGI app pointing to the mega_tester_app.py script
+app = App("mega_tester_app.py")
