@@ -27,3 +27,10 @@ skills/*
 !agents/
 agents/*
 !agents/reviewing-local-changes.md
+!agents/simplifying-local-changes.md
+
+# Allow commands
+!commands/
+commands/*
+!commands/simplifying-local-changes.md
+!commands/reviewing-local-changes.md

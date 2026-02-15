@@ -95,7 +95,7 @@ import {
 } from "./utils"
 
 // Lazy-load elements.
-const ArrowTable = lazy(() => import("~lib/components/elements/ArrowTable"))
+const Table = lazy(() => import("~lib/components/elements/Table"))
 const ArrowVegaLiteChart = lazy(
   () => import("~lib/components/elements/ArrowVegaLiteChart")
 )
@@ -226,10 +226,10 @@ const RawElementNodeRenderer = (
       return (
         <ElementContainer
           node={node}
-          config={ElementContainerConfig.DEFAULT}
+          config={ElementContainerConfig.LARGE_ELEMENT}
           isStale={isStale}
         >
-          <ArrowTable
+          <Table
             element={tableProto}
             data={node.quiverElement}
             {...elementProps}
