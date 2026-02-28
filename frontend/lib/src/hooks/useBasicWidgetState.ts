@@ -26,6 +26,7 @@ import {
 import { useFormClearHelper } from "~lib/components/widgets/Form"
 import { isNullOrUndefined } from "~lib/util/utils"
 import {
+  DateType,
   Source,
   WidgetStateManager,
   WidgetValueType,
@@ -205,6 +206,8 @@ export interface QueryParamBindingConfig {
    * stores indices internally but uses formatted option strings in URLs).
    */
   urlDefault?: string | number | boolean | string[] | number[] | null
+  /** For date/time sliders: format microsecond timestamps as ISO strings in URLs */
+  dateType?: DateType
 }
 
 interface UseBasicWidgetStateBaseArgs<
@@ -318,9 +321,16 @@ export function useBasicWidgetState<
   const queryParamBindingOptions = useMemo(
     () =>
       hasQueryParamBinding
-        ? { urlFormat: queryParamBinding?.urlFormat }
+        ? {
+            urlFormat: queryParamBinding?.urlFormat,
+            dateType: queryParamBinding?.dateType,
+          }
         : undefined,
-    [hasQueryParamBinding, queryParamBinding?.urlFormat]
+    [
+      hasQueryParamBinding,
+      queryParamBinding?.urlFormat,
+      queryParamBinding?.dateType,
+    ]
   )
 
   // Query param binding registration (optional, integrated for convenience)

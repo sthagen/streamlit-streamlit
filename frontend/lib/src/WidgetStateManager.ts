@@ -73,6 +73,7 @@ export interface QueryParamBinding {
   // When true, empty values write ?foo= to URL; when false, empty clears the param.
   clearable: boolean
   urlFormat?: "comma" | "repeated" // How to serialize arrays
+  dateType?: DateType
 }
 
 /**
@@ -104,6 +105,38 @@ export function createFormsData(): FormsData {
 }
 
 const LOG = getLogger("WidgetStateManager")
+
+// Structurally identical to MomentKind in formatMoment.ts, but kept separate:
+// MomentKind is for display formatting (moment.js), DateType is for URL
+// serialization (ISO strings). Coupling them would create an unrelated
+// dependency between URL binding logic and the display formatting layer.
+export type DateType = "date" | "time" | "datetime"
+
+/**
+ * Convert a microsecond timestamp (as used by date/time sliders) to an ISO
+ * string suitable for URL query parameters. The format matches the ISO
+ * conventions used by st.date_input and st.time_input.
+ *
+ * Python datetime microseconds → JS milliseconds → Date UTC → ISO substring.
+ */
+export function microsToIsoString(micros: number, dateType: DateType): string {
+  // micros are UTC-based; Date constructor interprets ms as UTC.
+  const iso = new Date(micros / 1000).toISOString()
+  switch (dateType) {
+    case "date":
+      return iso.slice(0, 10) // "YYYY-MM-DD"
+    case "time": {
+      // Include seconds when non-zero to preserve sub-minute precision.
+      const hhmmss = iso.slice(11, 19) // "HH:mm:ss"
+      return hhmmss.endsWith(":00") ? hhmmss.slice(0, 5) : hhmmss
+    }
+    case "datetime": {
+      // Include seconds when non-zero to preserve sub-minute precision.
+      const secs = iso.slice(17, 19)
+      return secs === "00" ? iso.slice(0, 16) : iso.slice(0, 19)
+    }
+  }
+}
 
 /**
  * A Dictionary that maps widgetID -> WidgetState, and provides some utility
@@ -1084,7 +1117,8 @@ export class WidgetStateManager {
     valueType: WidgetValueType,
     defaultValue: unknown,
     clearable: boolean,
-    urlFormat?: "comma" | "repeated"
+    urlFormat?: "comma" | "repeated",
+    dateType?: DateType
   ): void {
     // Clean up old binding if a different widget was bound to this paramKey.
     // This keeps boundWidgets and paramKeyToWidgetId consistent.
@@ -1093,12 +1127,27 @@ export class WidgetStateManager {
       this.boundWidgets.delete(existingWidgetId)
     }
 
+    // For date/time sliders, convert microsecond defaults to ISO strings so
+    // that shouldClearUrlParam / isDefaultArrayValue comparisons match the
+    // ISO strings produced by convertToUrlValue.
+    let normalizedDefault = defaultValue
+    if (dateType) {
+      if (Array.isArray(normalizedDefault)) {
+        normalizedDefault = normalizedDefault.map(n =>
+          typeof n === "number" ? microsToIsoString(n, dateType) : String(n)
+        )
+      } else if (typeof normalizedDefault === "number") {
+        normalizedDefault = microsToIsoString(normalizedDefault, dateType)
+      }
+    }
+
     this.boundWidgets.set(widgetId, {
       paramKey,
       valueType,
-      defaultValue,
+      defaultValue: normalizedDefault,
       urlFormat,
       clearable,
+      dateType,
     })
     this.paramKeyToWidgetId.set(paramKey, widgetId)
   }
@@ -1211,8 +1260,14 @@ export class WidgetStateManager {
       case "int_array_value":
         return (value as number[]).map(n => String(n))
 
-      case "double_array_value":
-        return (value as number[]).map(n => String(n))
+      case "double_array_value": {
+        const arr = value as number[]
+        if (binding.dateType) {
+          const dt = binding.dateType
+          return arr.map(n => microsToIsoString(n, dt))
+        }
+        return arr.map(n => String(n))
+      }
 
       default:
         return assertNever(binding.valueType)
