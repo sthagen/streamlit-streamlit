@@ -54,7 +54,7 @@ Review the recommendations from step 6. For each recommendation:
 
 ### 8. Run checks (second pass)
 
-Run the /checking-changes skill in a subagent (uses `make check`) to validate the changes. Wait for completion, then fix any issues found before proceeding. Don't run other checks besides `make check` in this step.
+Run the /checking-changes skill in a subagent with `E2E_CHECK=true make check` to also run changed e2e tests. Wait for completion, then fix any issues found before proceeding. Snapshot mismatches can be ignored (they require manual updates).
 
 ### 9. Create or update PR
 
@@ -66,7 +66,9 @@ Check if a PR exists for the current branch:
 gh pr view --json number,title,url
 ```
 
-**If no PR exists**, create one following the guidelines in `wiki/pull-requests.md` (please read!). Add appropriate labels and fill in the body based on `.github/pull_request_template.md` (skip the video/screenshot section):
+**If no PR exists**, create one following the guidelines in `wiki/pull-requests.md` (please read!). Add appropriate labels and fill in the body based on `.github/pull_request_template.md` (skip the video/screenshot section).
+
+**Link related issues:** Add `- Closes #12345` to the PR description for any known GitHub issues this PR resolves.
 
 **Required labels:**
 
@@ -87,6 +89,10 @@ gh pr create --base develop --title "[type] Description" --body "$(cat <<'EOF'
 
 - Change 1
 - Change 2
+
+## GitHub Issue Link (if applicable)
+
+- Closes #12345
 
 ## Testing Plan
 

@@ -176,6 +176,9 @@ class WStates(MutableMapping[str, Any]):
             value = cast("Any", value).data
         elif value_field_name == "json_value":
             value = json.loads(cast("str", value))
+        elif value_field_name == "string_trigger_value":
+            # StringTriggerValue is a message with data in a `data` field
+            value = cast("Any", value).data
 
         deserialized = metadata.deserializer(value)
 
