@@ -588,7 +588,7 @@ def _get_positional_arg_name(func: Callable[..., Any], arg_index: int) -> str | 
     if arg_index < 0:
         return None
 
-    params: list[inspect.Parameter] = list(inspect.signature(func).parameters.values())
+    params = type_util.get_func_parameters(func)
     if arg_index >= len(params):
         return None
 
