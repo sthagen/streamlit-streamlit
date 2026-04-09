@@ -1986,9 +1986,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microlink/react-json-view@npm:^1.31.15":
-  version: 1.31.15
-  resolution: "@microlink/react-json-view@npm:1.31.15"
+"@microlink/react-json-view@npm:^1.31.16":
+  version: 1.31.16
+  resolution: "@microlink/react-json-view@npm:1.31.16"
   dependencies:
     react-base16-styling: "npm:~0.10.0"
     react-lifecycles-compat: "npm:~3.0.4"
@@ -1996,7 +1996,7 @@ __metadata:
   peerDependencies:
     react: ">= 15"
     react-dom: ">= 15"
-  checksum: 10c0/1b60f0e8709df0e47265a42f9675339b1ccb8c86824c8c8ee891ae5f309a092a43e7323f152b7740d35a73fdc9e932bd3f05c80ab36f6ba4a31db53ff97b133a
+  checksum: 10c0/14bbefbd7cc45042fe4394872ed2b7c3419e722c94f2306eba49ef209c8359f34e42743333d92b72e38ae35a66cd74b72717b4236b2c099e7b662699be182989
   languageName: node
   linkType: hard
 
@@ -3797,7 +3797,7 @@ __metadata:
     "@loaders.gl/core": "npm:^4.4.1"
     "@loaders.gl/csv": "npm:^4.4.1"
     "@loaders.gl/gltf": "npm:^4.4.1"
-    "@microlink/react-json-view": "npm:^1.31.15"
+    "@microlink/react-json-view": "npm:^1.31.16"
     "@sindresorhus/slugify": "npm:^3.0.0"
     "@streamlit/component-v2-lib": "workspace:^"
     "@streamlit/protobuf": "workspace:^"
@@ -3853,7 +3853,7 @@ __metadata:
     node-emoji: "npm:^2.2.0"
     node-fetch: "npm:3.3.2"
     numbro: "npm:^2.5.0"
-    plotly.js: "npm:^3.4.0"
+    plotly.js: "npm:^3.5.0"
     postinstall-postinstall: "npm:^2.1.0"
     protobufjs: "npm:^8.0.0"
     query-string: "npm:^9.3.1"
@@ -10073,13 +10073,13 @@ __metadata:
   linkType: hard
 
 "fast-xml-parser@npm:^4.2.5":
-  version: 4.5.4
-  resolution: "fast-xml-parser@npm:4.5.4"
+  version: 4.5.6
+  resolution: "fast-xml-parser@npm:4.5.6"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/7989148650fc1fce988798b62467f7dee0fd5a7ad049373e00e65fbc68f689c119975d03da32c427f0a1f5aad01de2efbd783a48dcdaf3ca41817a8b161ad3e8
+  checksum: 10c0/1c19e183b5ee93bea9b24e1ddb0aed8564b273c6106af622b1c11ff8eb1fc8d2033cd7a0cb68976a5f3e05d1cbf0a0026e6f300f904be0bc854ff896dbdf38d2
   languageName: node
   linkType: hard
 
@@ -15151,9 +15151,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plotly.js@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "plotly.js@npm:3.4.0"
+"plotly.js@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "plotly.js@npm:3.5.0"
   dependencies:
     "@plotly/d3": "npm:3.8.2"
     "@plotly/d3-sankey": "npm:0.7.2"
@@ -15205,7 +15205,7 @@ __metadata:
     topojson-client: "npm:^3.1.0"
     webgl-context: "npm:^2.2.0"
     world-calendars: "npm:^1.0.4"
-  checksum: 10c0/2a6e5bba2385a040efdcff7b46f546b82a17918be803e6e7397aa870c998be0682c110f024743c1bff528544f5fb3df291d0cdb15e3a41fb745d84eb3a339d20
+  checksum: 10c0/5247d4be5fb39268d14b95fa3d4d278f56bbd35c01b53b71eb331208c66d936044ef42dd2e3b2574987171fc1d04bdb7cf53e5dce1a113f19ef2f0bf80aaacaa
   languageName: node
   linkType: hard
 
