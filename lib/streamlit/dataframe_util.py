@@ -21,6 +21,7 @@ import dataclasses
 import inspect
 import math
 import re
+import warnings
 from collections import ChainMap, UserDict, UserList, deque
 from collections.abc import ItemsView, Iterable, Mapping, Sequence
 from enum import Enum, EnumMeta, auto
@@ -166,11 +167,26 @@ class DataframeInterchangeCompatible(Protocol):
     def __dataframe__(self, allow_copy: bool) -> Any: ...
 
 
+class ArrowStreamExportable(Protocol):
+    """Protocol for objects implementing the Arrow PyCapsule Interface.
+
+    Objects implementing this protocol can export their data as an Arrow stream
+    via the C Data Interface using PyCapsules. This is the recommended way for
+    cross-library Arrow data exchange, replacing the deprecated DataFrame
+    Interchange Protocol.
+
+    https://arrow.apache.org/docs/format/CDataInterface/PyCapsuleInterface.html
+    """
+
+    def __arrow_c_stream__(self, requested_schema: Any = None) -> Any: ...
+
+
 OptionSequence: TypeAlias = (
     Iterable[V_co]
     | DataFrameGenericAlias[V_co]
     | PandasCompatible
     | DataframeInterchangeCompatible
+    | ArrowStreamExportable
 )
 
 # Various data types supported by our dataframe processing
@@ -189,6 +205,7 @@ Data: TypeAlias = Union[
     DBAPICursor,
     PandasCompatible,
     DataframeInterchangeCompatible,
+    ArrowStreamExportable,
     CustomDict,
     None,
 ]
@@ -254,6 +271,18 @@ def is_pyarrow_version_less_than(v: str) -> bool:
     import pyarrow as pa
 
     return is_version_less_than(pa.__version__, v)
+
+
+# Minimum PyArrow version that supports consuming PyCapsule Interface via from_stream.
+# While the PyCapsule Interface dunder methods (__arrow_c_stream__, etc.) were added in
+# PyArrow 14.0.0, RecordBatchReader.from_stream() was introduced in PyArrow 15.0.0.
+# https://arrow.apache.org/docs/format/CDataInterface/PyCapsuleInterface.html
+_MIN_PYARROW_PYCAPSULE_VERSION: Final = "15.0.0"
+
+
+def _is_arrow_pycapsule_supported() -> bool:
+    """Return True if PyArrow supports the Arrow PyCapsule Interface."""
+    return not is_pyarrow_version_less_than(_MIN_PYARROW_PYCAPSULE_VERSION)
 
 
 def is_pandas_version_less_than(v: str) -> bool:
@@ -696,14 +725,35 @@ def convert_anything_to_pandas_df(
     if has_callable_attr(data, "to_pandas"):
         return pd.DataFrame(data.to_pandas())
 
-    # Check for dataframe interchange protocol
+    # Check for Arrow PyCapsule Interface (__arrow_c_stream__). Preferred over
+    # the deprecated DataFrame Interchange Protocol for cross-library data exchange.
+    # https://arrow.apache.org/docs/format/CDataInterface/PyCapsuleInterface.html
+    if (
+        has_callable_attr(data, "__arrow_c_stream__")
+        and _is_arrow_pycapsule_supported()
+    ):
+        import pyarrow as pa
+
+        try:
+            table = pa.RecordBatchReader.from_stream(data).read_all()
+            data_df = cast("pd.DataFrame", table.to_pandas())
+            return data_df.copy() if ensure_copy else data_df
+        except (pa.ArrowInvalid, pa.ArrowTypeError, pa.ArrowNotImplementedError):
+            # Object exports a non-struct type (e.g., pandas Series) or has a
+            # partial __arrow_c_stream__ implementation. Fall back to other methods.
+            pass
+
+    # Check for dataframe interchange protocol (deprecated, prefer PyCapsule above)
     # Only available in pandas >= 1.5.0
     # https://pandas.pydata.org/docs/whatsnew/v1.5.0.html#dataframe-interchange-protocol-implementation
     if (
         has_callable_attr(data, "__dataframe__")
         and is_pandas_version_less_than("1.5.0") is False
     ):
-        data_df = pd.api.interchange.from_dataframe(data)
+        # Suppress the Pandas4Warning about deprecated interchange protocol
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "The Dataframe Interchange Protocol")
+            data_df = pd.api.interchange.from_dataframe(data)
         return data_df.copy() if ensure_copy else data_df
 
     # Support for generator functions
@@ -890,8 +940,6 @@ def convert_anything_to_arrow_bytes(
 
     if isinstance(data, pa.Table):
         return convert_arrow_table_to_arrow_bytes(data)
-
-    # TODO(lukasmasuch): Add direct conversion to Arrow for supported formats here
 
     # Fallback: try to convert to pandas DataFrame
     # and then to Arrow bytes.
