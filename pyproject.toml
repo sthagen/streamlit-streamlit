@@ -303,6 +303,11 @@ extend-safe-fixes = ["TC002", "TC003"]
   "TRY",     # Ignore tryceratops rules (simpler exception handling in tests).
 ]
 "scripts/**" = ["T20", "INP", "PERF", "S", "TRY002"]
+"lib/streamlit/.agents/**" = [
+  # Each template is a standalone app, not a package. Adding __init__.py would
+  # misrepresent them as importable modules.
+  "INP",
+]
 
 [tool.ruff.lint.flake8-tidy-imports]
 # Disallow all relative imports.
@@ -411,6 +416,8 @@ module = [
   "authlib.*",
   "uvloop.*",
   "polars.*",
+  # yfinance is a template-only dependency (used by dashboard-stock-peers) and has no stubs.
+  "yfinance.*",
   # SQLAlchemy is optional and its stubs are only installed with integration extras
   "sqlalchemy.*",
   # tomllib is only available in Python 3.11+, tomli is the fallback for Python 3.10

@@ -159,6 +159,8 @@ exclude = ["tests", "tests.*"]
 streamlit = [
     "py.typed",
     ".agents/**/*.md",
+    ".agents/skills/**/assets/templates/**/*.py",
+    ".agents/skills/**/assets/templates/**/*.toml",
     "hello/**/*.py",
 ]
 
