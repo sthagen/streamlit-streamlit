@@ -89,7 +89,7 @@
     "node-emoji": "^2.2.0",
     "numbro": "^2.5.0",
     "plotly.js": "^3.5.1",
-    "protobufjs": "^8.3.0",
+    "protobufjs": "^8.4.0",
     "query-string": "^9.3.1",
     "re-resizable": "^6.11.2",
     "react-aria-components": "^1.17.0",
@@ -136,7 +136,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@swc/plugin-emotion": "^14.9.0",
+    "@swc/plugin-emotion": "^14.10.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -166,10 +166,10 @@
     "timezone-mock": "^1.4.2",
     "tsc-alias": "^1.8.17",
     "typesync": "^0.14.3",
-    "vite": "^8.0.13",
-    "vite-plugin-dts": "^5.0.0",
+    "vite": "^8.0.14",
+    "vite-plugin-dts": "^5.0.1",
     "vite-plugin-svgr": "^5.2.0",
-    "vitest": "^4.1.6",
+    "vitest": "^4.1.7",
     "vitest-canvas-mock": "^1.1.4",
     "vitest-fetch-mock": "^0.4.5"
   },
