@@ -3752,14 +3752,14 @@ __metadata:
     color2k: "npm:^2.0.2"
     d3: "npm:^7.9.0"
     d3-graphviz: "npm:^5.6.0"
-    date-fns: "npm:^4.1.0"
+    date-fns: "npm:^4.2.1"
     decamelize: "npm:^6.0.1"
     deck.gl: "npm:^9.3.2"
     dompurify: "npm:^3.4.3"
     hoist-non-react-statics: "npm:^3.3.2"
     immer: "npm:^11.1.7"
     json5: "npm:^2.2.3"
-    katex: "npm:^0.16.46"
+    katex: "npm:^0.17.0"
     lodash-es: "npm:^4.18.1"
     loglevel: "npm:^1.9.2"
     mapbox-gl: "npm:^1.13.2"
@@ -3773,7 +3773,7 @@ __metadata:
     numbro: "npm:^2.5.0"
     plotly.js: "npm:^3.5.1"
     postinstall-postinstall: "npm:^2.1.0"
-    protobufjs: "npm:^8.4.0"
+    protobufjs: "npm:^8.4.2"
     query-string: "npm:^9.3.1"
     re-resizable: "npm:^6.11.2"
     react-aria-components: "npm:^1.17.0"
@@ -3827,8 +3827,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@streamlit/protobuf@workspace:protobuf"
   dependencies:
-    protobufjs: "npm:^8.4.0"
-    protobufjs-cli: "npm:^2.4.0"
+    protobufjs: "npm:^8.4.2"
+    protobufjs-cli: "npm:^2.4.2"
     typesync: "npm:^0.14.3"
   languageName: unknown
   linkType: soft
@@ -8360,10 +8360,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "date-fns@npm:4.1.0"
-  checksum: 10c0/b79ff32830e6b7faa009590af6ae0fb8c3fd9ffad46d930548fbb5acf473773b4712ae887e156ba91a7b3dc30591ce0f517d69fd83bd9c38650fdc03b4e0bac8
+"date-fns@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "date-fns@npm:4.2.1"
+  checksum: 10c0/1694c57a180a76c1001401fde85925cebb3b89594d37625063be0a571eddde278a87d3c76ecad5759c3dbeabcc34a5c5757eb6b3487d89a9a61ef48571791166
   languageName: node
   linkType: hard
 
@@ -12127,7 +12127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"katex@npm:^0.16.0, katex@npm:^0.16.46":
+"katex@npm:^0.16.0":
   version: 0.16.47
   resolution: "katex@npm:0.16.47"
   dependencies:
@@ -12135,6 +12135,17 @@ __metadata:
   bin:
     katex: cli.js
   checksum: 10c0/b10f4d0651c60771a48444879e4227255e26e2b2ec061b1ee4b08934863ad2324ba8dbb772455f7768aeb14dfcc13bcd309174a0ddd5ef954a607f644a197710
+  languageName: node
+  linkType: hard
+
+"katex@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "katex@npm:0.17.0"
+  dependencies:
+    commander: "npm:^8.3.0"
+  bin:
+    katex: cli.js
+  checksum: 10c0/e80ad159961341799940740ceeaf9501338f9f04a91089f35e08ee25a13aeeff1cb0771a1ae5394f0b5eb98cc5c8e6ef2569c29ae60a1554c4844bcd079a2e21
   languageName: node
   linkType: hard
 
@@ -12177,9 +12188,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knip@npm:^6.13.1":
-  version: 6.14.1
-  resolution: "knip@npm:6.14.1"
+"knip@npm:^6.14.2":
+  version: 6.14.2
+  resolution: "knip@npm:6.14.2"
   dependencies:
     fdir: "npm:^6.5.0"
     formatly: "npm:^0.3.0"
@@ -12198,7 +12209,7 @@ __metadata:
   bin:
     knip: bin/knip.js
     knip-bun: bin/knip-bun.js
-  checksum: 10c0/d0221aa904b801a38a38503133d4d67ea4036de045691e127972ddedfde2da37fe1be0648d966f72061cb0dcf8b3e35131038c37401e24d15f1c483920bb4989
+  checksum: 10c0/02263901b05a0717efde2ae38ae430da9dce3987714873957bfe33323e57736621d03d85940e0b8cd7e8f542c2f87535a101acccc3c26261b0101c9c3fc565c2
   languageName: node
   linkType: hard
 
@@ -15139,9 +15150,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs-cli@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "protobufjs-cli@npm:2.4.0"
+"protobufjs-cli@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "protobufjs-cli@npm:2.4.2"
   dependencies:
     chalk: "npm:^4.0.0"
     escodegen: "npm:^1.13.0"
@@ -15154,21 +15165,21 @@ __metadata:
     tmp: "npm:^0.2.1"
     uglify-js: "npm:^3.7.7"
   peerDependencies:
-    protobufjs: ">=8.4.0 <9"
+    protobufjs: ^8.4.2
   bin:
     pbjs: bin/pbjs
     pbts: bin/pbts
     protoc-gen-pbjs: bin/protoc-gen-pbjs
-  checksum: 10c0/be846d235303eaac3e4fc8b6c01b340a6bccff8720573708d776a3279b02abe0a1c587f35adc64ffcc9c9dc9cf7913b374107125f067829cec47653f35d69cee
+  checksum: 10c0/36abd1b7f1113c6a2dc508031d00244f79aeb9ee3712eae8f6c86751545a0383ca9e04907a24ca64252245bb0c5b399803fa9ba869ae21d5f363fb347575128b
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "protobufjs@npm:8.4.0"
+"protobufjs@npm:^8.4.2":
+  version: 8.4.2
+  resolution: "protobufjs@npm:8.4.2"
   dependencies:
     long: "npm:^5.3.2"
-  checksum: 10c0/d692c1741e04c9eb777b7aecfed4bb5a5407cc0aa4b601850f73e1bb0b12ba6a28bf06602463b2479bfcd4498089d8812b47df61a5ea2a790d3dc1fc5b6eadb7
+  checksum: 10c0/f97c7f8f1dba8b71f5ea7443a9672ce205497a574687e3fec48d27421a420f8558653cf4387368bc6147ac479262b356a001c83d8040376460828cc63c69dbfb
   languageName: node
   linkType: hard
 
@@ -17037,7 +17048,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:^7.16.2"
     globals: "npm:^17.6.0"
     jiti: "npm:^2.7.0"
-    knip: "npm:^6.13.1"
+    knip: "npm:^6.14.2"
     oxfmt: "npm:^0.51.0"
     oxlint: "npm:^1.66.0"
     typescript: "npm:^6.0.3"
