@@ -82,6 +82,16 @@ Step 4: Check if app is running and offer to run it
 
 **IMPORTANT — `use_container_width` is deprecated.** Never add `use_container_width` to new code. Streamlit elements now stretch to fill their container by default. Use `width="stretch"` or `width="content"` instead. Remove `use_container_width` when you encounter it.
 
+### Proactively Look Up API Details
+
+When selecting a Streamlit command, discovering functionality that may be newer than the agent's knowledge cutoff, validating available functionality, or using unfamiliar parameters, proactively look up the relevant local docs before coding:
+
+```bash
+streamlit docs st.<command>
+```
+
+Run this with the Streamlit installation relevant to the app being edited. Use `references/api-reference.md` to discover available public `st` commands and namespaces, then use `streamlit docs st.<command>` for exact signatures, parameters, and docstrings.
+
 Use this routing table to select reference(s). **Always read the reference file** before making changes.
 
 > All file paths below are relative to this skill's directory (`streamlit/.agents/skills/developing-with-streamlit/`).
@@ -97,6 +107,7 @@ Use this routing table to select reference(s). **Always read the reference file*
 | **Displaying or editing tabular data** — `st.dataframe` column configuration, `st.data_editor` for editable tables, chart selection, and best practices for large datasets | read `references/data-display.md` |
 | **Multi-page app architecture** — `st.navigation`, `st.Page`, page routing, shared state across pages, and structuring apps with multiple views | read `references/multipage-apps.md` |
 | **Persisting values across reruns** — `st.session_state`, widget keys, callbacks (`on_change`, `on_click`), and patterns for stateful interactions | read `references/session-state.md` |
+| **Discovering available Streamlit public APIs, looking up `st.<command>` commands, exact parameters, docstrings, signatures, or choosing the right top-level command** — quick table of public `st` commands and related public objects plus CLI instructions for inspecting local docstrings | read `references/api-reference.md` |
 | **Rich text formatting** — Markdown in `st.markdown` and widget labels, colored text (`:red[...]`), badges, Material Symbols icons (`:material/icon_name:`), LaTeX math, and Mermaid diagrams | read `references/markdown.md` |
 | **Chat and conversational UIs** — `st.chat_message`, `st.chat_input`, streaming responses with `st.write_stream`, and building AI assistant interfaces | read `references/chat-ui.md` |
 | **Connecting to Snowflake** — `st.connection("snowflake")`, secrets configuration, querying data, and Snowflake-specific patterns | read `references/snowflake-connection.md` |
