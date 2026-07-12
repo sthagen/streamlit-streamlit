@@ -799,6 +799,7 @@ class ConfigTest(unittest.TestCase):
                 "server.headless",
                 "server.maxMessageSize",
                 "server.maxUploadSize",
+                "server.maxWidgetStateSize",
                 "server.port",
                 "server.runOnSave",
                 "server.scriptHealthCheckEnabled",
@@ -1074,6 +1075,12 @@ class ConfigTest(unittest.TestCase):
 
         config._set_option("browser.gatherUsageStats", "test", "test")
         assert config.get_option("browser.gatherUsageStats") == "test"
+
+    def test_set_user_option_raises_for_unrecognized_key(self):
+        """set_user_option raises for an unknown config option key."""
+        with pytest.raises(StreamlitAPIException) as e:
+            config.set_user_option("not.a.real.option", "value")
+        assert "Unrecognized config option: not.a.real.option" in str(e.value)
 
     def test_is_manually_set(self):
         config._set_option("browser.serverAddress", "some.bucket", "test")
@@ -1678,6 +1685,9 @@ class ConfigLoadingTest(unittest.TestCase):
 
     def test_max_message_size_default_values(self):
         assert config.get_option("server.maxMessageSize") == 200
+
+    def test_max_widget_state_size_default_values(self):
+        assert config.get_option("server.maxWidgetStateSize") == 25
 
     def test_config_options_removed_on_reparse(self):
         """Test that config options that are removed in a file are also removed
