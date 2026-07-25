@@ -159,6 +159,7 @@ def set_user_option(key: str, value: Any) -> None:
     script itself:
 
         - ``client.showErrorDetails``
+        - ``client.disableDataExport``
         - ``client.showSidebarNavigation``
         - ``client.toolbarMode``
 
@@ -631,6 +632,27 @@ _create_option(
 )
 
 _create_option(
+    "client.disableDataExport",
+    description="""
+        When true, hides the built-in controls for exporting data from
+        components that support it:
+
+        - Hides the CSV download button for st.dataframe, st.data_editor,
+          and chart table views.
+        - Disables clipboard copy for read-only tables (st.dataframe and
+          chart table views), while keeping st.data_editor copy/paste enabled.
+
+        This only hides the built-in export and copy controls. It does not
+        prevent users from otherwise accessing the underlying data (e.g. via
+        screenshots, browser developer tools, or network inspection), so it
+        should not be relied upon as a security or data-protection control.
+    """,
+    default_val=False,
+    type_=bool,
+    scriptable=True,
+)
+
+_create_option(
     "client.showSidebarNavigation",
     description="""
         Controls whether to display the default sidebar page navigation in a
@@ -782,6 +804,23 @@ _create_option(
         ThreadPoolExecutor default (min(32, os.cpu_count() + 4)).
     """,
     default_val=None,
+    type_=int,
+)
+
+_create_option(
+    "runner.cacheBackgroundRefreshMaxWorkers",
+    description="""
+        Maximum number of concurrent background refreshes for cached functions
+        that use refresh_mode="background" (@st.cache_data / @st.cache_resource).
+        Sizes a single, process-wide thread pool shared by all such functions;
+        when it is saturated, extra refreshes are skipped (the stale value is
+        still served) rather than queued.
+
+        Set to 0 to disable background refresh entirely: stale entries are then
+        recomputed by a blocking foreground call at hard expiry (2 x ttl).
+    """,
+    visibility="hidden",
+    default_val=4,
     type_=int,
 )
 
@@ -1080,19 +1119,6 @@ _create_option(
     visibility="hidden",
     default_val=25,
     type_=int,
-)
-
-_create_option(
-    "server.enableArrowTruncation",
-    description="""
-        Enable automatically truncating all data structures that get serialized
-        into Arrow (e.g. DataFrames) to ensure that the size is under
-        `server.maxMessageSize`.
-    """,
-    visibility="hidden",
-    default_val=False,
-    scriptable=True,
-    type_=bool,
 )
 
 _create_option(
