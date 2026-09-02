@@ -154,7 +154,7 @@ describe("FileUploader widget tests", () => {
     const { element, widgetMgr } = props
 
     widgetMgr.setFileUploaderStateValue(
-      element,
+      element.id,
       buildFileUploaderStateProto([
         new FileURLsProto({
           fileId: "filename.txt",
@@ -162,13 +162,28 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename.txt",
         }),
       ]),
-      { fromUi: false },
-      undefined
+      { formId: element.formId, fragmentId: undefined, fromUser: false }
     )
 
     render(<FileUploader {...props} />)
     const fileNameNode = screen.getByText("filename.txt")
     expect(fileNameNode).toBeInTheDocument()
+  })
+
+  it("renders the empty dropzone when widget state has no uploaded files", () => {
+    const props = getProps()
+    const { element, widgetMgr } = props
+
+    widgetMgr.setFileUploaderStateValue(
+      element.id,
+      buildFileUploaderStateProto([]),
+      { formId: element.formId, fragmentId: undefined, fromUser: false }
+    )
+
+    render(<FileUploader {...props} />)
+
+    expect(screen.queryByTestId("stFileChip")).not.toBeInTheDocument()
+    expect(screen.getByText("Upload")).toBeVisible()
   })
 
   it("shows a label", () => {
@@ -226,7 +241,7 @@ describe("FileUploader widget tests", () => {
     expect(fileDropZoneInput.files?.[0]).toEqual(fileToUpload)
 
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename.txt",
@@ -234,10 +249,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename.txt",
         },
       ]),
-      {
-        fromUi: true,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: true }
     )
   })
 
@@ -255,7 +267,7 @@ describe("FileUploader widget tests", () => {
     await user.upload(fileDropZoneInput, fileToUpload)
 
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename.txt",
@@ -264,9 +276,10 @@ describe("FileUploader widget tests", () => {
         },
       ]),
       {
-        fromUi: true,
-      },
-      "myFragmentId"
+        formId: props.element.formId,
+        fragmentId: "myFragmentId",
+        fromUser: true,
+      }
     )
   })
 
@@ -313,7 +326,7 @@ describe("FileUploader widget tests", () => {
     expect(errors[1].textContent).toContain("Only one file is allowed.")
 
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename1.txt",
@@ -321,10 +334,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename1.txt",
         },
       ]),
-      {
-        fromUi: true,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: true }
     )
   })
   it("replaces file on single file uploader", async () => {
@@ -363,7 +373,7 @@ describe("FileUploader widget tests", () => {
     expect(currentFiles[0].textContent).toContain("filename2.txt")
     expect(fileDropZoneInput.files?.[0]).toEqual(secondFile)
     expect(props.uploadClient.uploadFile).toHaveBeenCalledTimes(2)
-    // setFileUploaderStateValue should have been called once on init (fromUi false),
+    // setFileUploaderStateValue should have been called once on init (fromUser false),
     // once when the first file finished uploading, once when the existing file was
     // cleared before the replacement, and once for the replacement upload.
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledTimes(4)
@@ -405,7 +415,7 @@ describe("FileUploader widget tests", () => {
     expect(errorFileNames.length).toBe(1)
 
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename1.txt",
@@ -418,10 +428,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename2.txt",
         },
       ]),
-      {
-        fromUi: true,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: true }
     )
   })
 
@@ -621,7 +628,7 @@ describe("FileUploader widget tests", () => {
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledTimes(3)
 
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenLastCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename1.txt",
@@ -634,10 +641,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename2.txt",
         },
       ]),
-      {
-        fromUi: true,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: true }
     )
 
     const firstDeleteBtn = screen.getAllByTestId("stFileChipDeleteBtn")[0]
@@ -654,7 +658,7 @@ describe("FileUploader widget tests", () => {
     // has been updated.
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledTimes(4)
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenLastCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         {
           fileId: "filename2.txt",
@@ -662,10 +666,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "filename2.txt",
         },
       ]),
-      {
-        fromUi: true,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: true }
     )
   })
 
@@ -676,7 +677,7 @@ describe("FileUploader widget tests", () => {
 
     // Seed an existing uploaded file before rendering (simulates server state)
     props.widgetMgr.setFileUploaderStateValue(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([
         new FileURLsProto({
           fileId: "file1.txt",
@@ -684,8 +685,7 @@ describe("FileUploader widget tests", () => {
           deleteUrl: "file1.txt",
         }),
       ]),
-      { fromUi: false },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: false }
     )
 
     render(<FileUploader {...props} />)
@@ -748,12 +748,9 @@ describe("FileUploader widget tests", () => {
     // WidgetStateManager will still have been called once, during component mounting
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledTimes(1)
     expect(props.widgetMgr.setFileUploaderStateValue).toHaveBeenCalledWith(
-      props.element,
+      props.element.id,
       buildFileUploaderStateProto([]),
-      {
-        fromUi: false,
-      },
-      undefined
+      { formId: props.element.formId, fragmentId: undefined, fromUser: false }
     )
   })
 
