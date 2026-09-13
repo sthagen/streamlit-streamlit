@@ -34,7 +34,6 @@ import {
   CameraInput as CameraInputProto,
   FileUploaderState as FileUploaderStateProto,
   FileURLs as FileURLsProto,
-  IFileURLs,
   UploadedFileInfo as UploadedFileInfoProto,
 } from "@streamlit/protobuf"
 
@@ -268,11 +267,9 @@ const CameraInput = ({
    * Upload progress for the current file, derived during render.
    */
   const progress: number | undefined = useMemo(() => {
-    if (
-      files.length > 0 &&
-      files[files.length - 1].status.type === "uploading"
-    ) {
-      const lastFileStatus = files[files.length - 1].status as UploadingStatus
+    const lastFile = files.at(-1)
+    if (lastFile?.status.type === "uploading") {
+      const lastFileStatus: UploadingStatus = lastFile.status
       return lastFileStatus.progress
     }
     return undefined
@@ -339,7 +336,7 @@ const CameraInput = ({
    * Called when an upload has completed. Updates the file's status.
    */
   const onUploadComplete = useCallback(
-    (localFileId: number, fileUrls: IFileURLs): void => {
+    (localFileId: number, fileUrls: FileURLsProto.$Properties): void => {
       setShutter(false)
 
       const curFile = getFile(localFileId)
@@ -395,7 +392,7 @@ const CameraInput = ({
    * Upload a file to the backend.
    */
   const uploadFile = useCallback(
-    (fileURLs: IFileURLs, file: File): void => {
+    (fileURLs: FileURLsProto.$Properties, file: File): void => {
       // Create an UploadFileInfo for this file and add it to our state.
       const abortController = new AbortController()
       const uploadingFileInfo = new UploadFileInfo(
@@ -492,7 +489,7 @@ const CameraInput = ({
 
       const capturePromise = urltoFile(
         capturedImgSrc,
-        `camera-input-${new Date().toISOString().replace(/:/g, "_")}.jpg`
+        `camera-input-${new Date().toISOString().replaceAll(":", "_")}.jpg`
       )
         .then(file =>
           uploadClient.fetchFileURLs([file]).then(fileURLsArray => ({

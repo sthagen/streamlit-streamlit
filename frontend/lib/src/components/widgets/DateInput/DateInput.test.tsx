@@ -849,7 +849,7 @@ describe("DateInput", () => {
         .queryAllByRole("button", { expanded: false })
         .filter(el => el.getAttribute("aria-haspopup") === "listbox")
         .map(el => el.getAttribute("aria-label"))
-      expect(pickerNames.sort()).toEqual(["month", "year"])
+      expect(pickerNames.toSorted()).toEqual(["month", "year"])
       expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
     })
 
@@ -1950,12 +1950,15 @@ describe("DateInput single-mode active calendar (Alt+ArrowDown)", () => {
     await waitFor(() => {
       const calendar = screen.getByTestId("stDateInputCalendar")
       expect(calendar).toHaveAttribute("role", "dialog")
-      expect(calendar).toHaveAttribute("aria-modal", "true")
       // Focus should be inside the calendar grid
       const focused = document.activeElement
       expect(calendar.contains(focused)).toBe(true)
       expect(focused?.getAttribute("tabindex")).toBe("0")
     })
+    expect(screen.getByTestId("stDateInputCalendar")).toHaveAttribute(
+      "aria-modal",
+      "true"
+    )
   })
 
   it("Alt+ArrowDown opens calendar even if popover was closed", async () => {
@@ -2184,10 +2187,15 @@ describe("DateInput range-mode active calendar (Alt+ArrowDown)", () => {
     await user.keyboard("{Alt>}{ArrowDown}{/Alt}")
 
     await waitFor(() => {
-      const calendar = screen.getByTestId("stDateInputCalendar")
-      expect(calendar).toHaveAttribute("role", "dialog")
-      expect(calendar).toHaveAttribute("aria-modal", "true")
+      expect(screen.getByTestId("stDateInputCalendar")).toHaveAttribute(
+        "role",
+        "dialog"
+      )
     })
+    expect(screen.getByTestId("stDateInputCalendar")).toHaveAttribute(
+      "aria-modal",
+      "true"
+    )
   })
 
   it("Alt+ArrowDown from end field segment enters active calendar", async () => {

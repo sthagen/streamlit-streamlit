@@ -56,6 +56,7 @@ from streamlit.runtime.state import (
     WidgetKwargs,
     get_session_state,
     register_widget,
+    validate_on_change_mode,
 )
 from streamlit.string_util import to_help_str
 from streamlit.type_util import check_python_comparable
@@ -313,8 +314,13 @@ class RadioMixin:
             The default is false (vertical buttons).
 
         captions : iterable of str or None
-            A list of captions to show below each radio button. If None (default),
-            no captions are shown.
+            A list of captions to show below each radio button. If this is
+            ``None`` (default), no captions are shown.
+
+            Captions are matched to ``options`` by position. To caption only
+            some options, use ``None`` or an empty string for the others. If
+            this list is shorter than ``options``, the remaining options have no
+            caption. Any captions after the last option are ignored.
 
         label_visibility : "visible", "hidden", or "collapsed"
             The visibility of the label. The default is ``"visible"``. If this
@@ -460,6 +466,10 @@ class RadioMixin:
         width: Width = "content",
     ) -> T | None:
         key = to_key(key)
+        on_change = validate_on_change_mode(
+            on_change,
+            supported_modes=(),
+        )
 
         check_widget_policies(
             self.dg,
