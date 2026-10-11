@@ -5,6 +5,24 @@ Build professional, brand-aligned themes using `.streamlit/config.toml`. This sk
 
 Use `streamlit config show` to look up the full, current set of available theme configuration options and their descriptions before configuring a theme. The theme settings are grouped under `[theme]`, `[theme.sidebar]`, and the light and dark variants.
 
+## Contents
+
+- [Theme file setup](#theme-file-setup)
+- [Theme inheritance](#theme-inheritance)
+- [Color configuration](#color-configuration)
+- [Typography](#typography)
+- [Border and radius](#border-and-radius)
+- [Sidebar customization](#sidebar-customization)
+- [Light and dark modes](#light-and-dark-modes)
+- [Detecting current theme](#detecting-current-theme)
+- [Design principles](#design-principles)
+- [Example: VS Code dark theme](#example-vs-code-dark-theme)
+- [Common mistakes](#common-mistakes)
+- [IMPORTANT: No custom CSS unless explicitly requested](#important-no-custom-css-unless-explicitly-requested)
+- [Development workflow](#development-workflow)
+- [Theme templates](#theme-templates)
+- [References](#references)
+
 ## Theme file setup
 
 Theme options go in Streamlit's `config.toml` under the `[theme]` section:
@@ -20,7 +38,7 @@ base = "light"                         # or "dark"
 # base = "https://example.com/theme.toml"  # Remote URL
 ```
 
-When using `base`, you only need to override the values you want to change. Theme files referenced via `base` can only contain a single `[theme]` section—`[theme.light]` and `[theme.dark]` variants are not supported in external theme files.
+When using `base`, you only need to override the values you want to change. A theme file referenced via `base` can contain `[theme]` plus `[theme.sidebar]`, `[theme.light]`, and `[theme.dark]` (each light and dark section can have its own `.sidebar`). Its own `base` must be `"light"` or `"dark"`; it can't point to another theme file.
 
 ## Color configuration
 
@@ -34,7 +52,7 @@ secondaryBackgroundColor = "#f6f8fa"  # Widget backgrounds, code blocks
 textColor = "#1F2328"              # Body text
 
 # Optional refinements
-linkColor = "#0969da"              # Markdown links (defaults to primaryColor)
+linkColor = "#0969da"              # Markdown links (defaults to blueTextColor)
 codeTextColor = "#1F2328"          # Inline code text
 codeBackgroundColor = "#f6f8fa"    # Code block background
 borderColor = "#d0d7de"            # Widget borders
@@ -80,6 +98,9 @@ chartCategoricalColors = ["#0969da", "#1a7f37", "#bf3989", "#8250df", "#cf222e",
 # Sequential/gradient data (heatmaps) - exactly 10 colors required
 chartSequentialColors = ["#f0f6fc", "#c8e1ff", "#79c0ff", "#58a6ff", "#388bfd", "#1f6feb", "#1158c7", "#0d419d", "#0a3069", "#04244a"]
 
+# Diverging data (midpoint scales) - exactly 10 colors; Plotly/Altair/Vega-Lite only
+chartDivergingColors = ["#67001f", "#b2182b", "#d6604d", "#f4a582", "#fddbc7", "#d1e5f0", "#92c5de", "#4393c3", "#2166ac", "#053061"]
+
 [theme.dark]
 # Brighter palette for dark backgrounds
 chartCategoricalColors = ["#58a6ff", "#3fb950", "#db61a2", "#a371f7", "#f85149", "#d29922", "#8b949e"]
@@ -90,10 +111,12 @@ chartCategoricalColors = ["#58a6ff", "#3fb950", "#db61a2", "#a371f7", "#f85149",
 ```toml
 [theme]
 dataframeBorderColor = "#d0d7de"
-dataframeHeaderBackgroundColor = "#f6f8fa"
+dataframeHeaderBackgroundColor = "#1f2937"
+dataframeHeaderTextColor = "#ffffff"
 ```
 
-Ensure `textColor` is readable against `dataframeHeaderBackgroundColor`—headers use the main text color.
+Set `dataframeHeaderTextColor` when the header background is dark or tinted.
+If unset, header text and icons use a faded `textColor`. A selected column's header text and icons stay white, including when `dataframeHeaderTextColor` is set.
 
 ## Typography
 
@@ -115,7 +138,7 @@ font = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:w
 
 ### Self-hosting custom fonts
 
-Use `[[theme.fontFaces]]` tables to load fonts via Streamlit's static file serving. Font files must be placed in a `static/` directory and served through the app—they cannot be arbitrary local file paths.
+Use `[[theme.fontFaces]]` tables to load fonts via Streamlit's static file serving. Font files must be placed in a `static/` directory and served through the app—they cannot be arbitrary local file paths. Static serving is off by default, so enable it with `[server] enableStaticServing = true`; otherwise the `app/static/...` URLs return 404 and the font falls back.
 
 **Before adding fonts to config.toml:** Verify the font files exist in the static directory.
 
@@ -158,6 +181,10 @@ codeFontWeight = 400
 # Heading hierarchy (h1 through h6), or use a single value for all
 headingFontSizes = ["32px", "24px", "20px", "16px", "14px", "12px"]
 headingFontWeights = [600, 600, 600, 500, 500, 500]
+
+# st.metric value. Size must be a string ("2.25rem", "36px", or "36"); a bare number is ignored.
+metricValueFontSize = "2.25rem"
+metricValueFontWeight = 700       # 100-900, multiple of 50; default 400 (ignores baseFontWeight)
 ```
 
 ### Link styling
@@ -177,7 +204,7 @@ showWidgetBorder = true            # Show borders on unfocused widgets
 showSidebarBorder = true           # Show divider between sidebar and content
 ```
 
-**Radius keywords:** `"none"` (0), `"small"` (4px), `"medium"` (8px), `"large"` (12px), `"full"` (pill shape).
+**Radius keywords:** `"none"` (0), `"small"` (0.35rem), `"medium"` (0.5rem), `"large"` (1rem), `"full"` (1.4rem).
 
 ## Sidebar customization
 
@@ -219,7 +246,7 @@ backgroundColor = "#f6f8fa"
 backgroundColor = "#010409"
 ```
 
-Users can switch between modes in the app settings menu only if both `[theme.light]` and `[theme.dark]` are defined. A custom theme with just `[theme]` locks the app to a single mode.
+Users can switch between light and dark mode in the app settings menu when `[theme.light]` or `[theme.dark]` is defined; define both to control how each mode looks. A custom theme with just `[theme]` locks the app to a single mode.
 
 ## Detecting current theme
 
