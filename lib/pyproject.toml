@@ -80,7 +80,7 @@ dependencies = [
   # 10.0.1 is the first release that publishes Python 3.11 wheels.
   # PyArrow 25.0.0 can segfault when first imported from a short-lived worker thread.
   # See https://github.com/apache/arrow/issues/50471.
-  "pyarrow>=10.0.1,!=25.0.0,<26",
+  "pyarrow>=10.0.1,!=25.0.0,<27",
   "requests>=2.27,<3",
   # Writes credentials and `streamlit config show` output. Reading uses stdlib tomllib.
   "tomli-w>=1.0.0,<2",
